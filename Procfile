@@ -1,1 +1,1 @@
-web: gunicorn KISLEV.wsgi 
+web: gunicorn kislevsmart.wsgi 
