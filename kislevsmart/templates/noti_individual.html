@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notificaciones Individuales</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/noti_individual.css' %}">
+</head>
+
+<body>
+    
+    <div class="envelope-background">
+        <!-- Repetir 6 veces para diferentes sobres -->
+        <div class="envelope-icon">
+            <svg viewBox="0 0 24 24">
+                <rect x="2" y="4" width="20" height="16" rx="2"/>
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+            </svg>
+        </div>
+        <div class="envelope-icon">
+            <svg viewBox="0 0 24 24">
+                <rect x="2" y="4" width="20" height="16" rx="2"/>
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+            </svg>
+        </div>
+        <div class="envelope-icon">
+            <svg viewBox="0 0 24 24">
+                <rect x="2" y="4" width="20" height="16" rx="2"/>
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+            </svg>
+        </div>
+        <div class="envelope-icon">
+            <svg viewBox="0 0 24 24">
+                <rect x="2" y="4" width="20" height="16" rx="2"/>
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+            </svg>
+        </div>
+        <div class="envelope-icon">
+            <svg viewBox="0 0 24 24">
+                <rect x="2" y="4" width="20" height="16" rx="2"/>
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+            </svg>
+        </div>
+        <div class="envelope-icon">
+            <svg viewBox="0 0 24 24">
+                <rect x="2" y="4" width="20" height="16" rx="2"/>
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+            </svg>
+        </div>
+    </div>
+        
+
+    <!-- Contenedor principal -->
+    <div class="container">
+        <h1>Notificaciones Individuales</h1>
+
+        <form class="notification-form" id="notificationForm">
+            <!-- Sección de ubicación -->
+            <div class="form-section">
+                <h2 class="form-section-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1" />
+                    </svg>
+                    Ubicación
+                </h2>
+                <div class="selects-container">
+                    <div class="select-group">
+                        <label for="tower">Interior/Torre</label>
+                        <select id="tower" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="int1">Interior 1</option>
+                            <option value="int2">Interior 2</option>
+                            <option value="torre1">Torre 1</option>
+                            <option value="torre2">Torre 2</option>
+                        </select>
+                    </div>
+                    <div class="select-group">
+                        <label for="apartment">Apartamento</label>
+                        <select id="apartment" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="101">101</option>
+                            <option value="102">102</option>
+                            <option value="201">201</option>
+                            <option value="202">202</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección de mensaje -->
+            <div class="message-section">
+                <h2 class="form-section-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z" />
+                    </svg>
+                    Mensaje
+                </h2>
+                <textarea id="message" placeholder="Escribe tu mensaje aquí..." required></textarea>
+            </div>
+
+            <!-- Sección de botones -->
+            <div class="buttons-container">
+                <input type="file" id="fileInput" class="file-input" accept=".pdf,.doc,.docx,.xls,.xlsx">
+                <label for="fileInput" class="btn btn-secondary">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l8.57-8.57A4 4 0 1118 8.84l-8.59 8.57a2 2 0 01-2.83-2.83l8.49-8.48" />
+                    </svg>
+                    Adjuntar Archivo
+                </label>
+
+                <button type="button" class="btn btn-primary" onclick="showConfirmation()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+                    </svg>
+                    Enviar Mensaje
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Modal de confirmación -->
+    <div class="modal-backdrop" id="confirmModal">
+        <div class="modal">
+            <div class="modal-content">
+                <h2 style="margin-bottom: 1rem;">¿Está seguro de enviar el mensaje?</h2>
+                <div class="modal-buttons">
+                    <button class="btn btn-secondary" onclick="hideConfirmation()">No</button>
+                    <button class="btn btn-primary" onclick="sendMessage()">Sí</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Elementos del DOM
+        const form = document.getElementById('notificationForm');
+        const fileInput = document.getElementById('fileInput');
+        const modalBackdrop = document.getElementById('confirmModal');
+
+        // Configuración
+        const ALLOWED_FILE_TYPES = [
+            'application/pdf',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'application/vnd.ms-excel',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        ];
+        const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
+        // Manejador del input de archivo
+        fileInput.addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Validar tipo de archivo
+            if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+                alert('Por favor, seleccione un archivo PDF, Word o Excel.');
+                fileInput.value = '';
+                return;
+            }
+
+            // Validar tamaño
+            if (file.size > MAX_FILE_SIZE) {
+                alert('El archivo no debe superar los 10MB.');
+                fileInput.value = '';
+                return;
+            }
+
+            // Mostrar nombre del archivo seleccionado
+            const label = document.querySelector('.file-label');
+            label.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l8.57-8.57A4 4 0 1118 8.84l-8.59 8.57a2 2 0 01-2.83-2.83l8.49-8.48"/>
+        </svg>
+        ${file.name}
+    `;
+        });
+
+        // Funciones para el modal
+        function showConfirmation() {
+            // Validar el formulario antes de mostrar el modal
+            const tower = document.getElementById('tower').value;
+            const apartment = document.getElementById('apartment').value;
+            const message = document.getElementById('message').value;
+
+            if (!tower || !apartment || !message.trim()) {
+                alert('Por favor complete todos los campos requeridos.');
+                return;
+            }
+
+            modalBackdrop.style.display = 'flex';
+            // Añadir animación de entrada
+            modalBackdrop.querySelector('.modal').style.animation = 'modalAppear 0.3s ease-out forwards';
+        }
+
+        function hideConfirmation() {
+            // Añadir animación de salida
+            const modal = modalBackdrop.querySelector('.modal');
+            modal.style.animation = 'modalAppear 0.3s ease-out reverse';
+
+            setTimeout(() => {
+                modalBackdrop.style.display = 'none';
+                modal.style.animation = '';
+            }, 300);
+        }
+
+        // Función para enviar el mensaje
+        function sendMessage() {
+            const formData = new FormData(form);
+
+            // Aquí iría la lógica de envío al servidor
+            console.log('Enviando mensaje...');
+            console.log('Torre/Interior:', formData.get('tower'));
+            console.log('Apartamento:', formData.get('apartment'));
+            console.log('Mensaje:', formData.get('message'));
+            console.log('Archivo:', fileInput.files[0]?.name || 'No hay archivo');
+
+            // Simular envío
+            setTimeout(() => {
+                alert('Mensaje enviado exitosamente');
+                hideConfirmation();
+                resetForm();
+            }, 1000);
+        }
+
+        // Función para resetear el formulario
+        function resetForm() {
+            form.reset();
+            const label = document.querySelector('.file-label');
+            label.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l8.57-8.57A4 4 0 1118 8.84l-8.59 8.57a2 2 0 01-2.83-2.83l8.49-8.48"/>
+        </svg>
+        Adjuntar Archivo
+    `;
+        }
+
+        // Event Listeners
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                hideConfirmation();
+            }
+        });
+
+        modalBackdrop.addEventListener('click', function (e) {
+            if (e.target === modalBackdrop) {
+                hideConfirmation();
+            }
+        });
+
+        // Prevenir cierre accidental
+        window.addEventListener('beforeunload', function (e) {
+            if (form.querySelector('textarea').value.trim()) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+    </script>
+</body>
+
+</html>

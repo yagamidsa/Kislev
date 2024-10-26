@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notificaciones de Servicios Públicos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/noti_publicos.css' %}">
+</head>
+
+<body>
+    <!-- Patrón de sobres en el fondo -->
+    <div class="envelope-pattern">
+        <!-- 24 sobres para crear un patrón uniforme -->
+        <div class="envelope">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+        </div>
+        <div class="envelope">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+        </div>
+        <div class="envelope">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+        </div>
+        <div class="envelope">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+        </div>
+        <div class="envelope">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+        </div>
+        <div class="envelope">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+        </div>
+        <div class="envelope">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+        </div>
+        <div class="envelope">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+        </div>
+        <div class="envelope">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+        </div>
+        <div class="envelope">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+        </div>
+        <div class="envelope">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+        </div>
+        <div class="envelope">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+        </div>
+    </div>
+
+    <!-- Contenedor principal -->
+    <div class="container">
+        <h1>Notificaciones de Servicios Públicos</h1>
+
+        <div class="services-grid">
+            <!-- Tarjeta de Luz -->
+            <div class="service-card">
+                <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path
+                        d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+                <h2 class="service-name">Luz</h2>
+                <button class="send-button" data-service="Luz" onclick="showConfirmation('Luz')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+                    </svg>
+                    Enviar Notificación
+                </button>
+            </div>
+            <!-- Tarjeta de Gas -->
+            <div class="service-card">
+                <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <!-- Manguera/tubería de gas -->
+                    <path d="M3 7v2c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V7m4 0v2c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V7" />
+                    <path d="M3 7h18" />
+                    <path d="M3 10v7a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-7" />
+                    <path d="M15 10v7a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-7" />
+                    <!-- Válvula -->
+                    <circle cx="7" cy="7" r="1" />
+                    <circle cx="19" cy="7" r="1" />
+                </svg>
+                <h2 class="service-name">Gas</h2>
+                <button class="send-button" data-service="Gas" onclick="showConfirmation('Gas')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+                    </svg>
+                    Enviar Notificación
+                </button>
+            </div>
+
+            <!-- Tarjeta de Agua -->
+            <div class="service-card">
+                <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path
+                        d="M12 22c4.97 0 9-4.03 9-9s-9-13-9-13-9 8.03-9 13 4.03 9 9 9zm0-16c.64.64 6 5.37 6 7 0 3.31-2.69 6-6 6s-6-2.69-6-6c0-1.63 5.36-6.36 6-7z" />
+                </svg>
+                <h2 class="service-name">Agua</h2>
+                <button class="send-button" data-service="Agua" onclick="showConfirmation('Agua')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+                    </svg>
+                    Enviar Notificación
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmación -->
+    <div class="modal-backdrop" id="confirmModal">
+        <div class="modal">
+            <div class="modal-content">
+                <h2 style="margin-bottom: 1rem;">¿Está seguro de enviar la notificación de <span
+                        id="serviceType"></span>?</h2>
+                <div class="modal-buttons">
+                    <button class="modal-button no" onclick="hideConfirmation()">No</button>
+                    <button class="modal-button yes" onclick="sendNotification()">Sí</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let currentService = '';
+        const ANIMATION_DURATION = 300;
+
+        // Función para inicializar efectos visuales
+        function initializeVisualEffects() {
+            // Crear efecto de desplazamiento aleatorio para los sobres
+            const envelopes = document.querySelectorAll('.envelope');
+            envelopes.forEach((envelope, index) => {
+                // Posición inicial aleatoria
+                const randomX = Math.random() * 20 - 10;
+                const randomY = Math.random() * 20 - 10;
+                const randomDelay = Math.random() * 2;
+                const randomDuration = 2 + Math.random() * 2;
+
+                envelope.style.transform = `translate(${randomX}px, ${randomY}px)`;
+                envelope.style.transition = `all ${randomDuration}s ease-in-out`;
+                envelope.style.animationDelay = `${randomDelay}s`;
+            });
+
+            // Efecto de aparición suave para las tarjetas
+            const cards = document.querySelectorAll('.service-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.5s ease-in-out';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 100 * index);
+            });
+        }
+
+        // Funciones para el modal de confirmación
+        function showConfirmation(service) {
+            const modal = document.getElementById('confirmModal');
+            const serviceSpan = document.getElementById('serviceType');
+
+            if (!modal || !serviceSpan) {
+                console.error('Elementos del modal no encontrados');
+                return;
+            }
+
+            currentService = service;
+            serviceSpan.textContent = service;
+
+            modal.style.display = 'flex';
+            setTimeout(() => {
+                modal.style.opacity = '1';
+            }, 10);
+
+            const modalContent = modal.querySelector('.modal');
+            if (modalContent) {
+                modalContent.classList.add('modal-enter');
+            }
+        }
+
+
+        function hideConfirmation() {
+            const modal = document.getElementById('confirmModal');
+            const modalContent = modal.querySelector('.modal');
+
+            // Animación de salida
+            modalContent.classList.remove('modal-enter');
+            modalContent.classList.add('modal-leave');
+            modal.style.opacity = '0';
+
+            setTimeout(() => {
+                modal.style.display = 'none';
+                modalContent.classList.remove('modal-leave');
+            }, ANIMATION_DURATION);
+        }
+
+        // Función para enviar notificación
+        // Actualiza la función sendNotification
+        // Actualizar tu función sendNotification
+        async function sendNotification() {
+            try {
+                const button = document.querySelector(`.send-button[onclick*="${currentService}"]`);
+                if (!button) {
+                    console.error('Botón no encontrado');
+                    return;
+                }
+
+                button.disabled = true;
+                showProgressModal();
+
+                const response = await fetch('/api/send-service-notification/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    },
+                    body: JSON.stringify({
+                        service_type: currentService
+                    })
+                });
+
+                const data = await response.json();
+                hideConfirmation();
+
+                if (data.status === 'success') {
+                    // Actualizar progreso final
+                    updateProgress(data.successful_sends, data.total_processed);
+
+                    setTimeout(() => {
+                        hideProgressModal();
+                        showResultNotification(true,
+                            `Proceso completado exitosamente:\n` +
+                            `✓ ${data.successful_sends} correos enviados\n` +
+                            `${data.failed_sends > 0 ? `✕ ${data.failed_sends} fallidos\n` : ''}` +
+                            `Total procesado: ${data.total_processed}`,
+                            {
+                                successful: data.successful_sends,
+                                failed: data.failed_sends,
+                                total: data.total_processed
+                            }
+                        );
+                    }, 1000);
+                } else {
+                    hideProgressModal();
+                    showError(data.message || 'Error al enviar las notificaciones');
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                hideProgressModal();
+                showError('Error en el proceso de envío');
+            } finally {
+                const button = document.querySelector(`.send-button[onclick*="${currentService}"]`);
+                if (button) {
+                    button.disabled = false;
+                    button.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                </svg>
+                Enviar Notificación
+            `;
+                }
+            }
+        }
+
+        // Modificar los botones en el HTML
+        document.addEventListener('DOMContentLoaded', () => {
+            // Inicializar los botones correctamente
+            const buttons = document.querySelectorAll('.send-button');
+            buttons.forEach(button => {
+                const service = button.closest('.service-card').querySelector('.service-name').textContent;
+                button.setAttribute('data-service', service);
+            });
+
+            // Resto de tu código de inicialización...
+            initializeVisualEffects();
+        });
+
+
+
+
+
+        // Función para obtener el CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+
+        // Actualizar las funciones de notificación
+        function showSuccess(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success-notification';
+            successDiv.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 6L9 17l-5-5"/>
+        </svg>
+        <span>${message}</span>
+    `;
+
+            document.body.appendChild(successDiv);
+            requestAnimationFrame(() => successDiv.classList.add('show'));
+
+            setTimeout(() => {
+                successDiv.classList.remove('show');
+                setTimeout(() => successDiv.remove(), 300);
+            }, 3000);
+        }
+
+
+        // Añade una función para mostrar errores
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-notification';
+            errorDiv.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+        </svg>
+        <span>${message}</span>
+    `;
+
+            document.body.appendChild(errorDiv);
+            requestAnimationFrame(() => errorDiv.classList.add('show'));
+
+            setTimeout(() => {
+                errorDiv.classList.remove('show');
+                setTimeout(() => errorDiv.remove(), 300);
+            }, 3000);
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeVisualEffects();
+
+            // Cerrar modal al hacer click fuera
+            document.getElementById('confirmModal')?.addEventListener('click', (e) => {
+                if (e.target.id === 'confirmModal') {
+                    hideConfirmation();
+                }
+            });
+
+            // Cerrar modal con ESC
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    hideConfirmation();
+                }
+            });
+
+            // Hover effects para las tarjetas
+            document.querySelectorAll('.service-card').forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+
+                    const rotateX = (y - centerY) / 20;
+                    const rotateY = (centerX - x) / 20;
+
+                    card.style.transform = `
+                perspective(1000px)
+                rotateX(${rotateX}deg)
+                rotateY(${rotateY}deg)
+                translateZ(10px)
+            `;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'none';
+                });
+            });
+        });
+
+        // Prevenir múltiples envíos
+        let isSubmitting = false;
+        function throttleSubmit(fn) {
+            return function () {
+                if (isSubmitting) return;
+                isSubmitting = true;
+                fn.apply(this, arguments);
+                setTimeout(() => {
+                    isSubmitting = false;
+                }, 2000);
+            }
+        }
+
+        const throttledSend = throttleSubmit(sendNotification);
+
+
+        let progressModal = null;
+        let currentProgress = 0;
+
+        // Función para mostrar el modal de progreso
+        function showProgressModal() {
+            // Eliminar modal existente si hay uno
+            if (progressModal) {
+                progressModal.remove();
+            }
+
+            const modalHTML = `
+        <div class="progress-modal" id="progressModal">
+            <div class="progress-content">
+                <div class="sending-animation">
+                    <svg viewBox="0 0 24 24" width="64" height="64" stroke="#4CAF50" fill="none">
+                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke-width="2"/>
+                    </svg>
+                </div>
+                <h3>Enviando Notificaciones</h3>
+                <div class="progress-status">
+                    <p class="current-status">Preparando envío...</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                    <div class="progress-stats">
+                        <div class="progress-stat">
+                            <div class="progress-stat-value" id="sent-count">0</div>
+                            <div class="progress-stat-label">Enviados</div>
+                        </div>
+                        <div class="progress-stat">
+                            <div class="progress-stat-value" id="total-count">0</div>
+                            <div class="progress-stat-label">Total</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+            progressModal = document.createElement('div');
+            progressModal.innerHTML = modalHTML;
+            document.body.appendChild(progressModal.firstElementChild);
+            progressModal = document.getElementById('progressModal');
+        }
+
+        // Función para actualizar el progreso
+        function updateProgress(sent, total) {
+            if (!progressModal) return;
+
+            const progress = (sent / total) * 100;
+            const progressBar = progressModal.querySelector('.progress-fill');
+            const statusText = progressModal.querySelector('.current-status');
+            const sentCount = progressModal.querySelector('#sent-count');
+            const totalCount = progressModal.querySelector('#total-count');
+
+            if (progressBar) progressBar.style.width = `${progress}%`;
+            if (statusText) statusText.textContent = `Enviando ${sent} de ${total} notificaciones...`;
+            if (sentCount) sentCount.textContent = sent;
+            if (totalCount) totalCount.textContent = total;
+        }
+
+        // Función para ocultar el modal de progreso
+        function hideProgressModal() {
+            if (progressModal && progressModal.parentElement) {
+                progressModal.classList.add('fade-out');
+                setTimeout(() => {
+                    progressModal.remove();
+                    progressModal = null;
+                }, 300);
+            }
+        }
+
+        // Función para mostrar notificación de resultado
+        function showResultNotification(success, message, stats) {
+            const notification = document.createElement('div');
+            notification.className = `result-notification ${success ? 'success' : 'error'}`;
+
+            notification.innerHTML = `
+        <div class="notification-content">
+            <div class="notification-icon">
+                ${success ? `
+                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="#4CAF50" fill="none">
+                        <path d="M20 6L9 17l-5-5" stroke-width="2"/>
+                    </svg>
+                ` : `
+                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="#f44336" fill="none">
+                        <path d="M18 6L6 18M6 6l12 12" stroke-width="2"/>
+                    </svg>
+                `}
+            </div>
+            <div class="notification-message">
+                <h4>${success ? 'Envío Completado' : 'Error en el Envío'}</h4>
+                <p>${message}</p>
+                ${stats ? `
+                    <div class="notification-stats">
+                        <span>✓ ${stats.successful} exitosos</span>
+                        ${stats.failed > 0 ? `<span>✕ ${stats.failed} fallidos</span>` : ''}
+                    </div>
+                ` : ''}
+            </div>
+        </div>
+    `;
+
+            document.body.appendChild(notification);
+            setTimeout(() => notification.classList.add('show'), 100);
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 5000);
+        }
+
+
+    </script>
+
+
+</body>
+
+</html>

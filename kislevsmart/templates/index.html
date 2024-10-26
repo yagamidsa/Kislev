@@ -1,0 +1,67 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página Principal</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+</head>
+
+<body>
+    <div class="header">
+        <h2><a></a></h2>
+        <button class="contact-btn" data-url="{% url 'login' %}" onclick="redirectTo(this)">
+            <span class="glow"></span>
+            <span class="contact-btn-content">Iniciar Sesión</span>
+        </button>
+
+        <div class="spotlight">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+
+    <canvas id="particleCanvas"></canvas>
+
+    <div class="accent-lines">
+        <div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+    <div class="heroSubP">
+        <p>Bienvenido a </p>
+    </div>
+    <div class="hero">
+        <div class="heroT">
+            <h2>KISLEV</h2>
+            <h2>KISLEV</h2>
+        </div>
+    </div>
+    <p class="heroP">Innovación en Seguridad: Tu Tranquilidad es Nuestra Prioridad.<br>La Solución Moderna para la
+        Seguridad
+        de Tu Hogar.</p>
+    <div class="mountains">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+    <div class="hero-spacer"></div>
+    {% load static %}
+    <script src="{% static 'js/index.js' %}"></script> <!-- Agregar aquí -->
+</body>
+
+</html>

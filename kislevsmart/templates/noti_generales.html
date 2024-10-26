@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enviar Notificación</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/noti_generales.css' %}">
+</head>
+
+<body>
+    <div class="envelope-pattern">
+        <!-- Sobres animados -->
+        <div class="envelope">
+            <svg viewBox="0 0 24 24">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+        </div>
+        <div class="envelope">
+            <svg viewBox="0 0 24 24">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+        </div>
+        <div class="envelope">
+            <svg viewBox="0 0 24 24">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+        </div>
+        <div class="envelope">
+            <svg viewBox="0 0 24 24">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+        </div>
+        <div class="envelope">
+            <svg viewBox="0 0 24 24">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+        </div>
+    </div>
+
+
+    <!-- Loading Screen -->
+    <div class="loading-backdrop" id="loadingScreen">
+        <div class="loading-container">
+            <div class="loading-spinner"></div>
+            <p class="loading-text">Enviando notificaciones...</p>
+            <p class="loading-subtext" id="loadingStatus">Preparando envío</p>
+        </div>
+    </div>
+
+
+
+    <div class="container">
+        <h1>Notificaciones Generales</h1>
+
+        <form class="notification-form" id="notificationForm">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="message">Mensaje</label>
+                <textarea id="message" name="message" placeholder="Escribe tu mensaje aquí..." data-gramm="false"
+                    data-gramm_editor="false" data-enable-grammarly="false" spellcheck="false"></textarea>
+            </div>
+
+            <div class="buttons-container">
+                <input type="file" id="fileInput" name="fileInput" class="file-input"
+                    accept=".pdf,.doc,.docx,.xls,.xlsx">
+                <label for="fileInput" class="btn btn-secondary file-label">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l8.57-8.57A4 4 0 1118 8.84l-8.59 8.57a2 2 0 01-2.83-2.83l8.49-8.48" />
+                    </svg>
+                    Adjuntar Archivo
+                </label>
+
+                <button type="button" class="btn btn-primary" onclick="showConfirmation()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+                    </svg>
+                    Enviar Mensaje
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Modal de confirmación -->
+    <div class="modal-backdrop" id="confirmModal">
+        <div class="modal">
+            <div class="modal-content">
+                <h2 style="margin-bottom: 1rem;">¿Está seguro de enviar el mensaje?</h2>
+                <div class="modal-buttons">
+                    <button class="btn btn-secondary" onclick="hideConfirmation()">No</button>
+                    <button class="btn btn-primary" onclick="sendMessage()">Sí</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reemplaza todos los bloques de script actuales con este único bloque -->
+<script>
+    // Función principal de envío
+    async function sendMessage() {
+    const loadingScreen = document.getElementById('loadingScreen');
+    const loadingStatus = document.getElementById('loadingStatus');
+    const messageInput = document.getElementById('message');
+    const fileInput = document.getElementById('fileInput');
+
+    // Validación inicial
+    if (!messageInput || !messageInput.value.trim()) {
+        if (loadingStatus) {
+            loadingStatus.innerHTML = `
+                <div class="progress-status">
+                    <div class="loading-text" style="color: #ff4646;">Error</div>
+                    <div class="loading-subtext">Por favor, escribe un mensaje</div>
+                </div>
+            `;
+        }
+        hideConfirmation();
+        return;
+    }
+
+    if (loadingScreen) loadingScreen.style.display = 'flex';
+    hideConfirmation();
+
+    // Actualizar todo el contenedor de loading
+    const loadingContainer = loadingScreen.querySelector('.loading-container');
+    if (loadingContainer) {
+        loadingContainer.innerHTML = `
+            <div class="loading-spinner"></div>
+            <p class="loading-text">Enviando notificaciones...</p>
+            <p class="loading-subtext">Preparando envío</p>
+        `;
+    }
+
+    const formData = new FormData();
+    formData.append('message', messageInput.value);
+    
+    if (fileInput && fileInput.files && fileInput.files.length > 0) {
+        formData.append('fileInput', fileInput.files[0]);
+    }
+
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+    if (!csrfToken) return;
+
+    try {
+        const response = await fetch('/notifications/send/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken.value
+            },
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error('Error en la respuesta del servidor');
+        }
+
+        const data = await response.json();
+        
+        if (data.status === 'success' && loadingContainer) {
+            loadingContainer.innerHTML = `
+                <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                    <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+                    <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                </svg>
+                <div class="loading-text">¡Envío completado!</div>
+                <div class="loading-subtext success-text">
+                    ${data.enviados || 0} de ${data.total || 0} correos enviados exitosamente
+                </div>
+                <button onclick="closeSuccessMessage()" class="btn btn-primary" style="margin-top: 20px;">
+                    Cerrar
+                </button>
+            `;
+            
+            // Limpiar el formulario pero mantener el mensaje visible
+            if (messageInput) messageInput.value = '';
+            if (fileInput) fileInput.value = '';
+            const fileLabel = document.querySelector('.file-label');
+            if (fileLabel) {
+                fileLabel.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l8.57-8.57A4 4 0 1118 8.84l-8.59 8.57a2 2 0 01-2.83-2.83l8.49-8.48"/>
+                    </svg>
+                    Adjuntar Archivo
+                `;
+            }
+        } else {
+            throw new Error(data.message || 'Error en el envío');
+        }
+    } catch (error) {
+        if (loadingContainer) {
+            loadingContainer.innerHTML = `
+                <svg class="error-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="11" fill="none"/>
+                    <path d="M15 9l-6 6M9 9l6 6"/>
+                </svg>
+                <div class="loading-text">Error en el envío</div>
+                <div class="loading-subtext error-text">
+                    ${error.message || 'Error desconocido'}
+                </div>
+                <button onclick="closeSuccessMessage()" class="btn btn-primary" style="margin-top: 20px;">
+                    Cerrar
+                </button>
+            `;
+        }
+    }
+}
+
+// Función para cerrar el mensaje
+function closeSuccessMessage() {
+    const loadingScreen = document.getElementById('loadingScreen');
+    if (loadingScreen) {
+        loadingScreen.style.display = 'none';
+    }
+}
+    
+    // Funciones de modal
+    function showConfirmation() {
+        const messageInput = document.getElementById('message');
+        const confirmModal = document.getElementById('confirmModal');
+        
+        if (!messageInput || !messageInput.value.trim()) {
+            const loadingStatus = document.getElementById('loadingStatus');
+            if (loadingStatus) {
+                loadingStatus.innerHTML = `
+                    <div class="progress-status">
+                        <div class="loading-text" style="color: #ff4646;">Error</div>
+                        <div class="loading-subtext">Por favor, escribe un mensaje</div>
+                    </div>
+                `;
+            }
+            return;
+        }
+        
+        if (confirmModal) {
+            confirmModal.style.display = 'flex';
+        }
+    }
+    
+    function hideConfirmation() {
+        const confirmModal = document.getElementById('confirmModal');
+        if (confirmModal) {
+            confirmModal.style.display = 'none';
+        }
+    }
+    
+    // Manejo del archivo
+    const fileInput = document.getElementById('fileInput');
+    if (fileInput) {
+        fileInput.addEventListener('change', function(e) {
+            if (this.files && this.files[0]) {
+                const fileName = this.files[0].name;
+                const fileLabel = document.querySelector('.file-label');
+                if (fileLabel) {
+                    fileLabel.innerHTML = `
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l8.57-8.57A4 4 0 1118 8.84l-8.59 8.57a2 2 0 01-2.83-2.83l8.49-8.48"/>
+                        </svg>
+                        ${fileName}
+                    `;
+                }
+            }
+        });
+    }
+    
+    // Inicialización
+    document.addEventListener('DOMContentLoaded', () => {
+        const loadingScreen = document.getElementById('loadingScreen');
+        if (loadingScreen) {
+            loadingScreen.style.display = 'none';
+        }
+    });
+    </script>
+</body>
+
+</html>

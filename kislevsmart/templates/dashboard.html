@@ -1,0 +1,689 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+</head>
+
+<body class="min-h-screen">
+    <!-- Pasar datos de Django a JavaScript -->
+    {{ meses|json_script:"meses-data" }}
+    {{ datos_grafico|json_script:"visitantes-data" }}
+
+    <div class="flex h-screen">
+        <!-- Menú lateral -->
+        <aside class="hidden md:flex md:flex-col w-64 glass-effect">
+            <div class="p-6">
+                <h2 class="text-xl font-semibold text-white">Tablero</h2>
+            </div>
+            <nav class="flex-1">
+                <a href="#"
+                    class="flex items-center px-6 py-4 text-white hover:bg-white/10 transition-all duration-300 menu-item"
+                    data-slide="visitantes">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 20 20"
+                        fill="currentColor">
+                        <path
+                            d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zm6-4a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zm6-3a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
+                    </svg>
+                    Visitantes
+                </a>
+                <a href="#"
+                    class="flex items-center px-6 py-4 text-white hover:bg-white/10 transition-all duration-300 menu-item"
+                    data-slide="recepcion">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 20 20"
+                        fill="currentColor">
+                        <path
+                            d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+                    </svg>
+                    Recepción
+                </a>
+                <a href="#"
+                    class="flex items-center px-6 py-4 text-white hover:bg-white/10 transition-all duration-300 menu-item"
+                    data-slide="parqueaderos">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M7 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                        <path d="M17 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+                        <path d="M5 17h-2v-6l2-5h9l4 5h1a2 2 0 0 1 2 2v4h-2m-4 0h-6" />
+                        <path d="M15 4l2 5" />
+                        <path d="M7 4l-2 5" />
+                        <path d="M3 11h18" />
+                    </svg>
+                    Parqueaderos
+                </a>
+                <a href="#"
+                    class="flex items-center px-6 py-4 text-white hover:bg-white/10 transition-all duration-300 menu-item"
+                    data-slide="zonas-comunes">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18" />
+                        <path d="M6 12h12" />
+                        <path d="M6 7h12" />
+                        <path d="M6 17h12" />
+                        <path d="M2 22h20" />
+                        <rect x="10" y="14" width="4" height="4" />
+                        <rect x="10" y="9" width="4" height="4" />
+                        <rect x="10" y="4" width="4" height="4" />
+                    </svg>
+                    Zonas Comunes
+                </a>
+                <a href="{% url 'visor_admin' %}"
+                    class="flex items-center px-6 py-4 text-white hover:bg-white/10 transition-all duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                        <path d="M21 12h-6" />
+                        <path d="M15 9l3 3-3 3" />
+                    </svg>
+                    Panel Admin
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Contenido principal -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Header móvil -->
+            <header class="md:hidden glass-effect">
+                <div class="flex items-center justify-between p-4">
+                    <button id="menuButton" class="text-white hover:text-white/80">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                    <h1 class="text-lg font-semibold text-white">Tablero</h1>
+                    <div class="w-6"></div>
+                </div>
+            </header>
+
+            <!-- Contenedor de slides -->
+            <main class="flex-1 overflow-hidden relative">
+                <!-- Slide de Visitantes -->
+                <div id="slide-visitantes" class="slide-content">
+                    <div class="p-6">
+                        <!-- Mensaje de bienvenida -->
+                        <div class="text-center mb-8">
+                            <h1 class="text-4xl font-bold text-white mb-2">¡Bienvenid@ al Tablero!</h1>
+                            <p class="subtle-text text-lg">Gestión de visitantes</p>
+                        </div>
+
+                        <!-- Selector de fecha -->
+                        <div class="glass-effect rounded-xl p-4 mb-8">
+                            <form method="get" class="flex items-center space-x-4">
+                                <label for="fecha" class="font-medium text-white">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2"
+                                        fill="none" viewBox="0 0 24 24" stroke="white">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    Fecha:
+                                </label>
+                                <input type="date" id="fecha" name="fecha" value="{{ fecha_seleccionada|date:'Y-m-d' }}"
+                                    max="{{ fecha_actual|date:'Y-m-d' }}" onchange="this.form.submit()"
+                                    class="flex-1 max-w-xs p-2 bg-white/10 text-white border border-white/20 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            </form>
+                        </div>
+
+                        <!-- Grid container para las tarjetas y el gráfico -->
+                        <div class="grid gap-6">
+                            <!-- Contenedor de las tarjetas de estadísticas -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Tarjeta de Ingresos -->
+                                <div class="glass-effect rounded-xl p-6 card-hover glow stat-card">
+                                    <div class="flex flex-col">
+                                        <h3 class="text-xl font-semibold text-white/80 mb-2">Ingresos</h3>
+                                        <p class="text-5xl font-bold text-white mb-3">{{ ingresos }}</p>
+                                        <p class="subtle-text">Visitantes que han ingresado hoy</p>
+                                    </div>
+                                    <div class="icon-wrapper bg-blue-500/20">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-400"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                        </svg>
+                                    </div>
+                                </div>
+
+                                <!-- Tarjeta de Pendientes -->
+                                <div class="glass-effect rounded-xl p-6 card-hover glow stat-card">
+                                    <div class="flex flex-col">
+                                        <h3 class="text-xl font-semibold text-white/80 mb-2">Visitantes Pendientes</h3>
+                                        <p class="text-5xl font-bold text-white mb-3">{{ total_pendientes }}</p>
+                                        <div class="subtle-text">
+                                            <p>Hoy: {{ pendientes_hoy }}</p>
+                                            <p>Anteriores vigentes: {{ pendientes_anteriores }}</p>
+                                            <p class="text-xs mt-2">*QRs válidos por 24 horas</p>
+                                        </div>
+                                    </div>
+                                    <div class="icon-wrapper bg-orange-500/20">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-orange-400"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+                            <!-- Dentro del grid de tarjetas -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Tarjetas existentes de Ingresos y Pendientes -->
+
+                                <!-- Nueva tarjeta de Usuarios Recurrentes -->
+                                <div class="glass-effect rounded-xl p-6 card-hover glow stat-card">
+                                    <div class="flex flex-col">
+                                        <h3 class="text-xl font-semibold text-white/80 mb-2">Usuarios Recurrentes</h3>
+                                        <p class="text-5xl font-bold text-white mb-3">{{ visitantes_recurrentes }}</p>
+                                        <p class="subtle-text">Visitantes que han regresado</p>
+                                    </div>
+                                    <div class="icon-wrapper bg-green-500/20">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-400"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                        </svg>
+                                    </div>
+                                </div>
+
+                                <!-- Nueva tarjeta de Usuarios Nuevos -->
+                                <div class="glass-effect rounded-xl p-6 card-hover glow stat-card">
+                                    <div class="flex flex-col">
+                                        <h3 class="text-xl font-semibold text-white/80 mb-2">Usuarios Nuevos</h3>
+                                        <p class="text-5xl font-bold text-white mb-3">{{ visitantes_nuevos }}</p>
+                                        <p class="subtle-text">Visitantes por primera vez</p>
+                                    </div>
+                                    <div class="icon-wrapper bg-purple-500/20">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-400"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+
+
+
+
+                            <!-- Nuevo gráfico de Visitantes por Motivo y Día -->
+                            <!-- Nueva tarjeta de Visitantes por Motivo -->
+                            <div class="glass-effect rounded-xl p-6 card-hover glow stat-card col-span-full">
+                                <div class="flex flex-col">
+                                    <h3 class="text-xl font-semibold text-white/80 mb-4">Visitantes por Categoría</h3>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                                        {% for categoria in visitantes_por_motivo %}
+                                        <div class="bg-white/5 rounded-lg p-4 backdrop-blur-sm">
+                                            <div class="flex justify-between items-center mb-3">
+                                                <div class="flex items-center gap-3">
+                                                    <!-- Iconos y colores según la categoría -->
+                                                    {% if categoria.motivo == 'Visita Personal' %}
+                                                    <div class="p-2 bg-pink-500/20 rounded-lg">
+                                                        <svg class="h-5 w-5 text-pink-400" fill="none"
+                                                            viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                                        </svg>
+                                                    </div>
+                                                    {% elif categoria.motivo == 'Servicios' %}
+                                                    <div class="p-2 bg-blue-500/20 rounded-lg">
+                                                        <svg class="h-5 w-5 text-blue-400" fill="none"
+                                                            viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                                        </svg>
+                                                    </div>
+                                                    {% elif categoria.motivo == 'Vista Proveedores' %}
+                                                    <div class="p-2 bg-green-500/20 rounded-lg">
+                                                        <svg class="h-5 w-5 text-green-400" fill="none"
+                                                            viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                                        </svg>
+                                                    </div>
+                                                    {% elif categoria.motivo == 'Eventos Especiales' %}
+                                                    <div class="p-2 bg-purple-500/20 rounded-lg">
+                                                        <svg class="h-5 w-5 text-purple-400" fill="none"
+                                                            viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                                                        </svg>
+                                                    </div>
+                                                    {% elif categoria.motivo == 'Mantenimiento de Instalaciones' %}
+                                                    <div class="p-2 bg-yellow-500/20 rounded-lg">
+                                                        <svg class="h-5 w-5 text-yellow-400" fill="none"
+                                                            viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                        </svg>
+                                                    </div>
+                                                    {% elif categoria.motivo == 'Inspección' %}
+                                                    <div class="p-2 bg-red-500/20 rounded-lg">
+                                                        <svg class="h-5 w-5 text-red-400" fill="none"
+                                                            viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                                        </svg>
+                                                    </div>
+                                                    {% else %}
+                                                    <div class="p-2 bg-gray-500/20 rounded-lg">
+                                                        <svg class="h-5 w-5 text-gray-400" fill="none"
+                                                            viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                        </svg>
+                                                    </div>
+                                                    {% endif %}
+                                                    <p class="text-white font-medium">{{ categoria.motivo }}</p>
+                                                </div>
+                                                <span class="text-2xl font-bold text-white">{{ categoria.total }}</span>
+                                            </div>
+                                            <div class="mt-2 bg-white/10 rounded-full h-2">
+                                                <div class="h-2 rounded-full transition-all duration-500 
+                                                            {% if categoria.motivo == 'Visita Personal' %}bg-pink-500
+                                                            {% elif categoria.motivo == 'Servicios' %}bg-blue-500
+                                                            {% elif categoria.motivo == 'Vista Proveedores' %}bg-green-500
+                                                            {% elif categoria.motivo == 'Eventos Especiales' %}bg-purple-500
+                                                            {% elif categoria.motivo == 'Mantenimiento de Instalaciones' %}bg-yellow-500
+                                                            {% elif categoria.motivo == 'Inspección' %}bg-red-500
+                                                            {% else %}bg-gray-500{% endif %}"
+                                                    data-width="{% widthratio categoria.total total_visitantes_dia 100 %}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% empty %}
+                                        <div class="text-white/60 text-center col-span-full">
+                                            No hay visitantes registrados para esta fecha
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+
+                            <!-- Selector de año y título del gráfico -->
+                            <div class="glass-effect rounded-xl p-6 chart-container glow">
+                                <div class="flex justify-between items-center mb-6">
+                                    <div class="flex items-center gap-8">
+                                        <!-- Indicador de Visitantes (solo uno) -->
+                                        <div class="flex items-center">
+                                            <span class="w-3 h-3 rounded-full bg-pink-700 mr-2"></span>
+                                            <h3 class="text-xl font-semibold text-white">Visitantes por Mes</h3>
+                                        </div>
+                                        <!-- Selector de Año -->
+                                        <div class="relative min-w-[120px]">
+                                            <select name="año" id="selectAño"
+                                                class="bg-white/10 text-white border border-white/20 rounded-lg px-3 py-1.5 pr-8 appearance-none cursor-pointer hover:bg-white/20 transition-colors duration-200 text-sm w-full"
+                                                onchange="actualizarAño(this.value)">
+                                                {% for año in años_disponibles %}
+                                                <option value="{{ año }}" {% if
+                                                    año|stringformat:"s"==año_seleccionado|stringformat:"s" %}selected{%
+                                                    endif %} class="bg-gray-800 text-white py-1 px-2 text-sm">
+                                                    {{ año }}
+                                                </option>
+                                                {% endfor %}
+                                            </select>
+                                            <!-- Ícono de flecha -->
+                                            <div
+                                                class="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white"
+                                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2" d="M19 9l-7 7-7-7" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Formulario oculto para enviar el año -->
+                                <form id="formAño" method="get" class="hidden">
+                                    <input type="hidden" name="fecha" value="{{ fecha_seleccionada|date:'Y-m-d' }}">
+                                    <input type="hidden" name="año" id="inputAño">
+                                </form>
+
+                                <!-- Contenedor del gráfico -->
+                                <div class="h-[400px] w-full backdrop-blur-sm rounded-lg p-4">
+                                    <canvas id="visitantesChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Slide de Recepción -->
+                <div id="slide-recepcion" class="slide-content hidden">
+                    <div class="p-6">
+                        <div class="text-center mb-8">
+                            <h1 class="text-4xl font-bold text-white mb-2">Recepción</h1>
+                            <p class="subtle-text text-lg">Gestión de Recepción</p>
+                        </div>
+                        <!-- Aquí irá el contenido de recepción -->
+                        <div class="glass-effect rounded-xl p-6">
+                            <p class="text-white text-center">Contenido de Recepción en desarrollo</p>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <!-- Slide de Parqueaderos -->
+                <div id="slide-parqueaderos" class="slide-content hidden">
+                    <div class="p-6">
+                        <div class="text-center mb-8">
+                            <h1 class="text-4xl font-bold text-white mb-2">Parqueaderos</h1>
+                            <p class="subtle-text text-lg">Gestión de Parqueaderos</p>
+                        </div>
+                        <!-- Contenido en construcción -->
+                        <div class="glass-effect rounded-xl p-6 flex flex-col items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 text-blue-400 mb-4" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            </svg>
+                            <p class="text-white text-xl mb-2">Sección en Construcción</p>
+                            <p class="text-white/60">Esta funcionalidad estará disponible próximamente</p>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+                <!-- Slide de Zonas Comunes -->
+                <div id="slide-zonas-comunes" class="slide-content hidden">
+                    <div class="p-6">
+                        <div class="text-center mb-8">
+                            <h1 class="text-4xl font-bold text-white mb-2">Zonas Comunes</h1>
+                            <p class="subtle-text text-lg">Gestión de Zonas Comunes</p>
+                        </div>
+                        <!-- Contenido en construcción -->
+                        <div class="glass-effect rounded-xl p-6 flex flex-col items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 text-blue-400 mb-4" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            </svg>
+                            <p class="text-white text-xl mb-2">Sección en Construcción</p>
+                            <p class="text-white/60">Esta funcionalidad estará disponible próximamente</p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script>
+        // Toggle menú en móviles
+        const menuButton = document.getElementById('menuButton');
+        const aside = document.querySelector('aside');
+
+        menuButton.addEventListener('click', () => {
+            aside.classList.toggle('hidden');
+            aside.classList.toggle('absolute');
+            aside.classList.toggle('inset-y-0');
+            aside.classList.toggle('left-0');
+            aside.classList.toggle('z-50');
+        });
+
+        // Configuración del gráfico
+        // Obtener los datos de los elementos script
+        const meses = JSON.parse(document.getElementById('meses-data').textContent);
+        const datosGrafico = JSON.parse(document.getElementById('visitantes-data').textContent);
+
+        // Configuración del gráfico
+        const ctx = document.getElementById('visitantesChart').getContext('2d');
+
+        // Crear gradientes más llamativos
+        const gradientFill = ctx.createLinearGradient(0, 0, 0, 400);
+        gradientFill.addColorStop(0, 'rgba(96, 165, 250, 0.3)');   // Azul más brillante
+        gradientFill.addColorStop(1, 'rgba(96, 165, 250, 0.02)');  // Casi transparente
+
+        const gradientStroke = ctx.createLinearGradient(0, 0, 400, 0);
+        gradientStroke.addColorStop(0, 'rgba(147, 197, 253, 1)');  // Azul claro
+        gradientStroke.addColorStop(0.5, 'rgba(59, 130, 246, 1)'); // Azul medio
+        gradientStroke.addColorStop(1, 'rgba(37, 99, 235, 1)');    // Azul oscuro
+
+        // Añadir sombras al canvas
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
+        ctx.shadowBlur = 10;
+        ctx.shadowOffsetY = 5;
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: meses,
+                datasets: [{
+                    label: 'Visitantes',
+                    data: datosGrafico,
+                    borderColor: 'rgba(190, 24, 93, 1)',
+                    backgroundColor: gradientFill,
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: 'white',
+                    pointBorderColor: 'rgba(190, 24, 93, 1)',
+                    pointBorderWidth: 2,
+                    pointHoverBackgroundColor: 'white',
+                    pointHoverBorderColor: 'rgba(37, 99, 235, 1)',
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    pointShadowOffsetY: 3,
+                    pointHoverShadowOffsetY: 5,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 2000,
+                    easing: 'easeOutQuart'
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        titleColor: '#1e3a8a',
+                        bodyColor: '#1e3a8a',
+                        bodyFont: {
+                            family: 'Poppins',
+                            size: 14
+                        },
+                        titleFont: {
+                            family: 'Poppins',
+                            size: 16,
+                            weight: 'bold'
+                        },
+                        padding: 12,
+                        borderColor: 'rgba(96, 165, 250, 0.2)',
+                        borderWidth: 1,
+                        displayColors: false,
+                        cornerRadius: 8,
+                        caretSize: 6,
+                        titleMarginBottom: 10,
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            label: function (context) {
+                                return `${context.parsed.y} visitantes`;
+                            }
+                        }
+                    }
+                },
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 1000,
+                        ticks: {
+                            stepSize: 50,
+                            color: 'rgba(255, 255, 255, 0.7)',
+                            font: {
+                                family: 'Poppins',
+                                size: 12
+                            },
+                            padding: 10
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)',
+                            drawBorder: false
+                        },
+                        border: {
+                            display: false
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: 'rgba(255, 255, 255, 0.7)',
+                            font: {
+                                family: 'Poppins',
+                                size: 12
+                            },
+                            padding: 10
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)',
+                            drawBorder: false
+                        },
+                        border: {
+                            display: false
+                        }
+                    }
+                },
+                elements: {
+                    line: {
+                        cubicInterpolationMode: 'monotone'
+                    }
+                },
+                hover: {
+                    mode: 'index',
+                    intersect: false
+                }
+            },
+            plugins: [{
+                beforeDraw: (chart) => {
+                    const ctx = chart.ctx;
+                    ctx.save();
+                    ctx.globalCompositeOperation = 'destination-over';
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+                    ctx.fillRect(0, 0, chart.width, chart.height);
+                    ctx.restore();
+                }
+            }]
+        });
+
+
+        // Al inicio de tu sección de scripts
+        document.addEventListener('DOMContentLoaded', function () {
+            // Función para manejar la navegación entre slides
+            function showSlide(slideId) {
+                // Ocultar todos los slides
+                document.querySelectorAll('.slide-content').forEach(slide => {
+                    slide.classList.add('hidden');
+                });
+
+                // Mostrar el slide seleccionado
+                const selectedSlide = document.getElementById(`slide-${slideId}`);
+                if (selectedSlide) {
+                    selectedSlide.classList.remove('hidden');
+                }
+
+                // Actualizar estado activo en el menú
+                document.querySelectorAll('.menu-item').forEach(item => {
+                    if (item.dataset.slide === slideId) {
+                        item.classList.add('active');
+                    } else {
+                        item.classList.remove('active');
+                    }
+                });
+
+                // Si está en móvil, cerrar el menú después de seleccionar
+                if (window.innerWidth < 768) {
+                    document.querySelector('aside').classList.add('hidden');
+                }
+            }
+
+            // Agregar event listeners a los elementos del menú
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    showSlide(this.dataset.slide);
+                });
+            });
+
+            // Mostrar el slide inicial
+            showSlide('visitantes');
+        });
+
+        // filtro año visitantes por mes 
+        function actualizarAño(año) {
+            const urlParams = new URLSearchParams(window.location.search);
+
+            // Mantener el parámetro de fecha si existe
+            const fecha = urlParams.get('fecha');
+
+            // Construir la nueva URL
+            let nuevaUrl = new URL(window.location.pathname, window.location.origin);
+
+            // Añadir el año seleccionado
+            nuevaUrl.searchParams.set('año', año);
+
+            // Mantener la fecha si existe
+            if (fecha) {
+                nuevaUrl.searchParams.set('fecha', fecha);
+            }
+
+            // Redirigir con los parámetros actualizados
+            window.location.href = nuevaUrl.toString();
+        }
+
+        // Al cargar la página, establecer el año seleccionado
+        document.addEventListener('DOMContentLoaded', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const añoSeleccionado = urlParams.get('año');
+            if (añoSeleccionado) {
+                document.getElementById('selectAño').value = añoSeleccionado;
+            }
+        });
+
+
+
+        // grafico horas * semana
+       
+
+    </script>
+</body>
+
+</html>

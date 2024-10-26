@@ -1,0 +1,108 @@
+body, html {
+    background-image: linear-gradient(45deg, #6015ab, #ffaf19);
+    height: 100%;
+    margin: 0;
+    font-family: Lato, sans-serif;
+    
+}
+.blur-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.ticket {
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2), 0 0 8px rgba(0,0,0,0.1);
+    overflow: hidden;
+    width: 90%;
+    max-width: 400px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+.ticket-inner {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+.header {
+    background-color: #b728e2;
+    backdrop-filter: blur(0.4em);
+    color: white;
+    text-align: center;
+    padding: 20px;
+    margin: -20px -20px 20px -20px;
+    border-radius: 15px 15px 0 0;
+}
+.content {
+    text-align: center;
+}
+.qr-code {
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 20px auto;
+    width: 80%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.qr-code img {
+    max-width: 100%;
+    height: auto;
+}
+.buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+.button {
+    display: inline-block; /* Asegura que el <a> se comporte como un botón */
+    text-align: center;
+    text-decoration: none; /* Quita el subrayado del enlace */
+    padding: 10px 20px;
+    border-radius: 20px;
+    border: none;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.exit {
+    background: #7f00ff;
+    background: -webkit-linear-gradient(to right, #e62626, #7f00ff);
+    background: linear-gradient(to right, #ee1313, #7f00ff);
+    box-shadow: 0px 5px 15px 5px #840fe440;
+}
+
+.new-ticket {
+    background: #7f00ff;
+    background: -webkit-linear-gradient(to right, #e100ff, #7f00ff);
+    background: linear-gradient(to right, #e100ff, #7f00ff);
+    box-shadow: 0px 5px 15px 5px #840fe440;
+}
+
+.button:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+
+/* Adaptación para pantallas móviles */
+@media (max-width: 480px) {
+    .button {
+        width: 80%;  /* Botones ocupan todo el ancho en pantallas pequeñas */
+        margin-bottom: 10px; /* Espacio entre botones */
+        padding: 9px 24px;
+        margin-left: 15px;
+        
+    }
+    .ticket {
+        width: 95%;
+    }
+}
+

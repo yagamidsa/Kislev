@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validación QR</title>
+    {% load static %}
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'css/formenvioQR.css' %}">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+    <div class="blur-container">
+        <div class="ticket">
+            <div class="ticket-inner">
+                <div class="header">
+                    <h1>¡Éxito!<br>{{ request.user.nombre }}</h1>
+                </div>
+                <div class="content">
+                    <p>Su QR fue realizado correctamente.</p>
+                    <p>Se ha enviado al correo {{ email }}. ¡No dudes en generar otro QR si es necesario!</p>
+
+                    <div class="qr-code">
+                        <img src="{% static 'images/QR.png' %}" alt="Código QR" />
+                    </div>
+
+                    <div class="buttons">
+                        <!-- Redirección según el tipo de usuario -->
+                        <form method="GET">
+                            {% if request.user.user_type == 'administrador' %}
+                                <button formaction="{% url 'visor_admin' %}" class="button exit">
+                                    Ir al Panel
+                                </button>
+                            {% elif request.user.user_type == 'propietario' %}
+                                <button formaction="{% url 'visor_propietario' %}" class="button exit">
+                                    Ir al Panel
+                                </button>
+                            {% elif request.user.user_type == 'porteria' %}
+                                <button formaction="{% url 'control_porteria' %}" class="button exit">
+                                    Ir al Panel
+                                </button>
+                            {% else %}
+                                <p>No tienes permisos para acceder a ningún panel.</p>
+                            {% endif %}
+                        </form>
+
+                        <a href="{% url 'bienvenida' %}" class="button new-ticket">Generar otro QR</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

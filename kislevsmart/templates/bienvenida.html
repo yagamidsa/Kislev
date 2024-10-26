@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenido</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/formQR.css' %}">
+</head>
+
+<body>
+
+    <div class="logout-button">
+        {% if request.user.user_type == 'administrador' %}
+            <a href="{% url 'visor_admin' %}" class="apple-btn">
+                <i class="fas fa-arrow-left"></i>
+                <span>Panel Admin</span>
+            </a>
+        {% elif request.user.user_type == 'propietario' %}
+            <a href="{% url 'visor_propietario' %}" class="apple-btn">
+                <i class="fas fa-arrow-left"></i>
+                <span>Panel</span>
+            </a>
+        {% elif request.user.user_type == 'porteria' %}
+            <a href="{% url 'control_porteria' %}" class="apple-btn">
+                <i class="fas fa-arrow-left"></i>
+                <span>Panel Portería</span>
+            </a>
+        {% else %}
+            <div class="apple-btn" style="opacity: 0.5; cursor: not-allowed;">
+                <i class="fas fa-ban"></i>
+                <span>Sin acceso</span>
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="main-content">
+        <form id="formbienvenida" method="POST">
+            {% csrf_token %}
+            <div class="container">
+                <h1 class="front-text text-white">Bienvenido, {{ user.nombre }}!</h1>
+                <h2 class="front-text text-white">Aqui puedes generar el codigo QR para Visitante</h2>
+                <label class="btn-open" for="frmContactForm"><i class="far fa-envelope"></i><span class="ml-half">Abrir
+                        Formulario</span></label>
+            </div>
+            <input id="frmContactForm" type="checkbox" />
+            <div class="contact-modal">
+                <div class="contact-form">
+                    <div class="contact-wrapper">
+                        <div class="contact-section">
+                            <h2 class="p-none m-none mb-quarter text-white"><i class="fa fa-address-card"></i><span
+                                    class="ml-half">Datos Propietario</span></h2>
+                        </div>
+                        <div class="contact-section">
+                            <div class="form-item">
+                                <input type="text" name="nombre_log" value="{{user.nombre}}" readonly required>
+                                <label class="lbl-floating" for="nombre_log" placeholder="Propietario"></label><i
+                                    class="icon text-white fa fa-user"></i>
+                            </div>
+                            <div class="form-item">
+                                <input type="email" name="email_creador" value="{{user.email}}" readonly required>
+                                <label class="lbl-floating" for="email_creador"
+                                    placeholder="email Propietario"></label><i class="icon text-white fas fa-at"></i>
+                            </div>
+                            <div class="contact-section">
+                                <h2 class="p-none m-none mb-quarter text-white"><i class="fa fa-address-card"></i><span
+                                        class="ml-half">Datos Visitante</span></h2>
+                            </div>
+                            <div class="form-item">
+                                <input type="text" placeholder="Nombre" name="nombre" required>
+                                <label class="lbl-floating" for="nombre">Nombre visitante</label><i
+                                    class="icon text-white fa fa-user"></i>
+                            </div>
+                            <div class="form-item">
+                                <input type="email" name="email" required class="form-control"
+                                    title="Por favor ingresa un email válido">
+                                <label class="lbl-floating" for="email">Correo Electrónico:</label>
+                                <i class="icon text-white fa fa-at"></i>
+                            </div>
+                            <div class="form-item">
+                                <input type="number" placeholder="Número Celular" name="celular" id="celular" required>
+                                <label class="lbl-floating" for="celular">Número de Celular:</label><i
+                                    class="icon text-white fa fa-phone"></i>
+                            </div>
+                            <div class="form-item">
+                                <input type="number" placeholder="Número Cédula" name="cedula" required>
+                                <label class="lbl-floating" for="cedula">Cédula Vistante:</label><i
+                                    class="icon text-white fa fa-id-card"></i>
+                            </div>
+                            <div class="form-item">
+                                <input type="number" placeholder="Número de personas" name="numper" required>
+                                <label class="lbl-floating" for="numper">Numero de personas:</label><i
+                                    class="icon text-white fa fa-id-card"></i>
+                            </div>
+                            <div class="form-item2">
+                                <i class="icon text-white fa fa-info-circle" style="margin-bottom: 20px;"></i>
+                                <label class="cmotivo text-white" for="motivo" style="margin-left: 10px;">
+                                    Motivo de la Visita:
+                                </label>
+                                <select name="motivo" required>
+                                    <option value="Visita Personal">Visita Personal</option>
+                                    <option value="Servicios">Servicios</option>
+                                    <option value="Vista Proveedores">Vista Proveedores</option>
+                                    <option value="Eventos Especiales">Eventos Especiales</option>
+                                    <option value="Mantenimiento de Instalaciones">Mantenimiento de Instalaciones
+                                    </option>
+                                    <option value="Inspección">Inspección</option>
+                                    <option value="otro">otro</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="container">
+                            <div class="contact-section text-right">
+                                <label class="contact-cancel" for="frmContactForm"><i
+                                        class="fas fa-times-circle"></i><span class="ml-quarter">Cancelar</span></label>
+                                <button id="submitBtn" class="btn-open2" type="submit">Generar QR<i
+                                        class="far fa-paper-plane"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <script>
+        const emailInput = document.querySelector('input[name="email"]');
+        const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+        emailInput.addEventListener('input', function (e) {
+            if (!emailPattern.test(e.target.value)) {
+                e.target.setCustomValidity("Por favor ingresa un correo válido, como usuario@dominio.com");
+            } else {
+                e.target.setCustomValidity('');
+            }
+        });
+
+
+        const celularInput = document.getElementById('celular');
+        const form = document.getElementById('formbienvenida');
+        const submitBtn = document.getElementById('submitBtn');
+
+        // Evento para deshabilitar el botón mientras se envía el formulario
+        form.addEventListener('submit', function (e) {
+            const valor = celularInput.value;
+
+            // Validación del número de celular
+            if (valor.length !== 10) {
+                e.preventDefault(); // Detener el envío del formulario
+                alert('Por favor, ingresa un número de celular valido debe ser de 10 dígitos.');
+            } else {
+                // Deshabilitar el botón para evitar envíos múltiples
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = 'Enviando...';
+            }
+        });
+
+    </script>
+
+
+
+</body>
+
+</html>

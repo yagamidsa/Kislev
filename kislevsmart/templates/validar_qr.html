@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validar QR</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/validar_qr.css' %}">
+    <!-- Asegúrate de incluir el enlace a Font Awesome en tu HTML -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <canvas id="backgroundCanvas"></canvas>
+    <div class="ticket">
+        <div class="header-info">
+            <div class="user-count">
+                <i class="fa fa-users" aria-hidden="true"></i>
+                <span class="info">{{ visitante.numper }}</span>
+            </div>
+        </div>
+        <div class="ticket-header">
+            <div class="success-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <circle cx="12" cy="12" r="10" stroke="#00ff88" stroke-width="2" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4" stroke="#00ff88" />
+                </svg>
+            </div>
+            <h1>Validación QR</h1>
+        </div>
+        <div class="ticket-info">
+            <p><strong>Nombre:</strong> <span class="info">{{ visitante.nombre }}</span></p>
+            <p><strong>Email:</strong> <span class="info">{{ visitante.email }}</span></p>
+            <p><strong>Celular:</strong> <span class="info">{{ visitante.celular }}</span></p>
+            <p><strong>Motivo:</strong> <span class="info">{{ visitante.motivo }}</span></p>
+            <p><strong>Última lectura:</strong> <span class="info">{{ visitante.ultima_lectura }}</span></p>
+        </div>
+        <p class="success-message">¡Acceso permitido!</p>
+        <a href="{% url 'control_porteria' %}" class="btn">Volver</a>
+    </div>
+    <script src="{% static 'js/canvas.js' %}"></script>
+</body>
+</html>

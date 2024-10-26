@@ -1,0 +1,515 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ sala.nombre }} - Calendario</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/locale/es.js"></script>
+    <style>
+:root {
+    --primary-color: #be185d;  /* pink-700 */
+    --primary-hover: #9d174d;  /* pink-800 */
+    --neon-glow: rgba(74, 222, 128, 0.6);
+    --background-color: #050e2d;
+    --card-background: rgba(255, 255, 255, 0.05);
+    --text-color: rgba(255, 255, 255, 0.9);
+    --text-secondary: rgba(255, 255, 255, 0.6);
+    --border-color: rgba(255, 255, 255, 0.1);
+    --modal-overlay: rgba(0, 0, 0, 0.7);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+body {
+    background-color: var(--background-color);
+    background-image: 
+        radial-gradient(at 40% 20%, rgba(28, 117, 238, 0.1) 0px, transparent 50%),
+        radial-gradient(at 80% 0%, rgba(50, 255, 228, 0.1) 0px, transparent 50%),
+        radial-gradient(at 0% 50%, rgba(255, 255, 255, 0.1) 0px, transparent 50%);
+    color: var(--text-color);
+    line-height: 1.5;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    position: relative;
+}
+
+/* Header Styles */
+.header-container {
+    background: var(--card-background);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-title {
+    text-align: center;
+    flex-grow: 1;
+}
+
+.header-title h1 {
+    font-size: 2rem;
+    background: linear-gradient(90deg, #ffffff 0%, rgba(255,255,255,0.8) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+}
+
+.header-title p {
+    color: var(--text-secondary);
+}
+
+.admin-link {
+    background: var(--primary-color);
+    color: white;
+    padding: 0.75rem 1.25rem;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.admin-link:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Calendar Container */
+.calendar-container {
+    background: var(--card-background);
+    backdrop-filter: blur(10px);
+    border-radius: 30px;
+    padding: 2rem;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* FullCalendar Customization */
+.fc {
+    background: transparent;
+}
+
+.fc-view {
+    overflow: hidden;
+    border-radius: 20px;
+}
+
+.fc-toolbar {
+    padding: 1rem !important;
+    margin-bottom: 2rem !important;
+}
+
+.fc-button {
+    background: var(--primary-color) !important;
+    border: none !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+    padding: 0.75rem 1.25rem !important;
+    border-radius: 12px !important;
+    transition: all 0.3s ease !important;
+}
+
+.fc-button:hover {
+    background: var(--primary-hover) !important;
+    transform: translateY(-2px) !important;
+}
+
+.fc-day {
+    background: transparent !important;
+    border-color: var(--border-color) !important;
+    transition: all 0.3s ease !important;
+}
+
+.fc-day.fc-future {
+    cursor: pointer;
+}
+
+.fc-day.fc-future:hover {
+    box-shadow: 0 0 0 2px var(--neon-glow);
+    background: rgba(74, 222, 128, 0.05) !important;
+}
+
+.fc-day-header {
+    padding: 1rem !important;
+    background: rgba(0, 0, 0, 0.2) !important;
+    border: none !important;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--modal-overlay);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(20px);
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    padding: 2rem;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1rem;
+}
+
+.modal-header h3 {
+    color: var(--text-color);
+    font-size: 1.25rem;
+    font-weight: 500;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-color);
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: all 0.3s ease;
+    opacity: 0.7;
+}
+
+.close-modal:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.horarios-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.horario-slot {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    padding: 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.horario-slot:hover {
+    border-color: var(--neon-glow);
+    box-shadow: 0 0 15px var(--neon-glow);
+    transform: translateY(-2px);
+}
+
+.horario-slot.selected {
+    background: var(--primary-color);
+    border-color: transparent;
+    color: white;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.modal-footer {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 1rem;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover:not(.disabled) {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.btn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #666;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    display: none;
+    text-align: center;
+    padding: 2rem;
+}
+
+.loading-spinner::after {
+    content: '';
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    border-top-color: var(--primary-color);
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .container {
+        margin: 1rem auto;
+    }
+
+    .header-container {
+        padding: 1rem;
+    }
+
+    .header-title h1 {
+        font-size: 1.5rem;
+    }
+
+    .calendar-container {
+        padding: 1rem;
+    }
+
+    .modal-content {
+        width: 95%;
+        padding: 1.5rem;
+        margin: 1rem;
+        max-height: 80vh;
+    }
+
+    .horarios-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-footer {
+        flex-direction: column-reverse;
+    }
+
+    .modal-footer .btn {
+        width: 100%;
+    }
+
+    .fc-toolbar {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-container">
+            <a href="{% url 'visor_admin' %}" class="admin-link">Panel Admin</a>
+            <div class="header-title">
+                <h1>{{ sala.nombre }}</h1>
+                <p>Calendario de disponibilidad</p>
+            </div>
+        </div>
+
+        <div class="calendar-container">
+            <div id="calendario"></div>
+        </div>
+    </div>
+
+    <!-- Modal de horarios -->
+    <div id="horariosModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Horarios Disponibles - <span id="selectedDateText"></span></h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            
+            <div id="loadingSpinner" class="loading-spinner"></div>
+            <div id="horariosDisponibles" class="horarios-grid"></div>
+            
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+                <button id="btnReservar" class="btn btn-primary" onclick="realizarReserva()">Reservar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // Variables globales
+    let selectedDate = moment();
+    let selectedHorario = null;
+
+    $(document).ready(function() {
+        $('#calendario').fullCalendar({
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'month,agendaWeek,agendaDay'
+            },
+            defaultView: 'month',
+            locale: 'es',
+            timeZone: 'local',
+            selectable: true,
+            selectHelper: true,
+            editable: false,
+            eventLimit: true,
+            events: '/api/sala/{{ sala.id }}/reservas/',
+            dayClick: function(date, jsEvent, view) {
+                selectedDate = date;
+                openModal(date);
+            }
+        });
+
+        // Event listeners para el modal
+        $('.close-modal, .modal').click(function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        $('.modal-content').click(function(e) {
+            e.stopPropagation();
+        });
+
+        // Handler para el botón de reservar
+        $('#btnReservar').click(function() {
+            realizarReserva();
+        });
+    });
+
+    function openModal(date) {
+        $('#selectedDateText').text(date.format('DD/MM/YYYY'));
+        $('#loadingSpinner').show();
+        $('#horariosDisponibles').empty();
+        $('#horariosModal').addClass('active');
+        $('#btnReservar').addClass('disabled').prop('disabled', true);
+
+        // Cargar horarios disponibles
+        $.ajax({
+            url: '/api/sala/{{ sala.id }}/horarios/' + date.format('YYYY-MM-DD') + '/',
+            method: 'GET',
+            success: function(response) {
+                $('#loadingSpinner').hide();
+                if (response.slots_disponibles && response.slots_disponibles.length > 0) {
+                    response.slots_disponibles.forEach(function(slot) {
+                        var horarioDiv = $('<div>')
+                            .addClass('horario-slot')
+                            .html(slot.inicio + ' - ' + slot.fin)
+                            .data('horario', slot);
+
+                        horarioDiv.click(function() {
+                            $('.horario-slot').removeClass('selected');
+                            $(this).addClass('selected');
+                            selectedHorario = $(this).data('horario');
+                            $('#btnReservar').removeClass('disabled').prop('disabled', false);
+                        });
+
+                        $('#horariosDisponibles').append(horarioDiv);
+                    });
+                } else {
+                    $('#horariosDisponibles').html(
+                        '<p style="grid-column: 1/-1; text-align: center;">No hay horarios disponibles para esta fecha.</p>'
+                    );
+                }
+            },
+            error: function() {
+                $('#loadingSpinner').hide();
+                $('#horariosDisponibles').html(
+                    '<p style="grid-column: 1/-1; text-align: center; color: #FF3B30;">Error al cargar los horarios.</p>'
+                );
+            }
+        });
+    }
+
+    function closeModal() {
+        $('#horariosModal').removeClass('active');
+    }
+
+    function realizarReserva() {
+        if (!selectedHorario) {
+            alert('Por favor, selecciona un horario');
+            return;
+        }
+        
+        var dateStr = $('#selectedDateText').text().split('/').reverse().join('-');
+        var url = "{% url 'reservar_sala' sala.id %}?fecha=" + dateStr + 
+                 "&hora_inicio=" + selectedHorario.inicio + 
+                 "&hora_fin=" + selectedHorario.fin;
+        
+        // Usar window.location.href para la redirección
+        window.location.href = url;
+    }
+</script>
+</body>
+</html>

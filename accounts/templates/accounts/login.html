@@ -1,0 +1,85 @@
+<!-- login.html -->
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+</head>
+
+<body>
+    {% if messages %}
+    <div class="message-container">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+            {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if form.non_field_errors %}
+    <div class="error-container">
+        {{ form.non_field_errors }}
+    </div>
+    {% endif %}
+
+    <form method="POST"> <!-- Único formulario principal -->
+        {% csrf_token %}
+        <div class="container">
+            <div class="form">
+                <div class="sign-in-section">
+                    <h6>
+                        < Kislev />
+                    </h6>
+                    <h1>Iniciar Sesión</h1>
+
+                    <div class="form-field">
+                        <label for="usuario">Usuario:</label>
+                        {{ form.usuario }}
+                        {% if form.usuario.errors %}
+                        <div class="error">{{ form.usuario.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-field">
+                        <label for="password">Contraseña:</label>
+                        {{ form.password }}
+                        {% if form.password.errors %}
+                        <div class="error">{{ form.password.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-options">
+                        <a href="{% url 'reset_password' %}">Olvidé mi contraseña</a>
+                    </div>
+
+                    <div class="form-field">
+                        <input type="submit" class="btn btn-signin" value="Iniciar sesión">
+                    </div>
+
+                    <div class="links">
+                        <a href="#">Política de privacidad</a>
+                        <a href="#">Términos y condiciones</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <script>
+        window.addEventListener('load', function () {
+          const messages = document.querySelectorAll('.message-container, .error-container');
+          messages.forEach((message) => {
+            setTimeout(() => {
+              message.style.opacity = '0';  // Desvanece el mensaje.
+              setTimeout(() => {
+                message.style.display = 'none';  // Lo oculta completamente.
+              }, 1000);  // Tiempo para la transición.
+            }, 3000);  // Tiempo antes de empezar a desaparecer (3s).
+          });
+        });
+      </script>
+</body>
+
+</html>

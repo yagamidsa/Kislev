@@ -1,0 +1,65 @@
+<!-- templates/emails/service_notification.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <title>Notificación de Servicio</title>
+    <style>
+        /* Estilos previos ... */
+        .preheader {
+            display: none !important;
+            visibility: hidden;
+            opacity: 0;
+            color: transparent;
+            height: 0;
+            width: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Preheader text para previsualizaciones -->
+    <div class="preheader">
+        Su factura de {{ service_type }} está disponible para retiro en portería
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <h1 style="margin: 0; color: #333333;">Administración Conjunto Residencial</h1>
+            </div>
+        </div>
+        
+        <div class="content">
+            <p>Estimado(a) {{ nombre }},</p>
+            
+            <p>Le informamos que su factura de <strong>{{ service_type }}</strong> ya está disponible para su retiro en la portería.</p>
+
+            <div class="important-notice">
+                <h3 style="margin-top: 0;">Información Importante:</h3>
+                <ul>
+                    <li>La factura está disponible en horario de atención regular</li>
+                    <li>Por favor, presente su identificación al momento de retirar la factura</li>
+                </ul>
+            </div>
+
+            <div class="contact-info">
+                <p><strong>Información de Contacto:</strong></p>
+                <p>📞 Teléfono: (Número de la administración)</p>
+                <p>✉️ Email: email@administracion.com</p>
+                <p>🕒 Horario de Atención: Lunes a Viernes, 8:00 AM - 5:00 PM</p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Este es un mensaje oficial de la administración.</p>
+            <p>© {% now "Y" %} Administración Conjunto Residencial</p>
+            <p style="font-size: 10px; color: #666666;">
+                Recibió este email porque está registrado como propietario en nuestro sistema.
+                Para dejar de recibir estos mensajes, por favor contacte a la administración.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

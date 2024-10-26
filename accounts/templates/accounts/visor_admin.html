@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenido</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    {% load static %}
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'css/visor_admin.css' %}">
+
+    <!-- jQuery: Cargado antes del script personalizado -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Script personalizado -->
+    <script src="{% static 'js/visor_admin.js' %}"></script>
+</head>
+
+<body>
+
+    <div class="logout-button">
+        <form method="post" action="{% url 'logout' %}" class="logout-form">
+            {% csrf_token %}
+            <button type="submit" class="apple-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Cerrar sesión</span>
+            </button>
+        </form>
+    </div>
+
+    <div class="main-content">
+        <h1 class="Welcome">Bienvenid@, {{ user.nombre }}!</h1>
+        <h2 class="subtitle">Panel Administrativo</h2>
+
+        <div class="dropholder">
+            <p><i class="fa fa-arrow-right"></i></p>
+            <div class="dropdown">
+                <p>Opciones &nbsp;&nbsp;&nbsp;&nbsp; <i class="fa fa-chevron-circle-down"></i></p>
+            </div>
+            <ul class="menu">
+                <li>
+                    <a style="color: azure; text-decoration: none;" href="{% url 'dashboard' %}">
+                        <i class="fa fa-address-book"></i> Tablero
+                </li>
+                </a>
+                <li>
+                    <a style="color: azure; text-decoration: none;" href="{% url 'notificaciones' %}">
+                        <i class="fa fa-bullhorn"></i> Notificaciones
+                    </a>
+                </li>
+                <li>
+                    <a style="color: azure; text-decoration: none;" href="{% url 'bienvenida' %}">
+                        <i class="fa fa-qrcode"></i> Generar QR
+                    </a>
+                </li>
+                <li>
+                    <a style="color: azure; text-decoration: none;" href="{% url 'lista_salas' %}">
+                        <i class="fa fa-building"></i> Zonas comunes
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escanear QR - Kislev</title>
+    {% load static %}
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'css/leerscaner.css' %}">
+
+</head>
+<body>
+    <div class="container">
+        <h1>Escanear Código QR</h1>
+        <div class="scanner-container">
+            <video id="preview"></video>
+            <div class="scanner-frame">
+                <div class="scanner-line"></div>
+                <div class="scanner-corners"><span></span></div>
+            </div>
+        </div>
+        <p id="message">Coloca el código QR dentro del marco</p>
+        <a href="{% url 'control_porteria' %}" class="return-button">Regresar</a>
+    </div>
+
+    <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
+    <script type="text/javascript">
+        const scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
+        const messageElement = document.getElementById('message');
+
+        function showErrorMessage(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.innerHTML = `
+                <img src="https://fonts.gstatic.com/s/i/materialicons/error/v6/24px.svg" alt="Error" class="error-icon">
+                <p>${message}</p>
+            `;
+            document.body.appendChild(errorDiv);
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 3000);
+        }
+
+        scanner.addListener('scan', function (content) {
+            try {
+                const url = new URL(content);
+                
+                if (url.pathname.startsWith("/validar_qr/")) {
+                    url.searchParams.set('source', 'scan');
+                    window.location.href = url.toString();
+                } else {
+                    showErrorMessage("Código QR no válido.");
+                }
+            } catch (e) {
+                console.error(e);
+                showErrorMessage("Código QR no válido.");
+            }
+        });
+
+        Instascan.Camera.getCameras().then(function (cameras) {
+            if (cameras.length > 0) {
+                scanner.start(cameras[0]);
+            } else {
+                console.error('No se encontraron cámaras.');
+                showErrorMessage("Error: No se encontraron cámaras.");
+            }
+        }).catch(function (e) {
+            console.error(e);
+            showErrorMessage("Error al acceder a la cámara.");
+        });
+    </script>
+</body>
+</html>

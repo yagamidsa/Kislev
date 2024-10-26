@@ -1,0 +1,383 @@
+@import url("https://fonts.googleapis.com/css?family=Lato:400,400i,700");
+html, body {
+  font-size: 20px;
+  font-family: Lato, sans-serif;
+  background-image: linear-gradient(45deg, #6015ab, #ffaf19);
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  position: relative;  /* Añadido para el posicionamiento del botón */
+  overflow: hidden;
+}
+
+
+.main-content {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+.front-text {
+  text-align: center;
+  text-shadow: 0 0.15em 0.3em rgba(0, 0, 0, 0.5);
+  padding: 0;
+  margin: 0 0.5em 0.5em;
+  filter: drop-shadow(0, 0, 0.1em, #000000);
+}
+.front-text:last-child {
+  margin: 0;
+}
+
+.btn-open {
+  color: #ffffff;
+  font-size: 1.25em;
+  font-family: inherit;
+  background: #7f00ff;
+  background: -webkit-linear-gradient(to right, #e100ff, #7f00ff);
+  background: linear-gradient(to right, #e100ff, #7f00ff);
+  box-shadow: 0px 5px 15px 5px #840fe440;
+  color: #fff;
+  padding: 0.5em 1em;
+  border: 0;
+  outline: 0;
+  margin-top: 1.9em;
+  border-radius: 1.1em/50%;
+  box-shadow: 0 0.1em 0.3em rgba(0, 0, 0, 0.5), 0 -0.5em 1em rgba(0, 0, 0, 0.4) inset;
+  transition: box-shadow 32ms ease-out, color 32ms ease-out;
+  cursor: pointer;
+}
+
+.btn-open2 {
+    color: #ffffff;
+    font-size: 1.25em;
+    font-family: inherit;
+    background: #7f00ff;
+    background: -webkit-linear-gradient(to right, #e100ff, #7f00ff);
+    background: linear-gradient(to right, #e100ff, #7f00ff);
+    box-shadow: 0px 5px 15px 5px #840fe440;
+    padding: 0.5em 1em;
+    border: 0;
+    outline: 0;
+    margin-top: 1.9em;
+    border-radius: 1.1em/50%;
+    box-shadow: 0 0.1em 0.3em rgba(0, 0, 0, 0.5), 0 -0.5em 1em rgba(0, 0, 0, 0.4) inset;
+    transition: box-shadow 32ms ease-out, color 32ms ease-out;
+    cursor: pointer;
+  }
+
+.btn-open:active {
+  color: #dadada;
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0.5), 0 1em 2em rgba(0, 0, 0, 0.5) inset;
+}
+
+#frmContactForm {
+  display: none;
+}
+#frmContactForm:checked + .contact-modal {
+  width: 100vw;
+  height: 100vh;
+  opacity: 1;
+  overflow: auto;
+  transition: opacity 160ms ease-out, width 0ms ease-out, height 0ms ease-out;
+}
+#frmContactForm:checked + .contact-modal .contact-form {
+  animation: contact-form-show 160ms ease-out;
+}
+
+@keyframes contact-form-show {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.contact-modal {
+  font-size: 14.5px;
+  width: 0;
+  height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transition: opacity 160ms ease-out, width 0ms ease-out 160ms, height 0ms ease-out 160ms;
+}
+
+.contact-form {  
+  background-color: rgba(0, 0, 0, 0.45);
+  width: calc(100vw - 2em);
+  max-width: 480px;
+  padding: 0.5em 1.5em;
+  margin: 1em;
+  border-radius: 1.5em;
+  box-shadow: 0 2em 3em rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
+  backdrop-filter: blur(0.4em);
+  max-height: 101vh; /* Limita la altura máxima del formulario */
+  overflow-y: auto; /* Agrega un scroll si el contenido excede la altura */
+}
+
+.contact-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+
+.contact-section {
+  padding-bottom: 1.5em;
+  box-sizing: border-box;
+}
+.contact-section:last-child {
+  padding-bottom: 0;
+}
+
+.contact-cancel {
+  padding: 10px 20px;  /* Reduce el padding */
+  margin-bottom: 2px; /* Espacio entre este elemento y el contenido siguiente */
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-block; /* Ajusta su tamaño al contenido */
+  cursor: pointer;
+}
+.contact-cancel:hover {
+  text-decoration: underline;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-white {
+  color: #ffffff;
+}
+
+.p-none {
+  padding: 0;
+}
+
+.m-none {
+  margin: 0;
+}
+
+.mb-whole {
+  margin-bottom: 1em;
+}
+
+.ml-whole {
+  margin-left: 1em;
+}
+
+.mb-half {
+  margin-bottom: 0.5em;
+}
+
+.ml-half {
+  margin-left: 0.5em;
+}
+
+.mb-quarter {
+  margin-bottom: 0.25em;
+}
+
+.ml-quarter {
+  margin-left: 0.25em;
+}
+
+.form-item {
+  width: 100%;
+  margin-bottom: 1em;
+  position: relative;
+}
+.form-item input[type="text"], 
+.form-item input[type="email"], 
+.form-item input[type="number"], 
+.form-item textarea {
+  color: #ffffff;
+  font-family: inherit;
+  font-size: inherit;
+  background-color: rgba(0, 0, 0, 0.5);
+  width: 100%;
+  padding: 1.7em 2.9em 1.5em 2.9em;
+  border: 0;
+  border-radius: 0.75em;
+  outline: 0;
+  margin: -2px;
+  box-sizing: border-box;
+}
+
+
+.form-item2 {
+    position: relative; /* Importante para el ícono */
+}
+
+.form-item2 select {
+    color: #ffffff;
+    font-family: inherit;
+    font-size: inherit;
+    background-color: rgba(0, 0, 0, 0.5);
+    width: 100%;
+    padding: 0.8em 1em 0.8em 2.5em;
+    border: 0;
+    border-radius: 0.75em;
+    outline: none;
+    margin: 0;
+    box-sizing: border-box;
+    appearance: none; /* Elimina el estilo por defecto */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+}
+
+/* Flecha personalizada */
+.form-item2::after {
+    margin-top: 20px;
+    content: '\25BC'; /* Unicode para una flecha hacia abajo */
+    color: #ffffff;
+    position: absolute;
+    right: 1em;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none; /* Evita que la flecha interrumpa los clics */
+}
+
+.form-item input[type="text"]::placeholder, 
+.form-item input[type="email"]::placeholder, 
+.form-item input[type="number"]::placeholder, 
+.form-item textarea::placeholder {
+  color: transparent;
+}
+
+.form-item input[type="text"]:not(:placeholder-shown) + label, 
+.form-item input[type="email"]:not(:placeholder-shown) + label, 
+.form-item input[type="number"]:not(:placeholder-shown) + label, 
+.form-item textarea:not(:placeholder-shown) + label {
+  font-size: 0.8em;
+  top: 0.65em;
+  left: 1em;
+}
+
+.form-item i.icon {
+  position: absolute;
+  top: 1.8em;
+  left: 1em;
+}
+.form-item label.lbl-floating {
+  color: #c2c2c2;
+  position: absolute;
+  top: 1.8em;
+  left: 2.5em;
+  pointer-events: none;
+  transition: font-size 64ms ease-out, top 64ms ease-out, left 64ms ease-out;
+}
+
+
+
+/* Actualiza los estilos del botón logout */
+.logout-button {
+  position: absolute !important;
+  top: 20px !important;
+  right: 20px !important;
+  z-index: 9999;
+}
+
+.logout-button .apple-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(65, 61, 61, 0.2);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  text-decoration: none;
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logout-button .apple-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.logout-button .apple-btn:active {
+  transform: translateY(0px);
+}
+
+.logout-button .apple-btn i {
+  font-size: 16px;
+  transition: transform 0.3s ease;
+}
+
+.logout-button .apple-btn:hover i {
+  transform: translateX(3px);
+}
+
+/* Efecto brillo */
+.logout-button .apple-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.1),
+      rgba(255, 255, 255, 0)
+  );
+  border-radius: 20px 20px 0 0;
+  pointer-events: none;
+}
+
+/* Estilos responsive */
+@media (max-width: 768px) {
+  .logout-button {
+      top: 15px !important;
+      right: 15px !important;
+  }
+
+  .logout-button .apple-btn {
+      padding: 10px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      justify-content: center;
+  }
+  
+  .logout-button .apple-btn span {
+      display: none;
+  }
+
+  .logout-button .apple-btn i {
+      margin: 0;
+      font-size: 18px;
+  }
+
+  .logout-button .apple-btn::after {
+      border-radius: 50%;
+  }
+}

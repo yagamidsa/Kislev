@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Notificaciones</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+        <title>Notificaciones</title>
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'css/notificaciones.css' %}">
+</head>
+
+<body>
+
+    <div class="envelope-pattern">
+        <!-- Sobres animados -->
+        <div class="envelope">
+            <svg viewBox="0 0 24 24">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+        </div>
+        <div class="envelope">
+            <svg viewBox="0 0 24 24">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+        </div>
+        <div class="envelope">
+            <svg viewBox="0 0 24 24">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+        </div>
+        <div class="envelope">
+            <svg viewBox="0 0 24 24">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+        </div>
+        <div class="envelope">
+            <svg viewBox="0 0 24 24">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+        </div>
+        <div class="envelope">
+            <svg viewBox="0 0 24 24">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+        </div>
+        <div class="envelope">
+            <svg viewBox="0 0 24 24">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+        </div>
+        <div class="envelope">
+            <svg viewBox="0 0 24 24">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+        </div>
+        <div class="envelope">
+            <svg viewBox="0 0 24 24">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+        </div>
+        <div class="envelope">
+            <svg viewBox="0 0 24 24">
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+        </div>
+    </div>
+
+
+    <div class="light-effect"></div>
+    <div class="container">
+        <h1>¡Bienvenid@ al Panel de Notificaciones!</h1>
+
+        <div class="cards-container">
+            <!-- Card 1: Notificaciones Generales -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Notificaciones Generales</h2>
+                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                        d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z">
+                        </path>
+                    </svg>
+                </div>
+                <p class="card-content">Manten informado a tus propietarios sobre todas las notificaciones generales de la Administración.</p>
+                <button class="card-button" data-url="{% url 'noti_generales' %}" onclick="redirectTo(this)">Aceptar</button>
+            </div>
+
+            <!-- Card 2: Notificaciones Individuales -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Notificaciones Individuales</h2>
+                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
+                        </path>
+                    </svg>
+                </div>
+                <p class="card-content">Envia notificaciones personalizadas y mensajes directos.</p>
+                <button class="card-button" data-url="{% url 'noti_individual' %}" onclick="redirectTo(this)">Aceptar</button>
+            </div>
+
+            <!-- Card 3: Servicios Públicos -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Servicios Públicos</h2>
+                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                    </svg>
+                </div>
+                <p class="card-content">Manten informado a tus propietarios sobre la llegada de los servicios públicos.</p>
+                <button class="card-button" data-url="{% url 'noti_publicos' %}" onclick="redirectTo(this)">Aceptar</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        function redirectTo(button) {
+            const url = button.dataset.url;
+            window.location.href = url;
+        }
+    </script>
+</body>
+
+</html>

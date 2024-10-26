@@ -1,0 +1,602 @@
+/* Variables y configuración global */
+:root {
+    --primary-color: #BE185D;
+    --primary-light: #DB2777;
+    --primary-dark: #9D174D;
+    --neon-color: #BE185D;
+    --neon-glow: 0 0 10px #BE185D, 0 0 20px #BE185D, 0 0 30px #BE185D;
+    --bg-dark: #0F172A;
+    --card-bg: rgba(255, 255, 255, 0.07);
+    --card-border: rgba(255, 255, 255, 0.1);
+    --select-bg: rgba(255, 255, 255, 0.05);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Estilos base */
+body {
+    min-height: 100vh;
+    background-color: var(--bg-dark);
+    background-image: 
+        radial-gradient(circle at 20% 20%, rgba(219, 39, 119, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(219, 39, 119, 0.1) 0%, transparent 40%);
+    padding: 1rem 1rem 15px 1rem;
+    position: relative;
+    overflow-x: hidden;
+}
+
+
+/* Contenedor de sobres */
+.envelope-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+}
+
+/* Sobre individual */
+.envelope-icon {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    animation: floatEnvelope 20s linear infinite;
+    /* Quitamos la opacidad inicial para que sean más visibles */
+}
+
+/* Posiciones y delays distribuidos */
+.envelope-icon:nth-child(1) { left: 5%; animation-delay: 0s; }
+.envelope-icon:nth-child(2) { left: 20%; animation-delay: -4s; }
+.envelope-icon:nth-child(3) { left: 35%; animation-delay: -8s; }
+.envelope-icon:nth-child(4) { left: 50%; animation-delay: -12s; }
+.envelope-icon:nth-child(5) { left: 65%; animation-delay: -16s; }
+.envelope-icon:nth-child(6) { left: 80%; animation-delay: -20s; }
+
+/* SVG del sobre con mejor visibilidad */
+.envelope-icon svg {
+    width: 100%;
+    height: 100%;
+    stroke: var(--primary-color);
+    stroke-width: 1.5;
+    fill: rgba(190, 24, 93, 0.1); /* Agregamos un fill sutil */
+    filter: drop-shadow(0 0 10px var(--primary-color))
+            drop-shadow(0 0 20px var(--primary-color));
+}
+
+/* Animación flotante mejorada */
+@keyframes floatEnvelope {
+    0% {
+        transform: translateY(110vh) rotate(5deg) scale(1);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.8; /* Aumentamos la opacidad máxima */
+    }
+    90% {
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateY(-10vh) rotate(-5deg) scale(1.2);
+        opacity: 0;
+    }
+}
+
+/* Pulso neón mejorado */
+@keyframes neonPulse {
+    0%, 100% {
+        filter: drop-shadow(0 0 10px var(--primary-color))
+                drop-shadow(0 0 20px var(--primary-color));
+        opacity: 0.8;
+    }
+    50% {
+        filter: drop-shadow(0 0 15px var(--primary-color))
+                drop-shadow(0 0 30px var(--primary-color))
+                drop-shadow(0 0 45px var(--primary-color));
+        opacity: 1;
+    }
+}
+
+/* Aplicar pulso neón */
+.envelope-icon svg {
+    animation: neonPulse 3s ease-in-out infinite;
+}
+
+/* Ajustar velocidad y visibilidad según el dispositivo */
+@media (prefers-reduced-motion: no-preference) {
+    .envelope-icon {
+        animation-duration: 20s;
+    }
+}
+
+/* Media query para móviles con ajustes de tamaño y visibilidad */
+@media (max-width: 768px) {
+    .envelope-icon {
+        width: 40px;
+        height: 40px;
+    }
+    
+    /* Ajustar posiciones para móvil */
+    .envelope-icon:nth-child(1) { left: 10%; }
+    .envelope-icon:nth-child(2) { left: 30%; }
+    .envelope-icon:nth-child(3) { left: 50%; }
+    .envelope-icon:nth-child(4) { left: 70%; }
+    .envelope-icon:nth-child(5) { left: 90%; }
+    .envelope-icon:nth-child(6) { display: none; } /* Ocultamos uno en móvil */
+}
+
+/* Asegurar que los sobres están por detrás del contenido */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    pointer-events: none;
+    z-index: 1;
+}
+
+
+
+
+/* Contenedor principal */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+    min-height: calc(100vh - 2rem - 15px);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Estilos del título */
+h1 {
+    text-align: center;
+    color: white;
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    text-shadow: var(--neon-glow);
+    position: relative;
+    overflow: hidden;
+}
+
+h1::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 2px;
+    background: var(--primary-color);
+    box-shadow: var(--neon-glow);
+    animation: pulse 2s infinite;
+}
+
+/* Formulario principal */
+.notification-form {
+    background: var(--card-bg);
+    backdrop-filter: blur(25px) saturate(180%);
+    -webkit-backdrop-filter: blur(25px) saturate(180%);
+    border-radius: 20px;
+    padding: 2rem;
+    border: 1px solid var(--card-border);
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.2),
+        inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Efecto de brillo del formulario */
+.notification-form::before {
+    content: '';
+    position: absolute;
+    top: -100%;
+    left: -100%;
+    width: 300%;
+    height: 300%;
+    background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+    );
+    animation: shine 8s infinite;
+}
+
+/* Secciones del formulario */
+.form-section {
+    margin-bottom: 1.5rem;
+}
+
+.form-section-title {
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-section-title svg {
+    width: 20px;
+    height: 20px;
+    stroke: var(--primary-color);
+}
+
+/* Contenedor de selects */
+.selects-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.select-group {
+    position: relative;
+}
+
+.select-group label {
+    display: block;
+    color: white;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+/* Estilo de los selects */
+select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    background: var(--select-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 1rem;
+    appearance: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    /* Estilo de la flecha personalizada */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23BE185D' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1.25rem;
+    padding-right: 2.5rem;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+select:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 10px rgba(190, 24, 93, 0.2);
+}
+
+select:focus {
+    background-color: #1E293B; /* Fondo oscuro */
+    color: white;
+    padding: 1rem;
+    font-size: 1rem;
+}
+
+
+/* Estilos para el hover de las opciones */
+select option:hover,
+select option:focus,
+select option:active,
+select option:checked {
+    background: linear-gradient(to right, #BE185D, #9D174D) !important;
+    background-color: var(--primary-color) !important;
+    color: white !important;
+}
+
+
+/* Estilos específicos para Firefox */
+@-moz-document url-prefix() {
+    select {
+        color: white;
+        background-color: var(--select-bg);
+    }
+    
+    select:-moz-focusring {
+        color: transparent;
+        text-shadow: 0 0 0 white;
+    }
+
+    select:focus::-ms-value {
+        background-color: transparent;
+        color: white;
+    }
+}
+
+/* Estilos específicos para Chrome/Safari */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+    select {
+        background-color: var(--select-bg);
+    }
+
+    select::-ms-expand {
+        display: none;
+    }
+}
+
+/* Estilos para el scrollbar dentro del select (Chrome) */
+select::-webkit-scrollbar {
+    width: 8px;
+}
+
+select::-webkit-scrollbar-track {
+    background: #1E293B;
+    border-radius: 4px;
+}
+
+select::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 4px;
+}
+
+select::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-dark);
+}
+
+/* Estilos para dispositivos táctiles */
+@media (hover: none) {
+    select {
+        font-size: 16px; /* Previene zoom en iOS */
+    }
+    
+    select option {
+        font-size: 16px;
+        padding: 1.2rem 1rem;
+    }
+}
+
+
+/* Sección de mensaje */
+.message-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+textarea {
+    width: 100%;
+    flex: 1;
+    min-height: 150px;
+    padding: 1rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 1rem;
+    resize: vertical;
+    transition: all 0.3s ease;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 15px rgba(190, 24, 93, 0.3);
+}
+
+/* Contenedor de botones */
+.buttons-container {
+    display: flex;
+    gap: 1rem;
+    margin-top: auto;
+}
+
+/* Estilos de botones */
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        to right,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+    );
+    transition: 0.5s;
+}
+
+.btn:hover::before {
+    left: 100%;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    box-shadow: 0 0 10px rgba(190, 24, 93, 0.5);
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(190, 24, 93, 0.8);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+}
+
+/* Input de archivo */
+.file-input {
+    display: none;
+}
+
+/* Modal */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal {
+    background: var(--card-bg);
+    backdrop-filter: blur(25px) saturate(180%);
+    -webkit-backdrop-filter: blur(25px) saturate(180%);
+    border-radius: 20px;
+    padding: 2rem;
+    width: 90%;
+    max-width: 400px;
+    border: 1px solid var(--card-border);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    animation: modalAppear 0.3s ease-out;
+}
+
+.modal-content {
+    text-align: center;
+    color: white;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+/* Animaciones */
+@keyframes pulse {
+    0%, 100% {
+        width: 50px;
+        opacity: 0.5;
+    }
+    50% {
+        width: 100px;
+        opacity: 1;
+    }
+}
+
+@keyframes shine {
+    0% {
+        transform: translate(-100%, -100%) rotate(45deg);
+    }
+    100% {
+        transform: translate(100%, 100%) rotate(45deg);
+    }
+}
+
+@keyframes float-particle {
+    0% {
+        transform: translate(0, 0) scale(0);
+        opacity: 0;
+    }
+    50% {
+        opacity: 0.5;
+        transform: translate(var(--tx), var(--ty)) scale(1);
+    }
+    100% {
+        transform: translate(calc(var(--tx) * 2), calc(var(--ty) * 2)) scale(0);
+        opacity: 0;
+    }
+}
+
+@keyframes modalAppear {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Media queries */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.75rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .notification-form {
+        padding: 1.25rem;
+    }
+
+    .selects-container {
+        grid-template-columns: 1fr;
+    }
+
+    .buttons-container {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .btn {
+        width: 100%;
+        justify-content: center;
+        padding: 0.875rem;
+    }
+
+    textarea {
+        min-height: 120px;
+    }
+
+    .modal {
+        margin: 1rem;
+    }
+}
+
+/* Soporte iOS */
+@supports (-webkit-touch-callout: none) {
+    .container {
+        min-height: -webkit-fill-available;
+    }
+}
