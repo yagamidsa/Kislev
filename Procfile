@@ -1,1 +1,1 @@
-waitress-serve --port=$PORT Kislev.kislevsmart.wsgi:application
+web: gunicorn Kislev.Kislevsmart.wsgi:application --log-file -
