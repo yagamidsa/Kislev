@@ -205,3 +205,11 @@ LOGGING = {
         },
     },
 }
+
+
+
+import environ
+
+# Inicializa django-environ
+env = environ.Env()
+environ.Env.read_env()
