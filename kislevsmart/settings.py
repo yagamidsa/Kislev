@@ -78,7 +78,9 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             os.path.join(BASE_DIR, 'kislevsmart', 'templates'),
-            os.path.join(BASE_DIR, 'accounts', 'templates'),  # Agregar la carpeta de plantillas de accounts
+            os.path.join(BASE_DIR, 'accounts', 'templates'),
+            os.path.join(BASE_DIR, 'templates'),  # Añade esta línea
+            os.path.join(BASE_DIR),  # Añade esta línea si el template está en la raíz
         ],
         'APP_DIRS': True,
         'OPTIONS': {
