@@ -1,1 +1,1 @@
-web: gunicorn KISLEV.Kislevsmart.wsgi:application --log-file -
+waitress-serve --port=$PORT kislevsmart.wsgi:application

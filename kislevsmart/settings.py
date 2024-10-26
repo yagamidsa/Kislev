@@ -152,6 +152,9 @@ STATICFILES_DIRS = [
     BASE_DIR / "kislevsmart" / "static",  # Archivos estáticos específicos de 'kislevsmart'
 ]
 
+# Directorio donde se recopilan todos los archivos estáticos
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
