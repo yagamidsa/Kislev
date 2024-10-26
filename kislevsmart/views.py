@@ -783,7 +783,7 @@ def success_page(request):
     nombre_usuario = request.user.phone_number  # O cualquier campo que estés utilizando
     user_type = request.user.user_type
     
-    return render(request, 'ValQR.html', {
+    return render(request, 'valqr.html', {
         'nombre': nombre_usuario,
         'user_type': user_type
     })
