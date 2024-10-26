@@ -778,25 +778,29 @@ def validar_qr(request, encrypted_token):
 
 
 @login_required
-def success_page(request):
-    # Obtener el nombre del usuario logueado
-    nombre_usuario = request.user.phone_number  # O cualquier campo que estés utilizando
-    user_type = request.user.user_type
-    
-    return render(request, 'valqr.html', {
-        'nombre': nombre_usuario,
-        'user_type': user_type
-    })
-
-
-@login_required
-def success_page(request, email_b64, ):
+def success_page(request, email_b64):
     try:
-        email = base64.urlsafe_b64decode(email_b64.encode()).decode()  # Decodificar
-    except Exception:
-        email = "Email no válido"  # En caso de error, mostrar mensaje
+        # Decodificar el email
+        email = base64.urlsafe_b64decode(email_b64.encode()).decode()
         
-    return render(request, 'valqr.html', {'email': email})
+        # Obtener información del usuario
+        nombre_usuario = request.user.phone_number
+        user_type = request.user.user_type
+        
+        context = {
+            'nombre': nombre_usuario,
+            'user_type': user_type,
+            'email': email
+        }
+        
+        return render(request, 'valqr.html', context)  # Ya no necesitas 'salas/'
+        
+    except Exception as e:
+        print(f"Error en success_page: {e}")
+        # Podrías redirigir a una página de error o mostrar un mensaje
+        return render(request, 'valqr.html', {
+            'error': 'Ocurrió un error al procesar la solicitud'
+        })
 
 
 
