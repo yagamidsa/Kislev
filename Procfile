@@ -1,1 +1,1 @@
-waitress-serve --port=$PORT kislevsmart.wsgi:application
+waitress-serve --port=$PORT Kislev.kislevsmart.wsgi:application
