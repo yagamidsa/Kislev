@@ -1,1 +1,1 @@
-web: cd kislevsmart && gunicorn kislevsmart.wsgi:application
+web: gunicorn kislevsmart.wsgi:application
