@@ -23,18 +23,22 @@
     <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
     <script>
         let scanner = null;
-
+    
         async function initializeScanner() {
             try {
-                // Crear el scanner
+                // Crear el scanner con configuración optimizada
                 scanner = new Instascan.Scanner({
                     video: document.getElementById('preview'),
-                    mirror: false,
+                    mirror: false, // Importante para cámara trasera
                     captureImage: false,
                     backgroundScan: true,
-                    refractoryPeriod: 5000
+                    refractoryPeriod: 5000,
+                    scanPeriod: 3 // Escaneo más rápido
                 });
-
+    
+                const videoElement = document.getElementById('preview');
+                videoElement.setAttribute('playsinline', true); // Importante para iOS
+    
                 // Manejar escaneos
                 scanner.addListener('scan', function(content) {
                     try {
@@ -52,35 +56,57 @@
                         showErrorMessage("QR no válido");
                     }
                 });
-
+    
                 // Obtener cámaras disponibles
                 const cameras = await Instascan.Camera.getCameras();
                 
                 if (cameras.length > 0) {
+                    console.log('Cámaras disponibles:', cameras.map(c => c.name));
+                    
                     // Intentar encontrar la cámara trasera
-                    const rearCamera = cameras.find(camera => 
-                        camera.name.toLowerCase().includes('back') || 
+                    let selectedCamera;
+                    
+                    // Primero intentar encontrar la cámara trasera
+                    selectedCamera = cameras.find(camera => 
+                        camera.name.toLowerCase().includes('back') ||
                         camera.name.toLowerCase().includes('rear') ||
                         camera.name.toLowerCase().includes('environment')
                     );
-                    
-                    // Usar cámara trasera si está disponible, si no, usar la primera
-                    const selectedCamera = rearCamera || cameras[0];
-                    await scanner.start(selectedCamera);
-                    console.log('Usando cámara:', selectedCamera.name);
+    
+                    // Si no se encuentra específicamente una trasera, usar la última
+                    if (!selectedCamera) {
+                        selectedCamera = cameras[cameras.length - 1];
+                    }
+    
+                    try {
+                        await scanner.start(selectedCamera);
+                        console.log('Cámara iniciada:', selectedCamera.name);
+                        
+                        // Agregar clase para cámara trasera
+                        videoElement.classList.add('rear-camera');
+                    } catch (e) {
+                        console.error('Error al iniciar la cámara seleccionada, intentando con otra:', e);
+                        // Si falla, intentar con la primera cámara
+                        if (cameras.length > 1) {
+                            await scanner.start(cameras[0]);
+                        } else {
+                            throw new Error('No se pudo iniciar ninguna cámara');
+                        }
+                    }
                 } else {
                     showErrorMessage("No se encontraron cámaras disponibles");
                 }
+    
             } catch (e) {
                 console.error('Error inicializando scanner:', e);
                 showErrorMessage("Error al iniciar la cámara");
             }
         }
-
+    
         function showErrorMessage(message) {
             const existing = document.querySelector('.error-message');
             if (existing) existing.remove();
-
+    
             const errorDiv = document.createElement('div');
             errorDiv.className = 'error-message';
             errorDiv.innerHTML = `
@@ -90,15 +116,35 @@
             document.body.appendChild(errorDiv);
             setTimeout(() => errorDiv.remove(), 3000);
         }
-
-        // Iniciar el scanner cuando la página cargue
-        document.addEventListener('DOMContentLoaded', initializeScanner);
-
-        // Limpiar cuando la página se cierre
+    
+        // Manejar errores de video
+        function handleVideoError(error) {
+            console.error('Error de video:', error);
+            showErrorMessage("Error al acceder a la cámara");
+        }
+    
+        // Inicialización cuando el DOM está listo
+        document.addEventListener('DOMContentLoaded', () => {
+            const videoElement = document.getElementById('preview');
+            videoElement.addEventListener('error', handleVideoError);
+            initializeScanner();
+        });
+    
+        // Limpiar recursos cuando la página se cierre
         window.addEventListener('beforeunload', () => {
             if (scanner) {
                 scanner.stop();
             }
+        });
+    
+        // Manejar cambios de orientación
+        window.addEventListener('orientationchange', () => {
+            setTimeout(() => {
+                const videoElement = document.getElementById('preview');
+                if (videoElement) {
+                    videoElement.style.height = '100%';
+                }
+            }, 100);
         });
     </script>
 </body>
