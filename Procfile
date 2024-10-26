@@ -1,1 +1,1 @@
-web: gunicorn kislevsmart.wsgi --log-file -
+web: gunicorn kislevsmart.wsgi:application --log-file -

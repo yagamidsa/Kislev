@@ -31,13 +31,13 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = 'django-insecure-@@i8x+#kv7)iilb$kc3^zpgf+m^%)&_a!x!8bb+b2!m0f_*61k'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG')
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
+ALLOWED_HOSTS = ['*'] 
 
 
 
@@ -108,12 +108,27 @@ AUTHENTICATION_BACKENDS = (
 
 
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default=env('DATABASE_URL', default='postgresql://user:pass@localhost/dbname'),
-        conn_max_age=600
-    )
-}
+# Database configuration
+if os.getenv('DATABASE_URL', None):
+    # Configuración para Railway (producción)
+    import dj_database_url
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.getenv('DATABASE_URL')
+        )
+    }
+else:
+    # Configuración para desarrollo local
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'login',
+            'USER': 'yagami',
+            'PASSWORD': 'Ipsos2012*',
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
+    }
 
 #DATABASES = {
 #    'default': {
