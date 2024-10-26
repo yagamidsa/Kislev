@@ -10,22 +10,37 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+import os
 from pathlib import Path
+import environ
+import dj_database_url
+
+
+
+# Inicializa django-environ
+env = environ.Env(
+    DEBUG=(bool, False)
+)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-@@i8x+#kv7)iilb$kc3^zpgf+m^%)&_a!x!8bb+b2!m0f_*61k'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = []
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
+
+
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
+
+
+
 
 
 
@@ -40,17 +55,18 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'accounts',
     'kislevsmart',
+    'whitenoise.runserver_nostatic',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Añadido para archivos estáticos
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    
 ]
 
 ROOT_URLCONF = 'kislevsmart.urls'
@@ -90,16 +106,25 @@ AUTHENTICATION_BACKENDS = (
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'login',
-        'USER': 'yagami',
-        'PASSWORD': 'Ipsos2012*',
-        'HOST': 'localhost',  # O el host que uses
-        'PORT': '5432',       # Puerto predeterminado de PostgreSQL
-    }
+    'default': dj_database_url.config(
+        default=env('DATABASE_URL', default='postgresql://user:pass@localhost/dbname'),
+        conn_max_age=600
+    )
 }
+
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.postgresql',
+#        'NAME': 'login',
+#        'USER': 'yagami',
+#        'PASSWORD': 'Ipsos2012*',
+#        'HOST': 'localhost',  # O el host que uses
+#        'PORT': '5432',       # Puerto predeterminado de PostgreSQL
+#    }
+#}
 
 AUTH_USER_MODEL = 'accounts.Usuario'
 
@@ -144,34 +169,54 @@ LOGIN_URL = '/accounts/login/'
 ESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
 
+# Configuración de archivos estáticos
 STATIC_URL = '/static/'
-
-STATICFILES_DIRS = [
-    BASE_DIR / "static",  # Carpeta global
-    BASE_DIR / "accounts" / "static",  # Archivos estáticos específicos de 'accounts'
-    BASE_DIR / "kislevsmart" / "static",  # Archivos estáticos específicos de 'kislevsmart'
-]
-
-# Directorio donde se recopilan todos los archivos estáticos
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+    BASE_DIR / "accounts" / "static",
+    BASE_DIR / "kislevsmart" / "static",
+]
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
+
+
+# Configuración de archivos media
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Configuración de Email con SendGrid
+EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
+SENDGRID_API_KEY = env('SENDGRID_API_KEY', default='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')
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='mariax.ceb@gmail.com')
+SENDGRID_SANDBOX_MODE_IN_DEBUG = False
+
+
+
+# Configuración de seguridad adicional para producción
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
 
 # Configuración de Email con SendGrid
-EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
-SENDGRID_API_KEY = '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'
-DEFAULT_FROM_EMAIL = 'mariax.ceb@gmail.com'  # El email que configuraste en SendGrid
-SENDGRID_SANDBOX_MODE_IN_DEBUG = False  # Ponlo en False cuando quieras enviar emails reales
+#EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
+#SENDGRID_API_KEY = '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'
+#DEFAULT_FROM_EMAIL = 'mariax.ceb@gmail.com'  # El email que configuraste en SendGrid
+#SENDGRID_SANDBOX_MODE_IN_DEBUG = False  # Ponlo en False cuando quieras enviar emails reales
 # Configuración adicional recomendada
 SENDGRID_TRACK_EMAIL_OPENS = True
 SENDGRID_TRACK_CLICKS = True
@@ -211,8 +256,3 @@ LOGGING = {
 
 
 
-import environ
-
-# Inicializa django-environ
-env = environ.Env()
-environ.Env.read_env()
