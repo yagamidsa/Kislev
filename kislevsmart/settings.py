@@ -188,9 +188,8 @@ ESSION_ENGINE = 'django.contrib.sessions.backends.db'
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
-    BASE_DIR / "static",
-    BASE_DIR / "accounts" / "static",
-    BASE_DIR / "kislevsmart" / "static",
+    os.path.join(BASE_DIR, 'kislevsmart', 'static'),  # Archivos estáticos del proyecto
+    os.path.join(BASE_DIR, 'accounts', 'static'),      # Archivos estáticos de accounts
 ]
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
