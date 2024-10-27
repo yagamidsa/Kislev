@@ -68,7 +68,8 @@ h1 {
     box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
     border: 1px solid rgba(255, 255, 255, 0.18);
     display: flex;
-    align-items: center;
+    flex-direction: column;  /* Cambiado a columna */
+    align-items: center;     /* Centrado horizontal */
     justify-content: center;
     gap: 12px;
     z-index: 1000;
@@ -81,6 +82,13 @@ h1 {
     font-size: 15px;
     text-align: center;
     margin: 0;
+}
+
+
+.error-icon {
+    width: 24px;
+    height: 24px;
+    filter: invert(31%) sepia(93%) saturate(7391%) hue-rotate(322deg) brightness(95%) contrast(111%);  /* Esto hará el icono rosa */
 }
 
 @keyframes slideDown {

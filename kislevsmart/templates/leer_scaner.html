@@ -79,10 +79,8 @@
         }
 
         function showErrorMessage(message) {
-            // Si ya hay un error mostrándose, no mostrar otro
             if (isShowingError) return;
 
-            // Remover cualquier mensaje de error existente
             const existing = document.querySelectorAll('.error-message');
             existing.forEach(el => el.remove());
 
@@ -91,13 +89,12 @@
             const errorDiv = document.createElement('div');
             errorDiv.className = 'error-message';
             errorDiv.innerHTML = `
-        <img src="https://fonts.gstatic.com/s/i/materialicons/error/v6/24px.svg" alt="Error" class="error-icon">
         <p>${message}</p>
+        <img src="https://fonts.gstatic.com/s/i/materialicons/error/v6/24px.svg" alt="Error" class="error-icon">
     `;
             document.getElementById('error-container').appendChild(errorDiv);
             errorDiv.style.display = 'block';
 
-            // Remover el mensaje después de 3 segundos y permitir nuevos mensajes
             setTimeout(() => {
                 errorDiv.remove();
                 isShowingError = false;
