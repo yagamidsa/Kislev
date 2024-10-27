@@ -7,62 +7,7 @@
     <title>Escanear QR - Kislev</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/leerscaner.css' %}">
-    <style>
-        /* Estilos de mensajes de error */
-        .error-message {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #f44336;
-            color: white;
-            padding: 15px;
-            border-radius: 5px;
-            z-index: 1000;
-            animation: fadeInOut 3s;
-            display: none;
-            /* Oculto inicialmente */
-        }
 
-        .error-icon {
-            vertical-align: middle;
-            margin-right: 5px;
-        }
-
-        @keyframes fadeInOut {
-            0% {
-                opacity: 0;
-            }
-
-            10% {
-                opacity: 1;
-            }
-
-            90% {
-                opacity: 1;
-            }
-
-            100% {
-                opacity: 0;
-            }
-        }
-
-        .scanner-container {
-            position: relative;
-            /* Para posicionar el mensaje de error */
-            width: 100%;
-            height: auto;
-            /* Ajustar automáticamente */
-            margin-bottom: 20px;
-            /* Espacio inferior */
-        }
-
-        video {
-            width: 100%;
-            height: auto;
-            /* Asegúrate de que el video se ajuste correctamente */
-        }
-    </style>
 </head>
 
 <body>
@@ -70,11 +15,17 @@
         <h1>Escanear Código QR</h1>
         <div class="scanner-container">
             <video id="video" playsinline></video>
-            <p id="message">Coloca el código QR dentro del marco</p>
-            <div id="error-container"></div> <!-- Contenedor para mensajes de error -->
+            <div class="scan-overlay">
+                <div class="scan-frame">
+                    <div class="scan-line"></div>
+                    <div class="scan-corners"><span></span></div>
+                </div>
+            </div>
         </div>
+        <p id="message">Coloca el código QR dentro del marco</p>
         <a href="{% url 'control_porteria' %}" class="return-button">Regresar</a>
     </div>
+
 
     <script src="https://unpkg.com/@zxing/library@latest"></script>
 
