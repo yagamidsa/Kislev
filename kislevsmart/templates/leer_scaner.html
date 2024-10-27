@@ -89,8 +89,8 @@
             const errorDiv = document.createElement('div');
             errorDiv.className = 'error-message';
             errorDiv.innerHTML = `
-        <p>${message}</p>
         <img src="https://fonts.gstatic.com/s/i/materialicons/error/v6/24px.svg" alt="Error" class="error-icon">
+        <p>${message}</p>
     `;
             document.getElementById('error-container').appendChild(errorDiv);
             errorDiv.style.display = 'block';
