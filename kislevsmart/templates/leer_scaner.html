@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -7,6 +8,7 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/leerscaner.css' %}">
 </head>
+
 <body>
     <div class="container">
         <h1>Escanear Código QR</h1>
@@ -17,7 +19,7 @@
             </div>
             <p id="message">Coloca el código QR dentro del marco</p>
             <div id="error-container"></div>
-        </div>  
+        </div>
         <a href="{% url 'control_porteria' %}" class="return-button">Regresar</a>
     </div>
 
@@ -25,6 +27,7 @@
     <script>
         const maxFailedAttempts = 5;
         let failedAttempts = 0;
+        let isShowingError = false; // Variable para controlar mensajes de error
 
         async function startCamera() {
             const codeReader = new ZXing.BrowserQRCodeReader();
@@ -76,15 +79,29 @@
         }
 
         function showErrorMessage(message) {
+            // Si ya hay un error mostrándose, no mostrar otro
+            if (isShowingError) return;
+
+            // Remover cualquier mensaje de error existente
+            const existing = document.querySelectorAll('.error-message');
+            existing.forEach(el => el.remove());
+
+            isShowingError = true;
+
             const errorDiv = document.createElement('div');
             errorDiv.className = 'error-message';
             errorDiv.innerHTML = `
-                <img src="https://fonts.gstatic.com/s/i/materialicons/error/v6/24px.svg" alt="Error" class="error-icon">
-                <p>${message}</p>
-            `;
+        <img src="https://fonts.gstatic.com/s/i/materialicons/error/v6/24px.svg" alt="Error" class="error-icon">
+        <p>${message}</p>
+    `;
             document.getElementById('error-container').appendChild(errorDiv);
             errorDiv.style.display = 'block';
-            setTimeout(() => errorDiv.remove(), 3000);
+
+            // Remover el mensaje después de 3 segundos y permitir nuevos mensajes
+            setTimeout(() => {
+                errorDiv.remove();
+                isShowingError = false;
+            }, 3000);
         }
 
         document.addEventListener('DOMContentLoaded', startCamera);
@@ -97,4 +114,5 @@
         });
     </script>
 </body>
+
 </html>
