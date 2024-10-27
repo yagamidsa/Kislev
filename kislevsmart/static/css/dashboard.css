@@ -344,13 +344,116 @@ select:hover {
 
 
 
+/* Prevenir scroll horizontal y fijar el menú lateral */
+html, body {
+    overflow-x: hidden;
+    position: relative;
+    width: 100%;
+}
 
+/* Contenedor principal */
+.flex.h-screen {
+    min-height: 100vh;
+    width: 100%;
+    position: relative;
+    overflow-x: hidden;
+}
 
+/* Ajustes del menú lateral */
+@media (max-width: 768px) {
+    aside {
+        position: fixed;
+        top: 0;
+        left: -100%;
+        width: 80%;
+        height: 100vh;
+        z-index: 50;
+        transition: left 0.3s ease;
+        overflow-y: auto;
+    }
 
+    aside.show-menu {
+        left: 0;
+    }
 
+    /* Overlay para el menú */
+    .menu-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 49;
+    }
 
+    .menu-overlay.show {
+        display: block;
+    }
 
+    /* Contenedor principal cuando el menú está abierto */
+    .menu-open {
+        overflow: hidden;
+    }
+}
 
+/* Ajustes responsivos para el contenido */
+@media (max-width: 768px) {
+    /* Contenedor principal del contenido */
+    .flex-1.flex.flex-col {
+        width: 100%;
+        padding-left: 0;
+        padding-right: 0;
+    }
 
+    /* Ajustes de grid y tarjetas */
+    .grid {
+        margin-left: 0;
+        margin-right: 0;
+    }
 
+    .glass-effect {
+        margin-left: 0;
+        margin-right: 0;
+        width: 100%;
+    }
 
+    /* Ajuste para el selector de fecha */
+    .flex.items-center.space-x-4 {
+        padding: 0;
+    }
+
+    /* Ajuste para los contenedores de estadísticas */
+    .grid.gap-6 {
+        gap: 1rem;
+        padding: 0;
+    }
+
+    /* Ajuste para el contenedor del gráfico */
+    .chart-container {
+        width: 100%;
+        overflow-x: hidden;
+    }
+}
+
+/* Ajustes adicionales para prevenir scroll horizontal */
+.slide-content {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+
+@media (max-width: 768px) {
+    /* Ajustes para las tarjetas de estadísticas en móvil */
+    .stat-card {
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    /* Ajuste para el contenedor de las categorías */
+    .grid.grid-cols-1.sm\:grid-cols-2.md\:grid-cols-3.gap-4 {
+        padding: 0;
+    }
+}

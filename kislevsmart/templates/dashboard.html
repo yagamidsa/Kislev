@@ -679,9 +679,53 @@
         });
 
 
+        // Agregar después de tu script actual
+        document.addEventListener('DOMContentLoaded', function () {
+            const menuButton = document.getElementById('menuButton');
+            const aside = document.querySelector('aside');
+            const body = document.body;
+
+            // Crear overlay para el menú
+            const overlay = document.createElement('div');
+            overlay.classList.add('menu-overlay');
+            body.appendChild(overlay);
+
+            // Toggle menú
+            function toggleMenu() {
+                aside.classList.toggle('show-menu');
+                overlay.classList.toggle('show');
+                body.classList.toggle('menu-open');
+            }
+
+            // Event listeners
+            menuButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleMenu();
+            });
+
+            // Cerrar menú al hacer click en el overlay
+            overlay.addEventListener('click', toggleMenu);
+
+            // Cerrar menú al seleccionar una opción
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    if (window.innerWidth <= 768) {
+                        toggleMenu();
+                    }
+                });
+            });
+
+            // Cerrar menú al redimensionar la ventana a desktop
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 768 && aside.classList.contains('show-menu')) {
+                    toggleMenu();
+                }
+            });
+        });
+
 
         // grafico horas * semana
-       
+
 
     </script>
 </body>
