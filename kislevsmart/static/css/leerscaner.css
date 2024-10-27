@@ -47,6 +47,13 @@ h1 {
     border-radius: 30px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     background-color: #000;
+    z-index: 1;
+}
+
+
+#reader {
+    position: relative;
+    z-index: 1;
 }
 
 #preview {
@@ -70,6 +77,7 @@ h1 {
     border: 3px solid rgba(255,255,255,0.8);
     border-radius: 30px;
     box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);
+    z-index: 2;
 }
 
 .scanner-line {

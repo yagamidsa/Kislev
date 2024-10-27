@@ -11,7 +11,7 @@
     <div class="container">
         <h1>Escanear Código QR</h1>
         <div class="scanner-container">
-            <video id="preview" playsinline autoplay muted></video>
+            <div id="reader"></div>
             <div class="scanner-frame">
                 <div class="scanner-line"></div>
             </div>
@@ -20,108 +20,28 @@
         <a href="{% url 'control_porteria' %}" class="return-button">Regresar</a>
     </div>
 
-    <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
     <script>
-        let scanner = null;
-        let currentStream = null;
-
-        async function initializeScanner() {
-            const videoElement = document.getElementById('preview');
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
+        function onScanSuccess(decodedText, decodedResult) {
             try {
-                if (isIOS) {
-                    // Configuración específica para iOS
-                    const stream = await navigator.mediaDevices.getUserMedia({
-                        video: {
-                            facingMode: { exact: "environment" },
-                            width: { ideal: 1280 },
-                            height: { ideal: 720 }
-                        }
-                    });
-
-                    currentStream = stream;
-                    videoElement.srcObject = stream;
-
-                    // Esperar a que el video esté listo
-                    await new Promise((resolve) => {
-                        videoElement.onloadedmetadata = () => {
-                            resolve();
-                        };
-                    });
-
-                    // Configuración optimizada para iOS
-                    scanner = new Instascan.Scanner({
-                        video: videoElement,
-                        mirror: false,
-                        backgroundScan: false,
-                        scanPeriod: 3,
-                        captureImage: true,
-                        refractoryPeriod: 3000,
-                        resolution: 1280
-                    });
-
-                    await scanner.start();
+                const url = new URL(decodedText);
+                const baseUrl = window.location.origin;
+                
+                if (url.pathname.startsWith("/validar_qr/")) {
+                    const fullUrl = `${baseUrl}${url.pathname}${url.search ? url.search + '&' : '?'}source=scan`;
+                    window.location.href = fullUrl;
                 } else {
-                    // Configuración para Android
-                    scanner = new Instascan.Scanner({
-                        video: videoElement,
-                        mirror: false,
-                        backgroundScan: false,
-                        scanPeriod: 3
-                    });
-
-                    const cameras = await Instascan.Camera.getCameras();
-                    
-                    if (cameras.length > 0) {
-                        const rearCamera = cameras[cameras.length - 1];
-                        await scanner.start(rearCamera);
-                    } else {
-                        throw new Error('No se encontraron cámaras');
-                    }
+                    showErrorMessage("Código QR no válido");
                 }
-
-                // Mejorar el enfoque y brillo para iOS
-                if (isIOS && currentStream) {
-                    const videoTrack = currentStream.getVideoTracks()[0];
-                    if (videoTrack) {
-                        try {
-                            await videoTrack.applyConstraints({
-                                advanced: [
-                                    { exposure: { ideal: -1.0 } }, // Ajustar exposición
-                                    { brightness: { ideal: 1.0 } }, // Ajustar brillo
-                                    { contrast: { ideal: 1.0 } },   // Ajustar contraste
-                                    { focusMode: "continuous" }     // Enfoque automático continuo
-                                ]
-                            });
-                        } catch (e) {
-                            console.log('No se pudieron aplicar configuraciones avanzadas:', e);
-                        }
-                    }
-                }
-
-                // Configurar el escáner para ambas plataformas
-                scanner.addListener('scan', function(content) {
-                    try {
-                        const url = new URL(content);
-                        const baseUrl = window.location.origin;
-                        
-                        if (url.pathname.startsWith("/validar_qr/")) {
-                            const fullUrl = `${baseUrl}${url.pathname}${url.search ? url.search + '&' : '?'}source=scan`;
-                            window.location.href = fullUrl;
-                        } else {
-                            showErrorMessage("Código QR no válido");
-                        }
-                    } catch (e) {
-                        console.error('Error procesando QR:', e);
-                        showErrorMessage("QR no válido");
-                    }
-                });
-
             } catch (e) {
-                console.error('Error:', e);
-                showErrorMessage("Por favor, permite el acceso a la cámara");
+                console.error('Error procesando QR:', e);
+                showErrorMessage("QR no válido");
             }
+        }
+
+        function onScanFailure(error) {
+            // No necesitamos mostrar errores de escaneo fallido
+            // console.warn(`Escaneo fallido = ${error}`);
         }
 
         function showErrorMessage(message) {
@@ -138,27 +58,63 @@
             setTimeout(() => errorDiv.remove(), 3000);
         }
 
-        // Inicializar cuando el vídeo esté listo
-        document.addEventListener('DOMContentLoaded', () => {
-            const video = document.getElementById('preview');
-            video.addEventListener('play', () => {
-                console.log('Video comenzó a reproducirse');
-            });
-            video.addEventListener('error', (e) => {
-                console.error('Error en el video:', e);
-            });
-            initializeScanner();
-        });
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar el escáner
+            const html5QrcodeScanner = new Html5QrcodeScanner(
+                "reader", 
+                { 
+                    fps: 10, 
+                    qrbox: { width: 250, height: 250 },
+                    aspectRatio: 1.0,
+                    showTorchButtonIfSupported: true,
+                    formatsToSupport: [ Html5QrcodeSupportedFormats.QR_CODE ],
+                    rememberLastUsedCamera: true
+                }
+            );
 
-        // Limpiar recursos
-        window.addEventListener('beforeunload', () => {
-            if (scanner) {
-                scanner.stop();
-            }
-            if (currentStream) {
-                currentStream.getTracks().forEach(track => track.stop());
-            }
+            html5QrcodeScanner.render(onScanSuccess, onScanFailure);
         });
     </script>
+
+    <style>
+        /* Estilos adicionales para el nuevo escáner */
+        #reader {
+            width: 100% !important;
+            border: none !important;
+            background: none !important;
+        }
+
+        #reader__scan_region {
+            background: none !important;
+        }
+
+        #reader__scan_region img {
+            display: none;
+        }
+
+        #reader__camera_selection {
+            width: 100% !important;
+            max-width: 100% !important;
+            background: rgba(255, 255, 255, 0.1) !important;
+            border: none !important;
+            color: white !important;
+            padding: 8px !important;
+            border-radius: 8px !important;
+            margin-bottom: 10px !important;
+        }
+
+        #reader__camera_permission_button {
+            background: linear-gradient(to right, #e100ff, #7f00ff) !important;
+            border: none !important;
+            padding: 10px 20px !important;
+            border-radius: 20px !important;
+            color: white !important;
+            font-weight: bold !important;
+        }
+
+        #reader * {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif !important;
+        }
+    </style>
 </body>
 </html>
