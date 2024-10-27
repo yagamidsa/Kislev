@@ -30,61 +30,56 @@
                 const videoElement = document.getElementById('preview');
                 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
-                // Configuración básica del scanner
-                scanner = new Instascan.Scanner({
-                    video: videoElement,
-                    mirror: false,
-                    captureImage: false,
-                    backgroundScan: true,
-                    scanPeriod: 1  // Reducir el período de escaneo
-                });
-
-                scanner.addListener('scan', function(content) {
-                    try {
-                        const url = new URL(content);
-                        const baseUrl = window.location.origin;
-                        
-                        if (url.pathname.startsWith("/validar_qr/")) {
-                            const fullUrl = `${baseUrl}${url.pathname}${url.search ? url.search + '&' : '?'}source=scan`;
-                            window.location.href = fullUrl;
-                        } else {
-                            showErrorMessage("Código QR no válido");
-                        }
-                    } catch (e) {
-                        console.error('Error procesando QR:', e);
-                        showErrorMessage("QR no válido");
-                    }
-                });
-
                 if (isIOS) {
-                    // Código específico para iOS
                     try {
-                        // Primero conseguir acceso a la cámara
+                        // Primero obtenemos acceso a la cámara con configuraciones específicas para iOS
                         const stream = await navigator.mediaDevices.getUserMedia({
-                            video: { 
+                            video: {
                                 facingMode: { exact: "environment" },
-                                width: { ideal: 1280 },
-                                height: { ideal: 720 }
+                                width: { min: 1280, ideal: 1920, max: 2560 },
+                                height: { min: 720, ideal: 1080, max: 1440 },
+                                aspectRatio: { ideal: 1.777778 },
+                                frameRate: { ideal: 30, max: 60 }
                             }
                         });
 
                         videoElement.srcObject = stream;
+                        await videoElement.play();
+
+                        // Configurar el scanner después de que el video esté listo
+                        scanner = new Instascan.Scanner({
+                            video: videoElement,
+                            mirror: false,
+                            backgroundScan: false,
+                            scanPeriod: 3,
+                            captureImage: true,
+                            refractoryPeriod: 1000,
+                            resolution: 1280
+                        });
+
+                        scanner.addListener('scan', handleScan);
                         await scanner.start(null);
+
                         console.log('Cámara iOS iniciada');
-                    } catch (e) {
-                        // Si falla el método anterior, intentar con Instascan directamente
-                        const cameras = await Instascan.Camera.getCameras();
-                        if (cameras.length > 0) {
-                            await scanner.start(cameras[cameras.length - 1]);
-                        } else {
-                            throw new Error('No se encontraron cámaras en iOS');
-                        }
+                    } catch (iosError) {
+                        console.error('Error iOS:', iosError);
+                        throw iosError;
                     }
                 } else {
-                    // Código para Android (que ya sabemos que funciona)
+                    // Configuración para Android
+                    scanner = new Instascan.Scanner({
+                        video: videoElement,
+                        mirror: false,
+                        backgroundScan: false,
+                        scanPeriod: 3
+                    });
+
+                    scanner.addListener('scan', handleScan);
+
                     const cameras = await Instascan.Camera.getCameras();
                     if (cameras.length > 0) {
                         await scanner.start(cameras[cameras.length - 1]);
+                        console.log('Cámara Android iniciada');
                     } else {
                         throw new Error('No se encontraron cámaras');
                     }
@@ -93,8 +88,25 @@
                 videoElement.classList.add('rear-camera');
 
             } catch (e) {
-                console.error('Error:', e);
+                console.error('Error general:', e);
                 showErrorMessage("Error al acceder a la cámara");
+            }
+        }
+
+        function handleScan(content) {
+            try {
+                const url = new URL(content);
+                const baseUrl = window.location.origin;
+                
+                if (url.pathname.startsWith("/validar_qr/")) {
+                    const fullUrl = `${baseUrl}${url.pathname}${url.search ? url.search + '&' : '?'}source=scan`;
+                    window.location.href = fullUrl;
+                } else {
+                    showErrorMessage("Código QR no válido");
+                }
+            } catch (e) {
+                console.error('Error procesando QR:', e);
+                showErrorMessage("QR no válido");
             }
         }
 
