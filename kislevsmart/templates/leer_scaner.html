@@ -31,26 +31,44 @@
 
             try {
                 if (isIOS) {
-                    // Enfoque específico para iOS
+                    // Configuración específica para iOS
                     const stream = await navigator.mediaDevices.getUserMedia({
                         video: {
-                            facingMode: { exact: "environment" }
+                            facingMode: { exact: "environment" },
+                            width: { ideal: 1280 },
+                            height: { ideal: 720 }
                         }
                     });
 
                     currentStream = stream;
                     videoElement.srcObject = stream;
 
-                    // Configurar scanner después de obtener el stream
-                    scanner = new Instascan.Scanner({
-                        video: videoElement,
-                        mirror: false
+                    // Esperar a que el video esté listo
+                    await new Promise((resolve) => {
+                        videoElement.onloadedmetadata = () => {
+                            resolve();
+                        };
                     });
-                } else {
-                    // Enfoque para Android y otros
+
+                    // Configuración optimizada para iOS
                     scanner = new Instascan.Scanner({
                         video: videoElement,
-                        mirror: false
+                        mirror: false,
+                        backgroundScan: false,
+                        scanPeriod: 3,
+                        captureImage: true,
+                        refractoryPeriod: 3000,
+                        resolution: 1280
+                    });
+
+                    await scanner.start();
+                } else {
+                    // Configuración para Android
+                    scanner = new Instascan.Scanner({
+                        video: videoElement,
+                        mirror: false,
+                        backgroundScan: false,
+                        scanPeriod: 3
                     });
 
                     const cameras = await Instascan.Camera.getCameras();
@@ -60,6 +78,25 @@
                         await scanner.start(rearCamera);
                     } else {
                         throw new Error('No se encontraron cámaras');
+                    }
+                }
+
+                // Mejorar el enfoque y brillo para iOS
+                if (isIOS && currentStream) {
+                    const videoTrack = currentStream.getVideoTracks()[0];
+                    if (videoTrack) {
+                        try {
+                            await videoTrack.applyConstraints({
+                                advanced: [
+                                    { exposure: { ideal: -1.0 } }, // Ajustar exposición
+                                    { brightness: { ideal: 1.0 } }, // Ajustar brillo
+                                    { contrast: { ideal: 1.0 } },   // Ajustar contraste
+                                    { focusMode: "continuous" }     // Enfoque automático continuo
+                                ]
+                            });
+                        } catch (e) {
+                            console.log('No se pudieron aplicar configuraciones avanzadas:', e);
+                        }
                     }
                 }
 
@@ -101,8 +138,17 @@
             setTimeout(() => errorDiv.remove(), 3000);
         }
 
-        // Inicializar
-        document.addEventListener('DOMContentLoaded', initializeScanner);
+        // Inicializar cuando el vídeo esté listo
+        document.addEventListener('DOMContentLoaded', () => {
+            const video = document.getElementById('preview');
+            video.addEventListener('play', () => {
+                console.log('Video comenzó a reproducirse');
+            });
+            video.addEventListener('error', (e) => {
+                console.error('Error en el video:', e);
+            });
+            initializeScanner();
+        });
 
         // Limpiar recursos
         window.addEventListener('beforeunload', () => {
