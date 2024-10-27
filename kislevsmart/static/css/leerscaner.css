@@ -68,28 +68,33 @@ h1 {
     box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
     border: 1px solid rgba(255, 255, 255, 0.18);
     display: flex;
-    flex-direction: column;  /* Cambiado a columna */
-    align-items: center;     /* Centrado horizontal */
-    justify-content: center;
-    gap: 12px;
+    flex-direction: column;
+    align-items: center;     /* Centra los elementos horizontalmente */
+    justify-content: center; /* Centra los elementos verticalmente */
+    gap: 8px;
     z-index: 1000;
     animation: slideDown 0.3s ease-out;
+    text-align: center;      /* Asegura que todo el texto esté centrado */
 }
+
 
 .error-message p {
     color: #ffffff;
     font-weight: 500;
     font-size: 15px;
-    text-align: center;
+    width: 100%;            /* Asegura que el párrafo tome todo el ancho */
+    text-align: center;     /* Centra el texto */
     margin: 0;
 }
 
-
-.error-icon {
+.error-message .error-icon {
     width: 24px;
     height: 24px;
-    filter: invert(31%) sepia(93%) saturate(7391%) hue-rotate(322deg) brightness(95%) contrast(111%);  /* Esto hará el icono rosa */
+    filter: invert(31%) sepia(93%) saturate(7391%) hue-rotate(322deg) brightness(95%) contrast(111%);
+    display: block;         /* Hace que el icono sea un bloque */
+    margin: 0 auto;        /* Centra el icono */
 }
+
 
 @keyframes slideDown {
     from {
