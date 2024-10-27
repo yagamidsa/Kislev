@@ -7,647 +7,69 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ sala.nombre }} - Calendario</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css">
+    <link rel="stylesheet" href="{% static 'css/calendario.css' %}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/locale/es.js"></script>
-    <style>
-        :root {
-            --primary-color: #be185d;
-            /* pink-700 */
-            --primary-hover: #9d174d;
-            /* pink-800 */
-            --neon-pink: rgba(190, 24, 93, 0.6);
-            --background-color: #050e2d;
-            --card-background: rgba(255, 255, 255, 0.05);
-            --text-color: rgba(255, 255, 255, 0.9);
-            --text-secondary: rgba(255, 255, 255, 0.6);
-            --border-color: rgba(255, 255, 255, 0.1);
-            --modal-overlay: rgba(0, 0, 0, 0.7);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
-
-        body {
-            background-color: var(--background-color);
-            background-image:
-                radial-gradient(at 40% 20%, rgba(28, 117, 238, 0.1) 0px, transparent 50%),
-                radial-gradient(at 80% 0%, rgba(50, 255, 228, 0.1) 0px, transparent 50%),
-                radial-gradient(at 0% 50%, rgba(255, 255, 255, 0.1) 0px, transparent 50%);
-            color: var(--text-color);
-            line-height: 1.5;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-            position: relative;
-        }
-
-        /* Header Styles */
-        .header-container {
-            background: var(--card-background);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            border: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .header-title {
-            text-align: center;
-            flex-grow: 1;
-        }
-
-        .header-title h1 {
-            font-size: 2rem;
-            background: linear-gradient(90deg, #ffffff 0%, rgba(255, 255, 255, 0.8) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 0.5rem;
-        }
-
-        .header-title p {
-            color: var(--text-secondary);
-        }
-
-        .admin-link {
-            background: var(--primary-color);
-            color: white;
-            padding: 0.75rem 1.25rem;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .admin-link:hover {
-            background: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        /* Calendar Container */
-        .calendar-container {
-            background: var(--card-background);
-            backdrop-filter: blur(10px);
-            border-radius: 30px;
-            padding: 2rem;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-
-        /* FullCalendar Customization */
-        .fc {
-            background: transparent;
-            color: var(--text-color);
-        }
-
-        /* AGREGAR AQUÍ LOS NUEVOS ESTILOS */
-        /* Asegurar que no haya colores verdes */
-        .fc table {
-            background: transparent !important;
-        }
-
-        /* Sobrescribir el color verde de los eventos */
-        .fc-event,
-        .fc-event-dot {
-            background-color: var(--primary-color) !important;
-            border-color: var(--primary-color) !important;
-        }
-
-        /* Remover el fondo verde de las celdas disponibles */
-        .fc-nonbusiness,
-        .fc-bgevent {
-            background: transparent !important;
-        }
-
-        /* Asegurar que las celdas del calendario sean transparentes */
-        .fc-day-grid-event {
-            background-color: var(--primary-color) !important;
-            border-color: var(--primary-color) !important;
-        }
-
-        /* Forzar transparencia en el fondo de las celdas */
-        .fc-highlight {
-            background: transparent !important;
-        }
-
-        .fc-state-highlight {
-            background: transparent !important;
-        }
-
-        /* Asegurar que el contenedor de días sea transparente */
-        .fc-row .fc-bgevent-skeleton,
-        .fc-row .fc-highlight-skeleton {
-            background: transparent !important;
-        }
-
-        .fc-bgevent,
-        .fc-nonbusiness {
-            background: transparent !important;
-        }
-
-        /* Continuar con el resto de tus estilos... */
-        .fc-view {
-            overflow: hidden;
-            border-radius: 20px;
-            background: transparent !important;
-        }
-
-
-
-        .fc-view {
-            overflow: hidden;
-            border-radius: 20px;
-            background: transparent !important;
-        }
-
-        /* Remove white borders */
-
-
-        /* Estilos para los bordes de las celdas - más sutiles */
-        .fc td {
-            border: 1px solid rgba(255, 255, 255, 0.05) !important;
-            /* borde más sutil */
-        }
-
-        /* Asegurar que las celdas del calendario tengan bordes consistentes */
-        .fc-day {
-            border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        }
-
-        /* Mantener los bordes en el grid */
-        .fc-row {
-            border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
-        }
-
-        .fc-row .fc-content-skeleton td {
-            border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
-        }
-
-        /* Asegurar que los bordes sean visibles en todas las vistas */
-        .fc-time-grid .fc-slats td {
-            border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
-        }
-
-        /* Bordes para los encabezados */
-        .fc th {
-            border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        }
-
-        /* Bordes externos del calendario */
-        .fc-view>table {
-            border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        }
-
-
-        /* Toolbar styling */
-        .fc-toolbar {
-            padding: 1rem !important;
-            margin-bottom: 2rem !important;
-        }
-
-        .fc-toolbar .fc-button {
-            background: var(--primary-color) !important;
-            border: none !important;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
-            padding: 0.75rem 1.25rem !important;
-            border-radius: 12px !important;
-            transition: all 0.3s ease !important;
-            color: white !important;
-            margin: 0 0.5rem !important;
-        }
-
-        .fc-toolbar .fc-button:hover {
-            background: var(--primary-hover) !important;
-            transform: translateY(-2px) !important;
-        }
-
-        /* Calendar cells */
-        .fc-day {
-            background: transparent !important;
-            transition: all 0.3s ease !important;
-            border: 2px solid transparent !important;
-        }
-
-        .fc-day:hover {
-            background-color: rgba(190, 24, 93, 0.1) !important;
-            cursor: pointer;
-        }
-
-        /* Scroller container */
-        .fc-scroller.fc-day-grid-container {
-            background: transparent !important;
-        }
-
-        /* Available dates */
-        .fc-future {
-            cursor: pointer;
-            border: 2px solid rgba(190, 24, 93, 0.3) !important;
-            box-shadow: 0 0 10px rgba(190, 24, 93, 0.2) !important;
-        }
-
-        .fc-future:hover {
-            background: rgba(190, 24, 93, 0.1) !important;
-            box-shadow: 0 0 15px rgba(190, 24, 93, 0.3) !important;
-            transform: scale(1.02);
-        }
-
-        /* Headers */
-        .fc-day-header {
-            padding: 1rem !important;
-            background: rgba(0, 0, 0, 0.2) !important;
-            border: none !important;
-            color: white !important;
-            text-transform: uppercase;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .fc-day-number {
-            color: var(--text-color) !important;
-            padding: 0.5rem !important;
-            font-weight: 500;
-        }
-
-        /* Today highlighting */
-        .fc-today {
-            background-color: rgba(190, 24, 93, 0.1) !important;
-            border-color: var(--primary-color) !important;
-        }
-
-        /* Event styling */
-        .fc-event {
-            background-color: var(--primary-color) !important;
-            border: none !important;
-            border-radius: 8px !important;
-            padding: 2px 4px !important;
-            font-size: 0.85rem !important;
-        }
-
-        .fc-more {
-            color: var(--text-color) !important;
-        }
-
-        /* Transparent containers */
-        .fc-view-container {
-            background: transparent !important;
-        }
-
-        .fc-content-skeleton {
-            background: transparent !important;
-        }
-
-        .fc-bg {
-            background: transparent !important;
-        }
-
-        .fc-row .fc-content-skeleton {
-            background: transparent !important;
-        }
-
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--modal-overlay);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(20px);
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            padding: 2rem;
-            width: 90%;
-            max-width: 500px;
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
-            animation: modalSlideIn 0.3s ease;
-        }
-
-        @keyframes modalSlideIn {
-            from {
-                transform: translateY(-20px);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 1rem;
-        }
-
-        .modal-header h3 {
-            color: var(--text-color);
-            font-size: 1.25rem;
-            font-weight: 500;
-        }
-
-        .close-modal {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: var(--text-color);
-            cursor: pointer;
-            padding: 0.5rem;
-            transition: all 0.3s ease;
-            opacity: 0.7;
-        }
-
-        .close-modal:hover {
-            opacity: 1;
-            transform: scale(1.1);
-        }
-
-        .horarios-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-            margin: 1rem 0;
-        }
-
-        .horario-slot {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
-            border-radius: 15px;
-            padding: 1rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            color: white;
-        }
-
-        .horario-slot:hover {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 15px rgba(190, 24, 93, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .horario-slot.selected {
-            background: var(--primary-color);
-            border-color: transparent;
-            color: white;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .modal-footer {
-            margin-top: 1.5rem;
-            display: flex;
-            justify-content: flex-end;
-            gap: 1.5rem;
-            border-top: 1px solid var(--border-color);
-            padding-top: 1rem;
-        }
-
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border-radius: 12px;
-            border: none;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            color: white;
-        }
-
-        .btn-primary {
-            background: var(--primary-color);
-        }
-
-        .btn-primary:hover:not(.disabled) {
-            background: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-        .btn.disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            background: #666;
-        }
-
-        /* Loading Spinner */
-        .loading-spinner {
-            display: none;
-            text-align: center;
-            padding: 2rem;
-        }
-
-        .loading-spinner::after {
-            content: '';
-            display: inline-block;
-            width: 30px;
-            height: 30px;
-            border: 3px solid rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            border-top-color: var(--primary-color);
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* Additional FullCalendar Overrides */
-        .fc-unthemed td.fc-today {
-            background: rgba(190, 24, 93, 0.1) !important;
-        }
-
-        .fc-unthemed .fc-divider,
-        .fc-unthemed .fc-popover .fc-header,
-        .fc-unthemed .fc-list-heading td {
-            background: rgba(0, 0, 0, 0.2) !important;
-        }
-
-        .fc-unthemed .fc-popover {
-            background: var(--card-background) !important;
-            border: 1px solid var(--border-color) !important;
-            backdrop-filter: blur(10px);
-        }
-
-        /* State-specific styles */
-        .fc-state-default {
-            text-shadow: none !important;
-            box-shadow: none !important;
-        }
-
-        .fc-state-hover,
-        .fc-state-down,
-        .fc-state-active,
-        .fc-state-disabled {
-            color: white !important;
-            background-color: var(--primary-hover) !important;
-        }
-
-        /* Time grid specific styles */
-        .fc-time-grid-event {
-            border-radius: 8px !important;
-        }
-
-        .fc-time {
-            color: white !important;
-            font-weight: 500 !important;
-        }
-
-        .fc-title {
-            font-weight: 500 !important;
-        }
-
-        /* Week/Day view specific */
-        .fc-widget-header {
-            background: rgba(0, 0, 0, 0.2) !important;
-            border: none !important;
-        }
-
-        .fc-widget-content {
-            border-color: var(--border-color) !important;
-        }
-
-        /* Responsive Styles */
-        @media (max-width: 768px) {
-            .container {
-                margin: 1rem auto;
-            }
-
-            .header-container {
-                padding: 1rem;
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .header-title h1 {
-                font-size: 1.5rem;
-            }
-
-            .calendar-container {
-                padding: 1rem;
-            }
-
-            .modal-content {
-                width: 95%;
-                padding: 1.5rem;
-                margin: 1rem;
-                max-height: 80vh;
-            }
-
-            .horarios-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .modal-footer {
-                flex-direction: column-reverse;
-                gap: 1rem;
-            }
-
-            .modal-footer .btn {
-                width: 100%;
-            }
-
-            .fc-toolbar {
-                display: flex;
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .fc-toolbar .fc-left,
-            .fc-toolbar .fc-right,
-            .fc-toolbar .fc-center {
-                display: flex;
-                justify-content: center;
-                width: 100%;
-                margin: 0 !important;
-                float: none !important;
-            }
-
-            .fc-toolbar .fc-left>*,
-            .fc-toolbar .fc-right>*,
-            .fc-toolbar .fc-center>* {
-                float: none !important;
-                margin: 0 4px !important;
-            }
-
-            .fc-toolbar .fc-button {
-                min-width: 120px;
-                justify-content: center;
-            }
-        }
-    </style>
 </head>
 
 <body>
+    <!-- Elemento para el efecto de luz ambiental -->
+    <div class="ambient-light"></div>
+
     <div class="container">
         <div class="header-container">
-            <a href="{% url 'visor_admin' %}" class="admin-link">Panel Admin</a>
+            <a href="{% url 'visor_admin' %}" class="admin-link">
+                <span class="icon">👑</span>
+                <span class="text">Panel Admin</span>
+            </a>
             <div class="header-title">
                 <h1>{{ sala.nombre }}</h1>
-                <p>Calendario de disponibilidad</p>
+                <p class="subtitle">Calendario de disponibilidad</p>
+                <div class="decoration-line"></div>
             </div>
         </div>
 
         <div class="calendar-container">
-            <div id="calendario"></div>
+            <div class="calendar-wrapper">
+                <div id="calendario"></div>
+            </div>
         </div>
     </div>
 
-    <!-- Modal de horarios -->
+    <!-- Modal de horarios mejorado -->
     <div id="horariosModal" class="modal">
+        <div class="modal-backdrop"></div>
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Horarios Disponibles - <span id="selectedDateText"></span></h3>
-                <button class="close-modal">&times;</button>
+                <h3>
+                    <span class="icon">📅</span>
+                    Horarios Disponibles - <span id="selectedDateText"></span>
+                </h3>
+                <button class="close-modal">
+                    <span class="icon">×</span>
+                </button>
             </div>
 
-            <div id="loadingSpinner" class="loading-spinner"></div>
-            <div id="horariosDisponibles" class="horarios-grid"></div>
+            <div class="modal-body">
+                <div id="loadingSpinner" class="loading-spinner">
+                    <div class="spinner"></div>
+                    <p>Cargando horarios...</p>
+                </div>
+
+                <div id="horariosDisponibles" class="horarios-grid"></div>
+            </div>
 
             <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
-                <button id="btnReservar" class="btn btn-primary" onclick="realizarReserva()">Reservar</button>
+                <button class="btn btn-secondary" onclick="closeModal()">
+                    <span class="icon">↩</span>
+                    Cancelar
+                </button>
+                <button id="btnReservar" class="btn btn-primary" onclick="realizarReserva()">
+                    <span class="icon">✓</span>
+                    Reservar
+                </button>
             </div>
         </div>
     </div>
@@ -658,6 +80,29 @@
         let selectedHorario = null;
 
         $(document).ready(function () {
+            initializeCalendar();
+            setupEventListeners();
+            removeGreenBackground();
+        });
+
+        // Función para eliminar fondos verdes
+        function removeGreenBackground() {
+            // Remover fondos verdes de todas las celdas
+            $('.fc td, .fc-bgevent, .fc-nonbusiness, .fc-highlight').css({
+                'background': 'transparent !important',
+                'background-color': 'transparent !important'
+            });
+
+            // Aplicar estilos periódicamente para asegurar que no aparezcan fondos verdes
+            setInterval(() => {
+                $('.fc td, .fc-bgevent, .fc-nonbusiness, .fc-highlight').css({
+                    'background': 'transparent !important',
+                    'background-color': 'transparent !important'
+                });
+            }, 100);
+        }
+
+        function initializeCalendar() {
             $('#calendario').fullCalendar({
                 header: {
                     left: 'prev,next today',
@@ -672,90 +117,298 @@
                 editable: false,
                 eventLimit: true,
                 events: '/api/sala/{{ sala.id }}/reservas/',
-                dayClick: function (date, jsEvent, view) {
-                    selectedDate = date;
-                    openModal(date);
+                dayClick: handleDayClick,
+                longPressDelay: 100,
+                eventLongPressDelay: 100,
+                selectLongPressDelay: 100,
+                // Personalización de días disponibles con verde neón
+                dayRender: function (date, cell) {
+                    // Remover cualquier fondo verde
+                    cell.css('background', 'transparent');
+
+                    // Si la fecha es futura, aplicar borde verde neón
+                    if (date.isAfter(moment(), 'day')) {
+                        cell.css({
+                            'border': '2px solid #22c55e', // Verde neón
+                            'box-shadow': '0 0 10px rgba(34, 197, 94, 0.4), 0 0 20px rgba(34, 197, 94, 0.2)',
+                            'position': 'relative',
+                            'z-index': '1',
+                            'background': 'transparent'
+                        });
+                    }
+                },
+                viewRender: function (view, element) {
+                    removeGreenBackground();
+
+                    // Mejorar la apariencia de días disponibles
+                    $('.fc-future').each(function () {
+                        $(this).css({
+                            'transition': 'all 0.3s ease',
+                            'cursor': 'pointer',
+                            'background': 'transparent'
+                        });
+                    });
                 }
             });
+        }
 
+        function setupEventListeners() {
             // Event listeners para el modal
-            $('.close-modal, .modal').click(function (e) {
-                if (e.target === this) {
-                    closeModal();
-                }
-            });
-
-            $('.modal-content').click(function (e) {
+            $('.close-modal, .modal-backdrop').on('click', closeModal);
+            $('.modal-content').on('click', function (e) {
                 e.stopPropagation();
             });
 
-            // Handler para el botón de reservar
-            $('#btnReservar').click(function () {
-                realizarReserva();
+            // Mejorar hover en días disponibles con verde neón
+            $(document).on('mouseenter', '.fc-future', function () {
+                $(this).css({
+                    'border-color': '#16a34a', // Verde más intenso para hover
+                    'box-shadow': '0 0 15px rgba(34, 197, 94, 0.6), 0 0 30px rgba(34, 197, 94, 0.3)',
+                    'transform': 'scale(1.02)',
+                    'background': 'transparent'
+                });
+            }).on('mouseleave', '.fc-future', function () {
+                $(this).css({
+                    'border-color': '#22c55e', // Volver al verde neón original
+                    'box-shadow': '0 0 10px rgba(34, 197, 94, 0.4), 0 0 20px rgba(34, 197, 94, 0.2)',
+                    'transform': 'scale(1)',
+                    'background': 'transparent'
+                });
             });
-        });
+
+            // Soporte para dispositivos táctiles
+            if ('ontouchstart' in window) {
+                setupTouchHandlers();
+            }
+
+            // Manejar teclas de escape
+            $(document).on('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    closeModal();
+                }
+            });
+        }
+
+        // Modificar la función setupTouchHandlers
+        function setupTouchHandlers() {
+            let touchStartTime;
+            const LONG_PRESS_DURATION = 500;
+
+            // Prevenir el scroll solo en elementos específicos
+            $('.fc-day').on('touchstart', function (e) {
+                // No prevenir el comportamiento por defecto en touchstart
+                touchStartTime = Date.now();
+                if ($(this).hasClass('fc-future')) {
+                    $(this).css({
+                        'border-color': '#16a34a',
+                        'box-shadow': '0 0 15px rgba(74, 222, 128, 0.6), 0 0 30px rgba(74, 222, 128, 0.3)'
+                    });
+                }
+            });
+
+            $('.fc-day').on('touchend', function (e) {
+                // Prevenir el comportamiento por defecto solo si es un tap rápido
+                const touchDuration = Date.now() - touchStartTime;
+                if (touchDuration < LONG_PRESS_DURATION) {
+                    e.preventDefault();
+                    handleDayClick($(this).data('date'));
+                }
+
+                if ($(this).hasClass('fc-future')) {
+                    $(this).css({
+                        'border-color': '#22c55e',
+                        'box-shadow': '0 0 10px rgba(74, 222, 128, 0.4), 0 0 20px rgba(74, 222, 128, 0.2)'
+                    });
+                }
+            });
+
+            // Permitir scroll normal
+            $('.fc-day').on('touchmove', function (e) {
+                // No prevenir el scroll
+            });
+
+            // Prevenir el scroll solo en el modal
+            $('.modal-content').on('touchmove', function (e) {
+                e.stopPropagation();
+            });
+        }
+
+
+        const styles = `
+    .fc-scroller {
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .modal-content {
+        touch-action: pan-y pinch-zoom;
+    }
+
+    .fc-day {
+        touch-action: manipulation;
+    }
+`;
+
+        // Agregar los estilos al documento
+        if (!document.getElementById('touchStyles')) {
+            $('<style>')
+                .attr('id', 'touchStyles')
+                .text(styles)
+                .appendTo('head');
+        }
+
+        // El resto de las funciones permanecen igual...
+        function handleDayClick(date) {
+            selectedDate = moment(date);
+
+            if (selectedDate.isBefore(moment(), 'day')) {
+                showNotification('No se pueden realizar reservas en fechas pasadas', 'error');
+                return;
+            }
+
+            openModal(date);
+        }
 
         function openModal(date) {
-            $('#selectedDateText').text(date.format('DD/MM/YYYY'));
-            $('#loadingSpinner').show();
+            $('#selectedDateText').text(moment(date).format('DD/MM/YYYY'));
+            showLoading(true);
             $('#horariosDisponibles').empty();
             $('#horariosModal').addClass('active');
             $('#btnReservar').addClass('disabled').prop('disabled', true);
+            selectedHorario = null;
 
-            // Cargar horarios disponibles
+            fetchHorarios(date);
+        }
+
+        function fetchHorarios(date) {
             $.ajax({
-                url: '/api/sala/{{ sala.id }}/horarios/' + date.format('YYYY-MM-DD') + '/',
+                url: `/api/sala/{{ sala.id }}/horarios/${moment(date).format('YYYY-MM-DD')}/`,
                 method: 'GET',
-                success: function (response) {
-                    $('#loadingSpinner').hide();
-                    if (response.slots_disponibles && response.slots_disponibles.length > 0) {
-                        response.slots_disponibles.forEach(function (slot) {
-                            var horarioDiv = $('<div>')
-                                .addClass('horario-slot')
-                                .html(slot.inicio + ' - ' + slot.fin)
-                                .data('horario', slot);
-
-                            horarioDiv.click(function () {
-                                $('.horario-slot').removeClass('selected');
-                                $(this).addClass('selected');
-                                selectedHorario = $(this).data('horario');
-                                $('#btnReservar').removeClass('disabled').prop('disabled', false);
-                            });
-
-                            $('#horariosDisponibles').append(horarioDiv);
-                        });
-                    } else {
-                        $('#horariosDisponibles').html(
-                            '<p style="grid-column: 1/-1; text-align: center;">No hay horarios disponibles para esta fecha.</p>'
-                        );
-                    }
-                },
-                error: function () {
-                    $('#loadingSpinner').hide();
-                    $('#horariosDisponibles').html(
-                        '<p style="grid-column: 1/-1; text-align: center; color: #FF3B30;">Error al cargar los horarios.</p>'
-                    );
-                }
+                success: handleHorariosResponse,
+                error: handleHorariosError,
+                complete: () => showLoading(false)
             });
+        }
+
+        function handleHorariosResponse(response) {
+            const $container = $('#horariosDisponibles');
+            $container.empty();
+
+            if (response.slots_disponibles?.length > 0) {
+                response.slots_disponibles.forEach(slot => {
+                    createHorarioSlot(slot).appendTo($container);
+                });
+            } else {
+                showNoHorariosMessage($container);
+            }
+        }
+
+        function createHorarioSlot(slot) {
+            return $('<div>')
+                .addClass('horario-slot')
+                .html(`
+            <span class="time-icon">⏰</span>
+            <span class="time-text">${slot.inicio} - ${slot.fin}</span>
+        `)
+                .data('horario', slot)
+                .on('click', function () {
+                    selectHorario($(this), slot);
+                });
+        }
+
+        function selectHorario($slot, horario) {
+            $('.horario-slot').removeClass('selected');
+            $slot.addClass('selected');
+            selectedHorario = horario;
+            $('#btnReservar').removeClass('disabled').prop('disabled', false);
+        }
+
+        function showNoHorariosMessage($container) {
+            $container.html(`
+        <div class="no-horarios">
+            <span class="icon">📅</span>
+            <p>No hay horarios disponibles para esta fecha.</p>
+        </div>
+    `);
+        }
+
+        function handleHorariosError() {
+            showLoading(false);
+            showNotification('Error al cargar los horarios. Por favor, intenta nuevamente.', 'error');
         }
 
         function closeModal() {
             $('#horariosModal').removeClass('active');
+            selectedHorario = null;
+        }
+
+        function showLoading(show) {
+            $('#loadingSpinner').toggle(show);
+            $('#horariosDisponibles').toggle(!show);
         }
 
         function realizarReserva() {
             if (!selectedHorario) {
-                alert('Por favor, selecciona un horario');
+                showNotification('Por favor, selecciona un horario', 'warning');
                 return;
             }
 
-            var dateStr = $('#selectedDateText').text().split('/').reverse().join('-');
-            var url = "{% url 'reservar_sala' sala.id %}?fecha=" + dateStr +
-                "&hora_inicio=" + selectedHorario.inicio +
-                "&hora_fin=" + selectedHorario.fin;
+            const dateStr = selectedDate.format('YYYY-MM-DD');
+            const url = `{% url 'reservar_sala' sala.id %}?fecha=${dateStr}&hora_inicio=${selectedHorario.inicio}&hora_fin=${selectedHorario.fin}`;
 
-            // Usar window.location.href para la redirección
-            window.location.href = url;
+            $('body').addClass('page-transition');
+            setTimeout(() => {
+                window.location.href = url;
+            }, 300);
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = $('<div>')
+                .addClass('notification ' + type)
+                .text(message)
+                .css({
+                    'position': 'fixed',
+                    'bottom': '20px',
+                    'right': '20px',
+                    'padding': '1rem 2rem',
+                    'background': type === 'error' ? '#dc2626' : '#22c55e', // Rojo para error, verde para info
+                    'color': 'white',
+                    'border-radius': '8px',
+                    'box-shadow': '0 0 15px rgba(34, 197, 94, 0.4)',
+                    'z-index': '9999',
+                    'animation': 'slideIn 0.3s ease'
+                })
+                .appendTo('body');
+
+            setTimeout(() => {
+                notification.css('animation', 'slideOut 0.3s ease');
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Estilos de animación
+        if (!document.getElementById('notificationStyles')) {
+            $('<style>')
+                .attr('id', 'notificationStyles')
+                .text(`
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+            .page-transition {
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+            .notification {
+                font-weight: 500;
+                font-size: 0.9rem;
+                line-height: 1.4;
+            }
+        `)
+                .appendTo('head');
         }
     </script>
 </body>

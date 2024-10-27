@@ -1,0 +1,629 @@
+:root {
+    --primary-color: #be185d;  /* pink-700 */
+    --primary-hover: #9d174d;  /* pink-800 */
+    --primary-transparent: rgba(190, 24, 93, 0.1);
+    --neon-pink: rgba(190, 24, 93, 0.6);
+    --neon-glow: 0 0 10px rgba(190, 24, 93, 0.4),
+                 0 0 20px rgba(190, 24, 93, 0.3),
+                 0 0 30px rgba(190, 24, 93, 0.2);
+    --background-color: #050e2d;
+    --card-background: rgba(255, 255, 255, 0.05);
+    --text-color: rgba(255, 255, 255, 0.9);
+    --text-secondary: rgba(255, 255, 255, 0.6);
+    --border-color: rgba(255, 255, 255, 0.1);
+    --modal-overlay: rgba(0, 0, 0, 0.7);
+    --gradient-1: rgba(28, 117, 238, 0.1);
+    --gradient-2: rgba(50, 255, 228, 0.1);
+    --gradient-3: rgba(255, 255, 255, 0.1);
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.5;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.5rem;
+}
+
+/* Header Styles */
+.header-container {
+    background: var(--card-background);
+    backdrop-filter: blur(10px);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-title {
+    text-align: center;
+    flex-grow: 1;
+}
+
+@keyframes neonTitlePulse {
+    0%, 100% {
+        text-shadow: 0 0 7px rgba(190, 24, 93, 0.7),
+                     0 0 10px rgba(190, 24, 93, 0.5),
+                     0 0 21px rgba(190, 24, 93, 0.3),
+                     0 0 42px rgba(190, 24, 93, 0.2);
+    }
+    50% {
+        text-shadow: 0 0 14px rgba(190, 24, 93, 0.8),
+                     0 0 20px rgba(190, 24, 93, 0.6),
+                     0 0 42px rgba(190, 24, 93, 0.4),
+                     0 0 84px rgba(190, 24, 93, 0.3);
+    }
+}
+
+@keyframes neonTitlePulse {
+    0%, 100% {
+        text-shadow: 0 0 10px rgba(190, 24, 93, 0.7),
+                    0 0 20px rgba(190, 24, 93, 0.5),
+                    0 0 30px rgba(190, 24, 93, 0.3),
+                    0 0 40px rgba(190, 24, 93, 0.2);
+    }
+    50% {
+        text-shadow: 0 0 20px rgba(190, 24, 93, 0.8),
+                    0 0 30px rgba(190, 24, 93, 0.6),
+                    0 0 40px rgba(190, 24, 93, 0.4),
+                    0 0 50px rgba(190, 24, 93, 0.3);
+    }
+}
+
+.header-title h1 {
+    font-size: 2.5rem;
+    color: #ffffff;
+    text-align: center;
+    font-weight: bold;
+    animation: neonTitlePulse 2s infinite ease-in-out;
+    position: relative;
+    margin-bottom: 0.5rem;
+    -webkit-text-fill-color: white; /* Para asegurar que el texto sea blanco */
+    text-shadow: 0 0 7px rgba(190, 24, 93, 0.8),
+                 0 0 10px rgba(190, 24, 93, 0.6),
+                 0 0 21px rgba(190, 24, 93, 0.4),
+                 0 0 42px rgba(190, 24, 93, 0.2);
+}
+
+/* Ajuste para móviles */
+@media (max-width: 768px) {
+    .header-title h1 {
+        font-size: 1.8rem;
+    }
+}
+
+
+.fc-day-header {
+    background: var(--primary-color) !important;
+    color: white !important;
+    padding: 10px 2px !important;
+    border: none !important;
+    box-shadow: 0 0 10px rgba(190, 24, 93, 0.4),
+                0 0 20px rgba(190, 24, 93, 0.2) !important;
+    transition: all 0.3s ease !important;
+    text-transform: uppercase !important;
+    font-weight: 500 !important;
+    font-size: 0.9rem !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.fc-day-header:hover {
+    background: var(--primary-hover) !important;
+    box-shadow: 0 0 15px rgba(190, 24, 93, 0.8),
+                0 0 30px rgba(190, 24, 93, 0.6),
+                0 0 45px rgba(190, 24, 93, 0.4) !important;
+    transform: translateY(-1px);
+}
+
+/* Efecto adicional en hover */
+.fc-day-header::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, 
+        transparent 0%,
+        rgba(190, 24, 93, 0.1) 50%,
+        transparent 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.fc-day-header:hover::after {
+    opacity: 1;
+}
+
+/* Aplicar border-radius al contenedor y todos los elementos internos necesarios */
+.fc-view-container {
+    border-radius: 25px !important;
+    overflow: hidden !important;
+    position: relative !important;
+}
+
+.fc-view {
+    border-radius: 25px !important;
+    overflow: hidden !important;
+}
+
+.fc-content-skeleton {
+    border-radius: 25px !important;
+}
+
+.fc-body {
+    border-radius: 25px !important;
+    overflow: hidden !important;
+}
+
+
+
+/* Si estás usando la vista mes */
+.fc-month-view {
+    border-radius: 25px !important;
+    overflow: hidden !important;
+}
+
+
+/* Para la cabecera del calendario */
+.fc-head {
+    border-top-left-radius: 25px !important;
+    border-top-right-radius: 25px !important;
+    overflow: hidden !important;
+}
+
+/* Para el cuerpo del calendario */
+.fc-body {
+    border-bottom-left-radius: 25px !important;
+    border-bottom-right-radius: 25px !important;
+    overflow: hidden !important;
+}
+
+
+/* Animación del brillo neón */
+@keyframes neonPulse {
+    0%, 100% {
+        box-shadow: 0 0 15px rgba(190, 24, 93, 0.6),
+                   0 0 30px rgba(190, 24, 93, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(190, 24, 93, 0.8),
+                   0 0 40px rgba(190, 24, 93, 0.6),
+                   0 0 60px rgba(190, 24, 93, 0.4);
+    }
+}
+
+/* Ajustes responsive */
+@media (max-width: 768px) {
+    .fc-day-header {
+        font-size: 0.8rem !important;
+        padding: 8px 2px !important;
+    }
+}
+
+.admin-link {
+    background: var(--primary-color);
+    color: white;
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition-normal);
+}
+
+.admin-link:hover {
+    background: var(--primary-hover);
+}
+
+/* Calendar Container */
+.calendar-container {
+    background: var(--card-background);
+    backdrop-filter: blur(10px);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Botones del calendario */
+.fc button {
+    background: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: white !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+    transition: background-color 0.3s ease !important;
+}
+
+
+/* Contenido del evento con efecto neón */
+.fc-content {
+    background: var(--primary-color) !important;
+    padding: 4px 8px !important;
+    border-radius: 4px !important;
+    box-shadow: 0 0 10px rgba(190, 24, 93, 0.4),
+                0 0 20px rgba(190, 24, 93, 0.2) !important;
+    transition: all 0.3s ease !important;
+}
+
+.fc-content:hover {
+    box-shadow: 0 0 15px rgba(190, 24, 93, 0.6),
+                0 0 30px rgba(190, 24, 93, 0.3),
+                0 0 45px rgba(190, 24, 93, 0.1) !important;
+    transform: translateY(-1px);
+}
+
+/* Título del evento */
+.fc-title {
+    color: white !important;
+    font-weight: 500 !important;
+}
+
+/* Estilos para eventos completos */
+.fc-event {
+    background: transparent !important;
+    border: none !important;
+    margin: 2px 0 !important;
+}
+
+.fc-time-grid-event .fc-content {
+    margin: 2px !important;
+}
+
+
+.fc button:hover {
+    background: var(--primary-hover) !important;
+    border-color: var(--primary-hover) !important;
+}
+/* Estilos de las celdas del calendario */
+.fc td {
+    transition: all 0.3s ease !important;
+    background: transparent !important;
+}
+
+.fc td:hover {
+    background: var(--primary-transparent) !important;
+    box-shadow: 0 0 15px rgba(190, 24, 93, 0.3) !important;
+}
+
+.fc-day-number {
+    color: var(--text-color) !important;
+    transition: color 0.3s ease;
+}
+
+.fc-day-number {
+    color: var(--text-color) !important;
+}
+
+@keyframes todayBorderPulse {
+    0%, 100% {
+        box-shadow: 0 0 10px rgba(190, 24, 93, 0.6),
+                   0 0 20px rgba(190, 24, 93, 0.4),
+                   inset 0 0 15px rgba(190, 24, 93, 0.3);
+        border-color: rgba(190, 24, 93, 0.8);
+    }
+    50% {
+        box-shadow: 0 0 15px rgba(190, 24, 93, 0.8),
+                   0 0 30px rgba(190, 24, 93, 0.6),
+                   inset 0 0 20px rgba(190, 24, 93, 0.5);
+        border-color: var(--primary-color);
+    }
+}
+
+.fc-today {
+    background: transparent !important;
+    border: 3px solid var(--primary-color) !important;
+    position: relative !important;
+    z-index: 2 !important;
+    animation: todayBorderPulse 2s infinite ease-in-out !important;
+}
+
+.fc-today::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(190, 24, 93, 0.1);
+    pointer-events: none;
+}
+
+.fc-today.fc-day-top:hover {
+    background: var(--primary-transparent) !important;
+    box-shadow: 0 0 20px rgba(190, 24, 93, 0.5) !important;
+}
+
+
+.fc-future {
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    background: transparent !important;
+}
+
+/* Eventos */
+.fc-event {
+    background: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: white !important;
+    transition: all 0.3s ease;
+}
+
+.fc-day-top:hover .fc-day-number {
+    color: var(--text-color) !important;
+}
+
+.fc-event:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--neon-glow);
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--modal-overlay);
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
+.modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: var(--card-background);
+    backdrop-filter: blur(20px);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    width: 90%;
+    max-width: 500px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-lg);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h3 {
+    color: var(--text-color);
+    font-size: 1.25rem;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: var(--transition-normal);
+}
+
+/* Horarios Grid */
+.horarios-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.horario-slot {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition-normal);
+}
+
+.horario-slot:hover {
+    border-color: var(--primary-color);
+    box-shadow: var(--neon-glow);
+    transform: translateY(-2px);
+}
+
+.horario-slot.selected {
+    background: var(--primary-color);
+    border-color: transparent;
+    color: white;
+    box-shadow: var(--neon-glow);
+}
+
+/* Modal Footer y Botones */
+.modal-footer {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-md);
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition-normal);
+    min-width: 120px;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover:not(.disabled) {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.btn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    text-align: center;
+    padding: 2rem;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    border-top-color: var(--primary-color);
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .header-container {
+        padding: 1.5rem;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .header-title h1 {
+        font-size: 1.8rem;
+    }
+
+    .calendar-container {
+        padding: 1rem;
+    }
+
+    .modal-content {
+        width: 95%;
+        padding: 1.5rem;
+    }
+
+    .horarios-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.8rem;
+    }
+
+    .horario-slot {
+        padding: 0.8rem;
+        font-size: 0.9rem;
+    }
+
+    .modal-footer {
+        flex-direction: row;
+        justify-content: flex-end;
+        gap: 1rem;
+    }
+
+    .btn {
+        min-width: auto;
+        padding: 0.75rem 1rem;
+    }
+
+    .fc-toolbar {
+        margin: 0 !important;
+        padding: 1rem !important;
+    }
+
+    .fc-toolbar .fc-left,
+    .fc-toolbar .fc-right,
+    .fc-toolbar .fc-center {
+        float: none !important;
+        display: flex !important;
+        justify-content: center !important;
+        margin: 0.5rem 0 !important;
+    }
+
+    .fc-toolbar h2 {
+        font-size: 1.2rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .horarios-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+    }
+
+    .horario-slot {
+        padding: 0.6rem;
+        font-size: 0.8rem;
+    }
+
+    .btn {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+    }
+}
+
+
+.fc td, 
+.fc-day-top, 
+.fc-day-grid-event,
+.fc-time-grid-event,
+.fc-bgevent,
+.fc-nonbusiness {
+    background: transparent !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
