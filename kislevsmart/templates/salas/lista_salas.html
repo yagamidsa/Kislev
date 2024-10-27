@@ -5,126 +5,112 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Salas Disponibles</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root {
-            --primary-color: #007AFF;
-            --background-color: #F5F5F7;
-            --card-background: #FFFFFF;
-            --text-color: #1D1D1F;
-            --shadow-color: rgba(0, 0, 0, 0.1);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-        }
-
-        body {
-            background-color: var(--background-color);
-            color: var(--text-color);
-            line-height: 1.5;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 3rem;
-        }
-
-        .header h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-        }
-
-        .salas-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 2rem;
-            padding: 1rem;
-        }
-
-        .sala-card {
-            background: var(--card-background);
-            border-radius: 20px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px var(--shadow-color);
-        }
-
-        .sala-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 15px var(--shadow-color);
-        }
-
-        .sala-image {
-            width: 100%;
-            height: 200px;
-            background-size: cover;
-            background-position: center;
-        }
-
-        .sala-content {
-            padding: 1.5rem;
-        }
-
-        .sala-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .sala-info {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-top: 1rem;
-            color: #666;
-        }
-
-        .sala-button {
-            display: inline-block;
-            background: var(--primary-color);
-            color: white;
-            padding: 0.8rem 1.5rem;
-            border-radius: 25px;
-            text-decoration: none;
-            margin-top: 1rem;
-            transition: background 0.3s ease;
-        }
-
-        .sala-button:hover {
-            background: #0056b3;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
-            }
-
-            .salas-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .header h1 {
-                font-size: 2rem;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/lista_salas.css' %}">
 </head>
 <body>
+
+    <!-- Efecto de luz ambiental -->
+    <div class="light-effect"></div>
+
+
+    <div class="floating-symbols">
+        <!-- Calendario 1 -->
+        <div class="symbol">
+            <svg viewBox="0 0 24 24">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+        </div>
+        <!-- Reloj 1 -->
+        <div class="symbol">
+            <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+            </svg>
+        </div>
+        <!-- Calendario 2 -->
+        <div class="symbol">
+            <svg viewBox="0 0 24 24">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+                <line x1="8" y1="14" x2="16" y2="14"/>
+                <line x1="8" y1="18" x2="16" y2="18"/>
+            </svg>
+        </div>
+        <!-- Reloj 2 -->
+        <div class="symbol">
+            <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 8 14"/>
+            </svg>
+        </div>
+        <!-- Calendario 3 -->
+        <div class="symbol">
+            <svg viewBox="0 0 24 24">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+                <circle cx="12" cy="15" r="2"/>
+            </svg>
+        </div>
+        <!-- Reloj 3 -->
+        <div class="symbol">
+            <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 12 16 16"/>
+                <line x1="12" y1="12" x2="12" y2="6"/>
+            </svg>
+        </div>
+        <!-- Calendario 4 -->
+        <div class="symbol">
+            <svg viewBox="0 0 24 24">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+                <path d="M8 14h3m2 0h3M8 18h3m2 0h3"/>
+            </svg>
+        </div>
+        <!-- Reloj 4 -->
+        <div class="symbol">
+            <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 12 7 12"/>
+                <line x1="12" y1="12" x2="12" y2="7"/>
+            </svg>
+        </div>
+        <!-- Calendario 5 -->
+        <div class="symbol">
+            <svg viewBox="0 0 24 24">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+                <rect x="8" y="14" width="8" height="4" rx="1"/>
+            </svg>
+        </div>
+        <!-- Reloj 5 -->
+        <div class="symbol">
+            <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 12 16 10"/>
+                <line x1="12" y1="12" x2="12" y2="16"/>
+            </svg>
+        </div>
+    </div>
+
+
     <div class="container">
         <header class="header">
             <h1>Salas Disponibles</h1>
-            <p>Selecciona una sala para ver su disponibilidad</p>
+            <p>Explora nuestras salas y encuentra el espacio perfecto para tu evento</p>
         </header>
 
         <div class="salas-grid">
@@ -142,11 +128,26 @@
                     </div>
                     <a href="{% url 'calendario_sala' sala.id %}" class="sala-button">
                         Ver Disponibilidad
+                        <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
                     </a>
                 </div>
             </div>
             {% endfor %}
         </div>
     </div>
+
+    <script>
+    // Efecto de seguimiento del cursor para el brillo
+    document.addEventListener('mousemove', (e) => {
+        const lightEffect = document.querySelector('.light-effect');
+        const x = e.clientX / window.innerWidth * 100;
+        const y = e.clientY / window.innerHeight * 100;
+        
+        lightEffect.style.background = `
+            radial-gradient(circle at ${x}% ${y}%, rgba(190, 24, 93, 0.15) 0%, transparent 50%),
+            radial-gradient(circle at ${100-x}% ${100-y}%, rgba(190, 24, 93, 0.15) 0%, transparent 50%)
+        `;
+    });
+    </script>
 </body>
 </html>
