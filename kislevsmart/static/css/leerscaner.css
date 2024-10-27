@@ -50,106 +50,10 @@ h1 {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-radius: 30px;
 }
 
-.scan-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-radius: 24px;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    overflow: hidden;
-}
-
-.scan-frame {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 70%;
-    height: 70%;
-    border: 2px solid rgba(225, 0, 255, 0.6);
-    border-radius: 20px;
-    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.7);
-}
-
-.scan-line {
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(to right, #e100ff, #7f00ff);
-    box-shadow: 0 0 10px rgba(225, 0, 255, 0.8);
-    animation: scan 2s linear infinite;
-}
-
-.scan-corners::before,
-.scan-corners::after {
-    content: '';
-    position: absolute;
-    width: 30px;
-    height: 30px;
-    border: 2px solid #e100ff;
-}
-
-.scan-corners::before {
-    top: -2px;
-    left: -2px;
-    border-right: none;
-    border-bottom: none;
-    border-radius: 8px 0 0 0;
-}
-
-.scan-corners::after {
-    top: -2px;
-    right: -2px;
-    border-left: none;
-    border-bottom: none;
-    border-radius: 0 8px 0 0;
-}
-
-.scan-corners span::before,
-.scan-corners span::after {
-    content: '';
-    position: absolute;
-    width: 30px;
-    height: 30px;
-    border: 2px solid #e100ff;
-}
-
-.scan-corners span::before {
-    bottom: -2px;
-    left: -2px;
-    border-right: none;
-    border-top: none;
-    border-radius: 0 0 0 8px;
-}
-
-.scan-corners span::after {
-    bottom: -2px;
-    right: -2px;
-    border-left: none;
-    border-top: none;
-    border-radius: 0 0 8px 0;
-}
-
-@keyframes scan {
-    0% { top: 15%; }
-    50% { top: 85%; }
-    100% { top: 15%; }
-}
-
-#message {
-    margin-top: 24px;
-    font-weight: 400;
-    font-size: 16px;
-    color: rgba(255, 255, 255, 0.8);
-    text-align: center;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
+/* Mensaje de error estilo iOS */
 .error-message {
     position: fixed;
     top: 50px;
@@ -188,6 +92,15 @@ h1 {
         transform: translate(-50%, 0);
         opacity: 1;
     }
+}
+
+#message {
+    margin-top: 24px;
+    font-weight: 400;
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.8);
+    text-align: center;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .return-button {
