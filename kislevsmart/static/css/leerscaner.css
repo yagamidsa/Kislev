@@ -7,8 +7,6 @@
 }
 
 body, html {
-    margin: 0;
-    padding: 0;
     font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
     background-color: #070229;
     height: 100vh;
@@ -17,6 +15,10 @@ body, html {
     justify-content: center;
     color: white;
     overflow: hidden;
+}
+
+.hidden {
+    display: none;
 }
 
 .container {
@@ -29,7 +31,6 @@ body, html {
     align-items: center;
     padding: 20px;
     gap: 20px;
-    box-sizing: border-box;
 }
 
 h1 {
@@ -47,7 +48,6 @@ h1 {
     border-radius: 30px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     background-color: #000;
-    margin: 10px 0;
 }
 
 #reader {
@@ -58,10 +58,10 @@ h1 {
     width: 100% !important;
     height: 100% !important;
     object-fit: cover;
-    transform: scaleX(-1); /* Para cámara frontal */
+    transform: scaleX(-1); /* Cámara frontal */
 }
 
-/* Para cámara trasera */
+/* Cámara trasera */
 #preview.rear-camera {
     transform: scaleX(1);
 }
@@ -102,6 +102,20 @@ h1 {
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
+/* Estilo para mensajes de error */
+#error-message {
+    margin-top: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #ff4d4d; /* Rojo vibrante para errores */
+    text-align: center;
+    background-color: rgba(255, 77, 77, 0.2);
+    padding: 10px 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(255, 0, 0, 0.3);
+}
+
+/* Botón de volver */
 .return-button {
     margin-top: 15px;
     padding: 12px 24px;
@@ -126,7 +140,7 @@ h1 {
     box-shadow: 0 2px 4px rgba(10, 132, 255, 0.4);
 }
 
-/* Estilos específicos para móviles */
+/* Estilos para pantallas pequeñas */
 @media (max-width: 390px) {
     .container {
         padding: 20px 10px;
@@ -163,4 +177,17 @@ h1 {
     h1 {
         font-size: 20px;
     }
+}
+
+#error-container {
+    margin-top: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #ff4d4d;
+    text-align: center;
+    background-color: rgba(255, 77, 77, 0.2);
+    padding: 10px 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(255, 0, 0, 0.3);
+    display: none;
 }
