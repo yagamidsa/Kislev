@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -7,6 +8,7 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/leerscaner.css' %}">
 </head>
+
 <body>
     <div class="container">
         <h1>Escanear Código QR</h1>
@@ -31,22 +33,22 @@
                 const videoElement = document.getElementById('preview');
                 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
+                // Crear el escáner
                 scanner = new Instascan.Scanner({
                     video: videoElement,
                     mirror: false,
-                    continuous: true,          // Escaneo continuo
-                    backgroundScan: true,      // Escaneo en segundo plano
-                    scanPeriod: 1,            // Período de escaneo más rápido
-                    captureImage: true,        // Capturar imagen para análisis
-                    refractoryPeriod: 100,    // Período refractario corto
+                    continuous: true,
+                    backgroundScan: true,
+                    scanPeriod: 1,
+                    captureImage: true,
+                    refractoryPeriod: 100,
                 });
 
-                // Configurar el escáner para ambas plataformas
-                scanner.addListener('scan', function(content) {
+                scanner.addListener('scan', function (content) {
                     try {
                         const url = new URL(content);
                         const baseUrl = window.location.origin;
-                        
+
                         if (url.pathname.startsWith("/validar_qr/")) {
                             const fullUrl = `${baseUrl}${url.pathname}${url.search ? url.search + '&' : '?'}source=scan`;
                             window.location.href = fullUrl;
@@ -59,13 +61,13 @@
                     }
                 });
 
+                // Verifica si es iOS para manejarlo de forma diferente
                 if (isIOS) {
                     const stream = await navigator.mediaDevices.getUserMedia({
-                        video: { facingMode: { exact: "environment" } }
+                        video: { facingMode: "environment" }
                     });
-                    
+
                     videoElement.srcObject = stream;
-                    await scanner.start(null);
                 } else {
                     const cameras = await Instascan.Camera.getCameras();
                     if (cameras.length > 0) {
@@ -79,12 +81,12 @@
 
             } catch (e) {
                 console.error('Error:', e);
-                // No mostrar el mensaje de error si hay video
                 if (!document.getElementById('preview').srcObject) {
                     showErrorMessage("Error al acceder a la cámara");
                 }
             }
         }
+
 
         function showErrorMessage(message) {
             const existing = document.querySelector('.error-message');
@@ -113,4 +115,5 @@
         });
     </script>
 </body>
+
 </html>
