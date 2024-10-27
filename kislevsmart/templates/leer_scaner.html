@@ -13,56 +13,39 @@
     <div class="container">
         <h1>Escanear Código QR</h1>
         <div class="scanner-container">
-            <video id="preview" playsinline autoplay muted></video>
-            <div class="scanner-frame">
-                <div class="scanner-line"></div>
-                <div class="scanner-corners"><span></span></div>
-            </div>
+            <video id="video" style="width: 100%; height: auto;" playsinline></video>
+            <p id="message">Coloca el código QR dentro del marco</p>
         </div>
-        <p id="message">Coloca el código QR dentro del marco</p>
         <a href="{% url 'control_porteria' %}" class="return-button">Regresar</a>
     </div>
 
-    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+    <script src="https://unpkg.com/@zxing/library@latest"></script>
 
     <script>
-        const videoElement = document.getElementById('preview');
-        const messageElement = document.getElementById('message');
+        async function startCamera() {
+            const codeReader = new ZXing.BrowserQRCodeReader();
+            const videoElement = document.getElementById('video');
+            
+            try {
+                const devices = await codeReader.getVideoInputDevices();
+                if (devices.length === 0) throw new Error('No se encontraron cámaras.');
 
-        function startCamera() {
-            const config = { 
-                video: { facingMode: "environment" } 
-            };
-
-            navigator.mediaDevices.getUserMedia(config)
-                .then((stream) => {
-                    videoElement.srcObject = stream;
-                    videoElement.play();
-                    startQRScanner();
-                })
-                .catch((error) => {
-                    console.error("Error al acceder a la cámara:", error);
-                    showErrorMessage("Error al acceder a la cámara");
+                const preferredDevice = devices[devices.length - 1]; // Usa la cámara trasera
+                codeReader.decodeFromVideoDevice(preferredDevice.deviceId, 'video', (result, error) => {
+                    if (result) {
+                        console.log('QR detectado:', result.text);
+                        processQRContent(result.text);
+                    }
+                    if (error && !(error instanceof ZXing.NotFoundException)) {
+                        console.error('Error durante el escaneo:', error);
+                        showErrorMessage("Error escaneando el QR");
+                    }
                 });
-        }
 
-        function startQRScanner() {
-            const qrCodeScanner = new Html5Qrcode("preview");
-
-            qrCodeScanner.start(
-                { facingMode: "environment" }, 
-                { fps: 10, qrbox: 250 },
-                (decodedText) => {
-                    console.log("QR detectado:", decodedText);
-                    processQRContent(decodedText);
-                },
-                (errorMessage) => {
-                    console.warn("No se pudo leer QR:", errorMessage);
-                }
-            ).catch((error) => {
-                console.error("Error iniciando el escáner:", error);
-                showErrorMessage("Error iniciando el escáner");
-            });
+            } catch (error) {
+                console.error("Error al acceder a la cámara:", error);
+                showErrorMessage("Error al acceder a la cámara");
+            }
         }
 
         function processQRContent(content) {
@@ -96,6 +79,7 @@
         document.addEventListener('DOMContentLoaded', startCamera);
 
         window.addEventListener('beforeunload', () => {
+            const videoElement = document.getElementById('video');
             if (videoElement.srcObject) {
                 videoElement.srcObject.getTracks().forEach(track => track.stop());
             }
