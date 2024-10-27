@@ -12,9 +12,12 @@
         <h1>Escanear Código QR</h1>
         <div class="scanner-container">
             <video id="video" playsinline></video>
+            <div class="scan-animation">
+                <div class="scan-line"></div>
+            </div>
             <p id="message">Coloca el código QR dentro del marco</p>
             <div id="error-container"></div>
-        </div>
+        </div>  
         <a href="{% url 'control_porteria' %}" class="return-button">Regresar</a>
     </div>
 
