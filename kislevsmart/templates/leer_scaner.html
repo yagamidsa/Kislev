@@ -7,16 +7,56 @@
     <title>Escanear QR - Kislev</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/leerscaner.css' %}">
+    <style>
+        /* Estilos de mensajes de error */
+        .error-message {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #f44336;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            z-index: 1000;
+            animation: fadeInOut 3s;
+            display: none; /* Oculto inicialmente */
+        }
+
+        .error-icon {
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        .scanner-container {
+            position: relative; /* Para posicionar el mensaje de error */
+            width: 100%;
+            height: auto; /* Ajustar automáticamente */
+            margin-bottom: 20px; /* Espacio inferior */
+        }
+
+        video {
+            width: 100%;
+            height: auto; /* Asegúrate de que el video se ajuste correctamente */
+        }
+    </style>
 </head>
 
 <body>
     <div class="container">
         <h1>Escanear Código QR</h1>
         <div class="scanner-container">
-            <video id="video" style="width: 100%; height: auto;" playsinline></video>
+            <video id="video" playsinline></video>
             <p id="message">Coloca el código QR dentro del marco</p>
+            <div id="error-container"></div> <!-- Contenedor para mensajes de error -->
         </div>
-        <div id="error-container" class="hidden"></div> <!-- Contenedor de errores -->
         <a href="{% url 'control_porteria' %}" class="return-button">Regresar</a>
     </div>
 
@@ -67,13 +107,15 @@
         }
 
         function showErrorMessage(message) {
-            const errorContainer = document.getElementById('error-container');
-            errorContainer.innerHTML = `
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.innerHTML = `
                 <img src="https://fonts.gstatic.com/s/i/materialicons/error/v6/24px.svg" alt="Error" class="error-icon">
                 <p>${message}</p>
             `;
-            errorContainer.classList.remove('hidden'); // Muestra el contenedor
-            setTimeout(() => errorContainer.classList.add('hidden'), 3000); // Ocúltalo después de 3 segundos
+            document.getElementById('error-container').appendChild(errorDiv);
+            errorDiv.style.display = 'block'; // Muestra el mensaje de error
+            setTimeout(() => errorDiv.remove(), 3000);
         }
 
         document.addEventListener('DOMContentLoaded', startCamera);
