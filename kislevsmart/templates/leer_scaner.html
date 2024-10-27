@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -7,6 +8,7 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/leerscaner.css' %}">
 </head>
+
 <body>
     <div class="container">
         <h1>Escanear Código QR</h1>
@@ -32,41 +34,45 @@
 
                 if (isIOS) {
                     try {
-                        // Primero obtenemos acceso a la cámara con configuraciones específicas para iOS
+                        // Configuración específica para iOS
+                        scanner = new Instascan.Scanner({
+                            video: videoElement,
+                            mirror: false,
+                            backgroundScan: true,
+                            scanPeriod: 1,  // Escaneo más frecuente
+                            captureImage: true,  // Importante para iOS
+                            refractoryPeriod: 100,  // Tiempo más corto entre escaneos
+                            resolution: 2048,  // Mayor resolución
+                            willReadFrequently: true  // Optimización para lectura frecuente
+                        });
+
+                        // Configurar listener antes de iniciar
+                        scanner.addListener('scan', handleScan);
+
+                        // Obtener el stream con configuraciones específicas
                         const stream = await navigator.mediaDevices.getUserMedia({
                             video: {
                                 facingMode: { exact: "environment" },
-                                width: { min: 1280, ideal: 1920, max: 2560 },
-                                height: { min: 720, ideal: 1080, max: 1440 },
-                                aspectRatio: { ideal: 1.777778 },
-                                frameRate: { ideal: 30, max: 60 }
+                                width: { ideal: 2048 },
+                                height: { ideal: 1536 },
+                                frameRate: { ideal: 60 }
                             }
                         });
 
                         videoElement.srcObject = stream;
-                        await videoElement.play();
-
-                        // Configurar el scanner después de que el video esté listo
-                        scanner = new Instascan.Scanner({
-                            video: videoElement,
-                            mirror: false,
-                            backgroundScan: false,
-                            scanPeriod: 3,
-                            captureImage: true,
-                            refractoryPeriod: 1000,
-                            resolution: 1280
-                        });
-
-                        scanner.addListener('scan', handleScan);
                         await scanner.start(null);
 
-                        console.log('Cámara iOS iniciada');
+                        // Imprimir información de debug
+                        console.log('iOS Camera started');
+                        const tracks = stream.getVideoTracks();
+                        console.log('Camera capabilities:', tracks[0].getCapabilities());
+
                     } catch (iosError) {
-                        console.error('Error iOS:', iosError);
-                        throw iosError;
+                        console.error('iOS camera error:', iosError);
+                        showErrorMessage("Error de cámara iOS");
                     }
                 } else {
-                    // Configuración para Android
+                    // Configuración para Android (mantenemos la que funciona)
                     scanner = new Instascan.Scanner({
                         video: videoElement,
                         mirror: false,
@@ -79,7 +85,6 @@
                     const cameras = await Instascan.Camera.getCameras();
                     if (cameras.length > 0) {
                         await scanner.start(cameras[cameras.length - 1]);
-                        console.log('Cámara Android iniciada');
                     } else {
                         throw new Error('No se encontraron cámaras');
                     }
@@ -95,9 +100,10 @@
 
         function handleScan(content) {
             try {
+                console.log('QR detectado:', content); // Debug
                 const url = new URL(content);
                 const baseUrl = window.location.origin;
-                
+
                 if (url.pathname.startsWith("/validar_qr/")) {
                     const fullUrl = `${baseUrl}${url.pathname}${url.search ? url.search + '&' : '?'}source=scan`;
                     window.location.href = fullUrl;
@@ -117,9 +123,9 @@
             const errorDiv = document.createElement('div');
             errorDiv.className = 'error-message';
             errorDiv.innerHTML = `
-                <img src="https://fonts.gstatic.com/s/i/materialicons/error/v6/24px.svg" alt="Error" class="error-icon">
-                <p>${message}</p>
-            `;
+        <img src="https://fonts.gstatic.com/s/i/materialicons/error/v6/24px.svg" alt="Error" class="error-icon">
+        <p>${message}</p>
+    `;
             document.body.appendChild(errorDiv);
             setTimeout(() => errorDiv.remove(), 3000);
         }
@@ -137,4 +143,5 @@
         });
     </script>
 </body>
+
 </html>
