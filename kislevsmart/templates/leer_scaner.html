@@ -20,7 +20,8 @@
             border-radius: 5px;
             z-index: 1000;
             animation: fadeInOut 3s;
-            display: none; /* Oculto inicialmente */
+            display: none;
+            /* Oculto inicialmente */
         }
 
         .error-icon {
@@ -29,22 +30,37 @@
         }
 
         @keyframes fadeInOut {
-            0% { opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { opacity: 0; }
+            0% {
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
         }
 
         .scanner-container {
-            position: relative; /* Para posicionar el mensaje de error */
+            position: relative;
+            /* Para posicionar el mensaje de error */
             width: 100%;
-            height: auto; /* Ajustar automáticamente */
-            margin-bottom: 20px; /* Espacio inferior */
+            height: auto;
+            /* Ajustar automáticamente */
+            margin-bottom: 20px;
+            /* Espacio inferior */
         }
 
         video {
             width: 100%;
-            height: auto; /* Asegúrate de que el video se ajuste correctamente */
+            height: auto;
+            /* Asegúrate de que el video se ajuste correctamente */
         }
     </style>
 </head>
@@ -63,10 +79,13 @@
     <script src="https://unpkg.com/@zxing/library@latest"></script>
 
     <script>
+        const maxFailedAttempts = 5; // Número máximo de intentos fallidos antes de mostrar un error
+        let failedAttempts = 0; // Contador de intentos fallidos
+
         async function startCamera() {
             const codeReader = new ZXing.BrowserQRCodeReader();
             const videoElement = document.getElementById('video');
-            
+
             try {
                 const devices = await codeReader.getVideoInputDevices();
                 if (devices.length === 0) throw new Error('No se encontraron cámaras.');
@@ -75,11 +94,19 @@
                 codeReader.decodeFromVideoDevice(preferredDevice.deviceId, 'video', (result, error) => {
                     if (result) {
                         console.log('QR detectado:', result.text);
+                        failedAttempts = 0; // Reiniciar el contador en caso de éxito
                         processQRContent(result.text);
-                    }
-                    if (error && !(error instanceof ZXing.NotFoundException)) {
-                        console.error('Error durante el escaneo:', error);
-                        showErrorMessage("Error escaneando el QR");
+                    } else if (error) {
+                        // Manejo de errores
+                        if (!(error instanceof ZXing.NotFoundException)) {
+                            console.error('Error durante el escaneo:', error);
+                            failedAttempts++;
+
+                            // Mostrar mensaje de error solo si se alcanzó el número máximo de intentos fallidos
+                            if (failedAttempts >= maxFailedAttempts) {
+                                showErrorMessage("Error escaneando el QR");
+                            }
+                        }
                     }
                 });
 
