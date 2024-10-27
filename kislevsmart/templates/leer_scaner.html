@@ -23,59 +23,63 @@
         <a href="{% url 'control_porteria' %}" class="return-button">Regresar</a>
     </div>
 
+    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+
     <script>
-        let scanner = null;
-        let videoElement = document.getElementById('preview');
+        const videoElement = document.getElementById('preview');
+        const messageElement = document.getElementById('message');
 
-        async function startCamera() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: { ideal: 'environment' } }
+        function startCamera() {
+            const config = { 
+                video: { facingMode: "environment" } 
+            };
+
+            navigator.mediaDevices.getUserMedia(config)
+                .then((stream) => {
+                    videoElement.srcObject = stream;
+                    videoElement.play();
+                    startQRScanner();
+                })
+                .catch((error) => {
+                    console.error("Error al acceder a la cámara:", error);
+                    showErrorMessage("Error al acceder a la cámara");
                 });
-
-                videoElement.srcObject = stream;
-                videoElement.play();
-                initQRScanner();
-            } catch (error) {
-                console.error('Error al acceder a la cámara:', error);
-                showErrorMessage("Error al acceder a la cámara");
-            }
         }
 
-        function initQRScanner() {
-            scanner = new Instascan.Scanner({
-                video: videoElement,
-                mirror: false
-            });
+        function startQRScanner() {
+            const qrCodeScanner = new Html5Qrcode("preview");
 
-            scanner.addListener('scan', (content) => {
-                try {
-                    const url = new URL(content);
-                    const baseUrl = window.location.origin;
-
-                    if (url.pathname.startsWith("/validar_qr/")) {
-                        const fullUrl = `${baseUrl}${url.pathname}${url.search ? url.search + '&' : '?'}source=scan`;
-                        window.location.href = fullUrl;
-                    } else {
-                        showErrorMessage("Código QR no válido");
-                    }
-                } catch (e) {
-                    console.error('Error procesando QR:', e);
-                    showErrorMessage("QR no válido");
+            qrCodeScanner.start(
+                { facingMode: "environment" }, 
+                { fps: 10, qrbox: 250 },
+                (decodedText) => {
+                    console.log("QR detectado:", decodedText);
+                    processQRContent(decodedText);
+                },
+                (errorMessage) => {
+                    console.warn("No se pudo leer QR:", errorMessage);
                 }
+            ).catch((error) => {
+                console.error("Error iniciando el escáner:", error);
+                showErrorMessage("Error iniciando el escáner");
             });
+        }
 
-            // Intenta obtener las cámaras disponibles
-            Instascan.Camera.getCameras().then(function (cameras) {
-                if (cameras.length > 0) {
-                    scanner.start(cameras[cameras.length - 1]); // Usar la cámara trasera
+        function processQRContent(content) {
+            try {
+                const url = new URL(content);
+                const baseUrl = window.location.origin;
+
+                if (url.pathname.startsWith("/validar_qr/")) {
+                    const fullUrl = `${baseUrl}${url.pathname}${url.search ? url.search + '&' : '?'}source=scan`;
+                    window.location.href = fullUrl;
                 } else {
-                    showErrorMessage("No se encontraron cámaras");
+                    showErrorMessage("Código QR no válido");
                 }
-            }).catch(function (e) {
-                console.error(e);
-                showErrorMessage("Error al iniciar el escáner");
-            });
+            } catch (e) {
+                console.error("Error procesando QR:", e);
+                showErrorMessage("QR no válido");
+            }
         }
 
         function showErrorMessage(message) {
@@ -92,7 +96,6 @@
         document.addEventListener('DOMContentLoaded', startCamera);
 
         window.addEventListener('beforeunload', () => {
-            if (scanner) scanner.stop();
             if (videoElement.srcObject) {
                 videoElement.srcObject.getTracks().forEach(track => track.stop());
             }
