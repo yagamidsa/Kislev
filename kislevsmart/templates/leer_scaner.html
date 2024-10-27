@@ -27,59 +27,74 @@
 
         async function startCamera() {
             const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-            scanner = new Instascan.Scanner({
-                video: document.getElementById('preview'),
-                mirror: false,
-                backgroundScan: false,
-                scanPeriod: 3
-            });
+            const videoElement = document.getElementById('preview');
 
-            scanner.addListener('scan', function(content) {
+            if (isIOS) {
                 try {
-                    const url = new URL(content);
-                    const baseUrl = window.location.origin;
+                    // Primero obtener acceso a la cámara trasera usando MediaDevices
+                    const stream = await navigator.mediaDevices.getUserMedia({
+                        video: {
+                            facingMode: { exact: "environment" }
+                        }
+                    });
                     
-                    if (url.pathname.startsWith("/validar_qr/")) {
-                        const fullUrl = `${baseUrl}${url.pathname}${url.search ? url.search + '&' : '?'}source=scan`;
-                        window.location.href = fullUrl;
+                    videoElement.srcObject = stream;
+                    videoElement.classList.add('rear-camera');
+
+                    // Iniciar Instascan después de obtener el stream
+                    scanner = new Instascan.Scanner({
+                        video: videoElement,
+                        mirror: false,
+                        backgroundScan: false,
+                        scanPeriod: 3
+                    });
+
+                    await scanner.start();
+                } catch (e) {
+                    console.error('Error iOS:', e);
+                    showErrorMessage("Error al acceder a la cámara trasera");
+                }
+            } else {
+                // Configuración para Android
+                scanner = new Instascan.Scanner({
+                    video: videoElement,
+                    mirror: false,
+                    backgroundScan: false,
+                    scanPeriod: 3
+                });
+
+                try {
+                    const cameras = await Instascan.Camera.getCameras();
+                    if (cameras.length > 0) {
+                        await scanner.start(cameras[cameras.length - 1]);
+                        videoElement.classList.add('rear-camera');
                     } else {
-                        showErrorMessage("Código QR no válido");
+                        showErrorMessage("No se encontraron cámaras");
                     }
                 } catch (e) {
-                    console.error('Error procesando QR:', e);
-                    showErrorMessage("QR no válido");
+                    console.error('Error Android:', e);
+                    showErrorMessage("Error al acceder a la cámara");
                 }
-            });
+            }
 
-            try {
-                const cameras = await Instascan.Camera.getCameras();
-                
-                if (cameras.length > 0) {
-                    // Si es iOS, intentar primero encontrar la cámara trasera específicamente
-                    if (isIOS) {
-                        const rearCamera = cameras.find(camera => 
-                            camera.name.toLowerCase().includes('back') || 
-                            camera.name.toLowerCase().includes('rear') || 
-                            camera.name.toLowerCase().includes('environment')
-                        );
-                        if (rearCamera) {
-                            await scanner.start(rearCamera);
+            // Configurar el escáner para ambas plataformas
+            if (scanner) {
+                scanner.addListener('scan', function(content) {
+                    try {
+                        const url = new URL(content);
+                        const baseUrl = window.location.origin;
+                        
+                        if (url.pathname.startsWith("/validar_qr/")) {
+                            const fullUrl = `${baseUrl}${url.pathname}${url.search ? url.search + '&' : '?'}source=scan`;
+                            window.location.href = fullUrl;
                         } else {
-                            await scanner.start(cameras[cameras.length - 1]);
+                            showErrorMessage("Código QR no válido");
                         }
-                    } else {
-                        // Para Android, usar la última cámara (generalmente la trasera)
-                        await scanner.start(cameras[cameras.length - 1]);
+                    } catch (e) {
+                        console.error('Error procesando QR:', e);
+                        showErrorMessage("QR no válido");
                     }
-                    
-                    // Añadir clase para cámara trasera
-                    document.getElementById('preview').classList.add('rear-camera');
-                } else {
-                    showErrorMessage("No se encontraron cámaras");
-                }
-            } catch (e) {
-                console.error(e);
-                showErrorMessage("Error al acceder a la cámara");
+                });
             }
         }
 
@@ -104,6 +119,11 @@
         window.addEventListener('beforeunload', () => {
             if (scanner) {
                 scanner.stop();
+            }
+            // Detener cualquier stream activo
+            const videoElement = document.getElementById('preview');
+            if (videoElement.srcObject) {
+                videoElement.srcObject.getTracks().forEach(track => track.stop());
             }
         });
     </script>
