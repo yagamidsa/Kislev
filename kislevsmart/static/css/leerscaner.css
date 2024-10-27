@@ -13,7 +13,6 @@ body, html {
     background-color: #070229;
     height: 100vh;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
     color: white;
@@ -26,34 +25,33 @@ body, html {
     height: 100vh;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    padding: 40px 20px;
+    padding: 20px;
+    gap: 20px;
     box-sizing: border-box;
 }
 
 h1 {
     font-size: 28px;
     font-weight: 600;
-    margin-bottom: 20px;
     letter-spacing: -0.5px;
 }
 
 .scanner-container {
-    width: 100%;
+    width: 90%;
+    max-width: 320px;
     aspect-ratio: 1 / 1;
     position: relative;
     overflow: hidden;
     border-radius: 30px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     background-color: #000;
-    z-index: 1;
+    margin: 10px 0;
 }
-
 
 #reader {
     position: relative;
-    z-index: 1;
 }
 
 #preview {
@@ -63,7 +61,7 @@ h1 {
     transform: scaleX(-1); /* Para cámara frontal */
 }
 
-/* Agregar esta clase para cuando se use la cámara trasera */
+/* Para cámara trasera */
 #preview.rear-camera {
     transform: scaleX(1);
 }
@@ -74,10 +72,9 @@ h1 {
     left: 0;
     right: 0;
     bottom: 0;
-    border: 3px solid rgba(255,255,255,0.8);
+    border: 3px solid rgba(255, 255, 255, 0.8);
     border-radius: 30px;
-    box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);
-    z-index: 2;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
 }
 
 .scanner-line {
@@ -96,100 +93,19 @@ h1 {
     100% { top: 0; }
 }
 
-.scanner-corners::before,
-.scanner-corners::after {
-    content: '';
-    position: absolute;
-    width: 30px;
-    height: 30px;
-    border-color: #ff0aeb;
-    border-style: solid;
-    border-width: 3px 0 0 3px;
-}
-
-.scanner-corners::before {
-    top: -3px;
-    left: -3px;
-}
-
-.scanner-corners::after {
-    top: -3px;
-    right: -3px;
-    transform: rotate(90deg);
-}
-
-.scanner-corners span::before,
-.scanner-corners span::after {
-    content: '';
-    position: absolute;
-    width: 30px;
-    height: 30px;
-    border-color: #ff0aff;
-    border-style: solid;
-    border-width: 3px 0 0 3px;
-}
-
-.scanner-corners span::before {
-    bottom: -3px;
-    left: -3px;
-    transform: rotate(270deg);
-}
-
-.scanner-corners span::after {
-    bottom: -3px;
-    right: -3px;
-    transform: rotate(180deg);
-}
-
 #message {
     margin-top: 10px;
     font-weight: 400;
     font-size: 16px;
     text-align: center;
     color: #ffffff;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-}
-
-.error-message {
-    position: fixed;
-    top: 39%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: #7f00ff;
-    background: -webkit-linear-gradient(to right, #e100ff, #7f00ff);
-    background: linear-gradient(to right, #e100ff, #7f00ff);
-    box-shadow: 0px 5px 15px 5px #840fe440;
-    padding: 20px 10px;
-    border-radius: 16px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-    animation: fadeIn 0.3s ease-out;
-}
-
-.error-icon {
-    width: 48px;
-    height: 48px;
-    margin-bottom: 10px;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translate(-50%, -60%); }
-    to { opacity: 1; transform: translate(-50%, -50%); }
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .return-button {
-    display: inline-block;
     margin-top: 15px;
-    margin-bottom: 35px;
     padding: 12px 24px;
-    background: #7f00ff;
-    background: -webkit-linear-gradient(to right, #e100ff, #7f00ff);
     background: linear-gradient(to right, #e100ff, #7f00ff);
-    box-shadow: 0px 5px 15px 5px #840fe440;
     color: white;
     text-decoration: none;
     font-weight: 600;
@@ -214,6 +130,7 @@ h1 {
 @media (max-width: 390px) {
     .container {
         padding: 20px 10px;
+        gap: 10px;
     }
 
     h1 {
@@ -221,12 +138,7 @@ h1 {
     }
 
     .scanner-container {
-        width: 90%;
-    }
-
-    #preview {
-        width: 100% !important;
-        height: 100% !important;
+        width: 100%;
     }
 
     .return-button {
@@ -235,40 +147,20 @@ h1 {
     }
 }
 
-/* Estilos para orientación landscape en móviles */
+/* Estilos para landscape */
 @media (orientation: landscape) and (max-height: 500px) {
     .container {
         flex-direction: row;
+        justify-content: space-around;
         align-items: center;
-        padding: 20px;
         height: 100vh;
     }
 
     .scanner-container {
-        width: 60vh;
-        margin: 0 20px;
+        width: 50vh;
     }
 
     h1 {
         font-size: 20px;
-        margin-bottom: 10px;
-    }
-
-    .return-button {
-        margin: 10px 0;
-    }
-}
-
-/* Estilos para asegurar compatibilidad con iOS */
-@supports (-webkit-touch-callout: none) {
-    .scanner-container {
-        height: 0;
-        padding-bottom: 100%;
-    }
-    
-    #preview {
-        position: absolute;
-        top: 0;
-        left: 0;
     }
 }
