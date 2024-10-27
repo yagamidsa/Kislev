@@ -26,33 +26,14 @@
 
         async function initializeScanner() {
             try {
-                // Detectar si es iOS
-                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
-                // Configurar constraints según la plataforma
-                const constraints = {
-                    video: {
-                        facingMode: { exact: "environment" },
-                        aspectRatio: { ideal: 1 }
-                    }
-                };
-
-                // Configuración del scanner con ajustes específicos
+                // Configuración básica del scanner
                 scanner = new Instascan.Scanner({
                     video: document.getElementById('preview'),
                     mirror: false,
-                    captureImage: false,
-                    backgroundScan: true,
-                    refractoryPeriod: 5000,
-                    constraints: constraints
+                    backgroundScan: false,
+                    scanPeriod: 3
                 });
 
-                // Configuración del elemento video
-                const videoElement = document.getElementById('preview');
-                videoElement.setAttribute('playsinline', true);
-                videoElement.setAttribute('autoplay', true);
-                videoElement.setAttribute('muted', true);
-                
                 // Manejar escaneos
                 scanner.addListener('scan', function(content) {
                     try {
@@ -71,53 +52,67 @@
                     }
                 });
 
-                if (isIOS) {
-                    // Método específico para iOS
-                    try {
-                        const stream = await navigator.mediaDevices.getUserMedia(constraints);
-                        videoElement.srcObject = stream;
-                        await scanner.start(null);
-                        console.log('Cámara iOS iniciada');
-                    } catch (iosError) {
-                        console.error('Error iOS:', iosError);
-                        // Intentar método alternativo para iOS
-                        const cameras = await Instascan.Camera.getCameras();
-                        if (cameras.length > 0) {
-                            await scanner.start(cameras[cameras.length - 1]);
-                        }
-                    }
-                } else {
-                    // Método para Android y otros
-                    const cameras = await Instascan.Camera.getCameras();
-                    console.log('Cámaras encontradas:', cameras.length);
-                    
-                    if (cameras.length > 0) {
-                        // Intentar encontrar la cámara trasera
-                        const rearCamera = cameras.find(camera => 
-                            camera.name.toLowerCase().includes('back') ||
-                            camera.name.toLowerCase().includes('rear') ||
-                            camera.name.toLowerCase().includes('environment')
-                        ) || cameras[cameras.length - 1];
+                // Obtener cámaras
+                const cameras = await Instascan.Camera.getCameras();
+                
+                if (cameras.length === 0) {
+                    throw new Error('No se encontraron cámaras');
+                }
 
-                        try {
-                            await scanner.start(rearCamera);
-                            console.log('Cámara iniciada:', rearCamera.name);
-                            videoElement.style.transform = 'scaleX(1)';
-                        } catch (error) {
-                            console.error('Error al iniciar cámara trasera:', error);
-                            // Intentar con la primera cámara como fallback
-                            if (cameras.length > 1) {
-                                await scanner.start(cameras[0]);
-                            }
-                        }
-                    } else {
-                        showErrorMessage("No se encontraron cámaras disponibles");
+                // Intentar diferentes métodos para iniciar la cámara
+                let started = false;
+                let lastError = null;
+
+                // 1. Intentar con la última cámara (generalmente la trasera)
+                if (!started && cameras.length > 0) {
+                    try {
+                        await scanner.start(cameras[cameras.length - 1]);
+                        started = true;
+                        console.log('Cámara trasera iniciada');
+                    } catch (e) {
+                        lastError = e;
+                        console.log('Error con cámara trasera:', e);
                     }
                 }
 
+                // 2. Intentar encontrar específicamente la cámara trasera
+                if (!started) {
+                    const rearCamera = cameras.find(c => 
+                        c.name.toLowerCase().includes('back') || 
+                        c.name.toLowerCase().includes('rear') || 
+                        c.name.toLowerCase().includes('environment')
+                    );
+                    if (rearCamera) {
+                        try {
+                            await scanner.start(rearCamera);
+                            started = true;
+                            console.log('Cámara específica trasera iniciada');
+                        } catch (e) {
+                            lastError = e;
+                            console.log('Error con cámara específica trasera:', e);
+                        }
+                    }
+                }
+
+                // 3. Si todo lo demás falla, intentar con la primera cámara
+                if (!started && cameras.length > 0) {
+                    try {
+                        await scanner.start(cameras[0]);
+                        started = true;
+                        console.log('Primera cámara iniciada');
+                    } catch (e) {
+                        lastError = e;
+                        console.log('Error con primera cámara:', e);
+                    }
+                }
+
+                if (!started) {
+                    throw lastError || new Error('No se pudo iniciar ninguna cámara');
+                }
+
             } catch (e) {
-                console.error('Error general:', e);
-                showErrorMessage("Error al iniciar la cámara");
+                console.error('Error al inicializar:', e);
+                showErrorMessage("Error al iniciar la cámara. Por favor, asegúrate de dar permisos a la cámara y recargar la página.");
             }
         }
 
@@ -135,31 +130,19 @@
             setTimeout(() => errorDiv.remove(), 3000);
         }
 
-        // Inicializar cuando el DOM esté listo
-        document.addEventListener('DOMContentLoaded', initializeScanner);
-
-        // Manejar errores de video
-        const videoElement = document.getElementById('preview');
-        videoElement.addEventListener('error', (error) => {
-            console.error('Error de video:', error);
-            showErrorMessage("Error al acceder a la cámara");
+        // Iniciar cuando la página esté lista
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeScanner().catch(error => {
+                console.error('Error en inicialización:', error);
+                showErrorMessage("Error al iniciar. Intenta recargar la página.");
+            });
         });
 
-        // Limpieza al cerrar
+        // Limpiar al cerrar
         window.addEventListener('beforeunload', () => {
             if (scanner) {
                 scanner.stop();
             }
-        });
-
-        // Manejar cambios de orientación
-        window.addEventListener('orientationchange', () => {
-            setTimeout(() => {
-                const videoElement = document.getElementById('preview');
-                if (videoElement) {
-                    videoElement.style.height = '100%';
-                }
-            }, 100);
         });
     </script>
 </body>
