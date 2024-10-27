@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -8,7 +7,6 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/leerscaner.css' %}">
 </head>
-
 <body>
     <div class="container">
         <h1>Escanear Código QR</h1>
@@ -23,7 +21,8 @@
         <a href="{% url 'control_porteria' %}" class="return-button">Regresar</a>
     </div>
 
-    <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
+    <!-- Cambiar a una versión específica de Instascan -->
+    <script src="https://cdn.jsdelivr.net/gh/schmich/instascan-builds@0.0.1/instascan.min.js"></script>
     <script>
         let scanner = null;
 
@@ -32,56 +31,42 @@
                 const videoElement = document.getElementById('preview');
                 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
-                if (isIOS) {
+                scanner = new Instascan.Scanner({
+                    video: videoElement,
+                    mirror: false,
+                    continuous: true,          // Escaneo continuo
+                    backgroundScan: true,      // Escaneo en segundo plano
+                    scanPeriod: 1,            // Período de escaneo más rápido
+                    captureImage: true,        // Capturar imagen para análisis
+                    refractoryPeriod: 100,    // Período refractario corto
+                });
+
+                // Configurar el escáner para ambas plataformas
+                scanner.addListener('scan', function(content) {
                     try {
-                        // Configuración específica para iOS
-                        scanner = new Instascan.Scanner({
-                            video: videoElement,
-                            mirror: false,
-                            backgroundScan: true,
-                            scanPeriod: 1,  // Escaneo más frecuente
-                            captureImage: true,  // Importante para iOS
-                            refractoryPeriod: 100,  // Tiempo más corto entre escaneos
-                            resolution: 2048,  // Mayor resolución
-                            willReadFrequently: true  // Optimización para lectura frecuente
-                        });
-
-                        // Configurar listener antes de iniciar
-                        scanner.addListener('scan', handleScan);
-
-                        // Obtener el stream con configuraciones específicas
-                        const stream = await navigator.mediaDevices.getUserMedia({
-                            video: {
-                                facingMode: { exact: "environment" },
-                                width: { ideal: 2048 },
-                                height: { ideal: 1536 },
-                                frameRate: { ideal: 60 }
-                            }
-                        });
-
-                        videoElement.srcObject = stream;
-                        await scanner.start(null);
-
-                        // Imprimir información de debug
-                        console.log('iOS Camera started');
-                        const tracks = stream.getVideoTracks();
-                        console.log('Camera capabilities:', tracks[0].getCapabilities());
-
-                    } catch (iosError) {
-                        console.error('iOS camera error:', iosError);
-                        showErrorMessage("Error de cámara iOS");
+                        const url = new URL(content);
+                        const baseUrl = window.location.origin;
+                        
+                        if (url.pathname.startsWith("/validar_qr/")) {
+                            const fullUrl = `${baseUrl}${url.pathname}${url.search ? url.search + '&' : '?'}source=scan`;
+                            window.location.href = fullUrl;
+                        } else {
+                            showErrorMessage("Código QR no válido");
+                        }
+                    } catch (e) {
+                        console.error('Error procesando QR:', e);
+                        showErrorMessage("QR no válido");
                     }
-                } else {
-                    // Configuración para Android (mantenemos la que funciona)
-                    scanner = new Instascan.Scanner({
-                        video: videoElement,
-                        mirror: false,
-                        backgroundScan: false,
-                        scanPeriod: 3
+                });
+
+                if (isIOS) {
+                    const stream = await navigator.mediaDevices.getUserMedia({
+                        video: { facingMode: { exact: "environment" } }
                     });
-
-                    scanner.addListener('scan', handleScan);
-
+                    
+                    videoElement.srcObject = stream;
+                    await scanner.start(null);
+                } else {
                     const cameras = await Instascan.Camera.getCameras();
                     if (cameras.length > 0) {
                         await scanner.start(cameras[cameras.length - 1]);
@@ -93,26 +78,11 @@
                 videoElement.classList.add('rear-camera');
 
             } catch (e) {
-                console.error('Error general:', e);
-                showErrorMessage("Error al acceder a la cámara");
-            }
-        }
-
-        function handleScan(content) {
-            try {
-                console.log('QR detectado:', content); // Debug
-                const url = new URL(content);
-                const baseUrl = window.location.origin;
-
-                if (url.pathname.startsWith("/validar_qr/")) {
-                    const fullUrl = `${baseUrl}${url.pathname}${url.search ? url.search + '&' : '?'}source=scan`;
-                    window.location.href = fullUrl;
-                } else {
-                    showErrorMessage("Código QR no válido");
+                console.error('Error:', e);
+                // No mostrar el mensaje de error si hay video
+                if (!document.getElementById('preview').srcObject) {
+                    showErrorMessage("Error al acceder a la cámara");
                 }
-            } catch (e) {
-                console.error('Error procesando QR:', e);
-                showErrorMessage("QR no válido");
             }
         }
 
@@ -123,9 +93,9 @@
             const errorDiv = document.createElement('div');
             errorDiv.className = 'error-message';
             errorDiv.innerHTML = `
-        <img src="https://fonts.gstatic.com/s/i/materialicons/error/v6/24px.svg" alt="Error" class="error-icon">
-        <p>${message}</p>
-    `;
+                <img src="https://fonts.gstatic.com/s/i/materialicons/error/v6/24px.svg" alt="Error" class="error-icon">
+                <p>${message}</p>
+            `;
             document.body.appendChild(errorDiv);
             setTimeout(() => errorDiv.remove(), 3000);
         }
@@ -143,5 +113,4 @@
         });
     </script>
 </body>
-
 </html>
