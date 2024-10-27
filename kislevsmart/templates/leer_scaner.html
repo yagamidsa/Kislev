@@ -1,37 +1,27 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Escanear QR - Kislev</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/leerscaner.css' %}">
-
 </head>
-
 <body>
     <div class="container">
         <h1>Escanear Código QR</h1>
         <div class="scanner-container">
             <video id="video" playsinline></video>
-            <div class="scan-overlay">
-                <div class="scan-frame">
-                    <div class="scan-line"></div>
-                    <div class="scan-corners"><span></span></div>
-                </div>
-            </div>
+            <p id="message">Coloca el código QR dentro del marco</p>
+            <div id="error-container"></div>
         </div>
-        <p id="message">Coloca el código QR dentro del marco</p>
         <a href="{% url 'control_porteria' %}" class="return-button">Regresar</a>
     </div>
 
-
     <script src="https://unpkg.com/@zxing/library@latest"></script>
-
     <script>
-        const maxFailedAttempts = 5; // Número máximo de intentos fallidos antes de mostrar un error
-        let failedAttempts = 0; // Contador de intentos fallidos
+        const maxFailedAttempts = 5;
+        let failedAttempts = 0;
 
         async function startCamera() {
             const codeReader = new ZXing.BrowserQRCodeReader();
@@ -41,19 +31,17 @@
                 const devices = await codeReader.getVideoInputDevices();
                 if (devices.length === 0) throw new Error('No se encontraron cámaras.');
 
-                const preferredDevice = devices[devices.length - 1]; // Usa la cámara trasera
+                const preferredDevice = devices[devices.length - 1];
                 codeReader.decodeFromVideoDevice(preferredDevice.deviceId, 'video', (result, error) => {
                     if (result) {
                         console.log('QR detectado:', result.text);
-                        failedAttempts = 0; // Reiniciar el contador en caso de éxito
+                        failedAttempts = 0;
                         processQRContent(result.text);
                     } else if (error) {
-                        // Manejo de errores
                         if (!(error instanceof ZXing.NotFoundException)) {
                             console.error('Error durante el escaneo:', error);
                             failedAttempts++;
 
-                            // Mostrar mensaje de error solo si se alcanzó el número máximo de intentos fallidos
                             if (failedAttempts >= maxFailedAttempts) {
                                 showErrorMessage("Error escaneando el QR");
                             }
@@ -92,7 +80,7 @@
                 <p>${message}</p>
             `;
             document.getElementById('error-container').appendChild(errorDiv);
-            errorDiv.style.display = 'block'; // Muestra el mensaje de error
+            errorDiv.style.display = 'block';
             setTimeout(() => errorDiv.remove(), 3000);
         }
 
@@ -106,5 +94,4 @@
         });
     </script>
 </body>
-
 </html>
