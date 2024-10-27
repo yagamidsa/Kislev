@@ -69,16 +69,22 @@
     </form>
     <script>
         window.addEventListener('load', function () {
-          const messages = document.querySelectorAll('.message-container, .error-container');
-          messages.forEach((message) => {
+    const messages = document.querySelectorAll('.message-container, .error-container');
+    messages.forEach((message) => {
+        // Mostrar el mensaje con la animación de entrada
+        message.style.animation = 'slideIn 0.3s ease-out forwards';
+        
+        // Configurar la animación de salida después de 3 segundos
+        setTimeout(() => {
+            message.style.animation = 'slideOut 0.3s ease-out forwards';
+            
+            // Eliminar el elemento después de que termine la animación
             setTimeout(() => {
-              message.style.opacity = '0';  // Desvanece el mensaje.
-              setTimeout(() => {
-                message.style.display = 'none';  // Lo oculta completamente.
-              }, 1000);  // Tiempo para la transición.
-            }, 3000);  // Tiempo antes de empezar a desaparecer (3s).
-          });
-        });
+                message.remove();
+            }, 300);
+        }, 3000);
+    });
+});
       </script>
 </body>
 
