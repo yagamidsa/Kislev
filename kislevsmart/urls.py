@@ -45,6 +45,7 @@ urlpatterns = [
     path('reserva/<int:reserva_id>/cancelar/', views.cancelar_reserva, name='cancelar_reserva'),
     path('sala/<int:sala_id>/reservar/', views.reservar_sala, name='reservar_sala'),
     path('api/sala/<int:sala_id>/horarios/<str:fecha>/', views.get_horarios_disponibles, name='api_horarios_disponibles'),
+    path('visitor-stats/', views.get_visitor_stats, name='visitor-stats'),
 ]
 
 # Solo para desarrollo: permite servir archivos media desde MEDIA_URL

@@ -992,3 +992,90 @@ def dashboard(request):
     }
     
     return render(request, 'dashboard.html', context)
+
+
+#consulta por hora
+def get_visitor_stats(request):
+    # Obtener el tipo de filtro desde la solicitud
+    filter_type = request.GET.get('filter_type', 'week')
+    selected_month = int(request.GET.get('month', datetime.now().month))
+    selected_year = int(request.GET.get('year', datetime.now().year))
+    
+    # Consulta base
+    base_query = Visitante.objects.exclude(ultima_lectura__isnull=True)
+    
+    if filter_type == 'week':
+        # Consulta por día de la semana
+        stats = base_query.annotate(
+            day=ExtractWeekDay('ultima_lectura')
+        ).values('day').annotate(
+            count=Count('id')
+        ).order_by('day')
+        
+        # Mapear números a nombres de días
+        days_map = {
+            1: 'Domingo',
+            2: 'Lunes',
+            3: 'Martes',
+            4: 'Miércoles',
+            5: 'Jueves',
+            6: 'Viernes',
+            7: 'Sábado'
+        }
+        
+        # Asegurarse de que todos los días estén representados
+        all_data = {day: 0 for day in range(1, 8)}
+        for stat in stats:
+            all_data[stat['day']] = stat['count']
+        
+        labels = [days_map[day] for day in range(1, 8)]
+        data = [all_data[day] for day in range(1, 8)]
+        
+    elif filter_type == 'month':
+        # Consulta por mes
+        stats = base_query.filter(
+            ultima_lectura__year=selected_year
+        ).annotate(
+            month=ExtractMonth('ultima_lectura')
+        ).values('month').annotate(
+            count=Count('id')
+        ).order_by('month')
+        
+        months_map = {
+            1: 'Enero', 2: 'Febrero', 3: 'Marzo',
+            4: 'Abril', 5: 'Mayo', 6: 'Junio',
+            7: 'Julio', 8: 'Agosto', 9: 'Septiembre',
+            10: 'Octubre', 11: 'Noviembre', 12: 'Diciembre'
+        }
+        
+        # Asegurarse de que todos los meses estén representados
+        all_data = {month: 0 for month in range(1, 13)}
+        for stat in stats:
+            all_data[stat['month']] = stat['count']
+        
+        labels = [months_map[month] for month in range(1, 13)]
+        data = [all_data[month] for month in range(1, 13)]
+        
+    else:  # hour
+        # Consulta por hora del día
+        stats = base_query.filter(
+            ultima_lectura__year=selected_year,
+            ultima_lectura__month=selected_month
+        ).annotate(
+            hour=ExtractHour('ultima_lectura')
+        ).values('hour').annotate(
+            count=Count('id')
+        ).order_by('hour')
+        
+        # Asegurarse de que todas las horas estén representadas
+        all_data = {hour: 0 for hour in range(24)}
+        for stat in stats:
+            all_data[stat['hour']] = stat['count']
+        
+        labels = [f'{hour:02d}:00' for hour in range(24)]
+        data = [all_data[hour] for hour in range(24)]
+    
+    return JsonResponse({
+        'labels': labels,
+        'data': data
+    })

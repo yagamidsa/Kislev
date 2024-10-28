@@ -304,21 +304,14 @@
                                             </div>
 
                                             <!-- Selector de Año -->
+                                            <!-- Selector de Año -->
+                                            <!-- Selector de Año -->
                                             <div class="relative min-w-[120px]">
                                                 <select name="año" id="selectAño"
                                                     class="relative bg-gray-900/40 text-white border border-white/20 rounded-lg px-3 py-1.5 pr-8 appearance-none cursor-pointer hover:bg-white/10 transition-colors duration-200 text-sm w-full backdrop-blur-sm"
                                                     onchange="actualizarAño(this.value)">
-                                                    {% for año in años_disponibles %}
-                                                    <option value="{{ año }}" {% if
-                                                        año|stringformat:"s"==año_seleccionado|stringformat:"s"
-                                                        %}selected{% endif %}
-                                                        class="bg-gray-800 text-white py-1 px-2 text-sm">
-                                                        {{ año }}
-                                                    </option>
-                                                    {% endfor %}
+                                                    {% for año in años_disponibles %}<option value="{{ año }}" class="bg-gray-800 text-white py-1 px-2 text-sm" {% if año == año_seleccionado %}selected{% endif %}>{{ año }}</option>{% endfor %}
                                                 </select>
-
-                                                <!-- Ícono de flecha -->
                                                 <div
                                                     class="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white"
@@ -347,6 +340,103 @@
                                     </div>
                                 </div>
                             </div>
+
+
+
+                            <!-- Contenedor del gráfico de visitas por hora -->
+<div class="relative overflow-hidden rounded-xl">
+    <!-- Capas de fondo para compatibilidad con iOS -->
+    <div class="absolute inset-0 bg-gray-900/40"></div>
+    <div class="absolute inset-0 backdrop-blur-sm"></div>
+
+    <!-- Contenido -->
+    <div class="relative p-6">
+        <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
+            <div class="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-8">
+                <!-- Título -->
+                <div class="flex items-center">
+                    <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
+                    <h3 class="text-xl font-semibold text-white">Análisis de Ingresos</h3>
+                </div>
+
+                <!-- Selector de tipo de filtro -->
+                <div class="relative w-full md:w-[150px]">
+                    <select id="filterType" class="w-full relative bg-gray-900/40 text-white border border-white/20 rounded-lg px-3 py-1.5 pr-8 appearance-none cursor-pointer hover:bg-white/10 transition-colors duration-200 text-sm">
+                        <option value="week">Por Día de Semana</option>
+                    <!--    <option value="month">Por Mes</option> -->
+                        <option value="hour">Por Hora del Día</option>
+                    </select>
+                    <div class="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Filtros adicionales (se muestran/ocultan según el tipo) -->
+                <div id="monthFilter" class="relative w-full md:w-[120px] hidden">
+                    <select id="monthSelect" class="w-full relative bg-gray-900/40 text-white border border-white/20 rounded-lg px-3 py-1.5 pr-8 appearance-none cursor-pointer hover:bg-white/10 transition-colors duration-200 text-sm">
+                        <option value="1">Enero</option>
+                        <option value="2">Febrero</option>
+                        <option value="3">Marzo</option>
+                        <option value="4">Abril</option>
+                        <option value="5">Mayo</option>
+                        <option value="6">Junio</option>
+                        <option value="7">Julio</option>
+                        <option value="8">Agosto</option>
+                        <option value="9">Septiembre</option>
+                        <option value="10">Octubre</option>
+                        <option value="11">Noviembre</option>
+                        <option value="12">Diciembre</option>
+                    </select>
+                    <div class="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+                                            <!-- Filtros adicionales (se muestran/ocultan según el tipo) -->
+                                            <!-- Filtros adicionales (se muestran/ocultan según el tipo) -->
+<div id="monthFilter" class="relative min-w-[120px] hidden">
+    <select id="monthSelect" class="relative bg-gray-900/40 text-white border border-white/20 rounded-lg px-3 py-1.5 pr-8 appearance-none cursor-pointer hover:bg-white/10 transition-colors duration-200 text-sm w-full backdrop-blur-sm">
+        <option value="1">Enero</option>
+        <option value="2">Febrero</option>
+        <option value="3">Marzo</option>
+        <option value="4">Abril</option>
+        <option value="5">Mayo</option>
+        <option value="6">Junio</option>
+        <option value="7">Julio</option>
+        <option value="8">Agosto</option>
+        <option value="9">Septiembre</option>
+        <option value="10">Octubre</option>
+        <option value="11">Noviembre</option>
+        <option value="12">Diciembre</option>
+    </select>
+</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Contenedor del gráfico -->
+        <div class="relative overflow-hidden rounded-lg">
+            <div class="absolute inset-0 bg-gray-900/40"></div>
+            <div class="absolute inset-0 backdrop-blur-sm"></div>
+            <div class="relative h-[400px] w-full p-4">
+                <canvas id="visitorsAnalyticsChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
                         </div>
                     </div>
                 </div>
@@ -433,27 +523,14 @@
         });
 
         // Configuración del gráfico
-        // Obtener los datos de los elementos script
+        const ctx = document.getElementById('visitantesChart').getContext('2d');
         const meses = JSON.parse(document.getElementById('meses-data').textContent);
         const datosGrafico = JSON.parse(document.getElementById('visitantes-data').textContent);
 
-        // Configuración del gráfico
-        const ctx = document.getElementById('visitantesChart').getContext('2d');
-
-        // Crear gradientes más llamativos
+        // Crear gradientes
         const gradientFill = ctx.createLinearGradient(0, 0, 0, 400);
-        gradientFill.addColorStop(0, 'rgba(96, 165, 250, 0.3)');   // Azul más brillante
-        gradientFill.addColorStop(1, 'rgba(96, 165, 250, 0.02)');  // Casi transparente
-
-        const gradientStroke = ctx.createLinearGradient(0, 0, 400, 0);
-        gradientStroke.addColorStop(0, 'rgba(147, 197, 253, 1)');  // Azul claro
-        gradientStroke.addColorStop(0.5, 'rgba(59, 130, 246, 1)'); // Azul medio
-        gradientStroke.addColorStop(1, 'rgba(37, 99, 235, 1)');    // Azul oscuro
-
-        // Añadir sombras al canvas
-        ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
-        ctx.shadowBlur = 10;
-        ctx.shadowOffsetY = 5;
+        gradientFill.addColorStop(0, 'rgba(96, 165, 250, 0.3)');
+        gradientFill.addColorStop(1, 'rgba(96, 165, 250, 0.02)');
 
         new Chart(ctx, {
             type: 'line',
@@ -473,9 +550,7 @@
                     pointHoverBackgroundColor: 'white',
                     pointHoverBorderColor: 'rgba(37, 99, 235, 1)',
                     pointRadius: 6,
-                    pointHoverRadius: 8,
-                    pointShadowOffsetY: 3,
-                    pointHoverShadowOffsetY: 5,
+                    pointHoverRadius: 8
                 }]
             },
             options: {
@@ -507,10 +582,6 @@
                         borderWidth: 1,
                         displayColors: false,
                         cornerRadius: 8,
-                        caretSize: 6,
-                        titleMarginBottom: 10,
-                        mode: 'index',
-                        intersect: false,
                         callbacks: {
                             label: function (context) {
                                 return `${context.parsed.y} visitantes`;
@@ -518,16 +589,11 @@
                         }
                     }
                 },
-                interaction: {
-                    mode: 'index',
-                    intersect: false,
-                },
                 scales: {
                     y: {
                         beginAtZero: true,
                         max: 1000,
                         ticks: {
-                            stepSize: 50,
                             color: 'rgba(255, 255, 255, 0.7)',
                             font: {
                                 family: 'Poppins',
@@ -560,27 +626,8 @@
                             display: false
                         }
                     }
-                },
-                elements: {
-                    line: {
-                        cubicInterpolationMode: 'monotone'
-                    }
-                },
-                hover: {
-                    mode: 'index',
-                    intersect: false
                 }
-            },
-            plugins: [{
-                beforeDraw: (chart) => {
-                    const ctx = chart.ctx;
-                    ctx.save();
-                    ctx.globalCompositeOperation = 'destination-over';
-                    ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-                    ctx.fillRect(0, 0, chart.width, chart.height);
-                    ctx.restore();
-                }
-            }]
+            }
         });
 
 
@@ -627,28 +674,21 @@
         });
 
         // filtro año visitantes por mes 
+        // Función para actualizar el año
         function actualizarAño(año) {
             const urlParams = new URLSearchParams(window.location.search);
-
-            // Mantener el parámetro de fecha si existe
             const fecha = urlParams.get('fecha');
-
-            // Construir la nueva URL
             let nuevaUrl = new URL(window.location.pathname, window.location.origin);
 
-            // Añadir el año seleccionado
             nuevaUrl.searchParams.set('año', año);
-
-            // Mantener la fecha si existe
             if (fecha) {
                 nuevaUrl.searchParams.set('fecha', fecha);
             }
 
-            // Redirigir con los parámetros actualizados
             window.location.href = nuevaUrl.toString();
         }
 
-        // Al cargar la página, establecer el año seleccionado
+        // Inicializar el año seleccionado
         document.addEventListener('DOMContentLoaded', function () {
             const urlParams = new URLSearchParams(window.location.search);
             const añoSeleccionado = urlParams.get('año');
@@ -704,7 +744,157 @@
 
 
         // grafico horas * semana
+        let visitorsChart = null;
 
+        function initializeVisitorsChart() {
+            const ctx = document.getElementById('visitorsAnalyticsChart').getContext('2d');
+
+            // Crear gradientes
+            const gradientFill = ctx.createLinearGradient(0, 0, 0, 400);
+            gradientFill.addColorStop(0, 'rgba(59, 130, 246, 0.3)');
+            gradientFill.addColorStop(1, 'rgba(59, 130, 246, 0.02)');
+
+            visitorsChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Ingresos',
+                        data: [],
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        backgroundColor: gradientFill,
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: 'white',
+                        pointBorderColor: 'rgba(59, 130, 246, 1)',
+                        pointBorderWidth: 2,
+                        pointHoverBackgroundColor: 'white',
+                        pointHoverBorderColor: 'rgba(37, 99, 235, 1)',
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animations: {
+                        tension: {
+                            duration: 1000,
+                            easing: 'linear'
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                            titleColor: '#1e3a8a',
+                            bodyColor: '#1e3a8a',
+                            bodyFont: {
+                                family: 'Poppins',
+                                size: 14
+                            },
+                            titleFont: {
+                                family: 'Poppins',
+                                size: 16,
+                                weight: 'bold'
+                            },
+                            padding: 12,
+                            borderColor: 'rgba(96, 165, 250, 0.2)',
+                            borderWidth: 1,
+                            displayColors: false,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function (context) {
+                                    return `${context.parsed.y} visitantes`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)',
+                                font: {
+                                    family: 'Poppins',
+                                    size: 12
+                                },
+                                padding: 10
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)',
+                                drawBorder: false
+                            },
+                            border: {
+                                display: false
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)',
+                                font: {
+                                    family: 'Poppins',
+                                    size: 12
+                                },
+                                padding: 10
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)',
+                                drawBorder: false
+                            },
+                            border: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateChart(filterType) {
+            const month = document.getElementById('monthSelect')?.value || '';
+            const year = new Date().getFullYear();
+
+            fetch(`/visitor-stats/?filter_type=${filterType}&month=${month}&year=${year}`)
+                .then(response => response.json())
+                .then(data => {
+                    visitorsChart.data.labels = data.labels;
+                    visitorsChart.data.datasets[0].data = data.data;
+                    visitorsChart.update();
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function () {
+            initializeVisitorsChart();
+
+            // Manejar cambios en el tipo de filtro
+            document.getElementById('filterType').addEventListener('change', function (e) {
+                const filterType = e.target.value;
+                const monthFilter = document.getElementById('monthFilter');
+
+                // Mostrar/ocultar filtro de mes según corresponda
+                if (filterType === 'hour') {
+                    monthFilter.classList.remove('hidden');
+                } else {
+                    monthFilter.classList.add('hidden');
+                }
+
+                updateChart(filterType);
+            });
+
+            // Manejar cambios en el mes seleccionado
+            document.getElementById('monthSelect')?.addEventListener('change', function () {
+                updateChart('hour');
+            });
+
+            // Cargar datos iniciales
+            updateChart('week');
+        });
 
     </script>
 </body>
