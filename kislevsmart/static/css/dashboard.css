@@ -167,18 +167,12 @@ canvas {
     opacity: 0.2;
 }
 
-.slide-content {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
-    overflow-y: auto;
-}
 
 .slide-content.hidden {
     transform: translateX(100%);
     opacity: 0;
     pointer-events: none;
+    display: none;
 }
 
 .menu-item.active {
@@ -353,10 +347,9 @@ html, body {
 
 /* Contenedor principal */
 .flex.h-screen {
-    min-height: 100vh;
-    width: 100%;
-    position: relative;
-    overflow-x: hidden;
+    height: 100vh;
+    display: flex;
+    flex-direction: row;
 }
 
 /* Ajustes del menú lateral */
@@ -441,8 +434,13 @@ html, body {
 .slide-content {
     width: 100%;
     max-width: 100vw;
-    overflow-x: hidden;
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
+
 
 @media (max-width: 768px) {
     /* Ajustes para las tarjetas de estadísticas en móvil */
@@ -450,10 +448,111 @@ html, body {
         width: 100%;
         margin-left: 0;
         margin-right: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 
     /* Ajuste para el contenedor de las categorías */
     .grid.grid-cols-1.sm\:grid-cols-2.md\:grid-cols-3.gap-4 {
         padding: 0;
+        justify-content: center;
     }
+
+    /* Contenedor principal del contenido */
+.flex-1.flex.flex-col {
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+
+/* Ajustes para el contenido dentro de los slides */
+.slide-content .p-6 {
+    width: 100%;
+    padding: 2rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.slide-content .glass-effect {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    flex: 1;
+}
+
+.slide-content .glass-effect > * {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+    /* Ajustes de grid y tarjetas */
+    .grid {
+        margin-left: 0;
+        margin-right: 0;
+        width: 100%;
+    }
+
+    .glass-effect {
+        margin-left: 0;
+        margin-right: 0;
+        width: 100%;
+    }
+
+    /* Ajuste para el selector de fecha */
+    .flex.items-center.space-x-4 {
+        padding: 0;
+        justify-content: center;
+    }
+
+    /* Ajuste para los contenedores de estadísticas */
+    .grid.gap-6 {
+        gap: 1rem;
+        padding: 0;
+        justify-content: center;
+    }
+
+    /* Ajuste para el contenedor del gráfico */
+    .chart-container {
+        width: 100%;
+        overflow-x: hidden;
+    }
+
+    /* Ajustes para las tarjetas de estadísticas en móvil */
+    .stat-card {
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* Ajuste para el contenedor de las categorías */
+    .grid.grid-cols-1.sm\:grid-cols-2.md\:grid-cols-3.gap-4 {
+        padding: 0;
+        justify-content: center;
+    }
+
+
+}
+
+
+
+.flex-1.overflow-hidden.relative {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.flex-1.flex.flex-col.overflow-hidden {
+    height: 100%;
 }
