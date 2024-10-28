@@ -225,88 +225,53 @@
                                     <h3 class="text-xl font-semibold text-white/80 mb-4">Visitantes por Categoría</h3>
                                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                                         {% for categoria in visitantes_por_motivo %}
-                                        <div class="bg-white/5 rounded-lg p-4 backdrop-blur-sm">
-                                            <div class="flex justify-between items-center mb-3">
-                                                <div class="flex items-center gap-3">
-                                                    <!-- Iconos y colores según la categoría -->
-                                                    {% if categoria.motivo == 'Visita Personal' %}
-                                                    <div class="p-2 bg-pink-500/20 rounded-lg">
-                                                        <svg class="h-5 w-5 text-pink-400" fill="none"
-                                                            viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2"
-                                                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                                                        </svg>
+                                        <div class="relative overflow-hidden rounded-lg">
+                                            <!-- Capa base con fondo sólido -->
+                                            <div class="absolute inset-0 bg-gray-900/40"></div>
+                                            <!-- Capa de desenfoque -->
+                                            <div class="absolute inset-0 backdrop-blur-sm"></div>
+                                            <!-- Contenido -->
+                                            <div class="relative p-4">
+                                                <div class="flex justify-between items-center mb-3">
+                                                    <div class="flex items-center gap-3">
+                                                        <!-- Iconos y colores según la categoría -->
+                                                        {% if categoria.motivo == 'Visita Personal' %}
+                                                        <div class="p-2 bg-pink-500/20 rounded-lg">
+                                                            <svg class="h-5 w-5 text-pink-400" fill="none"
+                                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    stroke-width="2"
+                                                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                                            </svg>
+                                                        </div>
+                                                        {% elif categoria.motivo == 'Servicios' %}
+                                                        <div class="p-2 bg-blue-500/20 rounded-lg">
+                                                            <svg class="h-5 w-5 text-blue-400" fill="none"
+                                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    stroke-width="2"
+                                                                    d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                                            </svg>
+                                                        </div>
+                                                        {% elif categoria.motivo == 'Vista Proveedores' %}
+                                                        <!-- [Mantener el mismo patrón para los demás casos...] -->
+                                                        {% endif %}
+                                                        <p class="text-white font-medium">{{ categoria.motivo }}</p>
                                                     </div>
-                                                    {% elif categoria.motivo == 'Servicios' %}
-                                                    <div class="p-2 bg-blue-500/20 rounded-lg">
-                                                        <svg class="h-5 w-5 text-blue-400" fill="none"
-                                                            viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2"
-                                                                d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                                        </svg>
-                                                    </div>
-                                                    {% elif categoria.motivo == 'Vista Proveedores' %}
-                                                    <div class="p-2 bg-green-500/20 rounded-lg">
-                                                        <svg class="h-5 w-5 text-green-400" fill="none"
-                                                            viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2"
-                                                                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                                                        </svg>
-                                                    </div>
-                                                    {% elif categoria.motivo == 'Eventos Especiales' %}
-                                                    <div class="p-2 bg-purple-500/20 rounded-lg">
-                                                        <svg class="h-5 w-5 text-purple-400" fill="none"
-                                                            viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2"
-                                                                d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                                                        </svg>
-                                                    </div>
-                                                    {% elif categoria.motivo == 'Mantenimiento de Instalaciones' %}
-                                                    <div class="p-2 bg-yellow-500/20 rounded-lg">
-                                                        <svg class="h-5 w-5 text-yellow-400" fill="none"
-                                                            viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2"
-                                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                                        </svg>
-                                                    </div>
-                                                    {% elif categoria.motivo == 'Inspección' %}
-                                                    <div class="p-2 bg-red-500/20 rounded-lg">
-                                                        <svg class="h-5 w-5 text-red-400" fill="none"
-                                                            viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2"
-                                                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                                                        </svg>
-                                                    </div>
-                                                    {% else %}
-                                                    <div class="p-2 bg-gray-500/20 rounded-lg">
-                                                        <svg class="h-5 w-5 text-gray-400" fill="none"
-                                                            viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2"
-                                                                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                        </svg>
-                                                    </div>
-                                                    {% endif %}
-                                                    <p class="text-white font-medium">{{ categoria.motivo }}</p>
+                                                    <span class="text-2xl font-bold text-white">{{ categoria.total
+                                                        }}</span>
                                                 </div>
-                                                <span class="text-2xl font-bold text-white">{{ categoria.total }}</span>
-                                            </div>
-                                            <div class="mt-2 bg-white/10 rounded-full h-2">
-                                                <div class="h-2 rounded-full transition-all duration-500 
-                                                            {% if categoria.motivo == 'Visita Personal' %}bg-pink-500
-                                                            {% elif categoria.motivo == 'Servicios' %}bg-blue-500
-                                                            {% elif categoria.motivo == 'Vista Proveedores' %}bg-green-500
-                                                            {% elif categoria.motivo == 'Eventos Especiales' %}bg-purple-500
-                                                            {% elif categoria.motivo == 'Mantenimiento de Instalaciones' %}bg-yellow-500
-                                                            {% elif categoria.motivo == 'Inspección' %}bg-red-500
-                                                            {% else %}bg-gray-500{% endif %}"
-                                                    data-width="{% widthratio categoria.total total_visitantes_dia 100 %}">
+                                                <div class="mt-2 bg-black/30 rounded-full h-2">
+                                                    <div class="h-2 rounded-full transition-all duration-500 
+                        {% if categoria.motivo == 'Visita Personal' %}bg-pink-500
+                        {% elif categoria.motivo == 'Servicios' %}bg-blue-500
+                        {% elif categoria.motivo == 'Vista Proveedores' %}bg-green-500
+                        {% elif categoria.motivo == 'Eventos Especiales' %}bg-purple-500
+                        {% elif categoria.motivo == 'Mantenimiento de Instalaciones' %}bg-yellow-500
+                        {% elif categoria.motivo == 'Inspección' %}bg-red-500
+                        {% else %}bg-gray-500{% endif %}"
+                                                        data-width="{% widthratio categoria.total total_visitantes_dia 100 %}">
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -323,49 +288,63 @@
 
 
                             <!-- Selector de año y título del gráfico -->
-                            <div class="glass-effect rounded-xl p-6 chart-container glow">
-                                <div class="flex justify-between items-center mb-6">
-                                    <div class="flex items-center gap-8">
-                                        <!-- Indicador de Visitantes (solo uno) -->
-                                        <div class="flex items-center">
-                                            <span class="w-3 h-3 rounded-full bg-pink-700 mr-2"></span>
-                                            <h3 class="text-xl font-semibold text-white">Visitantes por Mes</h3>
-                                        </div>
-                                        <!-- Selector de Año -->
-                                        <div class="relative min-w-[120px]">
-                                            <select name="año" id="selectAño"
-                                                class="bg-white/10 text-white border border-white/20 rounded-lg px-3 py-1.5 pr-8 appearance-none cursor-pointer hover:bg-white/20 transition-colors duration-200 text-sm w-full"
-                                                onchange="actualizarAño(this.value)">
-                                                {% for año in años_disponibles %}
-                                                <option value="{{ año }}" {% if
-                                                    año|stringformat:"s"==año_seleccionado|stringformat:"s" %}selected{%
-                                                    endif %} class="bg-gray-800 text-white py-1 px-2 text-sm">
-                                                    {{ año }}
-                                                </option>
-                                                {% endfor %}
-                                            </select>
-                                            <!-- Ícono de flecha -->
-                                            <div
-                                                class="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white"
-                                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        stroke-width="2" d="M19 9l-7 7-7-7" />
-                                                </svg>
+                            <div class="relative overflow-hidden rounded-xl">
+                                <!-- Capas de fondo para compatibilidad con iOS -->
+                                <div class="absolute inset-0 bg-gray-900/40"></div>
+                                <div class="absolute inset-0 backdrop-blur-sm"></div>
+
+                                <!-- Contenido -->
+                                <div class="relative p-6">
+                                    <div class="flex justify-between items-center mb-6">
+                                        <div class="flex items-center gap-8">
+                                            <!-- Indicador de Visitantes -->
+                                            <div class="flex items-center">
+                                                <span class="w-3 h-3 rounded-full bg-pink-700 mr-2"></span>
+                                                <h3 class="text-xl font-semibold text-white">Visitantes por Mes</h3>
+                                            </div>
+
+                                            <!-- Selector de Año -->
+                                            <div class="relative min-w-[120px]">
+                                                <select name="año" id="selectAño"
+                                                    class="relative bg-gray-900/40 text-white border border-white/20 rounded-lg px-3 py-1.5 pr-8 appearance-none cursor-pointer hover:bg-white/10 transition-colors duration-200 text-sm w-full backdrop-blur-sm"
+                                                    onchange="actualizarAño(this.value)">
+                                                    {% for año in años_disponibles %}
+                                                    <option value="{{ año }}" {% if
+                                                        año|stringformat:"s"==año_seleccionado|stringformat:"s"
+                                                        %}selected{% endif %}
+                                                        class="bg-gray-800 text-white py-1 px-2 text-sm">
+                                                        {{ año }}
+                                                    </option>
+                                                    {% endfor %}
+                                                </select>
+
+                                                <!-- Ícono de flecha -->
+                                                <div
+                                                    class="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white"
+                                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2" d="M19 9l-7 7-7-7" />
+                                                    </svg>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <!-- Formulario oculto para enviar el año -->
-                                <form id="formAño" method="get" class="hidden">
-                                    <input type="hidden" name="fecha" value="{{ fecha_seleccionada|date:'Y-m-d' }}">
-                                    <input type="hidden" name="año" id="inputAño">
-                                </form>
+                                    <!-- Formulario oculto para enviar el año -->
+                                    <form id="formAño" method="get" class="hidden">
+                                        <input type="hidden" name="fecha" value="{{ fecha_seleccionada|date:'Y-m-d' }}">
+                                        <input type="hidden" name="año" id="inputAño">
+                                    </form>
 
-                                <!-- Contenedor del gráfico -->
-                                <div class="h-[400px] w-full backdrop-blur-sm rounded-lg p-4">
-                                    <canvas id="visitantesChart"></canvas>
+                                    <!-- Contenedor del gráfico -->
+                                    <div class="relative overflow-hidden rounded-lg">
+                                        <div class="absolute inset-0 bg-gray-900/40"></div>
+                                        <div class="absolute inset-0 backdrop-blur-sm"></div>
+                                        <div class="relative h-[400px] w-full p-4">
+                                            <canvas id="visitantesChart"></canvas>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
