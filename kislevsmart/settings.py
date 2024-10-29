@@ -290,11 +290,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Configuración de Email con SendGrid
 EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
-SENDGRID_API_KEY = env('SENDGRID_API_KEY', default='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')
-DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='mariax.ceb@gmail.com')
+SENDGRID_API_KEY = env('SENDGRID_API_KEY', default='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')
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='david.rojas@kislev.net.co')
 SENDGRID_SANDBOX_MODE_IN_DEBUG = False
 SENDGRID_TRACK_EMAIL_OPENS = True
 SENDGRID_TRACK_CLICKS = True
+SENDGRID_REPLY_TO = 'david.rojas@kislev.net.co'  # El mismo correo verificado
+
 
 
 # Configuración de seguridad adicional para producción
