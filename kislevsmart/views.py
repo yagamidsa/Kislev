@@ -33,15 +33,7 @@ from .models import Sala, Reserva
 from sendgrid.helpers.mail import Mail, To, Email, Content, Attachment, FileContent, FileName, FileType, Disposition
 import logging
 from django.contrib import messages
-
-
-
-
-
-
-
-
-
+from django.db import transaction
 
 #salas
 class SalaListView(ListView):
@@ -727,7 +719,6 @@ def bienvenida(request):
 @login_required
 @role_required(['porteria', 'administrador'])
 def validar_qr(request, encrypted_token):
-    logger = logging.getLogger(__name__)
     logger.info("Iniciando validación de QR")
     
     source = request.GET.get('source', '')
