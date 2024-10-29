@@ -100,6 +100,10 @@ WSGI_APPLICATION = 'kislevsmart.wsgi.application'
 
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_CACHE_ALIAS = 'default'
+SESSION_COOKIE_AGE = 3600
+
+
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',  # Backend por defecto
@@ -115,9 +119,20 @@ if os.getenv('DATABASE_URL', None):
     # Configuración para Railway (producción)
     import dj_database_url
     DATABASES = {
-        'default': dj_database_url.config(
-            default=os.getenv('DATABASE_URL')
-        )
+        'default': {
+            **dj_database_url.config(
+                default=os.getenv('DATABASE_URL'),
+                conn_max_age=0,  # Desactivar conexiones persistentes
+            ),
+            'ATOMIC_REQUESTS': True,  # Hace que todas las vistas sean atómicas por defecto
+            'OPTIONS': {
+                'isolation_level': 1,  # READ COMMITTED isolation level
+                'connect_timeout': 10,  # Timeout de conexión en segundos
+            },
+            'TEST': {
+                'MIRROR': 'default',   # Para tests
+            },
+        }
     }
 else:
     # Configuración para desarrollo local
@@ -129,8 +144,32 @@ else:
             'PASSWORD': 'Ipsos2012*',
             'HOST': 'localhost',
             'PORT': '5432',
+            'ATOMIC_REQUESTS': True,
+            'CONN_MAX_AGE': 0,  # Desactivar conexiones persistentes
+            'OPTIONS': {
+                'isolation_level': 1,  # READ COMMITTED isolation level
+                'connect_timeout': 10,
+            },
         }
     }
+
+# Configuración adicional recomendada para manejo de transacciones
+DATABASE_ROUTERS = []
+
+# Configuración de caché para mejor manejo de sesiones y transacciones
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+        'TIMEOUT': 300,  # 5 minutos
+        'OPTIONS': {
+            'MAX_ENTRIES': 1000
+        }
+    }
+}
+
+
+
 
 #DATABASES = {
 #    'default': {
@@ -167,15 +206,52 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
+# Configuración de internacionalización
 LANGUAGE_CODE = 'es-mx'
-
 TIME_ZONE = 'America/Bogota'
 
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
+
+# Configuración adicional para manejo de fechas y horas
+DATETIME_FORMAT = 'Y-m-d H:i:s'
+DATE_FORMAT = 'Y-m-d'
+TIME_FORMAT = 'H:i:s'
+
+# Configuración de formato para fechas en español
+DATE_INPUT_FORMATS = [
+    '%d/%m/%Y',
+    '%d-%m-%Y',
+    '%Y-%m-%d',
+]
+
+TIME_INPUT_FORMATS = [
+    '%H:%M:%S',
+    '%H:%M',
+]
+
+DATETIME_INPUT_FORMATS = [
+    '%d/%m/%Y %H:%M:%S',
+    '%d/%m/%Y %H:%M',
+    '%Y-%m-%d %H:%M:%S',
+    '%Y-%m-%d %H:%M',
+]
+
+# Configuración para manejo de zonas horarias
+USE_DEPRECATED_PYTZ = False  # Para versiones más nuevas de Django
+TIMEZONE_COOKIE_NAME = 'timezone'
+TIMEZONE_COOKIE_AGE = 2592000  # 30 días
+
+# Configuración de locale
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale'),
+]
+
+LANGUAGES = [
+    ('es-mx', 'Español de México'),
+    ('es-co', 'Español de Colombia'),
+]
 
 
 # Static files (CSS, JavaScript, Images)

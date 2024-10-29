@@ -15,121 +15,44 @@ logger = logging.getLogger(__name__)
 
 
 class Visitante(models.Model):
-   email_creador = models.EmailField()
-   nombre = models.CharField(max_length=100)
-   email = models.EmailField()
-   celular = models.CharField(max_length=15)
-   cedula = models.CharField(max_length=20)
-   motivo = models.CharField(max_length=255)
-   token = models.CharField(max_length=100, unique=True)
-   fecha_generacion = models.DateTimeField(default=timezone.now)
-   ultima_lectura = models.DateTimeField(null=True, blank=True)
-   usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
-   nombre_log = models.CharField(max_length=100)
-   numper = models.CharField(max_length=20)
+    email_creador = models.EmailField()
+    nombre = models.CharField(max_length=100)
+    email = models.EmailField()
+    celular = models.CharField(max_length=15)
+    cedula = models.CharField(max_length=20)
+    motivo = models.CharField(max_length=255)
+    token = models.CharField(max_length=100, unique=True)
+    fecha_generacion = models.DateTimeField(default=timezone.now)
+    ultima_lectura = models.DateTimeField(null=True, blank=True)
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
+    nombre_log = models.CharField(max_length=100)
+    numper = models.CharField(max_length=20)
 
-   def __str__(self):
-       return f"{self.nombre} - {self.email}"
+    def __str__(self):
+        return f"{self.nombre} - {self.email}"
 
-   def get_tiempo_actual(self):
-       """Obtiene el tiempo actual en la zona horaria local"""
-       return timezone.localtime(timezone.now())
+    def get_tiempo_actual(self):
+        """Obtiene el tiempo actual en la zona horaria local"""
+        return timezone.localtime(timezone.now())
 
-   def get_fecha_generacion_local(self):
-       """Obtiene la fecha de generación en la zona horaria local"""
-       return timezone.localtime(self.fecha_generacion)
+    def get_fecha_generacion_local(self):
+        """Obtiene la fecha de generación en la zona horaria local"""
+        return timezone.localtime(self.fecha_generacion)
 
-   def save(self, *args, **kwargs):
-       # Si es una nueva instancia (creación)
-       if not self.pk:
-           # Asegurar que fecha_generacion esté en la zona horaria local
-           self.fecha_generacion = self.get_tiempo_actual()
-       
-       # Para actualizaciones, asegurar que ultima_lectura esté en la zona horaria local
-       if self.ultima_lectura and timezone.is_naive(self.ultima_lectura):
-           self.ultima_lectura = timezone.make_aware(self.ultima_lectura, timezone.get_current_timezone())
-       
-       super().save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        """Sobrescribe el método save para manejar zonas horarias"""
+        if not self.pk:
+            self.fecha_generacion = self.get_tiempo_actual()
+            
+        # Asegurar zona horaria correcta para ultima_lectura
+        if self.ultima_lectura and timezone.is_naive(self.ultima_lectura):
+            self.ultima_lectura = timezone.make_aware(
+                self.ultima_lectura, 
+                timezone.get_current_timezone()
+            )
+            
+        super().save(*args, **kwargs)
 
-   def esta_vigente(self):
-       """Verifica si el QR está dentro del período de validez (24 horas)"""
-       try:
-           if not self.fecha_generacion:
-               logger.warning("QR sin fecha de generación")
-               return False
-               
-           fecha_generacion_local = self.get_fecha_generacion_local()
-           tiempo_actual_local = self.get_tiempo_actual()
-           tiempo_expiracion = fecha_generacion_local + timedelta(hours=24)
-           
-           es_vigente = tiempo_actual_local <= tiempo_expiracion
-           logger.info(f"""
-           Verificando vigencia:
-           ID: {self.id}
-           Fecha generación: {fecha_generacion_local}
-           Tiempo actual: {tiempo_actual_local}
-           Tiempo expiración: {tiempo_expiracion}
-           Es vigente: {es_vigente}
-           """)
-           
-           return es_vigente
-           
-       except Exception as e:
-           logger.error(f"Error verificando vigencia: {str(e)}")
-           return False
-
-   def esta_disponible(self):
-       """Verifica si el QR puede ser usado"""
-       return self.ultima_lectura is None and self.esta_vigente()
-
-   def registrar_lectura(self, nombre_log):
-       """Registra una lectura del QR si es posible"""
-       try:
-           # Recargar para tener datos frescos
-           self.refresh_from_db()
-           
-           # Log del estado inicial
-           logger.info(f"""
-           Iniciando registro de lectura:
-           ID: {self.id}
-           Token: {self.token[:10]}...
-           Última lectura actual: {self.ultima_lectura}
-           Nombre log: {nombre_log}
-           """)
-
-           # Verificación simple y directa
-           if self.ultima_lectura is not None:
-               logger.warning(f"QR ya utilizado - ID: {self.id}, Última lectura: {self.ultima_lectura}")
-               return False
-
-           if not self.esta_vigente():
-               logger.warning(f"QR expirado - ID: {self.id}")
-               return False
-
-           # Registrar la lectura
-           self.ultima_lectura = timezone.now()
-           self.nombre_log = nombre_log
-           self.save()
-           
-           logger.info(f"Lectura registrada exitosamente - ID: {self.id}, Nueva lectura: {self.ultima_lectura}")
-           return True
-
-       except Exception as e:
-           logger.error(f"Error en registrar_lectura - ID: {self.id}, Error: {str(e)}")
-           return False
-
-   def diagnostico_estado(self):
-       """Retorna un diccionario con el estado actual del QR"""
-       return {
-           'id': self.id,
-           'token': self.token[:10] + '...',  # Solo mostrar parte del token por seguridad
-           'fecha_generacion': self.fecha_generacion,
-           'ultima_lectura': self.ultima_lectura,
-           'esta_vigente': self.esta_vigente(),
-           'esta_disponible': self.esta_disponible(),
-           'tiempo_actual': self.get_tiempo_actual(),
-           'tiempo_expiracion': self.get_fecha_generacion_local() + timedelta(hours=24)
-       }
     
 
 
