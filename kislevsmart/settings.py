@@ -99,11 +99,13 @@ WSGI_APPLICATION = 'kislevsmart.wsgi.application'
 
 
 
+
+
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
-SESSION_COOKIE_AGE = 86400  # 24 horas en segundos
+SESSION_COOKIE_AGE = 3600  # 1 hora
 SESSION_COOKIE_SAMESITE = 'Lax'
 SESSION_CACHE_ALIAS = 'default'
-
+SESSION_SAVE_EVERY_REQUEST = True
 
 
 AUTHENTICATION_BACKENDS = (
@@ -116,6 +118,7 @@ AUTHENTICATION_BACKENDS = (
 
 
 # Database configuration
+# Database configuration
 if os.getenv('DATABASE_URL', None):
     # Configuración para Railway (producción)
     import dj_database_url
@@ -125,13 +128,19 @@ if os.getenv('DATABASE_URL', None):
                 default=os.getenv('DATABASE_URL'),
                 conn_max_age=0,  # Desactivar conexiones persistentes
             ),
-            'ATOMIC_REQUESTS': True,  # Hace que todas las vistas sean atómicas por defecto
+            'ATOMIC_REQUESTS': True,
+            'CONN_MAX_AGE': 0,
             'OPTIONS': {
-                'isolation_level': 1,  # READ COMMITTED isolation level
-                'connect_timeout': 10,  # Timeout de conexión en segundos
+                'isolation_level': 1,
+                'connect_timeout': 10,
+                'sslmode': 'require',  # Para Railway
+                'keepalives': 1,
+                'keepalives_idle': 30,
+                'keepalives_interval': 10,
+                'keepalives_count': 5,
             },
             'TEST': {
-                'MIRROR': 'default',   # Para tests
+                'MIRROR': 'default',
             },
         }
     }
@@ -162,7 +171,7 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         'LOCATION': 'unique-snowflake',
-        'TIMEOUT': 300,  # 5 minutos
+        'TIMEOUT': 300,
         'OPTIONS': {
             'MAX_ENTRIES': 1000
         }
@@ -328,27 +337,15 @@ SENDGRID_CATEGORIES = ['notificaciones_servicios']
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {message}',
-            'style': '{',
-        },
-    },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
         },
     },
     'loggers': {
-        '': {  # Root logger
+        'django.db.backends': {
             'handlers': ['console'],
-            'level': 'WARNING',  # Cambiado a WARNING para reducir logs
-        },
-        'tu_app': {  # Reemplaza con el nombre de tu app
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': False,
+            'level': 'WARNING',
         },
     },
 }

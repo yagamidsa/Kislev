@@ -735,20 +735,6 @@ def bienvenida(request):
 def validar_qr(request, encrypted_token):
     logger.info("Iniciando validación de QR")
     
-    # Verificar si es una pre-carga de Safari/iOS
-    is_ios_prefetch = (
-        'purpose' in request.headers and 
-        request.headers['purpose'] == 'prefetch'
-    ) or (
-        'Sec-Purpose' in request.headers and 
-        request.headers['Sec-Purpose'] == 'prefetch'
-    )
-
-    if is_ios_prefetch:
-        logger.info("Detectada pre-carga de iOS - ignorando validación")
-        return HttpResponse(status=204)  # No Content
-
-    # Verificar fuente del escaneo
     source = request.GET.get('source', '')
     if source != 'scan':
         logger.warning("Intento de acceso sin escaneo")
@@ -765,47 +751,65 @@ def validar_qr(request, encrypted_token):
 
         original_token = decrypted_token[len("Kislev_"):]
         
-        # Obtener visitante con bloqueo
+        # IMPORTANTE: Usamos select_for_update para bloquear el registro
         with transaction.atomic():
-            visitante = get_object_or_404(
-                Visitante.objects.select_for_update(nowait=True),
-                token=original_token
-            )
-            
-            # Verificar estado directamente en la base de datos
+            # Intentar obtener el visitante con bloqueo
+            try:
+                visitante = Visitante.objects.select_for_update(nowait=True).get(token=original_token)
+            except DatabaseError:
+                logger.warning("QR siendo procesado simultáneamente")
+                return render(request, 'error_qr.html', {
+                    'mensaje': 'QR siendo procesado. Por favor, intente nuevamente en unos segundos.'
+                })
+
+            # Verificar inmediatamente si ya fue usado
             visitante.refresh_from_db()
-            
-            # Detectar si es una solicitud desde Safari/iOS
-            is_safari = 'Safari' in request.META.get('HTTP_USER_AGENT', '')
-            
             if visitante.ultima_lectura is not None:
-                logger.warning(f"QR ya utilizado el: {visitante.ultima_lectura}")
-                # Si es Safari/iOS y es la primera vez que se intenta, dar una segunda oportunidad
-                if is_safari and 'attempted' not in request.session:
-                    request.session['attempted'] = True
-                    logger.info("Primera intención desde Safari - permitiendo segundo intento")
-                    return render(request, 'validar_qr.html', {'visitante': visitante})
+                logger.warning(f"QR ya utilizado - ID: {visitante.id}, Última lectura: {visitante.ultima_lectura}")
                 return render(request, 'qr_desactivado.html', {
                     'mensaje': 'Este código QR ya ha sido utilizado.',
                     'ultima_lectura': visitante.ultima_lectura
                 })
 
-            # Intentar registrar la lectura directamente
-            visitante.ultima_lectura = timezone.now()
+            # Verificar vigencia
+            tiempo_actual = timezone.now()
+            tiempo_expiracion = visitante.fecha_generacion + timedelta(hours=24)
+            
+            if tiempo_actual > tiempo_expiracion:
+                logger.warning(f"QR expirado - ID: {visitante.id}")
+                return render(request, 'qr_expirado.html', {
+                    'mensaje': 'El QR ha expirado.',
+                    'fecha_generacion': visitante.fecha_generacion,
+                    'fecha_expiracion': tiempo_expiracion
+                })
+
+            # Si llegamos aquí, podemos registrar la lectura
+            logger.info(f"Registrando primera lectura para QR - ID: {visitante.id}")
+            visitante.ultima_lectura = tiempo_actual
             visitante.nombre_log = request.user.email
             visitante.save()
-            
-            # Limpiar la sesión
-            if 'attempted' in request.session:
-                del request.session['attempted']
-            
-            logger.info(f"Lectura registrada exitosamente: {visitante.ultima_lectura}")
-            return render(request, 'validar_qr.html', {'visitante': visitante})
+
+            # Enviar notificación
+            try:
+                email = EmailMessage(
+                    "Tu visitante ha llegado",
+                    f"Tu visitante {visitante.nombre} ha llegado y su QR ha sido validado.",
+                    settings.DEFAULT_FROM_EMAIL,
+                    [visitante.email_creador]
+                )
+                email.send(fail_silently=True)
+            except Exception as e:
+                logger.error(f"Error enviando notificación: {str(e)}")
+
+            return render(request, 'validar_qr.html', {
+                'visitante': visitante,
+                'tiempo_validacion': timezone.localtime(tiempo_actual).strftime('%H:%M:%S')
+            })
 
     except Exception as e:
         logger.error(f"Error procesando QR: {str(e)}")
         return render(request, 'error_qr.html', {
-            'mensaje': f'Error al procesar el QR: {str(e)}'
+            'mensaje': 'Error al procesar el QR.'
         })
         
         
