@@ -529,114 +529,126 @@
             aside.classList.toggle('z-50');
         });
 
-        // Configuración del gráfico
-        const ctx = document.getElementById('visitantesChart').getContext('2d');
-        const meses = JSON.parse(document.getElementById('meses-data').textContent);
-        const datosGrafico = JSON.parse(document.getElementById('visitantes-data').textContent);
+        // Configuración del gráfico principal de visitantes
+const ctx = document.getElementById('visitantesChart').getContext('2d');
+const meses = JSON.parse(document.getElementById('meses-data').textContent);
+const datosGrafico = JSON.parse(document.getElementById('visitantes-data').textContent);
 
-        // Crear gradientes
-        const gradientFill = ctx.createLinearGradient(0, 0, 0, 400);
-        gradientFill.addColorStop(0, 'rgba(96, 165, 250, 0.3)');
-        gradientFill.addColorStop(1, 'rgba(96, 165, 250, 0.02)');
+// Crear gradientes
+const gradientFill = ctx.createLinearGradient(0, 0, 0, 400);
+gradientFill.addColorStop(0, 'rgba(96, 165, 250, 0.3)');
+gradientFill.addColorStop(1, 'rgba(96, 165, 250, 0.02)');
 
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: meses,
-                datasets: [{
-                    label: 'Visitantes',
-                    data: datosGrafico,
-                    borderColor: 'rgba(190, 24, 93, 1)',
-                    backgroundColor: gradientFill,
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4,
-                    pointBackgroundColor: 'white',
-                    pointBorderColor: 'rgba(190, 24, 93, 1)',
-                    pointBorderWidth: 2,
-                    pointHoverBackgroundColor: 'white',
-                    pointHoverBorderColor: 'rgba(37, 99, 235, 1)',
-                    pointRadius: 6,
-                    pointHoverRadius: 8
-                }]
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: meses,
+        datasets: [{
+            label: 'Visitantes',
+            data: datosGrafico,
+            borderColor: 'rgba(190, 24, 93, 1)',
+            backgroundColor: gradientFill,
+            borderWidth: 3,
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: 'white',
+            pointBorderColor: 'rgba(190, 24, 93, 1)',
+            pointBorderWidth: 2,
+            pointHoverBackgroundColor: 'white',
+            pointHoverBorderColor: 'rgba(37, 99, 235, 1)',
+            pointRadius: 6,
+            pointHoverRadius: 8,
+            // Agregar un área de interacción más grande alrededor de los puntos
+            pointHitRadius: 20
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: {
+            duration: 2000,
+            easing: 'easeOutQuart'
+        },
+        interaction: {
+            // Mejorar la interacción táctil
+            mode: 'nearest',
+            axis: 'xy',
+            intersect: false,
+            // Añadir un área más grande para la detección de interacción
+            radius: 20
+        },
+        plugins: {
+            legend: {
+                display: false
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                animation: {
-                    duration: 2000,
-                    easing: 'easeOutQuart'
+            tooltip: {
+                enabled: true,
+                // Mejorar el comportamiento del tooltip en dispositivos táctiles
+                events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove'],
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                titleColor: '#1e3a8a',
+                bodyColor: '#1e3a8a',
+                bodyFont: {
+                    family: 'Poppins',
+                    size: 14
                 },
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    tooltip: {
-                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                        titleColor: '#1e3a8a',
-                        bodyColor: '#1e3a8a',
-                        bodyFont: {
-                            family: 'Poppins',
-                            size: 14
-                        },
-                        titleFont: {
-                            family: 'Poppins',
-                            size: 16,
-                            weight: 'bold'
-                        },
-                        padding: 12,
-                        borderColor: 'rgba(96, 165, 250, 0.2)',
-                        borderWidth: 1,
-                        displayColors: false,
-                        cornerRadius: 8,
-                        callbacks: {
-                            label: function (context) {
-                                return `${context.parsed.y} visitantes`;
-                            }
-                        }
-                    }
+                titleFont: {
+                    family: 'Poppins',
+                    size: 16,
+                    weight: 'bold'
                 },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 1000,
-                        ticks: {
-                            color: 'rgba(255, 255, 255, 0.7)',
-                            font: {
-                                family: 'Poppins',
-                                size: 12
-                            },
-                            padding: 10
-                        },
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)',
-                            drawBorder: false
-                        },
-                        border: {
-                            display: false
-                        }
-                    },
-                    x: {
-                        ticks: {
-                            color: 'rgba(255, 255, 255, 0.7)',
-                            font: {
-                                family: 'Poppins',
-                                size: 12
-                            },
-                            padding: 10
-                        },
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)',
-                            drawBorder: false
-                        },
-                        border: {
-                            display: false
-                        }
+                padding: 12,
+                borderColor: 'rgba(96, 165, 250, 0.2)',
+                borderWidth: 1,
+                displayColors: false,
+                cornerRadius: 8,
+                callbacks: {
+                    label: function (context) {
+                        return `${context.parsed.y} visitantes`;
                     }
                 }
             }
-        });
-
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                max: 1000,
+                ticks: {
+                    color: 'rgba(255, 255, 255, 0.7)',
+                    font: {
+                        family: 'Poppins',
+                        size: 12
+                    },
+                    padding: 10
+                },
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.1)',
+                    drawBorder: false
+                },
+                border: {
+                    display: false
+                }
+            },
+            x: {
+                ticks: {
+                    color: 'rgba(255, 255, 255, 0.7)',
+                    font: {
+                        family: 'Poppins',
+                        size: 12
+                    },
+                    padding: 10
+                },
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.1)',
+                    drawBorder: false
+                },
+                border: {
+                    display: false
+                }
+            }
+        }
+    }
+});
 
         // Al inicio de tu sección de scripts
         document.addEventListener('DOMContentLoaded', function () {
@@ -754,113 +766,126 @@ document.querySelectorAll('.menu-item').forEach(item => {
         // grafico horas * semana
         let visitorsChart = null;
 
-        function initializeVisitorsChart() {
-            const ctx = document.getElementById('visitorsAnalyticsChart').getContext('2d');
+        // Configuración del gráfico de análisis de visitantes
+function initializeVisitorsChart() {
+    const ctx = document.getElementById('visitorsAnalyticsChart').getContext('2d');
+    
+    const gradientFill = ctx.createLinearGradient(0, 0, 0, 400);
+    gradientFill.addColorStop(0, 'rgba(59, 130, 246, 0.3)');
+    gradientFill.addColorStop(1, 'rgba(59, 130, 246, 0.02)');
 
-            // Crear gradientes
-            const gradientFill = ctx.createLinearGradient(0, 0, 0, 400);
-            gradientFill.addColorStop(0, 'rgba(59, 130, 246, 0.3)');
-            gradientFill.addColorStop(1, 'rgba(59, 130, 246, 0.02)');
-
-            visitorsChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: [],
-                    datasets: [{
-                        label: 'Ingresos',
-                        data: [],
-                        borderColor: 'rgba(59, 130, 246, 1)',
-                        backgroundColor: gradientFill,
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.4,
-                        pointBackgroundColor: 'white',
-                        pointBorderColor: 'rgba(59, 130, 246, 1)',
-                        pointBorderWidth: 2,
-                        pointHoverBackgroundColor: 'white',
-                        pointHoverBorderColor: 'rgba(37, 99, 235, 1)',
-                        pointRadius: 6,
-                        pointHoverRadius: 8
-                    }]
+    visitorsChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Ingresos',
+                data: [],
+                borderColor: 'rgba(59, 130, 246, 1)',
+                backgroundColor: gradientFill,
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: 'white',
+                pointBorderColor: 'rgba(59, 130, 246, 1)',
+                pointBorderWidth: 2,
+                pointHoverBackgroundColor: 'white',
+                pointHoverBorderColor: 'rgba(37, 99, 235, 1)',
+                pointRadius: 6,
+                pointHoverRadius: 8,
+                // Agregar un área de interacción más grande alrededor de los puntos
+                pointHitRadius: 20
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animations: {
+                tension: {
+                    duration: 1000,
+                    easing: 'linear'
+                }
+            },
+            interaction: {
+                // Mejorar la interacción táctil
+                mode: 'nearest',
+                axis: 'xy',
+                intersect: false,
+                // Añadir un área más grande para la detección de interacción
+                radius: 20
+            },
+            plugins: {
+                legend: {
+                    display: false
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    animations: {
-                        tension: {
-                            duration: 1000,
-                            easing: 'linear'
-                        }
+                tooltip: {
+                    enabled: true,
+                    // Mejorar el comportamiento del tooltip en dispositivos táctiles
+                    events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove'],
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                    titleColor: '#1e3a8a',
+                    bodyColor: '#1e3a8a',
+                    bodyFont: {
+                        family: 'Poppins',
+                        size: 14
                     },
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                            titleColor: '#1e3a8a',
-                            bodyColor: '#1e3a8a',
-                            bodyFont: {
-                                family: 'Poppins',
-                                size: 14
-                            },
-                            titleFont: {
-                                family: 'Poppins',
-                                size: 16,
-                                weight: 'bold'
-                            },
-                            padding: 12,
-                            borderColor: 'rgba(96, 165, 250, 0.2)',
-                            borderWidth: 1,
-                            displayColors: false,
-                            cornerRadius: 8,
-                            callbacks: {
-                                label: function (context) {
-                                    return `${context.parsed.y} visitantes`;
-                                }
-                            }
-                        }
+                    titleFont: {
+                        family: 'Poppins',
+                        size: 16,
+                        weight: 'bold'
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                color: 'rgba(255, 255, 255, 0.7)',
-                                font: {
-                                    family: 'Poppins',
-                                    size: 12
-                                },
-                                padding: 10
-                            },
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)',
-                                drawBorder: false
-                            },
-                            border: {
-                                display: false
-                            }
-                        },
-                        x: {
-                            ticks: {
-                                color: 'rgba(255, 255, 255, 0.7)',
-                                font: {
-                                    family: 'Poppins',
-                                    size: 12
-                                },
-                                padding: 10
-                            },
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)',
-                                drawBorder: false
-                            },
-                            border: {
-                                display: false
-                            }
+                    padding: 12,
+                    borderColor: 'rgba(96, 165, 250, 0.2)',
+                    borderWidth: 1,
+                    displayColors: false,
+                    cornerRadius: 8,
+                    callbacks: {
+                        label: function (context) {
+                            return `${context.parsed.y} visitantes`;
                         }
                     }
                 }
-            });
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: 'rgba(255, 255, 255, 0.7)',
+                        font: {
+                            family: 'Poppins',
+                            size: 12
+                        },
+                        padding: 10
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)',
+                        drawBorder: false
+                    },
+                    border: {
+                        display: false
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: 'rgba(255, 255, 255, 0.7)',
+                        font: {
+                            family: 'Poppins',
+                            size: 12
+                        },
+                        padding: 10
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)',
+                        drawBorder: false
+                    },
+                    border: {
+                        display: false
+                    }
+                }
+            }
         }
+    });
+}
 
         function updateChart(filterType) {
             const month = document.getElementById('monthSelect')?.value || '';

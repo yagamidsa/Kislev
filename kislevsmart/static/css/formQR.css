@@ -1,109 +1,96 @@
-@import url("https://fonts.googleapis.com/css?family=Lato:400,400i,700");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+:root {
+  --bg-primary: #0A1128;
+  --accent-pink: #be185d;
+  --accent-pink-glow: rgba(190, 24, 93, 0.5);
+  --accent-pink-dark: #881337;
+  --form-bg: rgba(255, 255, 255, 0.05);
+  --form-border: rgba(255, 255, 255, 0.1);
+  --input-bg: rgba(0, 0, 0, 0.3);
+  --white: #ffffff;
+  --scrollbar-width: 8px;
+}
+
 html, body {
   font-size: 20px;
-  font-family: Lato, sans-serif;
-  background-image: linear-gradient(45deg, #6015ab, #ffaf19);
-  width: 100vw;
+  font-family: 'Inter', sans-serif;
+  width: 100%;
   height: 100vh;
   margin: 0;
   padding: 0;
-  position: relative;  /* Añadido para el posicionamiento del botón */
+  position: relative;
   overflow: hidden;
+  background: var(--bg-primary);
+  background: linear-gradient(
+    135deg, 
+    var(--bg-primary) 0%,
+    #1a1f35 50%,
+    #0A1128 100%
+  );
 }
 
-
 .main-content {
-  width: 100vw;
+  width: 100%;
   height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  position: relative;
+  z-index: 1;
+  padding: 1rem;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 90%;
+  max-width: 1200px;
+  padding: 20px;
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
 
 .front-text {
+  color: var(--white);
   text-align: center;
   text-shadow: 0 0.15em 0.3em rgba(0, 0, 0, 0.5);
   padding: 0;
-  margin: 0 0.5em 0.5em;
-  filter: drop-shadow(0, 0, 0.1em, #000000);
-}
-.front-text:last-child {
-  margin: 0;
-}
-
-.btn-open {
-  color: #ffffff;
-  font-size: 1.25em;
-  font-family: inherit;
-  background: #7f00ff;
-  background: -webkit-linear-gradient(to right, #e100ff, #7f00ff);
-  background: linear-gradient(to right, #e100ff, #7f00ff);
-  box-shadow: 0px 5px 15px 5px #840fe440;
-  color: #fff;
-  padding: 0.5em 1em;
-  border: 0;
-  outline: 0;
-  margin-top: 1.9em;
-  border-radius: 1.1em/50%;
-  box-shadow: 0 0.1em 0.3em rgba(0, 0, 0, 0.5), 0 -0.5em 1em rgba(0, 0, 0, 0.4) inset;
-  transition: box-shadow 32ms ease-out, color 32ms ease-out;
-  cursor: pointer;
+  margin: 0 0 0.5em;
+  filter: drop-shadow(0 0 0.1em #000000);
+  width: 100%;
+  font-weight: 600;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
-.btn-open2 {
-    color: #ffffff;
-    font-size: 1.25em;
-    font-family: inherit;
-    background: #7f00ff;
-    background: -webkit-linear-gradient(to right, #e100ff, #7f00ff);
-    background: linear-gradient(to right, #e100ff, #7f00ff);
-    box-shadow: 0px 5px 15px 5px #840fe440;
-    padding: 0.5em 1em;
-    border: 0;
-    outline: 0;
-    margin-top: 1.9em;
-    border-radius: 1.1em/50%;
-    box-shadow: 0 0.1em 0.3em rgba(0, 0, 0, 0.5), 0 -0.5em 1em rgba(0, 0, 0, 0.4) inset;
-    transition: box-shadow 32ms ease-out, color 32ms ease-out;
-    cursor: pointer;
-  }
-
-.btn-open:active {
-  color: #dadada;
-  box-shadow: 0 0 0 rgba(0, 0, 0, 0.5), 0 1em 2em rgba(0, 0, 0, 0.5) inset;
+/* Scrollbar personalizado */
+.contact-form {
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-pink) rgba(190, 24, 93, 0.1);
 }
 
-#frmContactForm {
-  display: none;
-}
-#frmContactForm:checked + .contact-modal {
-  width: 100vw;
-  height: 100vh;
-  opacity: 1;
-  overflow: auto;
-  transition: opacity 160ms ease-out, width 0ms ease-out, height 0ms ease-out;
-}
-#frmContactForm:checked + .contact-modal .contact-form {
-  animation: contact-form-show 160ms ease-out;
+.contact-form::-webkit-scrollbar {
+  width: var(--scrollbar-width);
 }
 
-@keyframes contact-form-show {
-  0% {
-    transform: translateY(-100%);
-    opacity: 0;
-  }
-  100% {
-    transform: translateY(0);
-    opacity: 1;
-  }
+.contact-form::-webkit-scrollbar-track {
+  background: rgba(190, 24, 93, 0.1);
+  border-radius: var(--scrollbar-width);
 }
+
+.contact-form::-webkit-scrollbar-thumb {
+  background: var(--accent-pink);
+  border-radius: var(--scrollbar-width);
+  box-shadow: 0 0 10px var(--accent-pink);
+}
+
 .contact-modal {
   font-size: 14.5px;
   width: 0;
@@ -111,273 +98,500 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
   position: fixed;
   top: 0;
   left: 0;
   opacity: 0;
-  transition: opacity 160ms ease-out, width 0ms ease-out 160ms, height 0ms ease-out 160ms;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.5);
 }
 
-.contact-form {  
-  background-color: rgba(0, 0, 0, 0.45);
-  width: calc(100vw - 2em);
-  max-width: 480px;
-  padding: 0.5em 1.5em;
+#frmContactForm:checked + .contact-modal {
+  width: 100vw;
+  height: 100vh;
+  opacity: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+#frmContactForm {
+  display: none;
+}
+
+.contact-form {
+  background: var(--form-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--form-border);
+  width: min(90%, 480px);
+  padding: 2em;
   margin: 1em;
   border-radius: 1.5em;
   box-shadow: 0 2em 3em rgba(0, 0, 0, 0.5);
-  box-sizing: border-box;
-  backdrop-filter: blur(0.4em);
-  max-height: 101vh; /* Limita la altura máxima del formulario */
-  overflow-y: auto; /* Agrega un scroll si el contenido excede la altura */
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 80vh;
 }
-
-.contact-wrapper {
-  display: flex;
-  flex-direction: column;
-}
-
 
 .contact-section {
-  padding-bottom: 1.5em;
-  box-sizing: border-box;
-}
-.contact-section:last-child {
-  padding-bottom: 0;
+  margin-bottom: 1.5em;
 }
 
-.contact-cancel {
-  padding: 10px 20px;  /* Reduce el padding */
-  margin-bottom: 2px; /* Espacio entre este elemento y el contenido siguiente */
-  color: #ffffff;
-  cursor: pointer;
-  display: inline-block; /* Ajusta su tamaño al contenido */
-  cursor: pointer;
-}
-.contact-cancel:hover {
-  text-decoration: underline;
-}
-
-.text-right {
-  text-align: right;
-}
-
-.text-white {
-  color: #ffffff;
-}
-
-.p-none {
-  padding: 0;
-}
-
-.m-none {
-  margin: 0;
-}
-
-.mb-whole {
+.contact-section h2 {
+  color: var(--white);
+  font-size: 1.2em;
   margin-bottom: 1em;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
 }
 
-.ml-whole {
-  margin-left: 1em;
-}
-
-.mb-half {
-  margin-bottom: 0.5em;
-}
-
-.ml-half {
-  margin-left: 0.5em;
-}
-
-.mb-quarter {
-  margin-bottom: 0.25em;
-}
-
-.ml-quarter {
-  margin-left: 0.25em;
+.contact-section h2 i.fa-info-circle {
+  color: var(--white);
+  text-shadow: 0 0 10px var(--accent-pink);
 }
 
 .form-item {
   width: 100%;
-  margin-bottom: 1em;
   position: relative;
+  margin-bottom: 1.5em;
 }
-.form-item input[type="text"], 
-.form-item input[type="email"], 
-.form-item input[type="number"], 
-.form-item textarea {
-  color: #ffffff;
-  font-family: inherit;
-  font-size: inherit;
-  background-color: rgba(0, 0, 0, 0.5);
+
+.form-item input[type="text"],
+.form-item input[type="email"],
+.form-item input[type="number"] {
   width: 100%;
-  padding: 1.7em 2.9em 1.5em 2.9em;
-  border: 0;
+  padding: 1.4em 1em 0.4em 2.5em;
+  background: var(--input-bg);
+  border: 1px solid var(--form-border);
   border-radius: 0.75em;
-  outline: 0;
-  margin: -2px;
+  color: var(--white);
+  font-size: 1em;
+  transition: all 0.3s ease;
+  height: 3.2em;
   box-sizing: border-box;
 }
 
-
-.form-item2 {
-    position: relative; /* Importante para el ícono */
-}
-
-.form-item2 select {
-    color: #ffffff;
-    font-family: inherit;
-    font-size: inherit;
-    background-color: rgba(0, 0, 0, 0.5);
-    width: 100%;
-    padding: 0.8em 1em 0.8em 2.5em;
-    border: 0;
-    border-radius: 0.75em;
-    outline: none;
-    margin: 0;
-    box-sizing: border-box;
-    appearance: none; /* Elimina el estilo por defecto */
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    cursor: pointer;
-}
-
-/* Flecha personalizada */
-.form-item2::after {
-    margin-top: 20px;
-    content: '\25BC'; /* Unicode para una flecha hacia abajo */
-    color: #ffffff;
-    position: absolute;
-    right: 1em;
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none; /* Evita que la flecha interrumpa los clics */
-}
-
-.form-item input[type="text"]::placeholder, 
-.form-item input[type="email"]::placeholder, 
-.form-item input[type="number"]::placeholder, 
-.form-item textarea::placeholder {
+.form-item input::placeholder {
   color: transparent;
 }
 
-.form-item input[type="text"]:not(:placeholder-shown) + label, 
-.form-item input[type="email"]:not(:placeholder-shown) + label, 
-.form-item input[type="number"]:not(:placeholder-shown) + label, 
-.form-item textarea:not(:placeholder-shown) + label {
-  font-size: 0.8em;
-  top: 0.65em;
-  left: 1em;
+.form-item label.lbl-floating {
+  position: absolute;
+  left: 2.5em;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.7);
+  transition: all 0.3s ease;
+  pointer-events: none;
+  font-size: 1em;
+  background: transparent;
+  padding: 0 0.2em;
+  z-index: 1;
+}
+
+.form-item input:focus + label.lbl-floating,
+.form-item input:not(:placeholder-shown) + label.lbl-floating {
+  top: 0.4em;
+  transform: translateY(0) scale(0.85);
+  color: var(--accent-pink);
 }
 
 .form-item i.icon {
   position: absolute;
-  top: 1.8em;
   left: 1em;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--accent-pink);
+  text-shadow: 0 0 10px var(--accent-pink);
+  z-index: 1;
 }
-.form-item label.lbl-floating {
-  color: #c2c2c2;
+
+.form-item input:focus {
+  border-color: var(--accent-pink);
+  box-shadow: 0 0 0 2px var(--accent-pink-glow);
+  outline: none;
+}
+
+
+.form-item2 {
+  width: 100%;
+  position: relative;
+  margin-bottom: 1.5em;
+}
+
+.cmotivo {
+  color: var(--white);
+  display: block;
+  margin-bottom: 0.5em;
+  font-size: 0.95em;
+}
+
+.form-item2 select {
+  width: 100%;
+  padding: 0.8em 2.5em 0.8em 1em;
+  background: var(--input-bg);
+  border: 1px solid var(--form-border);
+  border-radius: 0.75em;
+  color: var(--white);
+  font-size: 1em;
+  transition: all 0.3s ease;
+  appearance: none;
+  cursor: pointer;
+  position: relative;
+}
+
+.form-item2 select:focus {
+  border-color: var(--accent-pink);
+  box-shadow: 0 0 0 2px var(--accent-pink-glow);
+  outline: none;
+}
+
+.form-item2 select option {
+  background-color: var(--bg-primary);
+  color: var(--white);
+  padding: 10px;
+}
+
+.form-item2::after {
+  content: '\25BC';
   position: absolute;
-  top: 1.8em;
-  left: 2.5em;
+  right: 1em;
+  bottom: 0.8em; /* Posición desde abajo */
+  color: var(--accent-pink);
   pointer-events: none;
-  transition: font-size 64ms ease-out, top 64ms ease-out, left 64ms ease-out;
+  font-size: 0.8em;
+  text-shadow: 0 0 10px var(--accent-pink);
+  z-index: 1;
 }
 
 
-
-/* Actualiza los estilos del botón logout */
-.logout-button {
-  position: absolute !important;
-  top: 20px !important;
-  right: 20px !important;
-  z-index: 9999;
-}
-
-.logout-button .apple-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(65, 61, 61, 0.2);
-  border: none;
-  padding: 10px 20px;
-  border-radius: 20px;
-  text-decoration: none;
-  color: white;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  font-size: 15px;
-  font-weight: 500;
+.btn-open2, .contact-cancel {
+  color: var(--white);
+  padding: 0.8em 1.5em;
+  border-radius: 0.75em;
   cursor: pointer;
   transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  font-size: 1em;
+  min-width: 120px;
+  justify-content: center;
 }
 
-.logout-button .apple-btn:hover {
-  background: rgba(255, 255, 255, 0.25);
+.btn-open2 {
+  background: var(--accent-pink);
+  border: none;
+  box-shadow: 0 0 15px var(--accent-pink-glow);
+}
+
+.btn-open2:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0 20px var(--accent-pink);
 }
 
-.logout-button .apple-btn:active {
-  transform: translateY(0px);
+.contact-cancel {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.logout-button .apple-btn i {
-  font-size: 16px;
-  transition: transform 0.3s ease;
+.contact-cancel:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
-.logout-button .apple-btn:hover i {
-  transform: translateX(3px);
+.contact-section.text-right {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1em;
+  margin-top: 2em;
 }
 
-/* Efecto brillo */
-.logout-button .apple-btn::after {
-  content: '';
-  position: absolute;
+
+.front-text-principal {
+  color: white;
+  text-shadow: 
+    0 0 5px #fff,
+    0 0 10px #fff,
+    0 0 15px #bc185d,
+    0 0 20px #bc185d,
+    0 0 25px #bc185d,
+    0 0 30px #bc185d;
+  font-size: 3rem;
+  padding: 20px;
+}
+
+
+@media (max-width: 768px) {
+
+  .form-item2::after {
+    position: absolute;
+    bottom: 8px;
+    /* Otros estilos necesarios */
+  }
+
+
+  .container {
+    width: 95%;
+    padding: 10px;
+  }
+
+  .front-text {
+    font-size: 1.2em;
+    margin-bottom: 0.8em;
+  }
+
+  .contact-form {
+    width: 95%;
+    padding: 1.5em;
+    max-height: 85vh;
+  }
+
+  .btn-open2, 
+  .contact-cancel {
+    padding: 0.7em 1.2em;
+    font-size: 0.95em;
+    min-width: 100px;
+  }
+}
+
+@media (max-width: 480px) {
+  html {
+    font-size: 16px;
+  }
+
+  .container {
+    width: 100%;
+    padding: 10px 5px;
+  }
+
+  .front-text {
+    font-size: 1.1em;
+    padding: 0 10px;
+  }
+
+  .contact-form {
+    padding: 1.2em;
+    margin: 0.5em;
+  }
+
+  .form-item2::after {
+    top: calc(50% + 0.8em);
+  }
+
+  .btn-open2, 
+  .contact-cancel {
+    padding: 0.6em 1em;
+    font-size: 0.9em;
+    min-width: 90px;
+  }
+}
+
+@media (max-width: 360px) {
+  .contact-form {
+    padding: 1em;
+    margin: 0.3em;
+  }
+
+  .front-text {
+    font-size: 1em;
+  }
+
+  .btn-open2, 
+  .contact-cancel {
+    padding: 0.5em 0.8em;
+    font-size: 0.85em;
+    min-width: 80px;
+  }
+}
+
+/* Ajuste específico para laptops */
+@media (min-height: 600px) and (max-height: 800px) {
+  .contact-form {
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+}
+
+
+
+/* Botón apple-btn */
+.logout-button {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  margin-bottom: 5px;
+}
+
+.apple-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--white);
+  font-size: 0.9em;
+  background: rgba(190, 24, 93, 0.2);
+  padding: 0.7em 1.5em;
+  border: 1px solid rgba(190, 24, 93, 0.3);
+  border-radius: 0.8em;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  text-shadow: 0 0 10px var(--accent-pink);
+  box-shadow: 0 0 15px var(--accent-pink),
+              inset 0 0 15px var(--accent-pink-glow);
+  min-width: 120px;
+  justify-content: center;
+}
+
+.apple-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  background: rgba(190, 24, 93, 0.3);
+  box-shadow: 0 0 25px var(--accent-pink),
+              inset 0 0 20px var(--accent-pink);
+}
+
+/* Botón de apertura principal */
+.btn-open {
+  color: var(--white);
+  font-size: 1.1em;
+  background: rgba(190, 24, 93, 0.2);
+  padding: 0.7em 1.5em;
+  border: 1px solid rgba(190, 24, 93, 0.3);
+  outline: 0;
+  margin-top: 1em;
+  border-radius: 0.8em;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  text-shadow: 0 0 10px var(--accent-pink);
+  box-shadow: 0 0 15px var(--accent-pink),
+              inset 0 0 15px var(--accent-pink-glow);
+  min-width: 200px;
+}
+
+.btn-open:hover {
+  transform: translateY(-2px) scale(1.02);
+  background: rgba(190, 24, 93, 0.3);
+  box-shadow: 0 0 25px var(--accent-pink),
+              inset 0 0 20px var(--accent-pink);
+}
+
+/* QR Background Styles */
+.qr-background {
+  position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  height: 50%;
-  background: linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 0.1),
-      rgba(255, 255, 255, 0)
-  );
-  border-radius: 20px 20px 0 0;
+  width: 100vw;
+  height: 100vh;
   pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
 }
 
-/* Estilos responsive */
+.floating-qr {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  padding: 3px;
+  background: rgba(190, 24, 93, 0.1);
+  border: 1px solid var(--accent-pink-dark);
+  border-radius: 4px;
+  box-shadow: 
+    0 0 10px var(--accent-pink),
+    0 0 20px var(--accent-pink-dark),
+    inset 0 0 15px var(--accent-pink-glow);
+  animation: floatQR 15s linear infinite;
+  opacity: 0;
+}
+
+.qr-square {
+  background: transparent;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.qr-square.filled {
+  background: var(--accent-pink);
+  box-shadow: 
+    0 0 5px var(--accent-pink),
+    0 0 10px var(--accent-pink-dark);
+}
+
+@keyframes floatQR {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.5;
+  }
+  90% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate(var(--move-x), var(--move-y)) rotate(var(--rotation));
+    opacity: 0;
+  }
+}
+
+/* Media Queries para los botones */
 @media (max-width: 768px) {
-  .logout-button {
-      top: 15px !important;
-      right: 15px !important;
+  .apple-btn {
+    font-size: 0.85em;
+    padding: 0.6em 1.2em;
+    min-width: 100px;
   }
 
-  .logout-button .apple-btn {
-      padding: 10px;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      justify-content: center;
-  }
-  
-  .logout-button .apple-btn span {
-      display: none;
+  .btn-open {
+    font-size: 1em;
+    padding: 0.6em 1.2em;
+    min-width: 180px;
   }
 
-  .logout-button .apple-btn i {
-      margin: 0;
-      font-size: 18px;
-  }
-
-  .logout-button .apple-btn::after {
-      border-radius: 50%;
+  .floating-qr {
+    width: 30px;
+    height: 30px;
   }
 }
+
+@media (max-width: 480px) {
+  .apple-btn {
+    font-size: 0.8em;
+    padding: 0.5em 1em;
+    min-width: 90px;
+  }
+
+  .btn-open {
+    font-size: 0.9em;
+    padding: 0.5em 1em;
+    min-width: 160px;
+  }
+
+  .floating-qr {
+    width: 25px;
+    height: 25px;
+  }
+}
+
+@media (max-width: 360px) {
+  .apple-btn {
+    font-size: 0.75em;
+    padding: 0.4em 0.8em;
+    min-width: 80px;
+  }
+
+  .btn-open {
+    font-size: 0.85em;
+    padding: 0.4em 0.8em;
+    min-width: 140px;
+  }
+}
+

@@ -11,37 +11,37 @@
 </head>
 
 <body>
-
+    <div class="qr-background"></div>
     <div class="logout-button">
         {% if request.user.user_type == 'administrador' %}
-            <a href="{% url 'visor_admin' %}" class="apple-btn">
-                <i class="fas fa-arrow-left"></i>
-                <span>Panel Admin</span>
-            </a>
+        <a href="{% url 'visor_admin' %}" class="apple-btn">
+            <i class="fas fa-arrow-left"></i>
+            <span>Panel Admin</span>
+        </a>
         {% elif request.user.user_type == 'propietario' %}
-            <a href="{% url 'visor_propietario' %}" class="apple-btn">
-                <i class="fas fa-arrow-left"></i>
-                <span>Panel</span>
-            </a>
+        <a href="{% url 'visor_propietario' %}" class="apple-btn">
+            <i class="fas fa-arrow-left"></i>
+            <span>Panel</span>
+        </a>
         {% elif request.user.user_type == 'porteria' %}
-            <a href="{% url 'control_porteria' %}" class="apple-btn">
-                <i class="fas fa-arrow-left"></i>
-                <span>Panel Portería</span>
-            </a>
+        <a href="{% url 'control_porteria' %}" class="apple-btn">
+            <i class="fas fa-arrow-left"></i>
+            <span>Panel Portería</span>
+        </a>
         {% else %}
-            <div class="apple-btn" style="opacity: 0.5; cursor: not-allowed;">
-                <i class="fas fa-ban"></i>
-                <span>Sin acceso</span>
-            </div>
+        <div class="apple-btn" style="opacity: 0.5; cursor: not-allowed;">
+            <i class="fas fa-ban"></i>
+            <span>Sin acceso</span>
+        </div>
         {% endif %}
     </div>
-    
+
     <div class="main-content">
         <form id="formbienvenida" method="POST">
             {% csrf_token %}
             <div class="container">
-                <h1 class="front-text text-white">Bienvenido, {{ user.nombre }}!</h1>
-                <h2 class="front-text text-white">Aqui puedes generar el codigo QR para Visitante</h2>
+                <h1 class="front-text-principal">Bienvenido, {{ user.nombre }}!</h1>
+                <h2 class="front-text">Aqui puedes generar el codigo QR para Visitante</h2>
                 <label class="btn-open" for="frmContactForm"><i class="far fa-envelope"></i><span class="ml-half">Abrir
                         Formulario</span></label>
             </div>
@@ -55,12 +55,14 @@
                         </div>
                         <div class="contact-section">
                             <div class="form-item">
-                                <input type="text" name="nombre_log" value="{{user.nombre}}" readonly required>
+                                <input type="text" id="nombre_log" name="nombre_log" value="{{user.nombre}}" readonly
+                                    required>
                                 <label class="lbl-floating" for="nombre_log" placeholder="Propietario"></label><i
                                     class="icon text-white fa fa-user"></i>
                             </div>
                             <div class="form-item">
-                                <input type="email" name="email_creador" value="{{user.email}}" readonly required>
+                                <input type="email" id="email_creador" name="email_creador" value="{{user.email}}"
+                                    readonly required>
                                 <label class="lbl-floating" for="email_creador"
                                     placeholder="email Propietario"></label><i class="icon text-white fas fa-at"></i>
                             </div>
@@ -69,37 +71,38 @@
                                         class="ml-half">Datos Visitante</span></h2>
                             </div>
                             <div class="form-item">
-                                <input type="text" placeholder="Nombre" name="nombre" required>
+                                <input type="text" placeholder=" " id="nombre" name="nombre" required>
                                 <label class="lbl-floating" for="nombre">Nombre visitante</label><i
                                     class="icon text-white fa fa-user"></i>
                             </div>
                             <div class="form-item">
-                                <input type="email" name="email" required class="form-control"
-                                    title="Por favor ingresa un email válido">
+                                <input type="email" placeholder=" " id="email" name="email" required
+                                    class="form-control" title="Por favor ingresa un email válido">
                                 <label class="lbl-floating" for="email">Correo Electrónico:</label>
                                 <i class="icon text-white fa fa-at"></i>
                             </div>
                             <div class="form-item">
-                                <input type="number" placeholder="Número Celular" name="celular" id="celular" required>
+                                <input type="number" placeholder=" " id="celular" name="celular" required>
                                 <label class="lbl-floating" for="celular">Número de Celular:</label><i
                                     class="icon text-white fa fa-phone"></i>
                             </div>
                             <div class="form-item">
-                                <input type="number" placeholder="Número Cédula" name="cedula" required>
+                                <input type="number" placeholder=" " id="cedula" name="cedula" required>
                                 <label class="lbl-floating" for="cedula">Cédula Vistante:</label><i
                                     class="icon text-white fa fa-id-card"></i>
                             </div>
                             <div class="form-item">
-                                <input type="number" placeholder="Número de personas" name="numper" required>
+                                <input type="number" placeholder=" " id="numper" name="numper" required>
                                 <label class="lbl-floating" for="numper">Numero de personas:</label><i
                                     class="icon text-white fa fa-id-card"></i>
                             </div>
                             <div class="form-item2">
-                                <i class="icon text-white fa fa-info-circle" style="margin-bottom: 20px;"></i>
+                                <i class="informativo fa fa-info-circle"
+                                    style="margin-bottom: 20px; color: aliceblue;"></i>
                                 <label class="cmotivo text-white" for="motivo" style="margin-left: 10px;">
                                     Motivo de la Visita:
                                 </label>
-                                <select name="motivo" required>
+                                <select id="motivo" name="motivo" required>
                                     <option value="Visita Personal">Visita Personal</option>
                                     <option value="Servicios">Servicios</option>
                                     <option value="Vista Proveedores">Vista Proveedores</option>
@@ -116,7 +119,7 @@
                                 <label class="contact-cancel" for="frmContactForm"><i
                                         class="fas fa-times-circle"></i><span class="ml-quarter">Cancelar</span></label>
                                 <button id="submitBtn" class="btn-open2" type="submit">Generar QR<i
-                                        class="far fa-paper-plane"></i>
+                                        class="far fa-paper-plane"></i></button>
                             </div>
                         </div>
                     </div>
@@ -125,36 +128,273 @@
         </form>
     </div>
     <script>
-        const emailInput = document.querySelector('input[name="email"]');
-        const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        document.addEventListener('DOMContentLoaded', function () {
+            // Configuración y Variables Globales
+            const SUBMIT_COOLDOWN = 5000; // 5 segundos entre envíos
+            const MAX_EMAIL_LENGTH = 254; // RFC 5321
+            const QR_CONFIG = {
+                minSize: 40,
+                maxSize: 80,
+                minDuration: 10000,
+                maxDuration: 20000,
+                maxQRs: 15,
+                spawnInterval: 2000
+            };
 
-        emailInput.addEventListener('input', function (e) {
-            if (!emailPattern.test(e.target.value)) {
-                e.target.setCustomValidity("Por favor ingresa un correo válido, como usuario@dominio.com");
-            } else {
-                e.target.setCustomValidity('');
+            let lastSubmitTime = 0;
+            let isSubmitting = false;
+
+            // Elementos del DOM
+            const form = document.getElementById('formbienvenida');
+            const emailInput = form.querySelector('input[name="email"]');
+            const celularInput = document.getElementById('celular');
+            const submitBtn = form.querySelector('#submitBtn');
+
+            // Crear elemento para mensajes de error
+            const errorDiv = document.createElement('div');
+            errorDiv.id = 'error-message';
+            // Insertar antes del contenedor que tiene el botón de envío
+            submitBtn.closest('.contact-section').insertAdjacentElement('beforebegin', errorDiv);
+
+            // Función para mostrar errores
+            const showError = (message) => {
+                errorDiv.textContent = message;
+                errorDiv.style.display = 'block';
+                setTimeout(() => {
+                    errorDiv.style.display = 'none';
+                }, 5000);
+            };
+
+            // Función para manejar el estado del botón
+            const setSubmitButtonState = (isLoading) => {
+                submitBtn.disabled = isLoading;
+                submitBtn.innerHTML = isLoading ?
+                    '<i class="fas fa-spinner fa-spin"></i> Enviando...' :
+                    'Generar QR <i class="far fa-paper-plane"></i>';
+            };
+
+            // Funciones de Validación
+            const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+            const isEmailValid = (email) => {
+                return emailPattern.test(email) && email.length <= MAX_EMAIL_LENGTH;
+            };
+
+            const isCelularValid = (celular) => {
+                return /^\d{10}$/.test(celular);
+            };
+
+            // Event Listeners para validación en tiempo real
+            emailInput.addEventListener('input', function (e) {
+                const email = e.target.value;
+                if (!isEmailValid(email)) {
+                    e.target.setCustomValidity("Por favor ingresa un correo válido");
+                    if (email.length > MAX_EMAIL_LENGTH) {
+                        showError(`El correo no debe exceder ${MAX_EMAIL_LENGTH} caracteres`);
+                    }
+                } else {
+                    e.target.setCustomValidity('');
+                }
+            });
+
+            celularInput.addEventListener('input', function (e) {
+                const celular = e.target.value;
+                e.target.value = celular.replace(/\D/g, '');
+
+                if (!isCelularValid(celular)) {
+                    e.target.setCustomValidity("El número debe tener 10 dígitos");
+                } else {
+                    e.target.setCustomValidity('');
+                }
+            });
+
+            // Manejo del envío del formulario
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                try {
+                    // Verificar cooldown
+                    const now = Date.now();
+                    if (now - lastSubmitTime < SUBMIT_COOLDOWN) {
+                        showError(`Por favor espera ${SUBMIT_COOLDOWN / 1000} segundos antes de enviar otro código`);
+                        return;
+                    }
+
+                    // Verificar si ya hay un envío en proceso
+                    if (isSubmitting) {
+                        return;
+                    }
+
+                    // Validaciones
+                    const email = emailInput.value;
+                    const celular = celularInput.value;
+
+                    if (!isEmailValid(email)) {
+                        showError('Por favor ingresa un correo electrónico válido');
+                        return;
+                    }
+
+                    if (!isCelularValid(celular)) {
+                        showError('Por favor ingresa un número de celular válido de 10 dígitos');
+                        return;
+                    }
+
+                    // Iniciar proceso de envío
+                    isSubmitting = true;
+                    setSubmitButtonState(true);
+                    lastSubmitTime = now;
+
+                    // Aquí iría la lógica de envío al servidor
+                    form.submit();
+
+                } catch (error) {
+                    console.error('Error:', error);
+                    showError('Hubo un error al procesar tu solicitud. Por favor intenta nuevamente.');
+                } finally {
+                    isSubmitting = false;
+                    setSubmitButtonState(false);
+                }
+            });
+
+            // Configuración de efectos QR
+            const qrContainer = document.createElement('div');
+            qrContainer.className = 'qr-background';
+            document.body.appendChild(qrContainer);
+
+            function generateQRPattern() {
+                const pattern = [];
+                const size = 3;
+                for (let i = 0; i < size * size; i++) {
+                    pattern.push(Math.random() > 0.5);
+                }
+                pattern[0] = true;
+                pattern[2] = true;
+                pattern[6] = true;
+                return pattern;
             }
+
+            function createQR() {
+                const qr = document.createElement('div');
+                qr.className = 'floating-qr';
+
+                const pattern = generateQRPattern();
+
+                pattern.forEach((filled) => {
+                    const square = document.createElement('div');
+                    square.className = 'qr-square';
+                    if (filled) {
+                        square.classList.add('filled');
+                        if (Math.random() > 0.7) {
+                            square.style.animation = `qrGlow ${Math.random() * 2 + 1}s infinite alternate`;
+                        }
+                    }
+                    qr.appendChild(square);
+                });
+
+                // Posición y animación inicial
+                const startX = Math.random() * window.innerWidth;
+                const startY = Math.random() * window.innerHeight;
+                qr.style.left = `${startX}px`;
+                qr.style.top = `${startY}px`;
+
+                // Tamaño aleatorio
+                const size = Math.random() * (QR_CONFIG.maxSize - QR_CONFIG.minSize) + QR_CONFIG.minSize;
+                qr.style.width = `${size}px`;
+                qr.style.height = `${size}px`;
+
+                // Movimiento aleatorio
+                const angle = Math.random() * Math.PI * 2;
+                const distance = Math.random() * 300 + 200;
+                qr.style.setProperty('--move-x', `${Math.cos(angle) * distance}px`);
+                qr.style.setProperty('--move-y', `${Math.sin(angle) * distance}px`);
+                qr.style.setProperty('--rotation', `${Math.random() * 360}deg`);
+
+                qrContainer.appendChild(qr);
+
+                setTimeout(() => {
+                    qr.remove();
+                }, QR_CONFIG.maxDuration);
+            }
+
+            // Optimización de la creación de QRs
+            const throttledCreateQR = (() => {
+                let lastCall = 0;
+                return () => {
+                    const now = Date.now();
+                    if (now - lastCall >= 2000) {
+                        lastCall = now;
+                        createQR();
+                    }
+                };
+            })();
+
+            // Crear QRs iniciales
+            for (let i = 0; i < 10; i++) {
+                setTimeout(createQR, i * 200);
+            }
+
+            // Eventos de mouse
+            let lastMouseMove = 0;
+            document.addEventListener('mousemove', (e) => {
+                const now = Date.now();
+                if (now - lastMouseMove > 100 && Math.random() > 0.7) {
+                    lastMouseMove = now;
+                    if (qrContainer.children.length < QR_CONFIG.maxQRs) {
+                        const qr = document.createElement('div');
+                        qr.className = 'floating-qr';
+
+                        const pattern = generateQRPattern();
+                        pattern.forEach((filled) => {
+                            const square = document.createElement('div');
+                            square.className = 'qr-square';
+                            if (filled) square.classList.add('filled');
+                            qr.appendChild(square);
+                        });
+
+                        qr.style.left = `${e.clientX}px`;
+                        qr.style.top = `${e.clientY}px`;
+
+                        const angle = Math.random() * Math.PI * 2;
+                        const distance = Math.random() * 200 + 100;
+                        qr.style.setProperty('--move-x', `${Math.cos(angle) * distance}px`);
+                        qr.style.setProperty('--move-y', `${Math.sin(angle) * distance}px`);
+                        qr.style.setProperty('--rotation', `${Math.random() * 360}deg`);
+
+                        qrContainer.appendChild(qr);
+
+                        setTimeout(() => {
+                            qr.remove();
+                        }, 10000);
+                    }
+                }
+            });
+
+            // Manejo del resize
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    qrContainer.innerHTML = '';
+                    for (let i = 0; i < 10; i++) {
+                        createQR();
+                    }
+                }, 250);
+            });
+
+            // Efectos de botones
+            const buttons = document.querySelectorAll('.btn-open, .btn-open2, .apple-btn');
+            buttons.forEach(button => {
+                button.addEventListener('mousemove', (e) => {
+                    const rect = button.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+
+                    button.style.setProperty('--x', `${x}px`);
+                    button.style.setProperty('--y', `${y}px`);
+                });
+            });
         });
 
-
-        const celularInput = document.getElementById('celular');
-        const form = document.getElementById('formbienvenida');
-        const submitBtn = document.getElementById('submitBtn');
-
-        // Evento para deshabilitar el botón mientras se envía el formulario
-        form.addEventListener('submit', function (e) {
-            const valor = celularInput.value;
-
-            // Validación del número de celular
-            if (valor.length !== 10) {
-                e.preventDefault(); // Detener el envío del formulario
-                alert('Por favor, ingresa un número de celular valido debe ser de 10 dígitos.');
-            } else {
-                // Deshabilitar el botón para evitar envíos múltiples
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = 'Enviando...';
-            }
-        });
 
     </script>
 
