@@ -4,26 +4,46 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField
-
-
+from datetime import timedelta
 
 class Visitante(models.Model):
-    
-    email_creador = models.EmailField()        # Correo electrónico del propietario
-    nombre = models.CharField(max_length=100)  # Nombre del visitante
-    email = models.EmailField()                # Correo electrónico del visitante
-    celular = models.CharField(max_length=15)  # Número de celular del visitante
-    cedula = models.CharField(max_length=20)   # Documento de identidad del visitante
-    motivo = models.CharField(max_length=255)  # Motivo de la visita
-    token = models.CharField(max_length=100, unique=True)  # Cambiar a CharField
-    fecha_generacion = models.DateTimeField(default=timezone.now)  # Fecha de generación del token
-    ultima_lectura = models.DateTimeField(null=True, blank=True)  # Fecha y hora de la última lectura del QR
-    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)  # Campo actualizado
+    email_creador = models.EmailField()
+    nombre = models.CharField(max_length=100)
+    email = models.EmailField()
+    celular = models.CharField(max_length=15)
+    cedula = models.CharField(max_length=20)
+    motivo = models.CharField(max_length=255)
+    token = models.CharField(max_length=100, unique=True)
+    fecha_generacion = models.DateTimeField(default=timezone.now)
+    ultima_lectura = models.DateTimeField(null=True, blank=True)
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
     nombre_log = models.CharField(max_length=100)
     numper = models.CharField(max_length=20)
 
     def __str__(self):
         return f"{self.nombre} - {self.email}"
+
+    def save(self, *args, **kwargs):
+        if self.fecha_generacion and timezone.is_naive(self.fecha_generacion):
+            self.fecha_generacion = timezone.make_aware(self.fecha_generacion)
+        super().save(*args, **kwargs)
+
+    def esta_vigente(self):
+        """Verifica si el QR está dentro del período de validez (24 horas)"""
+        return timezone.now() <= self.fecha_generacion + timedelta(hours=24)
+
+    def esta_disponible(self):
+        """Verifica si el QR puede ser usado (no ha sido usado y está vigente)"""
+        return self.ultima_lectura is None and self.esta_vigente()
+
+    def registrar_lectura(self, nombre_log):
+        """Registra una lectura del QR si es posible"""
+        if self.esta_disponible():
+            self.ultima_lectura = timezone.now()
+            self.nombre_log = nombre_log
+            self.save()
+            return True
+        return False
 
 
 class Sala(models.Model):
