@@ -774,6 +774,20 @@ def validar_qr(request, encrypted_token):
             # Verificar estado directamente en la base de datos
             visitante.refresh_from_db()
             
+            # Verificación especial para Safari/iOS
+            is_safari = 'Safari' in request.headers.get('User-Agent', '')
+            request_id = request.GET.get('req')
+            
+            if is_safari and visitante.ultima_lectura is not None:
+                # Si es Safari y tiene una lectura muy reciente (menos de 5 segundos)
+                ultima_lectura = timezone.localtime(visitante.ultima_lectura)
+                tiempo_actual = timezone.localtime(timezone.now())
+                diferencia = tiempo_actual - ultima_lectura
+                
+                if diferencia.total_seconds() < 5:
+                    logger.info("Detectada doble lectura de Safari - permitiendo acceso")
+                    return render(request, 'validar_qr.html', {'visitante': visitante})
+            
             if visitante.ultima_lectura is not None:
                 logger.warning(f"QR ya utilizado el: {visitante.ultima_lectura}")
                 return render(request, 'qr_desactivado.html', {
@@ -781,7 +795,7 @@ def validar_qr(request, encrypted_token):
                     'ultima_lectura': visitante.ultima_lectura
                 })
 
-            # Intentar registrar la lectura directamente
+            # El resto del código permanece exactamente igual
             tiempo_actual = timezone.now()
             visitante.ultima_lectura = tiempo_actual
             visitante.nombre_log = request.user.email
