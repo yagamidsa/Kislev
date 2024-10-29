@@ -129,272 +129,278 @@
     </div>
     <script>
         // Parte 1: Configuración Inicial y Utilidades
-document.addEventListener('DOMContentLoaded', function () {
-    // Configuración y Variables Globales
-    const SUBMIT_COOLDOWN = 5000; // 5 segundos entre envíos
-    const MAX_EMAIL_LENGTH = 254; // RFC 5321
-    const QR_CONFIG = {
-        minSize: 40,
-        maxSize: 80,
-        minDuration: 10000,
-        maxDuration: 20000,
-        maxQRs: 15,
-        spawnInterval: 2000
-    };
+        document.addEventListener('DOMContentLoaded', function () {
+            // Configuración y Variables Globales
+            const SUBMIT_COOLDOWN = 5000; // 5 segundos entre envíos
+            const MAX_EMAIL_LENGTH = 254; // RFC 5321
+            const QR_CONFIG = {
+                minSize: 40,
+                maxSize: 80,
+                minDuration: 10000,
+                maxDuration: 20000,
+                maxQRs: 15,
+                spawnInterval: 2000
+            };
 
-    let lastSubmitTime = 0;
-    let isSubmitting = false;
+            let lastSubmitTime = 0;
+            let isSubmitting = false;
 
-    // Elementos del DOM
-    const form = document.getElementById('formbienvenida');
-    const emailInput = form.querySelector('input[name="email"]');
-    const celularInput = document.getElementById('celular');
-    const submitBtn = form.querySelector('#submitBtn');
+            // Elementos del DOM
+            const form = document.getElementById('formbienvenida');
+            const emailInput = form.querySelector('input[name="email"]');
+            const celularInput = document.getElementById('celular');
+            const submitBtn = form.querySelector('#submitBtn');
 
-    // Crear elemento para mensajes de error
-    const errorDiv = document.createElement('div');
-    errorDiv.id = 'error-message';
-    submitBtn.closest('.contact-section').insertAdjacentElement('beforebegin', errorDiv);
+            // Crear elemento para mensajes de error
+            const errorDiv = document.createElement('div');
+            errorDiv.id = 'error-message';
+            submitBtn.closest('.contact-section').insertAdjacentElement('beforebegin', errorDiv);
 
-    // Funciones de utilidad
-    const showError = (message) => {
-        errorDiv.textContent = message;
-        errorDiv.style.display = 'block';
-        setTimeout(() => {
-            errorDiv.style.display = 'none';
-        }, 5000);
-    };
+            // Funciones de utilidad
+            const showError = (message) => {
+                errorDiv.textContent = message;
+                errorDiv.style.display = 'block';
+                setTimeout(() => {
+                    errorDiv.style.display = 'none';
+                }, 5000);
+            };
 
-    const setSubmitButtonState = (isLoading) => {
-        submitBtn.disabled = isLoading;
-        submitBtn.innerHTML = isLoading ?
-            '<i class="fas fa-spinner fa-spin"></i> Enviando...' :
-            'Generar QR <i class="far fa-paper-plane"></i>';
-    };
+            const setSubmitButtonState = (isLoading) => {
+                submitBtn.disabled = isLoading;
+                submitBtn.innerHTML = isLoading ?
+                    '<i class="fas fa-spinner fa-spin"></i> Enviando...' :
+                    'Generar QR <i class="far fa-paper-plane"></i>';
+            };
 
-    // Patrones de validación
-    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            // Patrones de validación
+            const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-    const isEmailValid = (email) => {
-        return emailPattern.test(email) && email.length <= MAX_EMAIL_LENGTH;
-    };
+            const isEmailValid = (email) => {
+                return emailPattern.test(email) && email.length <= MAX_EMAIL_LENGTH;
+            };
 
-    const isCelularValid = (celular) => {
-        return /^\d{10}$/.test(celular);
-    };
+            const isCelularValid = (celular) => {
+                return /^\d{10}$/.test(celular);
+            };
 
 
-    // Parte 2: Manejo de Eventos y Validaciones
-    emailInput.addEventListener('input', function (e) {
-        const email = e.target.value;
-        if (!isEmailValid(email)) {
-            e.target.setCustomValidity("Por favor ingresa un correo válido");
-            if (email.length > MAX_EMAIL_LENGTH) {
-                showError(`El correo no debe exceder ${MAX_EMAIL_LENGTH} caracteres`);
-            }
-        } else {
-            e.target.setCustomValidity('');
-        }
-    });
-
-    celularInput.addEventListener('input', function (e) {
-        const celular = e.target.value;
-        e.target.value = celular.replace(/\D/g, '');
-
-        if (!isCelularValid(celular)) {
-            e.target.setCustomValidity("El número debe tener 10 dígitos");
-        } else {
-            e.target.setCustomValidity('');
-        }
-    });
-
-    // Procesamiento del QR
-    const processQRScan = async (qrData) => {
-        try {
-            // Verificar si el QR contiene una URL válida
-            const url = new URL(qrData);
-            
-            // Agregar el parámetro source=scan a la URL
-            url.searchParams.append('source', 'scan');
-            
-            // Realizar la petición al backend
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'text/html,application/xhtml+xml,application/xml'
-                },
-                credentials: 'same-origin'
+            // Parte 2: Manejo de Eventos y Validaciones
+            emailInput.addEventListener('input', function (e) {
+                const email = e.target.value;
+                if (!isEmailValid(email)) {
+                    e.target.setCustomValidity("Por favor ingresa un correo válido");
+                    if (email.length > MAX_EMAIL_LENGTH) {
+                        showError(`El correo no debe exceder ${MAX_EMAIL_LENGTH} caracteres`);
+                    }
+                } else {
+                    e.target.setCustomValidity('');
+                }
             });
 
-            if (!response.ok) {
-                throw new Error(`Error HTTP: ${response.status}`);
-            }
+            celularInput.addEventListener('input', function (e) {
+                const celular = e.target.value;
+                e.target.value = celular.replace(/\D/g, '');
 
-            const html = await response.text();
-            document.body.innerHTML = html;
+                if (!isCelularValid(celular)) {
+                    e.target.setCustomValidity("El número debe tener 10 dígitos");
+                } else {
+                    e.target.setCustomValidity('');
+                }
+            });
 
-        } catch (error) {
-            console.error('Error procesando QR:', error);
-            showError('Error al procesar el código QR. Por favor, intente nuevamente.');
-        }
-    };
+            // Procesamiento del QR
+            const processQRScan = async (qrData) => {
+                try {
+                    // Verificar si el QR contiene una URL válida
+                    const url = new URL(qrData);
 
-    // Manejo del envío del formulario
-    // Manejo del envío del formulario
-form.addEventListener('submit', async function (e) {
-    e.preventDefault();  // Prevenir envío por defecto
+                    // Agregar el parámetro source=scan a la URL
+                    url.searchParams.append('source', 'scan');
 
-    try {
-        const now = Date.now();
-        if (now - lastSubmitTime < SUBMIT_COOLDOWN) {
-            showError(`Por favor espera ${SUBMIT_COOLDOWN / 1000} segundos antes de enviar otro código`);
-            return;
-        }
+                    // Realizar la petición al backend
+                    const response = await fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'text/html,application/xhtml+xml,application/xml'
+                        },
+                        credentials: 'same-origin'
+                    });
 
-        if (isSubmitting) {
-            return;
-        }
+                    if (!response.ok) {
+                        throw new Error(`Error HTTP: ${response.status}`);
+                    }
 
-        const email = emailInput.value;
-        const celular = celularInput.value;
+                    const html = await response.text();
+                    document.body.innerHTML = html;
 
-        if (!isEmailValid(email)) {
-            showError('Por favor ingresa un correo electrónico válido');
-            return;
-        }
+                } catch (error) {
+                    console.error('Error procesando QR:', error);
+                    showError('Error al procesar el código QR. Por favor, intente nuevamente.');
+                }
+            };
 
-        if (!isCelularValid(celular)) {
-            showError('Por favor ingresa un número de celular válido de 10 dígitos');
-            return;
-        }
+            // Manejo del envío del formulario
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
 
-        isSubmitting = true;
-        setSubmitButtonState(true);
-        lastSubmitTime = now;
+                try {
+                    // Verificar cooldown
+                    const now = Date.now();
+                    if (now - lastSubmitTime < SUBMIT_COOLDOWN) {
+                        showError(`Por favor espera ${SUBMIT_COOLDOWN / 1000} segundos antes de enviar otro código`);
+                        return;
+                    }
 
-        // En lugar de form.submit(), usamos FormData y fetch
-        const formData = new FormData(form);
+                    // Verificar si ya está en proceso de envío
+                    if (isSubmitting) {
+                        return;
+                    }
 
-        const response = await fetch(form.action, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-            },
-            credentials: 'same-origin'
-        });
+                    // Validar campos
+                    const email = emailInput.value;
+                    const celular = celularInput.value;
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+                    if (!isEmailValid(email)) {
+                        showError('Por favor ingresa un correo electrónico válido');
+                        return;
+                    }
 
-        // Redireccionar según la respuesta
-        const redirectUrl = response.url;
-        if (redirectUrl) {
-            window.location.href = redirectUrl;
-        }
+                    if (!isCelularValid(celular)) {
+                        showError('Por favor ingresa un número de celular válido de 10 dígitos');
+                        return;
+                    }
 
-    } catch (error) {
-        console.error('Error:', error);
-        showError('Hubo un error al procesar tu solicitud. Por favor intenta nuevamente.');
-    } finally {
-        isSubmitting = false;
-        setSubmitButtonState(false);
-    }
-});
-    // Exponer la función de procesamiento QR globalmente
-    window.processQRScan = processQRScan;
+                    // Iniciar envío
+                    isSubmitting = true;
+                    setSubmitButtonState(true);
+                    lastSubmitTime = now;
 
+                    // Obtener el formulario y el token CSRF
+                    const formData = new FormData(form);
+                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-    // Parte 3: Efectos Visuales QR
-    const qrContainer = document.createElement('div');
-    qrContainer.className = 'qr-background';
-    document.body.appendChild(qrContainer);
+                    // Enviar formulario
+                    const response = await fetch(form.action || window.location.href, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRFToken': csrfToken,
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        credentials: 'same-origin'
+                    });
 
-    function generateQRPattern() {
-        const pattern = [];
-        const size = 3;
-        for (let i = 0; i < size * size; i++) {
-            pattern.push(Math.random() > 0.5);
-        }
-        pattern[0] = true;
-        pattern[2] = true;
-        pattern[6] = true;
-        return pattern;
-    }
+                    if (!response.ok) {
+                        throw new Error(`Error en el servidor: ${response.status}`);
+                    }
 
-    function createQR() {
-        const qr = document.createElement('div');
-        qr.className = 'floating-qr';
+                    // Obtener la URL de redirección de la respuesta
+                    const redirectUrl = response.url;
 
-        const pattern = generateQRPattern();
+                    // Verificar si hay una URL de redirección válida
+                    if (redirectUrl) {
+                        // Limpiar el formulario antes de redirigir
+                        form.reset();
 
-        pattern.forEach((filled) => {
-            const square = document.createElement('div');
-            square.className = 'qr-square';
-            if (filled) {
-                square.classList.add('filled');
-                if (Math.random() > 0.7) {
-                    square.style.animation = `qrGlow ${Math.random() * 2 + 1}s infinite alternate`;
+                        // Redirigir a la nueva página
+                        window.location.href = redirectUrl;
+                    }
+
+                } catch (error) {
+                    console.error('Error:', error);
+                    showError('Error al procesar la solicitud. Por favor intenta nuevamente.');
+                } finally {
+                    isSubmitting = false;
+                    setSubmitButtonState(false);
+                }
+            });
+
+            // Función para procesar el QR (separada del manejo del formulario)
+            async function processQRScan(qrData) {
+                try {
+                    const url = new URL(qrData);
+                    url.searchParams.append('source', 'scan');
+
+                    const response = await fetch(url.toString(), {
+                        method: 'GET',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'text/html,application/xhtml+xml,application/xml'
+                        },
+                        credentials: 'same-origin'
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Error HTTP: ${response.status}`);
+                    }
+
+                    const html = await response.text();
+
+                    // Actualizar el contenido de la página de manera más segura
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    document.body.innerHTML = doc.body.innerHTML;
+
+                } catch (error) {
+                    console.error('Error procesando QR:', error);
+                    showError('Error al procesar el código QR. Por favor, intente nuevamente.');
                 }
             }
-            qr.appendChild(square);
-        });
 
-        // Posición y animación inicial
-        const startX = Math.random() * window.innerWidth;
-        const startY = Math.random() * window.innerHeight;
-        qr.style.left = `${startX}px`;
-        qr.style.top = `${startY}px`;
+            // Exponer la función de procesamiento QR globalmente
+            window.processQRScan = processQRScan;
 
-        // Tamaño aleatorio
-        const size = Math.random() * (QR_CONFIG.maxSize - QR_CONFIG.minSize) + QR_CONFIG.minSize;
-        qr.style.width = `${size}px`;
-        qr.style.height = `${size}px`;
 
-        // Movimiento aleatorio
-        const angle = Math.random() * Math.PI * 2;
-        const distance = Math.random() * 300 + 200;
-        qr.style.setProperty('--move-x', `${Math.cos(angle) * distance}px`);
-        qr.style.setProperty('--move-y', `${Math.sin(angle) * distance}px`);
-        qr.style.setProperty('--rotation', `${Math.random() * 360}deg`);
+            // Parte 3: Efectos Visuales QR
+            const qrContainer = document.createElement('div');
+            qrContainer.className = 'qr-background';
+            document.body.appendChild(qrContainer);
 
-        qrContainer.appendChild(qr);
+            function generateQRPattern() {
+                const pattern = [];
+                const size = 3;
+                for (let i = 0; i < size * size; i++) {
+                    pattern.push(Math.random() > 0.5);
+                }
+                pattern[0] = true;
+                pattern[2] = true;
+                pattern[6] = true;
+                return pattern;
+            }
 
-        setTimeout(() => {
-            qr.remove();
-        }, QR_CONFIG.maxDuration);
-    }
-
-    // Crear QRs iniciales
-    for (let i = 0; i < 10; i++) {
-        setTimeout(createQR, i * 200);
-    }
-
-    // Eventos de mouse para QRs
-    let lastMouseMove = 0;
-    document.addEventListener('mousemove', (e) => {
-        const now = Date.now();
-        if (now - lastMouseMove > 100 && Math.random() > 0.7) {
-            lastMouseMove = now;
-            if (qrContainer.children.length < QR_CONFIG.maxQRs) {
+            function createQR() {
                 const qr = document.createElement('div');
                 qr.className = 'floating-qr';
 
                 const pattern = generateQRPattern();
+
                 pattern.forEach((filled) => {
                     const square = document.createElement('div');
                     square.className = 'qr-square';
-                    if (filled) square.classList.add('filled');
+                    if (filled) {
+                        square.classList.add('filled');
+                        if (Math.random() > 0.7) {
+                            square.style.animation = `qrGlow ${Math.random() * 2 + 1}s infinite alternate`;
+                        }
+                    }
                     qr.appendChild(square);
                 });
 
-                qr.style.left = `${e.clientX}px`;
-                qr.style.top = `${e.clientY}px`;
+                // Posición y animación inicial
+                const startX = Math.random() * window.innerWidth;
+                const startY = Math.random() * window.innerHeight;
+                qr.style.left = `${startX}px`;
+                qr.style.top = `${startY}px`;
 
+                // Tamaño aleatorio
+                const size = Math.random() * (QR_CONFIG.maxSize - QR_CONFIG.minSize) + QR_CONFIG.minSize;
+                qr.style.width = `${size}px`;
+                qr.style.height = `${size}px`;
+
+                // Movimiento aleatorio
                 const angle = Math.random() * Math.PI * 2;
-                const distance = Math.random() * 200 + 100;
+                const distance = Math.random() * 300 + 200;
                 qr.style.setProperty('--move-x', `${Math.cos(angle) * distance}px`);
                 qr.style.setProperty('--move-y', `${Math.sin(angle) * distance}px`);
                 qr.style.setProperty('--rotation', `${Math.random() * 360}deg`);
@@ -403,37 +409,76 @@ form.addEventListener('submit', async function (e) {
 
                 setTimeout(() => {
                     qr.remove();
-                }, 10000);
+                }, QR_CONFIG.maxDuration);
             }
-        }
-    });
 
-
-    // Parte 4: Manejo de Eventos de Ventana y Botones
-    let resizeTimeout;
-    window.addEventListener('resize', () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-            qrContainer.innerHTML = '';
+            // Crear QRs iniciales
             for (let i = 0; i < 10; i++) {
-                createQR();
+                setTimeout(createQR, i * 200);
             }
-        }, 250);
-    });
 
-    // Efectos de botones
-    const buttons = document.querySelectorAll('.btn-open, .btn-open2, .apple-btn');
-    buttons.forEach(button => {
-        button.addEventListener('mousemove', (e) => {
-            const rect = button.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+            // Eventos de mouse para QRs
+            let lastMouseMove = 0;
+            document.addEventListener('mousemove', (e) => {
+                const now = Date.now();
+                if (now - lastMouseMove > 100 && Math.random() > 0.7) {
+                    lastMouseMove = now;
+                    if (qrContainer.children.length < QR_CONFIG.maxQRs) {
+                        const qr = document.createElement('div');
+                        qr.className = 'floating-qr';
 
-            button.style.setProperty('--x', `${x}px`);
-            button.style.setProperty('--y', `${y}px`);
+                        const pattern = generateQRPattern();
+                        pattern.forEach((filled) => {
+                            const square = document.createElement('div');
+                            square.className = 'qr-square';
+                            if (filled) square.classList.add('filled');
+                            qr.appendChild(square);
+                        });
+
+                        qr.style.left = `${e.clientX}px`;
+                        qr.style.top = `${e.clientY}px`;
+
+                        const angle = Math.random() * Math.PI * 2;
+                        const distance = Math.random() * 200 + 100;
+                        qr.style.setProperty('--move-x', `${Math.cos(angle) * distance}px`);
+                        qr.style.setProperty('--move-y', `${Math.sin(angle) * distance}px`);
+                        qr.style.setProperty('--rotation', `${Math.random() * 360}deg`);
+
+                        qrContainer.appendChild(qr);
+
+                        setTimeout(() => {
+                            qr.remove();
+                        }, 10000);
+                    }
+                }
+            });
+
+
+            // Parte 4: Manejo de Eventos de Ventana y Botones
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    qrContainer.innerHTML = '';
+                    for (let i = 0; i < 10; i++) {
+                        createQR();
+                    }
+                }, 250);
+            });
+
+            // Efectos de botones
+            const buttons = document.querySelectorAll('.btn-open, .btn-open2, .apple-btn');
+            buttons.forEach(button => {
+                button.addEventListener('mousemove', (e) => {
+                    const rect = button.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+
+                    button.style.setProperty('--x', `${x}px`);
+                    button.style.setProperty('--y', `${y}px`);
+                });
+            });
         });
-    });
-});
 
 
     </script>
