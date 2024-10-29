@@ -782,10 +782,38 @@ def validar_qr(request, encrypted_token):
                 })
 
             # Intentar registrar la lectura directamente
-            visitante.ultima_lectura = timezone.now()
+            tiempo_actual = timezone.now()
+            visitante.ultima_lectura = tiempo_actual
             visitante.nombre_log = request.user.email
             visitante.save()
             
+            # Enviar notificación por email
+            try:
+                email_subject = "Tu visitante ya está en la portería"
+                email_body = f"""
+                Hola,
+                
+                Tu visitante {visitante.nombre} se encuentra en la portería.
+                Fecha y hora de llegada: {timezone.localtime(visitante.ultima_lectura).strftime('%Y-%m-%d %H:%M:%S')}
+                Motivo de la visita: {visitante.motivo}
+                
+                Saludos,
+                Kislev
+                """
+                
+                email = EmailMessage(
+                    email_subject,
+                    email_body,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [visitante.email_creador],
+                    headers={'X-Priority': '1'}
+                )
+                email.send(fail_silently=False)
+                logger.info(f"Notificación enviada a {visitante.email_creador}")
+            except Exception as e:
+                logger.error(f"Error enviando notificación por email: {str(e)}")
+                # Continuar aunque falle el envío del email
+
             logger.info(f"Lectura registrada exitosamente: {visitante.ultima_lectura}")
             return render(request, 'validar_qr.html', {'visitante': visitante})
 
