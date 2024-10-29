@@ -751,19 +751,22 @@ def validar_qr(request, encrypted_token):
 
         original_token = decrypted_token[len("Kislev_"):]
         
-        # IMPORTANTE: Usamos select_for_update para bloquear el registro
+        # Usar una sola transacción para todo
         with transaction.atomic():
-            # Intentar obtener el visitante con bloqueo
-            try:
-                visitante = Visitante.objects.select_for_update(nowait=True).get(token=original_token)
-            except DatabaseError:
-                logger.warning("QR siendo procesado simultáneamente")
-                return render(request, 'error_qr.html', {
-                    'mensaje': 'QR siendo procesado. Por favor, intente nuevamente en unos segundos.'
-                })
-
-            # Verificar inmediatamente si ya fue usado
-            visitante.refresh_from_db()
+            visitante = get_object_or_404(
+                Visitante.objects.select_for_update(nowait=True),
+                token=original_token
+            )
+            
+            # Log del estado actual
+            logger.info(f"""
+            Estado del visitante antes de procesar:
+            ID: {visitante.id}
+            Token: {visitante.token[:10]}...
+            Última lectura: {visitante.ultima_lectura}
+            Fecha generación: {visitante.fecha_generacion}
+            """)
+            
             if visitante.ultima_lectura is not None:
                 logger.warning(f"QR ya utilizado - ID: {visitante.id}, Última lectura: {visitante.ultima_lectura}")
                 return render(request, 'qr_desactivado.html', {
@@ -783,21 +786,39 @@ def validar_qr(request, encrypted_token):
                     'fecha_expiracion': tiempo_expiracion
                 })
 
-            # Si llegamos aquí, podemos registrar la lectura
-            logger.info(f"Registrando primera lectura para QR - ID: {visitante.id}")
+            # Registrar la lectura
             visitante.ultima_lectura = tiempo_actual
             visitante.nombre_log = request.user.email
             visitante.save()
+            
+            logger.info(f"""
+            Lectura registrada exitosamente:
+            ID: {visitante.id}
+            Nueva última lectura: {visitante.ultima_lectura}
+            Usuario que registró: {request.user.email}
+            """)
 
-            # Enviar notificación
+            # Intentar enviar notificación
             try:
+                email_subject = "Tu visitante ya está en la portería"
+                email_body = f"""
+                Hola,
+                
+                Tu visitante {visitante.nombre} se encuentra en la portería.
+                Hora de llegada: {timezone.localtime(visitante.ultima_lectura).strftime('%H:%M:%S')}
+                
+                Saludos,
+                Kislev
+                """
+                
                 email = EmailMessage(
-                    "Tu visitante ha llegado",
-                    f"Tu visitante {visitante.nombre} ha llegado y su QR ha sido validado.",
+                    email_subject,
+                    email_body,
                     settings.DEFAULT_FROM_EMAIL,
                     [visitante.email_creador]
                 )
                 email.send(fail_silently=True)
+                logger.info(f"Notificación enviada a {visitante.email_creador}")
             except Exception as e:
                 logger.error(f"Error enviando notificación: {str(e)}")
 
