@@ -100,8 +100,9 @@ WSGI_APPLICATION = 'kislevsmart.wsgi.application'
 
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_AGE = 86400  # 24 horas en segundos
+SESSION_COOKIE_SAMESITE = 'Lax'
 SESSION_CACHE_ALIAS = 'default'
-SESSION_COOKIE_AGE = 3600
 
 
 
@@ -351,6 +352,5 @@ LOGGING = {
         },
     },
 }
-
 
 
