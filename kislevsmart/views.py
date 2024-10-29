@@ -743,84 +743,68 @@ def bienvenida(request):
 @login_required
 @role_required(['porteria', 'administrador'])
 def validar_qr(request, encrypted_token):
-    logger.info("Iniciando validación de QR")
-    
-    source = request.GET.get('source', '')
-    if source != 'scan':
-        logger.warning("Intento de acceso sin escaneo")
-        return render(request, 'error_qr.html', {
-            'mensaje': 'Acceso no autorizado. Escanea el QR desde la aplicación.'
-        })
+   logger.info("Iniciando validación de QR")
+   try:
+       # Desencriptar token
+       decrypted_token = cipher.decrypt(encrypted_token.encode()).decode()
+       if not decrypted_token.startswith("Kislev_"):
+           logger.error("Token inválido: prefijo incorrecto")
+           return render(request, 'error_qr.html', {'mensaje': 'Token no válido.'})
 
-    try:
-        # Desencriptar token
-        decrypted_token = cipher.decrypt(encrypted_token.encode()).decode()
-        if not decrypted_token.startswith("Kislev_"):
-            logger.error("Token inválido: prefijo incorrecto")
-            return render(request, 'error_qr.html', {'mensaje': 'Token no válido.'})
+       original_token = decrypted_token[len("Kislev_"):]
+       
+       # Obtener visitante con bloqueo
+       with transaction.atomic():
+           visitante = get_object_or_404(
+               Visitante.objects.select_for_update(nowait=True),
+               token=original_token
+           )
+           
+           # Registrar estado actual 
+           estado = visitante.diagnostico_estado()
+           logger.info(f"Estado actual del QR: {estado}")
+           
+           # Verificar si el QR ya fue utilizado
+           if visitante.ultima_lectura is not None:
+               logger.warning(f"QR ya utilizado el: {visitante.ultima_lectura}")
+               return render(request, 'qr_desactivado.html', {
+                   'mensaje': 'Este código QR ya ha sido utilizado.',
+                   'ultima_lectura': visitante.ultima_lectura,
+                   'estado': estado
+               })
 
-        original_token = decrypted_token[len("Kislev_"):]
-        
-        # Obtener visitante
-        visitante = get_object_or_404(Visitante, token=original_token)
-        logger.info(f"Visitante encontrado: {visitante.id} - Última lectura: {visitante.ultima_lectura}")
-        
-        # Verificar disponibilidad antes de registrar
-        if not visitante.esta_disponible():
-            if visitante.ultima_lectura is not None:
-                logger.warning(f"QR ya utilizado el: {visitante.ultima_lectura}")
-                return render(request, 'qr_desactivado.html', {
-                    'mensaje': 'Este código QR ya ha sido utilizado.',
-                    'ultima_lectura': visitante.ultima_lectura
-                })
-            elif not visitante.esta_vigente():
-                logger.warning("QR expirado")
-                return render(request, 'qr_expirado.html', {
-                    'mensaje': 'El QR ha expirado.',
-                    'fecha_generacion': visitante.fecha_generacion,
-                    'fecha_expiracion': visitante.fecha_generacion + timedelta(hours=24)
-                })
+           # Verificar vigencia
+           if not visitante.esta_vigente():
+               logger.warning("QR expirado")
+               return render(request, 'qr_expirado.html', {
+                   'mensaje': 'El QR ha expirado.',
+                   'fecha_generacion': visitante.fecha_generacion,
+                   'fecha_expiracion': visitante.get_fecha_generacion_local() + timedelta(hours=24),
+                   'estado': estado
+               })
 
-        # Intentar registrar la lectura
-        with transaction.atomic():
-            if visitante.registrar_lectura(request.user.email):
-                logger.info(f"Lectura registrada exitosamente para visitante {visitante.id}")
-                
-                # Enviar notificación por email
-                try:
-                    email_subject = "Tu visitante ya está en la portería"
-                    email_body = f"Hola, tu visitante {visitante.nombre} se encuentra en la portería."
-                    
-                    email_message = EmailMessage(
-                        email_subject,
-                        email_body,
-                        settings.DEFAULT_FROM_EMAIL,
-                        [visitante.email_creador]
-                    )
-                    email_message.send()
-                    logger.info(f"Notificación enviada a {visitante.email_creador}")
-                except Exception as e:
-                    logger.error(f"Error enviando notificación: {str(e)}")
-                
-                return render(request, 'validar_qr.html', {'visitante': visitante})
-            else:
-                logger.error(f"No se pudo registrar la lectura para visitante {visitante.id}")
-                return render(request, 'error_qr.html', {
-                    'mensaje': 'Error al validar el QR. Por favor, intente nuevamente.'
-                })
+           # Intentar registrar la lectura
+           if visitante.registrar_lectura(request.user.email):
+               # Recargar el visitante para obtener los datos actualizados
+               visitante.refresh_from_db()
+               logger.info(f"Lectura registrada exitosamente. Nueva última lectura: {visitante.ultima_lectura}")
+               
+               return render(request, 'validar_qr.html', {
+                   'visitante': visitante,
+                   'estado': visitante.diagnostico_estado()
+               })
+           else:
+               logger.error("No se pudo registrar la lectura")
+               return render(request, 'error_qr.html', {
+                   'mensaje': 'Error al registrar la lectura. Por favor, intente nuevamente.',
+                   'estado': estado
+               })
 
-    except InvalidToken:
-        logger.error("Token inválido o corrupto")
-        return render(request, 'error_qr.html', {'mensaje': 'Token inválido o corrupto.'})
-    except Exception as e:
-        logger.error(f"Error inesperado: {str(e)}")
-        return render(request, 'error_qr.html', {
-            'mensaje': 'Error al procesar el QR.'
-        })
-
-
-    logger.info(f"Estado del QR: {visitante.diagnostico_estado()}")
-
+   except Exception as e:
+       logger.error(f"Error inesperado: {str(e)}")
+       return render(request, 'error_qr.html', {
+           'mensaje': f'Error al procesar el QR: {str(e)}'
+       })
 
 @login_required
 def success_page(request, email_b64):
