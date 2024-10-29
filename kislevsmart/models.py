@@ -69,6 +69,19 @@ class Visitante(models.Model):
         return False
 
     
+    def diagnostico_estado(self):
+        """Retorna un diccionario con el estado actual del QR"""
+        return {
+            'id': self.id,
+            'token': self.token[:10] + '...',  # Solo mostrar parte del token por seguridad
+            'fecha_generacion': self.fecha_generacion,
+            'ultima_lectura': self.ultima_lectura,
+            'esta_vigente': self.esta_vigente(),
+            'esta_disponible': self.esta_disponible(),
+            'tiempo_actual': self.get_tiempo_actual(),
+            'tiempo_expiracion': self.get_fecha_generacion_local() + timedelta(hours=24)
+        }
+    
 
 
 class Sala(models.Model):
