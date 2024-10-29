@@ -632,86 +632,104 @@ cipher = Fernet(SECRET_KEY)
 
 @login_required
 def bienvenida(request):
-   if request.method == 'POST':
-       try:
-           # Recibir datos del formulario
-           nombre_log = request.POST['nombre_log']
-           email_creador = request.POST['email_creador']
-           nombre = request.POST['nombre']
-           email = request.POST['email']
-           celular = request.POST['celular']
-           cedula = request.POST['cedula']
-           motivo = request.POST['motivo']
-           numper = request.POST['numper']
-           
+    if request.method == 'POST':
+        try:
+            with transaction.atomic():  # Usar transacción atómica
+                # Recibir datos del formulario
+                nombre_log = request.POST['nombre_log']
+                email_creador = request.POST['email_creador']
+                nombre = request.POST['nombre']
+                email = request.POST['email']
+                celular = request.POST['celular']
+                cedula = request.POST['cedula']
+                motivo = request.POST['motivo']
+                numper = request.POST['numper']
 
-           # Generar un UUID puro
-           uuid_token = str(uuid.uuid4())
+                # Generar un UUID puro
+                uuid_token = str(uuid.uuid4())
 
-           # Guardar el visitante con el token UUID puro
-           visitante = Visitante.objects.create(
-               email=email,
-               nombre=nombre,
-               celular=celular,
-               cedula=cedula,
-               motivo=motivo,
-               email_creador=email_creador,
-               nombre_log = nombre_log,
-               token=uuid_token,
-               fecha_generacion=timezone.now(),
-               numper=numper,
-           )
+                # Verificar si ya existe un visitante con este token
+                if Visitante.objects.filter(token=uuid_token).exists():
+                    raise ValueError("Token duplicado, por favor intente nuevamente")
 
-           # Preparar el token con prefijo para encriptar
-           raw_token = f"Kislev_{uuid_token}"
-           encrypted_token = cipher.encrypt(raw_token.encode()).decode()
+                # Crear el visitante con última_lectura explícitamente None
+                visitante = Visitante.objects.create(
+                    email=email,
+                    nombre=nombre,
+                    celular=celular,
+                    cedula=cedula,
+                    motivo=motivo,
+                    email_creador=email_creador,
+                    nombre_log=nombre_log,
+                    token=uuid_token,
+                    fecha_generacion=timezone.now(),
+                    numper=numper,
+                    ultima_lectura=None  # Explícitamente None
+                )
 
-           # Determinar la URL base según el entorno
-           if 'railway.app' in request.get_host():
-               # Estamos en Railway (producción)
-               base_url = f"https://{request.get_host()}"
-           else:
-               # Estamos en desarrollo local
-               base_url = request.build_absolute_uri('/').rstrip('/')
+                # Preparar el token con prefijo para encriptar
+                raw_token = f"Kislev_{uuid_token}"
+                encrypted_token = cipher.encrypt(raw_token.encode()).decode()
 
-           # Generar el enlace con el token encriptado usando la URL base correcta
-           enlace_qr = f"{base_url}{reverse('validar_qr', args=[encrypted_token])}"
+                # Determinar la URL base
+                base_url = f"https://{request.get_host()}" if 'railway.app' in request.get_host() else request.build_absolute_uri('/').rstrip('/')
+                enlace_qr = f"{base_url}{reverse('validar_qr', args=[encrypted_token])}"
 
-           # Verificar la URL generada
-           print(f"URL generada para QR: {enlace_qr}")
+                logger.info(f"URL generada para QR: {enlace_qr}")
 
-           # Crear carpeta 'qrs' si no existe
-           qr_dir = os.path.join(settings.MEDIA_ROOT, 'qrs')
-           os.makedirs(qr_dir, exist_ok=True)
+                # Generar y guardar QR
+                qr_dir = os.path.join(settings.MEDIA_ROOT, 'qrs')
+                os.makedirs(qr_dir, exist_ok=True)
+                qr_file_path = os.path.join(qr_dir, f'qr_{visitante.id}.png')
+                
+                qr = qrcode.QRCode(
+                    version=1,
+                    error_correction=qrcode.constants.ERROR_CORRECT_L,
+                    box_size=10,
+                    border=4,
+                )
+                qr.add_data(enlace_qr)
+                qr.make(fit=True)
+                qr_img = qr.make_image(fill_color="black", back_color="white")
+                qr_img.save(qr_file_path)
 
-           # Definir ruta y generar el código QR
-           qr_file_path = os.path.join(qr_dir, f'qr_{visitante.id}.png')
-           qr_img = qrcode.make(enlace_qr)
-           qr_img.save(qr_file_path)
+                # Enviar email
+                try:
+                    email_subject = "Tu Código QR de Visitante"
+                    email_body = (
+                        f"Hola {visitante.nombre},\n\n"
+                        "Adjunto encontrarás tu código QR para la visita.\n"
+                        "Por favor, preséntalo en la entrada para el ingreso.\n\n"
+                        f"Motivo: {motivo}\n\nAtentamente,\nKislev"
+                    )
+                    
+                    email_message = EmailMessage(
+                        email_subject,
+                        email_body,
+                        settings.DEFAULT_FROM_EMAIL,
+                        [email]
+                    )
+                    email_message.attach_file(qr_file_path)
+                    email_message.send()
+                except Exception as e:
+                    logger.error(f"Error enviando email: {str(e)}")
+                    # Continuar a pesar del error en el email
 
-           # Enviar el QR por correo electrónico
-           email_subject = "Tu Código QR de Visitante"
-           email_body = (
-               f"Hola {visitante.nombre},\n\n"
-               "Adjunto encontrarás tu código QR para la visita.\n"
-               "Por favor, preséntalo en la entrada para el ingreso.\n\n"
-               f"Motivo: {motivo}\nAtentamente,\nKislev"
-           )
-           email_message = EmailMessage(
-               email_subject, email_body, settings.DEFAULT_FROM_EMAIL, [email]
-           )
-           email_message.attach_file(qr_file_path)
-           email_message.send()
+                # Verificar estado final del visitante
+                visitante.refresh_from_db()
+                logger.info(f"Estado final del visitante - ID: {visitante.id}, "
+                           f"Última lectura: {visitante.ultima_lectura}, "
+                           f"Token: {uuid_token[:10]}...")
 
-           email_b64 = base64.urlsafe_b64encode(email.encode()).decode()  # Codificar email
-           
-           return redirect('valqr', email_b64=email_b64)
+                email_b64 = base64.urlsafe_b64encode(email.encode()).decode()
+                return redirect('valqr', email_b64=email_b64)
 
-       except Exception as e:
-           print(f"Error: {e}")
-           # Mostrar un mensaje de error o redirigir a una página de error
+        except Exception as e:
+            logger.error(f"Error en bienvenida: {str(e)}")
+            messages.error(request, 'Error al generar el QR. Por favor, intente nuevamente.')
+            return render(request, 'bienvenida.html', {'error': str(e)})
 
-   return render(request, 'bienvenida.html')
+    return render(request, 'bienvenida.html')
 
 
 
