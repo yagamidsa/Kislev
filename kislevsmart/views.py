@@ -705,9 +705,11 @@ def bienvenida(request):
                 
                 # Si es una petición AJAX, devolver JSON
                 if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    # Si es una petición AJAX
                     return JsonResponse({
                         'status': 'success',
-                        'redirect_url': redirect_url
+                        'redirect_url': reverse('valqr', kwargs={'email_b64': email_b64}),
+                        'message': 'QR generado exitosamente'
                     })
                 
                 # Si no es AJAX, redireccionar normalmente

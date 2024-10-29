@@ -8,6 +8,7 @@
     <title>Bienvenido</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/formQR.css' %}">
+    <meta name="referrer" content="same-origin">
 </head>
 
 <body>
@@ -261,7 +262,7 @@
                 this.classList.toggle('is-invalid', !isCelularValid(celular));
             });
 
-            // Manejo mejorado del envío del formulario
+            // Reemplaza el manejo del formulario actual por este
             form.addEventListener('submit', async function (e) {
                 e.preventDefault();
 
@@ -294,18 +295,33 @@
                             'X-Requested-With': 'XMLHttpRequest',
                             'X-CSRFToken': csrfToken
                         },
-                        credentials: 'same-origin' // Importante para las cookies
+                        credentials: 'same-origin'
                     });
 
                     if (!response.ok) {
                         throw new Error(`Error HTTP: ${response.status}`);
                     }
 
-                    // Obtener la URL de redirección de la respuesta
-                    const redirectUrl = response.headers.get('X-Redirect-Url') || response.url;
+                    try {
+                        // Intentar parsear como JSON primero
+                        const data = await response.json();
+                        if (data.status === 'success' && data.redirect_url) {
+                            window.location.href = data.redirect_url;
+                            return;
+                        }
+                    } catch (e) {
+                        // Si no es JSON, podría ser una redirección directa
+                        console.log("No es una respuesta JSON, intentando redirección directa");
+                    }
 
-                    // Redireccionar directamente
-                    window.location.href = redirectUrl;
+                    // Si llegamos aquí, usar la URL de la respuesta
+                    const redirectUrl = response.headers.get('Location') || response.url;
+                    if (redirectUrl) {
+                        console.log("Redirigiendo a:", redirectUrl);
+                        window.location.href = redirectUrl;
+                    } else {
+                        showError('No se pudo determinar la URL de redirección');
+                    }
 
                 } catch (error) {
                     console.error('Error:', error);
