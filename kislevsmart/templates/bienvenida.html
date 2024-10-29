@@ -241,81 +241,51 @@
             };
 
             // Manejo del envío del formulario
-            form.addEventListener('submit', async function (e) {
-                e.preventDefault();
+            // Manejo del envío del formulario
+form.addEventListener('submit', function (e) {
+    try {
+        const now = Date.now();
+        if (now - lastSubmitTime < SUBMIT_COOLDOWN) {
+            e.preventDefault();
+            showError(`Por favor espera ${SUBMIT_COOLDOWN / 1000} segundos antes de enviar otro código`);
+            return;
+        }
 
-                try {
-                    // Verificar cooldown
-                    const now = Date.now();
-                    if (now - lastSubmitTime < SUBMIT_COOLDOWN) {
-                        showError(`Por favor espera ${SUBMIT_COOLDOWN / 1000} segundos antes de enviar otro código`);
-                        return;
-                    }
+        if (isSubmitting) {
+            e.preventDefault();
+            return;
+        }
 
-                    // Verificar si ya está en proceso de envío
-                    if (isSubmitting) {
-                        return;
-                    }
+        const email = emailInput.value;
+        const celular = celularInput.value;
 
-                    // Validar campos
-                    const email = emailInput.value;
-                    const celular = celularInput.value;
+        if (!isEmailValid(email)) {
+            e.preventDefault();
+            showError('Por favor ingresa un correo electrónico válido');
+            return;
+        }
 
-                    if (!isEmailValid(email)) {
-                        showError('Por favor ingresa un correo electrónico válido');
-                        return;
-                    }
+        if (!isCelularValid(celular)) {
+            e.preventDefault();
+            showError('Por favor ingresa un número de celular válido de 10 dígitos');
+            return;
+        }
 
-                    if (!isCelularValid(celular)) {
-                        showError('Por favor ingresa un número de celular válido de 10 dígitos');
-                        return;
-                    }
+        isSubmitting = true;
+        setSubmitButtonState(true);
+        lastSubmitTime = now;
 
-                    // Iniciar envío
-                    isSubmitting = true;
-                    setSubmitButtonState(true);
-                    lastSubmitTime = now;
+        // Permitir que el formulario se envíe normalmente
+        // No prevenimos el evento por defecto aquí
 
-                    // Obtener el formulario y el token CSRF
-                    const formData = new FormData(form);
-                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-
-                    // Enviar formulario
-                    const response = await fetch(form.action || window.location.href, {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            'X-CSRFToken': csrfToken,
-                            'X-Requested-With': 'XMLHttpRequest'
-                        },
-                        credentials: 'same-origin'
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`Error en el servidor: ${response.status}`);
-                    }
-
-                    // Obtener la URL de redirección de la respuesta
-                    const redirectUrl = response.url;
-
-                    // Verificar si hay una URL de redirección válida
-                    if (redirectUrl) {
-                        // Limpiar el formulario antes de redirigir
-                        form.reset();
-
-                        // Redirigir a la nueva página
-                        window.location.href = redirectUrl;
-                    }
-
-                } catch (error) {
-                    console.error('Error:', error);
-                    showError('Error al procesar la solicitud. Por favor intenta nuevamente.');
-                } finally {
-                    isSubmitting = false;
-                    setSubmitButtonState(false);
-                }
-            });
-
+    } catch (error) {
+        e.preventDefault();
+        console.error('Error:', error);
+        showError('Error al procesar la solicitud. Por favor intenta nuevamente.');
+        isSubmitting = false;
+        setSubmitButtonState(false);
+    }
+});
             // Función para procesar el QR (separada del manejo del formulario)
             async function processQRScan(qrData) {
                 try {
@@ -348,9 +318,7 @@
                 }
             }
 
-            // Exponer la función de procesamiento QR globalmente
-            window.processQRScan = processQRScan;
-
+      
 
             // Parte 3: Efectos Visuales QR
             const qrContainer = document.createElement('div');
