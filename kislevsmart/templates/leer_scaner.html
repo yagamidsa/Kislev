@@ -24,115 +24,99 @@
     </div>
 
     <script src="https://unpkg.com/@zxing/library@latest"></script>
-<script>
-    const maxFailedAttempts = 5;
-    let failedAttempts = 0;
-    let isShowingError = false;
-    let isProcessing = false;
-    let lastScanTime = 0;
-    const SCAN_COOLDOWN = 3000;
-
-    async function startCamera() {
-        const codeReader = new ZXing.BrowserQRCodeReader();
-        const videoElement = document.getElementById('video');
-
-        try {
-            const devices = await codeReader.getVideoInputDevices();
-            if (devices.length === 0) throw new Error('No se encontraron cámaras.');
-
-            const preferredDevice = devices[devices.length - 1];
-            codeReader.decodeFromVideoDevice(preferredDevice.deviceId, 'video', (result, error) => {
-                if (result && !isProcessing) {
-                    const currentTime = Date.now();
-                    if (currentTime - lastScanTime > SCAN_COOLDOWN) {
-                        isProcessing = true;
-                        lastScanTime = currentTime;
+    <script>
+        const maxFailedAttempts = 5;
+        let failedAttempts = 0;
+        let isShowingError = false; // Variable para controlar mensajes de error
+    
+        async function startCamera() {
+            const codeReader = new ZXing.BrowserQRCodeReader();
+            const videoElement = document.getElementById('video');
+    
+            try {
+                const devices = await codeReader.getVideoInputDevices();
+                if (devices.length === 0) throw new Error('No se encontraron cámaras.');
+    
+                const preferredDevice = devices[devices.length - 1];
+                codeReader.decodeFromVideoDevice(preferredDevice.deviceId, 'video', (result, error) => {
+                    if (result) {
                         console.log('QR detectado:', result.text);
                         failedAttempts = 0;
                         processQRContent(result.text);
-                        
-                        setTimeout(() => {
-                            isProcessing = false;
-                        }, SCAN_COOLDOWN);
-                    }
-                } else if (error) {
-                    if (!(error instanceof ZXing.NotFoundException)) {
-                        console.error('Error durante el escaneo:', error);
-                        failedAttempts++;
-
-                        if (failedAttempts >= maxFailedAttempts) {
-                            showErrorMessage("Error escaneando el QR");
+                    } else if (error) {
+                        if (!(error instanceof ZXing.NotFoundException)) {
+                            console.error('Error durante el escaneo:', error);
+                            failedAttempts++;
+    
+                            if (failedAttempts >= maxFailedAttempts) {
+                                showErrorMessage("Error escaneando el QR");
+                            }
                         }
                     }
-                }
-            });
-
-        } catch (error) {
-            console.error("Error al acceder a la cámara:", error);
-            showErrorMessage("Error al acceder a la cámara");
-        }
-    }
-
-    function processQRContent(content) {
-        try {
-            const url = new URL(content);
-            const baseUrl = window.location.origin;
-
-            if (url.pathname.startsWith("/validar_qr/")) {
-                // Agregar identificador único para la solicitud
-                const requestId = Date.now().toString(36) + Math.random().toString(36).substr(2);
-                const separator = url.search ? '&' : '?';
-                const fullUrl = `${baseUrl}${url.pathname}${url.search}${separator}source=scan&req=${requestId}`;
-                
-                // Detectar si es Safari/iOS
-                const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-                
-                if (isSafari) {
-                    window.location.replace(fullUrl);
-                } else {
-                    window.location.href = fullUrl;
-                }
-            } else {
-                showErrorMessage("Código QR no válido");
+                });
+    
+            } catch (error) {
+                console.error("Error al acceder a la cámara:", error);
+                showErrorMessage("Error al acceder a la cámara");
             }
-        } catch (e) {
-            console.error("Error procesando QR:", e);
-            showErrorMessage("QR no válido");
         }
-    }
-
-    function showErrorMessage(message) {
-        if (isShowingError) return;
-
-        const existing = document.querySelectorAll('.error-message');
-        existing.forEach(el => el.remove());
-
-        isShowingError = true;
-
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'error-message';
-        errorDiv.innerHTML = `
-            <img src="https://fonts.gstatic.com/s/i/materialicons/error/v6/24px.svg" alt="Error" class="error-icon">
-            <p>${message}</p>
-        `;
-        document.getElementById('error-container').appendChild(errorDiv);
-        errorDiv.style.display = 'block';
-
-        setTimeout(() => {
-            errorDiv.remove();
-            isShowingError = false;
-        }, 3000);
-    }
-
-    document.addEventListener('DOMContentLoaded', startCamera);
-
-    window.addEventListener('beforeunload', () => {
-        const videoElement = document.getElementById('video');
-        if (videoElement.srcObject) {
-            videoElement.srcObject.getTracks().forEach(track => track.stop());
+    
+        function processQRContent(content) {
+            try {
+                const url = new URL(content);
+                const baseUrl = window.location.origin;
+    
+                if (url.pathname.startsWith("/validar_qr/")) {
+                    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+                    const fullUrl = `${baseUrl}${url.pathname}${url.search ? url.search + '&' : '?'}source=scan`;
+                    
+                    // Solo para Safari/iOS usamos replace
+                    if (isSafari) {
+                        window.location.replace(fullUrl);
+                    } else {
+                        window.location.href = fullUrl;
+                    }
+                } else {
+                    showErrorMessage("Código QR no válido");
+                }
+            } catch (e) {
+                console.error("Error procesando QR:", e);
+                showErrorMessage("QR no válido");
+            }
         }
-    });
-</script>
+    
+        function showErrorMessage(message) {
+            if (isShowingError) return;
+    
+            const existing = document.querySelectorAll('.error-message');
+            existing.forEach(el => el.remove());
+    
+            isShowingError = true;
+    
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.innerHTML = `
+                <img src="https://fonts.gstatic.com/s/i/materialicons/error/v6/24px.svg" alt="Error" class="error-icon">
+                <p>${message}</p>
+            `;
+            document.getElementById('error-container').appendChild(errorDiv);
+            errorDiv.style.display = 'block';
+    
+            setTimeout(() => {
+                errorDiv.remove();
+                isShowingError = false;
+            }, 3000);
+        }
+    
+        document.addEventListener('DOMContentLoaded', startCamera);
+    
+        window.addEventListener('beforeunload', () => {
+            const videoElement = document.getElementById('video');
+            if (videoElement.srcObject) {
+                videoElement.srcObject.getTracks().forEach(track => track.stop());
+            }
+        });
+    </script>
 </body>
 
 </html>

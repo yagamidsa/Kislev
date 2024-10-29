@@ -742,9 +742,6 @@ def validar_qr(request, encrypted_token):
     ) or (
         'Sec-Purpose' in request.headers and 
         request.headers['Sec-Purpose'] == 'prefetch'
-    ) or (
-        'Safari' in request.headers.get('User-Agent', '') and 
-        not request.GET.get('source')
     )
 
     if is_ios_prefetch:
@@ -767,60 +764,35 @@ def validar_qr(request, encrypted_token):
 
         original_token = decrypted_token[len("Kislev_"):]
         
-        # Usar una sola transacción para todo
+        # Obtener visitante con bloqueo
         with transaction.atomic():
             visitante = get_object_or_404(
                 Visitante.objects.select_for_update(nowait=True),
                 token=original_token
             )
             
-            # Verificar si es una solicitud desde Safari/iOS
-            is_safari = 'Safari' in request.headers.get('User-Agent', '')
-            request_id = request.headers.get('X-Request-ID') or request.GET.get('req')
-            
-            if is_safari and request_id:
-                # Usar caché para evitar doble procesamiento en Safari
-                cache_key = f'qr_processed_{original_token}_{request_id}'
-                if cache.get(cache_key):
-                    logger.info(f"Solicitud duplicada detectada para token: {original_token[:10]}...")
-                    return render(request, 'validar_qr.html', {'visitante': visitante})
-                cache.set(cache_key, True, 60)  # Guardar por 1 minuto
+            # Verificar estado directamente en la base de datos
+            visitante.refresh_from_db()
             
             if visitante.ultima_lectura is not None:
-                logger.warning(f"QR ya utilizado - ID: {visitante.id}, Última lectura: {visitante.ultima_lectura}")
+                logger.warning(f"QR ya utilizado el: {visitante.ultima_lectura}")
                 return render(request, 'qr_desactivado.html', {
                     'mensaje': 'Este código QR ya ha sido utilizado.',
                     'ultima_lectura': visitante.ultima_lectura
                 })
 
-            # Verificar vigencia
-            tiempo_actual = timezone.now()
-            tiempo_expiracion = visitante.fecha_generacion + timedelta(hours=24)
-            
-            if tiempo_actual > tiempo_expiracion:
-                logger.warning(f"QR expirado - ID: {visitante.id}")
-                return render(request, 'qr_expirado.html', {
-                    'mensaje': 'El QR ha expirado.',
-                    'fecha_generacion': visitante.fecha_generacion,
-                    'fecha_expiracion': tiempo_expiracion
-                })
-
-            # Registrar la lectura
-            visitante.ultima_lectura = tiempo_actual
+            # Intentar registrar la lectura directamente
+            visitante.ultima_lectura = timezone.now()
             visitante.nombre_log = request.user.email
             visitante.save()
-
-            # Resto del código (envío de email, etc.) permanece igual...
-
-            return render(request, 'validar_qr.html', {
-                'visitante': visitante,
-                'tiempo_validacion': timezone.localtime(tiempo_actual).strftime('%H:%M:%S')
-            })
+            
+            logger.info(f"Lectura registrada exitosamente: {visitante.ultima_lectura}")
+            return render(request, 'validar_qr.html', {'visitante': visitante})
 
     except Exception as e:
         logger.error(f"Error procesando QR: {str(e)}")
         return render(request, 'error_qr.html', {
-            'mensaje': 'Error al procesar el QR.'
+            'mensaje': f'Error al procesar el QR: {str(e)}'
         })
         
         
