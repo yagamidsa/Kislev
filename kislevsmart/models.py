@@ -1,10 +1,18 @@
-from django.db import models
+import logging
+from venv import logger
+from django.db import models, transaction
 import uuid
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from datetime import timedelta
+
+
+
+# Configurar logger
+logger = logging.getLogger(__name__)
+
 
 class Visitante(models.Model):
     email_creador = models.EmailField()
@@ -57,16 +65,63 @@ class Visitante(models.Model):
 
     def esta_disponible(self):
         """Verifica si el QR puede ser usado (no ha sido usado y está vigente)"""
-        return self.ultima_lectura is None and self.esta_vigente()
+        tiempo_actual = self.get_tiempo_actual()
+
+        # Añadir logging detallado
+        logger.info(f"""
+        Verificando disponibilidad de QR:
+        ID: {self.id}
+        Token: {self.token[:10]}...
+        Última lectura: {self.ultima_lectura}
+        Tiempo actual: {tiempo_actual}
+        Fecha generación: {self.fecha_generacion}
+        Es vigente: {self.esta_vigente()}
+        """)
+
+        if self.ultima_lectura is not None:
+            logger.warning(f"QR ya fue utilizado el: {self.ultima_lectura}")
+            return False
+
+        if not self.esta_vigente():
+            logger.warning("QR no está vigente")
+            return False
+
+        return True
 
     def registrar_lectura(self, nombre_log):
         """Registra una lectura del QR si es posible"""
+        tiempo_actual = self.get_tiempo_actual()
+        
+        logger.info(f"""
+        Intentando registrar lectura:
+        ID: {self.id}
+        Token: {self.token[:10]}...
+        Estado anterior - última lectura: {self.ultima_lectura}
+        Tiempo actual: {tiempo_actual}
+        Nombre log: {nombre_log}
+        """)
+        
+        # Verificar si ya existe una lectura reciente (últimos 5 segundos)
+        if self.ultima_lectura:
+            diferencia = tiempo_actual - timezone.localtime(self.ultima_lectura)
+            if diferencia.total_seconds() < 5:
+                logger.warning(f"Intento de lectura múltiple en menos de 5 segundos. Diferencia: {diferencia.total_seconds()}")
+                return False
+        
         if self.esta_disponible():
-            self.ultima_lectura = self.get_tiempo_actual()
-            self.nombre_log = nombre_log
-            self.save()
-            return True
-        return False
+            try:
+                with transaction.atomic():
+                    self.ultima_lectura = tiempo_actual
+                    self.nombre_log = nombre_log
+                    self.save()
+                    logger.info(f"Lectura registrada exitosamente: {self.ultima_lectura}")
+                    return True
+            except Exception as e:
+                logger.error(f"Error al registrar lectura: {str(e)}")
+                return False
+        else:
+            logger.warning("QR no está disponible para lectura")
+            return False
 
     
     def diagnostico_estado(self):

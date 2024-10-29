@@ -35,6 +35,12 @@ import logging
 from django.contrib import messages
 from django.db import transaction
 
+
+
+# Configurar logger
+logger = logging.getLogger(__name__)
+
+
 #salas
 class SalaListView(ListView):
     model = Sala
