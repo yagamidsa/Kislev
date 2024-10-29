@@ -23,14 +23,37 @@ class Visitante(models.Model):
     def __str__(self):
         return f"{self.nombre} - {self.email}"
 
+    def get_tiempo_actual(self):
+        """Obtiene el tiempo actual en la zona horaria local"""
+        return timezone.localtime(timezone.now())
+
+    def get_fecha_generacion_local(self):
+        """Obtiene la fecha de generación en la zona horaria local"""
+        return timezone.localtime(self.fecha_generacion)
+
     def save(self, *args, **kwargs):
-        if self.fecha_generacion and timezone.is_naive(self.fecha_generacion):
-            self.fecha_generacion = timezone.make_aware(self.fecha_generacion)
+        # Si es una nueva instancia (creación)
+        if not self.pk:
+            # Asegurar que fecha_generacion esté en la zona horaria local
+            self.fecha_generacion = self.get_tiempo_actual()
+        
+        # Para actualizaciones, asegurar que ultima_lectura esté en la zona horaria local
+        if self.ultima_lectura and timezone.is_naive(self.ultima_lectura):
+            self.ultima_lectura = timezone.make_aware(self.ultima_lectura, timezone.get_current_timezone())
+        
         super().save(*args, **kwargs)
 
     def esta_vigente(self):
         """Verifica si el QR está dentro del período de validez (24 horas)"""
-        return timezone.now() <= self.fecha_generacion + timedelta(hours=24)
+        if not self.fecha_generacion:
+            return False
+            
+        # Obtener tiempos en zona horaria local
+        fecha_generacion_local = self.get_fecha_generacion_local()
+        tiempo_actual_local = self.get_tiempo_actual()
+        tiempo_expiracion = fecha_generacion_local + timedelta(hours=24)
+        
+        return tiempo_actual_local <= tiempo_expiracion
 
     def esta_disponible(self):
         """Verifica si el QR puede ser usado (no ha sido usado y está vigente)"""
@@ -39,11 +62,13 @@ class Visitante(models.Model):
     def registrar_lectura(self, nombre_log):
         """Registra una lectura del QR si es posible"""
         if self.esta_disponible():
-            self.ultima_lectura = timezone.now()
+            self.ultima_lectura = self.get_tiempo_actual()
             self.nombre_log = nombre_log
             self.save()
             return True
         return False
+
+    
 
 
 class Sala(models.Model):
