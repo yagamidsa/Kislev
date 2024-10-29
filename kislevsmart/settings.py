@@ -118,7 +118,6 @@ AUTHENTICATION_BACKENDS = (
 
 
 # Database configuration
-# Database configuration
 if os.getenv('DATABASE_URL', None):
     # Configuración para Railway (producción)
     import dj_database_url
@@ -128,19 +127,13 @@ if os.getenv('DATABASE_URL', None):
                 default=os.getenv('DATABASE_URL'),
                 conn_max_age=0,  # Desactivar conexiones persistentes
             ),
-            'ATOMIC_REQUESTS': True,
-            'CONN_MAX_AGE': 0,
+            'ATOMIC_REQUESTS': True,  # Hace que todas las vistas sean atómicas por defecto
             'OPTIONS': {
-                'isolation_level': 1,
-                'connect_timeout': 10,
-                'sslmode': 'require',  # Para Railway
-                'keepalives': 1,
-                'keepalives_idle': 30,
-                'keepalives_interval': 10,
-                'keepalives_count': 5,
+                'isolation_level': 1,  # READ COMMITTED isolation level
+                'connect_timeout': 10,  # Timeout de conexión en segundos
             },
             'TEST': {
-                'MIRROR': 'default',
+                'MIRROR': 'default',   # Para tests
             },
         }
     }
@@ -171,7 +164,7 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         'LOCATION': 'unique-snowflake',
-        'TIMEOUT': 300,
+        'TIMEOUT': 300,  # 5 minutos
         'OPTIONS': {
             'MAX_ENTRIES': 1000
         }
