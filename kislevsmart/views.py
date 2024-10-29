@@ -635,8 +635,6 @@ SECRET_KEY = b'Gm1U9cXOTymMtcdHpD8eFwXVVHF7o4F6AoIVJGAJ5K4='
 cipher = Fernet(SECRET_KEY)
 
 
-
-@login_required
 @login_required
 def bienvenida(request):
     if request.method == 'POST':
@@ -645,7 +643,7 @@ def bienvenida(request):
                 # Generar token único
                 uuid_token = str(uuid.uuid4())
                 
-                # Crear visitante con datos mínimos primero
+                # Crear visitante
                 visitante = Visitante.objects.create(
                     email=request.POST['email'],
                     nombre=request.POST['nombre'],
@@ -660,35 +658,23 @@ def bienvenida(request):
                     ultima_lectura=None
                 )
                 
-                # Log de creación
-                logger.info(f"""
-                Visitante creado:
-                ID: {visitante.id}
-                Token: {uuid_token[:10]}...
-                Fecha generación: {visitante.fecha_generacion}
-                """)
+                logger.info(f"Visitante creado - ID: {visitante.id}")
 
-                # Crear y encriptar token
+                # Generar y enviar QR
                 raw_token = f"Kislev_{uuid_token}"
                 encrypted_token = cipher.encrypt(raw_token.encode()).decode()
                 
-                # Generar URL
+                # Generar URL del QR
                 base_url = f"https://{request.get_host()}" if 'railway.app' in request.get_host() else request.build_absolute_uri('/').rstrip('/')
                 enlace_qr = f"{base_url}{reverse('validar_qr', args=[encrypted_token])}"
 
-                logger.info(f"URL generada para QR: {enlace_qr}")
-
-                # Generar y guardar QR
+                # Generar QR y enviarlo por email
                 qr_dir = os.path.join(settings.MEDIA_ROOT, 'qrs')
                 os.makedirs(qr_dir, exist_ok=True)
                 qr_file_path = os.path.join(qr_dir, f'qr_{visitante.id}.png')
                 
-                qr = qrcode.QRCode(
-                    version=1,
-                    error_correction=qrcode.constants.ERROR_CORRECT_L,
-                    box_size=10,
-                    border=4,
-                )
+                # Generar QR
+                qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_L)
                 qr.add_data(enlace_qr)
                 qr.make(fit=True)
                 qr_img = qr.make_image(fill_color="black", back_color="white")
@@ -696,49 +682,43 @@ def bienvenida(request):
 
                 # Enviar email
                 try:
-                    email_subject = "Tu Código QR de Visitante"
-                    email_body = (
-                        f"Hola {visitante.nombre},\n\n"
-                        "Adjunto encontrarás tu código QR para la visita.\n"
-                        "Por favor, preséntalo en la entrada para el ingreso.\n\n"
-                        f"Motivo: {visitante.motivo}\n\n"
-                        f"Número de personas: {visitante.numper}\n\n"
-                        "Atentamente,\nKislev"
-                    )
-                    
                     email_message = EmailMessage(
-                        email_subject,
-                        email_body,
+                        "Tu Código QR de Visitante",
+                        f"Hola {visitante.nombre},\n\nAdjunto encontrarás tu código QR para la visita.",
                         settings.DEFAULT_FROM_EMAIL,
                         [visitante.email]
                     )
                     email_message.attach_file(qr_file_path)
                     email_message.send()
-                    logger.info(f"Email enviado exitosamente a {visitante.email}")
-                    
                 except Exception as e:
                     logger.error(f"Error enviando email: {str(e)}")
-                    # Continuar a pesar del error en el email
 
-                # Verificación final
-                visitante.refresh_from_db()
-                if visitante.ultima_lectura is not None:
-                    logger.error(f"QR marcado como usado al crearse - ID: {visitante.id}")
-                    raise ValueError("Error: QR marcado como usado al crearse")
-
-                # Eliminar el archivo QR después de enviarlo
+                # Limpiar archivo temporal
                 try:
                     os.remove(qr_file_path)
-                    logger.info(f"Archivo QR eliminado: {qr_file_path}")
-                except Exception as e:
-                    logger.warning(f"No se pudo eliminar el archivo QR: {str(e)}")
+                except:
+                    pass
 
                 email_b64 = base64.urlsafe_b64encode(visitante.email.encode()).decode()
-                logger.info(f"Redirigiendo a valqr con email_b64: {email_b64[:10]}...")
+                redirect_url = reverse('valqr', kwargs={'email_b64': email_b64})
+                
+                # Si es una petición AJAX, devolver JSON
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return JsonResponse({
+                        'status': 'success',
+                        'redirect_url': redirect_url
+                    })
+                
+                # Si no es AJAX, redireccionar normalmente
                 return redirect('valqr', email_b64=email_b64)
 
         except Exception as e:
             logger.error(f"Error en bienvenida: {str(e)}")
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'status': 'error',
+                    'message': str(e)
+                }, status=400)
             messages.error(request, 'Error al generar el QR. Por favor, intente nuevamente.')
             return render(request, 'bienvenida.html', {'error': str(e)})
 
