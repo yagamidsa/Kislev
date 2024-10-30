@@ -10,37 +10,81 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+import environ
 import os
 from pathlib import Path
-import environ
 import dj_database_url
 
-
-
-# Inicializa django-environ
+# Inicialización de environ
 env = environ.Env(
     DEBUG=(bool, False)
 )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-@@i8x+#kv7)iilb$kc3^zpgf+m^%)&_a!x!8bb+b2!m0f_*61k'
+SECRET_KEY = env('DJANGO_SECRET_KEY', default='django-insecure-@@i8x+#kv7)iilb$kc3^zpgf+m^%)&_a!x!8bb+b2!m0f_*61k')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = os.getenv('DEBUG', 'False') == 'True'
-DEBUG = True
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
+DEBUG = env('DEBUG', default=True)
+
+# Configuraciones de Seguridad
+SECURE_SSL_REDIRECT = env.bool('SECURE_SSL_REDIRECT', default=not DEBUG)
+SESSION_COOKIE_SECURE = env.bool('SESSION_COOKIE_SECURE', default=not DEBUG)
+CSRF_COOKIE_SECURE = env.bool('CSRF_COOKIE_SECURE', default=not DEBUG)
+SECURE_BROWSER_XSS_FILTER = env.bool('SECURE_BROWSER_XSS_FILTER', default=not DEBUG)
+SECURE_CONTENT_TYPE_NOSNIFF = env.bool('SECURE_CONTENT_TYPE_NOSNIFF', default=True)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Configuraciones de Cookie
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'  # Cambiado a 'Lax' para mejor compatibilidad con Railway
+CSRF_COOKIE_SAMESITE = 'Lax'
+
+# Configuraciones adicionales de seguridad
+X_FRAME_OPTIONS = 'DENY'
+SECURE_REFERRER_POLICY = 'same-origin'
+
+if not DEBUG:
+    SECURE_HSTS_SECONDS = 31536000  # 1 año
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    
+    # Configuración de hosts permitidos para producción
+    ALLOWED_HOSTS = [
+        '.railway.app',
+        'localhost',
+        '127.0.0.1',
+        '[::1]',
+        # Añade aquí tu dominio personalizado si lo tienes
+    ]
+else:
+    ALLOWED_HOSTS = ['*']
+    
+    
 
 
-ALLOWED_HOSTS = ['*'] 
+# Configuración de sesión mejorada
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_AGE = 3600  # 1 hora
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # Añadido para mayor seguridad
 
-
-
+# Configuraciones de caché existentes
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+        'TIMEOUT': 300,
+        'OPTIONS': {
+            'MAX_ENTRIES': 1000
+        }
+    }
+}    
 
 
 
@@ -58,9 +102,10 @@ INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
 ]
 
+# Configuración de middleware con orden optimizado
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # Añadido para archivos estáticos
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',

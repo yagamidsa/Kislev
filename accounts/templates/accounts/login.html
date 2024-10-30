@@ -1,10 +1,9 @@
-<!-- login.html -->
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token }}">
     <title>Iniciar Sesión</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/restricciones.css' %}">
@@ -13,42 +12,42 @@
 
 <body>
     {% if messages %}
-    <div class="message-container">
+    <div class="message-container" role="alert">
         {% for message in messages %}
         <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
-            {% endfor %}
+        {% endfor %}
     </div>
     {% endif %}
 
     {% if form.non_field_errors %}
-    <div class="error-container">
+    <div class="error-container" role="alert">
         {{ form.non_field_errors }}
     </div>
     {% endif %}
 
-    <form method="POST"> <!-- Único formulario principal -->
+    <form method="POST" id="loginForm">
         {% csrf_token %}
         <div class="container">
             <div class="form">
                 <div class="sign-in-section">
-                    <h6>
-                        < Kislev />
-                    </h6>
+                    <h6>< Kislev /></h6>
                     <h1>Iniciar Sesión</h1>
 
                     <div class="form-field">
-                        <label for="usuario">Usuario:</label>
-                        {{ form.usuario }}
+                        <label for="id_usuario">Usuario:</label>
+                        <input type="text" name="usuario" id="id_usuario" required 
+                               autocomplete="username">
                         {% if form.usuario.errors %}
-                        <div class="error">{{ form.usuario.errors }}</div>
+                        <div class="error" role="alert">{{ form.usuario.errors }}</div>
                         {% endif %}
                     </div>
 
                     <div class="form-field">
-                        <label for="password">Contraseña:</label>
-                        {{ form.password }}
+                        <label for="id_password">Contraseña:</label>
+                        <input type="password" name="password" id="id_password" required 
+                               autocomplete="current-password">
                         {% if form.password.errors %}
-                        <div class="error">{{ form.password.errors }}</div>
+                        <div class="error" role="alert">{{ form.password.errors }}</div>
                         {% endif %}
                     </div>
 
@@ -57,7 +56,7 @@
                     </div>
 
                     <div class="form-field">
-                        <input type="submit" class="btn btn-signin" value="Iniciar sesión">
+                        <input type="submit" id="submit-button" class="btn btn-signin" value="Iniciar sesión">
                     </div>
 
                     <div class="links">
@@ -68,25 +67,62 @@
             </div>
         </div>
     </form>
-    <script>
-        window.addEventListener('load', function () {
-    const messages = document.querySelectorAll('.message-container, .error-container');
-    messages.forEach((message) => {
-        // Mostrar el mensaje con la animación de entrada
-        message.style.animation = 'slideIn 0.3s ease-out forwards';
-        
-        // Configurar la animación de salida después de 3 segundos
-        setTimeout(() => {
-            message.style.animation = 'slideOut 0.3s ease-out forwards';
-            
-            // Eliminar el elemento después de que termine la animación
-            setTimeout(() => {
-                message.remove();
-            }, 300);
-        }, 3000);
-    });
-});
-      </script>
-</body>
 
+    <script>
+        // Función para manejar mensajes
+        function handleMessages() {
+            const messages = document.querySelectorAll('.message-container, .error-container');
+            messages.forEach((message) => {
+                message.style.animation = 'slideIn 0.3s ease-out forwards';
+                
+                setTimeout(() => {
+                    message.style.animation = 'slideOut 0.3s ease-out forwards';
+                    setTimeout(() => {
+                        message.remove();
+                    }, 300);
+                }, 3000);
+            });
+        }
+
+        // Manejar el envío del formulario
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            const submitButton = document.getElementById('submit-button');
+            
+            // Verificar que el token CSRF existe
+            if (!csrfToken) {
+                e.preventDefault();
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-container';
+                errorDiv.setAttribute('role', 'alert');
+                errorDiv.textContent = 'Error de seguridad. Por favor, recarga la página.';
+                document.body.insertBefore(errorDiv, document.body.firstChild);
+                handleMessages();
+                return false;
+            }
+
+            // Prevenir múltiples envíos
+            if (submitButton.disabled) {
+                e.preventDefault();
+                return false;
+            }
+            submitButton.disabled = true;
+            submitButton.value = 'Iniciando sesión...';
+            setTimeout(() => {
+                submitButton.disabled = false;
+                submitButton.value = 'Iniciar sesión';
+            }, 3000);
+        });
+
+        // Manejar la carga inicial de mensajes
+        window.addEventListener('load', handleMessages);
+
+        // Manejar errores de CSRF
+        window.addEventListener('unhandledrejection', function(event) {
+            if (event.reason && event.reason.toString().includes('CSRF')) {
+                location.reload();
+            }
+        });
+    </script>
+</body>
 </html>

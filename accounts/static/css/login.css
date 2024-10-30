@@ -1,17 +1,22 @@
+/* Reset y estilos base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
-    background: #f9f9f9; /* fallback for old browsers */
-    font-family: "Raleway", sans-serif;
-    color: #151515;
-    overscroll-behavior-y: contain;
-    background-attachment: fixed;
-  }
+  background: #f9f9f9;
+  font-family: "Raleway", sans-serif;
+  color: #151515;
+  line-height: 1.5;
+  min-height: 100vh;
+}
 
-
-/* Reglas para prevenir scroll horizontal */
+/* Prevención de scroll horizontal y comportamiento de scroll */
 html, body {
   max-width: 100%;
   overflow-x: hidden;
-  position: fixed;
   height: 100%;
   width: 100%;
   margin: 0;
@@ -19,185 +24,162 @@ html, body {
   overscroll-behavior: none;
 }
 
-
-
-  a {
-    color: black;
-    font-weight: 600;
-    font-size: 0.85em;
-    text-decoration: none;
-  }
-  label {
-    color: black;
-    font-weight: 600;
-    font-size: 0.85em;
-  }
-  input:focus {
-    outline: none;
-  }
-  .container {
-    width: 100%;
-    max-width: 100vw;
-    height: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
-    position: fixed;
-    -webkit-overflow-scrolling: touch;
-}
-  .form {
-    width: calc(100% - 30px); /* 30px por los márgenes laterales (15px cada lado) */
-    display: flex;
-    background: #fff;
-    margin: 15px;
-    padding: 25px;
-    border-radius: 25px;
-    box-shadow: 0px 10px 25px 5px #0000000f;
-  }
-  .sign-in-section {
-    padding: 30px;
-  }
-  .sign-in-section h6 {
-    margin-top: 0px;
-    font-size: 0.75em;
-  }
-  .sign-in-section h1 {
-    text-align: center;
-    font-weight: 700;
-    position: relative;
-  }
-  .sign-in-section h1:after {
-    position: absolute;
-    content: "";
-    height: 5px;
-    bottom: -15px;
-    margin: 0 auto;
-    left: 0;
-    right: 0;
-    width: 40px;
-    background: #7f00ff;
-    background: -webkit-linear-gradient(to right, #e100ff, #7f00ff);
-    background: linear-gradient(to right, #e100ff, #7f00ff);
-    -o-transition: 0.25s;
-    -ms-transition: 0.25s;
-    -moz-transition: 0.25s;
-    -webkit-transition: 0.25s;
-    transition: 0.25s;
-  }
-  .sign-in-section h1:hover:after {
-    width: 100px;
-  }
-  .sign-in-section ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    text-align: center;
-  }
-  .sign-in-section ul > li {
-    display: inline-block;
-    padding: 10px;
-    font-size: 15px;
-    width: 20px;
-    text-align: center;
-    text-decoration: none;
-    margin: 5px 2px;
-    border-radius: 50%;
-    box-shadow: 0px 3px 1px #0000000f;
-    border: 1px solid #e2e2e2;
-  }
-  .sign-in-section p {
-    text-align: center;
-    font-size: 0.85em;
-  }
-  .form-field {
-    display: block;
-    width: 100%;
-    max-width: 300px;
-    box-sizing: border-box;
-    margin: 10px auto;
-  }
-  .form-field label {
-    display: block;
-    margin-bottom: 10px;
-  }
-  .form-field input[type="number"],
-  input[type="password"] {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 15px;
-    border-radius: 10px;
-    border: 1px solid #e8e8e8;
-  }
-  .form-field input::placeholder {
-    color: #e8e8e8;
-  }
-  .form-field input:focus {
-    border: 1px solid #ae00ff;
-  }
-  .form-field input[type="checkbox"] {
-    display: inline-block;
-  }
-  .form-options {
-    display: block;
-    margin: auto;
-    width: 100%;
-    max-width: 300px;
-    box-sizing: border-box;
-  }
-  .checkbox-field {
-    display: inline-block;
-    float: left;
-  }
-  .form-options a {
-    float: right;
-    text-decoration: none;
-  }
-  .btn {
-    padding: 15px;
-    font-size: 1em;
-    width: 100%;
-    border-radius: 25px;
-    border: none;
-    margin: 20px 0px;
-  }
-  .btn-signin {
-    cursor: pointer;
-    background: #7f00ff;
-    background: -webkit-linear-gradient(to right, #e100ff, #7f00ff);
-    background: linear-gradient(to right, #e100ff, #7f00ff);
-    box-shadow: 0px 5px 15px 5px #840fe440;
-    color: #fff;
-  }
-  .links a:nth-child(1) {
-    float: left;
-  }
-  .links a:nth-child(2) {
-    float: right;
-  }
-  
-  
-@keyframes fadeInOut {
-    0%, 100% { opacity: 0; transform: translate(-50%, -60%); }
-    10%, 90% { opacity: 1; transform: translate(-50%, -50%); }
+/* Enlaces y etiquetas */
+a {
+  color: black;
+  font-weight: 600;
+  font-size: 0.85em;
+  text-decoration: none;
+  transition: color 0.3s ease;
 }
 
+a:hover {
+  color: #7f00ff;
+}
 
-.message-container, .error-container {
+label {
+  color: black;
+  font-weight: 600;
+  font-size: 0.85em;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+/* Container principal */
+.container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+/* Formulario */
+.form {
+  width: 100%;
+  max-width: 480px;
+  background: #fff;
+  padding: 2rem;
+  border-radius: 25px;
+  box-shadow: 0px 10px 25px 5px rgba(0, 0, 0, 0.06);
+}
+
+.sign-in-section {
+  width: 100%;
+}
+
+/* Encabezados */
+.sign-in-section h6 {
+  margin: 0;
+  font-size: 0.75em;
+  color: #666;
+}
+
+.sign-in-section h1 {
+  text-align: center;
+  font-weight: 700;
+  position: relative;
+  margin: 1.5rem 0 2.5rem;
+}
+
+.sign-in-section h1:after {
+  position: absolute;
+  content: "";
+  height: 5px;
+  bottom: -15px;
+  margin: 0 auto;
+  left: 0;
+  right: 0;
+  width: 40px;
+  background: linear-gradient(to right, #e100ff, #7f00ff);
+  transition: width 0.25s ease;
+}
+
+.sign-in-section h1:hover:after {
+  width: 100px;
+}
+
+/* Campos del formulario */
+.form-field {
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+#id_usuario,
+#id_password {
+  width: 100%;
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid #e8e8e8;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+#id_usuario:focus,
+#id_password:focus {
+  outline: none;
+  border-color: #ae00ff;
+}
+
+#id_usuario::placeholder,
+#id_password::placeholder {
+  color: #ccc;
+}
+
+/* Opciones del formulario */
+.form-options {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1.5rem;
+}
+
+/* Botón */
+.btn {
+  width: 100%;
+  padding: 15px;
+  font-size: 1rem;
+  border-radius: 25px;
+  border: none;
+  margin: 1.5rem 0;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-signin {
+  cursor: pointer;
+  background: linear-gradient(to right, #e100ff, #7f00ff);
+  color: #fff;
+  box-shadow: 0px 5px 15px 5px rgba(132, 15, 228, 0.25);
+}
+
+.btn-signin:hover {
+  transform: translateY(-2px);
+  box-shadow: 0px 7px 20px 5px rgba(132, 15, 228, 0.3);
+}
+
+/* Enlaces inferiores */
+.links {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+  padding: 0 0.5rem;
+}
+
+/* Mensajes y errores */
+.message-container,
+.error-container {
   position: fixed;
-  top: 24px;  /* Cambiado de 50% a 24px para que aparezca en la parte superior */
-  right: 24px;  /* Alineado a la derecha */
-  transform: none;  /* Eliminamos el transform anterior */
+  top: 24px;
+  right: 24px;
   padding: 16px 24px;
   border-radius: 12px;
   font-size: 14px;
   font-weight: 500;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-  max-width: calc(100% - 32px);
-  box-sizing: border-box;
-  width: auto;
+  max-width: calc(100% - 48px);
   z-index: 1000;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  animation: slideIn 0.3s ease-out forwards;
 }
 
 .message-container {
@@ -212,7 +194,12 @@ html, body {
   border-left: 4px solid #d32f2f;
 }
 
-/* Nuevas animaciones */
+.message-container li,
+.error-container li {
+  list-style: none;
+}
+
+/* Animaciones */
 @keyframes slideIn {
   from {
       transform: translateX(100%);
@@ -233,54 +220,81 @@ html, body {
       transform: translateX(100%);
       opacity: 0;
   }
-} 
-
-/* Modificación para el responsive */
-@media (max-width: 480px) {
-
-  .sign-in-section {
-    padding: 20px;
-    width: 100%;
-    box-sizing: border-box;
 }
-.form-field,
-    .form-options {
-        width: 100%;
-        padding: 0 10px;
-        box-sizing: border-box;
-    }
 
-    .btn {
-      width: calc(100% - 20px);
-      margin: 20px 10px;
+/* Media Queries */
+@media (max-width: 768px) {
+  .form {
+      margin: 1rem;
+      padding: 1.5rem;
+  }
+  
+  .sign-in-section {
+      padding: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+      padding: 0.5rem;
   }
 
-  .links {
-    padding: 0 10px;
-    box-sizing: border-box;
-}
+  .form {
+      margin: 0.5rem;
+      padding: 1rem;
+      border-radius: 15px;
+  }
 
-  .message-container, .error-container {
+  .message-container,
+  .error-container {
       top: 16px;
       right: 16px;
       left: 16px;
-      max-width: none;
-      font-size: 14px;
       padding: 12px 16px;
+  }
+
+  .btn {
+      margin: 1rem 0;
+  }
+
+  .links {
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+  }
+
+  .links a {
+      text-align: center;
   }
 }
 
-/* Estilos para la lista dentro del contenedor */
-.message-container li, .error-container li {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+/* Soporte para pantallas más pequeñas */
+@media (max-width: 320px) {
+  .form {
+      padding: 0.8rem;
+  }
+
+  .sign-in-section h1 {
+      font-size: 1.5rem;
+  }
+
+  #id_usuario,
+  #id_password {
+      padding: 12px;
+  }
 }
 
-
-@keyframes shake {
-    0%, 100% { transform: translate(-50%, -50%) }
-    25% { transform: translate(-48%, -50%) }
-    75% { transform: translate(-52%, -50%) }
+/* Soporte para pantallas grandes */
+@media (min-width: 1200px) {
+  .form {
+      max-width: 520px;
+  }
 }
 
+/* Soporte para dispositivos con hover */
+@media (hover: hover) {
+  .btn-signin:hover {
+      transform: translateY(-2px);
+      box-shadow: 0px 7px 20px 5px rgba(132, 15, 228, 0.3);
+  }
+}

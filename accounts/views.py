@@ -48,33 +48,49 @@ class ControlpropietarioView(TemplateView):
     
 
 
+@method_decorator(csrf_protect, name='dispatch')
 class LoginView(View):
+    template_name = 'accounts/login.html'
+
     def get(self, request):
-        form = LoginForm()  # Asegúrate de que tu formulario use 'usuario' y no 'email'
-        return render(request, 'accounts/login.html', {'form': form})
+        # Si el usuario ya está autenticado, redirigir según su tipo
+        if request.user.is_authenticated:
+            return self._redirect_by_user_type(request.user)
+            
+        form = LoginForm()
+        return render(request, self.template_name, {'form': form})
 
     def post(self, request):
         form = LoginForm(request.POST)
         if form.is_valid():
-            usuario = form.cleaned_data.get('usuario')  # Aquí se debe llamar al campo 'usuario'
+            usuario = form.cleaned_data.get('usuario')
             password = form.cleaned_data.get('password')
 
-            # Autenticación con el campo usuario
             user = authenticate(request, username=usuario, password=password)
 
             if user is not None:
                 login(request, user)
-                # Redirigir según el tipo de usuario
-                if user.user_type == 'propietario':
-                    return redirect('visor_propietario')
-                elif user.user_type == 'administrador':
-                    return redirect('visor_admin')
-                elif user.user_type == 'porteria':
-                    return redirect('control_porteria')
+                # Establecer la cookie de sesión como segura si usas HTTPS
+                if request.is_secure():
+                    request.session.cookie_secure = True
+                
+                return self._redirect_by_user_type(user)
             else:
-                messages.error(request, 'Credenciales inválidas. Por favor, verifica que tu nombre de usuario y contraseña sean correctos. Si olvidaste tu contraseña, puedes restablecerla haciendo clic en Olvidé mi contraseña')
+                messages.error(
+                    request, 
+                    'Credenciales inválidas. Por favor, verifica que tu nombre de usuario y contraseña sean correctos.'
+                )
 
-        return render(request, 'accounts/login.html', {'form': form})
+        return render(request, self.template_name, {'form': form})
+
+    def _redirect_by_user_type(self, user):
+        """Helper method para manejar las redirecciones según el tipo de usuario"""
+        redirects = {
+            'propietario': 'visor_propietario',
+            'administrador': 'visor_admin',
+            'porteria': 'control_porteria'
+        }
+        return redirect(redirects.get(user.user_type, 'login'))
 
 @method_decorator(csrf_protect, name='dispatch')
 class LogoutView(DjangoLogoutView):
