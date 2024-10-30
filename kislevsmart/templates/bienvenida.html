@@ -9,6 +9,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Bienvenido</title>
     {% load static %}
+    <link rel="stylesheet" href="{% static 'css/restricciones.css' %}">
     <link rel="stylesheet" href="{% static 'css/formQR.css' %}">
 </head>
 
@@ -42,7 +43,7 @@
         <form id="formbienvenida" method="POST">
             {% csrf_token %}
             <div class="container">
-                <h1 class="front-text-principal">Bienvenido, {{ user.nombre }}!</h1>
+                <h1 class="front-text-principal">Bienvenid@, {{ user.nombre }}!</h1>
                 <h2 class="front-text">Aqui puedes generar el codigo QR para Visitante</h2>
                 <label class="btn-open" for="frmContactForm"><i class="far fa-envelope"></i><span class="ml-half">Abrir
                         Formulario</span></label>

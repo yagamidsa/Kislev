@@ -2,7 +2,25 @@ body {
     background: #f9f9f9; /* fallback for old browsers */
     font-family: "Raleway", sans-serif;
     color: #151515;
+    overscroll-behavior-y: contain;
+    background-attachment: fixed;
   }
+
+
+/* Reglas para prevenir scroll horizontal */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overscroll-behavior: none;
+}
+
+
+
   a {
     color: black;
     font-weight: 600;
@@ -18,14 +36,17 @@ body {
     outline: none;
   }
   .container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-  }
+    width: 100%;
+    max-width: 100vw;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: fixed;
+    -webkit-overflow-scrolling: touch;
+}
   .form {
+    width: calc(100% - 30px); /* 30px por los márgenes laterales (15px cada lado) */
     display: flex;
-    width: auto;
     background: #fff;
     margin: 15px;
     padding: 25px;
@@ -89,7 +110,9 @@ body {
   }
   .form-field {
     display: block;
-    width: 300px;
+    width: 100%;
+    max-width: 300px;
+    box-sizing: border-box;
     margin: 10px auto;
   }
   .form-field label {
@@ -98,7 +121,8 @@ body {
   }
   .form-field input[type="number"],
   input[type="password"] {
-    width: -webkit-fill-available;
+    width: 100%;
+    box-sizing: border-box;
     padding: 15px;
     border-radius: 10px;
     border: 1px solid #e8e8e8;
@@ -115,7 +139,9 @@ body {
   .form-options {
     display: block;
     margin: auto;
-    width: 300px;
+    width: 100%;
+    max-width: 300px;
+    box-sizing: border-box;
   }
   .checkbox-field {
     display: inline-block;
@@ -165,7 +191,8 @@ body {
   font-size: 14px;
   font-weight: 500;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-  max-width: 320px;
+  max-width: calc(100% - 32px);
+  box-sizing: border-box;
   width: auto;
   z-index: 1000;
   backdrop-filter: blur(8px);
@@ -206,10 +233,33 @@ body {
       transform: translateX(100%);
       opacity: 0;
   }
-}
+} 
 
 /* Modificación para el responsive */
 @media (max-width: 480px) {
+
+  .sign-in-section {
+    padding: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+.form-field,
+    .form-options {
+        width: 100%;
+        padding: 0 10px;
+        box-sizing: border-box;
+    }
+
+    .btn {
+      width: calc(100% - 20px);
+      margin: 20px 10px;
+  }
+
+  .links {
+    padding: 0 10px;
+    box-sizing: border-box;
+}
+
   .message-container, .error-container {
       top: 16px;
       right: 16px;

@@ -1,0 +1,114 @@
+/* Reglas globales para prevenir selección de texto */
+* {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent; /* Elimina highlight al tocar en móviles */
+    outline: none !important; /* Elimina outline en todos los elementos */
+  }
+  
+  /* Prevenir zoom en inputs en iOS */
+  input[type="text"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="email"],
+  input[type="password"],
+  select,
+  textarea {
+    font-size: 16px !important; /* Previene zoom en iOS */
+    max-height: 100000px; /* Previene zoom en Safari iOS */
+    -webkit-text-size-adjust: 100%; /* Previene ajuste de texto automático */
+  }
+  
+  /* Desactivar efectos de click y touch */
+  a, button, select, input[type="submit"], input[type="button"] {
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  
+  /* Eliminar outline al focus */
+  *:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+  
+  /* Eliminar highlight de selección */
+  ::selection {
+    background: transparent;
+  }
+  ::-moz-selection {
+    background: transparent;
+  }
+  
+  /* Prevenir arrastre de imágenes */
+  img {
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
+    pointer-events: none;
+  }
+  
+  /* Desactivar resize en textareas */
+  textarea {
+    resize: none;
+  }
+  
+  /* Eliminar spinners en inputs number */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+  
+  /* Prevenir comportamiento de scroll automático en Safari */
+  html {
+    -webkit-overflow-scrolling: touch;
+    overflow-scrolling: touch;
+    -webkit-text-size-adjust: 100%;
+  }
+  
+  /* Desactivar autocompletar background */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    transition: background-color 5000s ease-in-out 0s;
+    -webkit-text-fill-color: inherit !important;
+  }
+  
+  /* Eliminar bordes de focus en Firefox */
+  ::-moz-focus-inner {
+    border: 0;
+  }
+  
+  /* Prevenir pull-to-refresh en móviles */
+  body {
+    overscroll-behavior-y: contain;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Asegurar que los elementos clickeables sigan siendo interactivos */
+  a, button, select, input[type="submit"], input[type="button"] {
+    cursor: pointer;
+  }
+  
+  /* Permitir selección de texto solo en campos de entrada */
+  input[type="text"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="email"],
+  input[type="password"],
+  textarea {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+  }
