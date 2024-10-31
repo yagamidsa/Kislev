@@ -33,15 +33,15 @@
                         <!-- Redirección según el tipo de usuario -->
                         <form method="GET">
                             {% if request.user.user_type == 'administrador' %}
-                                <button formaction="{% url 'visor_admin' %}" class="button exit">
+                                <button formaction="{% url 'accounts:visor_admin' %}" class="button exit">
                                     Ir al Panel
                                 </button>
                             {% elif request.user.user_type == 'propietario' %}
-                                <button formaction="{% url 'visor_propietario' %}" class="button exit">
+                                <button formaction="{% url 'accounts:visor_propietario' %}" class="button exit">
                                     Ir al Panel
                                 </button>
                             {% elif request.user.user_type == 'porteria' %}
-                                <button formaction="{% url 'control_porteria' %}" class="button exit">
+                                <button formaction="{% url 'accounts:control_porteria' %}" class="button exit">
                                     Ir al Panel
                                 </button>
                             {% else %}

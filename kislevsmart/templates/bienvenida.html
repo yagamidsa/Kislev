@@ -17,17 +17,17 @@
     <div class="qr-background"></div>
     <div class="logout-button">
         {% if request.user.user_type == 'administrador' %}
-        <a href="{% url 'visor_admin' %}" class="apple-btn">
+        <a href="{% url 'accounts:visor_admin' %}" class="apple-btn">
             <i class="fas fa-arrow-left"></i>
             <span>Panel Admin</span>
         </a>
         {% elif request.user.user_type == 'propietario' %}
-        <a href="{% url 'visor_propietario' %}" class="apple-btn">
+        <a href="{% url 'accounts:visor_propietario' %}" class="apple-btn">
             <i class="fas fa-arrow-left"></i>
             <span>Panel</span>
         </a>
         {% elif request.user.user_type == 'porteria' %}
-        <a href="{% url 'control_porteria' %}" class="apple-btn">
+        <a href="{% url 'accounts:control_porteria' %}" class="apple-btn">
             <i class="fas fa-arrow-left"></i>
             <span>Panel Portería</span>
         </a>

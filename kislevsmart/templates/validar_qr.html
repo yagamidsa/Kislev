@@ -36,7 +36,7 @@
             <p><strong>Última lectura:</strong> <span class="info">{{ visitante.ultima_lectura }}</span></p>
         </div>
         <p class="success-message">¡Acceso permitido!</p>
-        <a href="{% url 'control_porteria' %}" class="btn">Volver</a>
+        <a href="{% url 'accounts:control_porteria' %}" class="btn">Volver</a>
     </div>
     <script src="{% static 'js/canvas.js' %}"></script>
 </body>

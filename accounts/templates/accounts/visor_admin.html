@@ -21,7 +21,7 @@
 <body>
 
     <div class="logout-button">
-        <form method="post" action="{% url 'logout' %}" class="logout-form">
+        <form method="post" action="{% url 'accounts:logout' %}" class="logout-form">
             {% csrf_token %}
             <button type="submit" class="apple-btn">
                 <i class="fas fa-sign-out-alt"></i>
@@ -56,7 +56,7 @@
                     </a>
                 </li>
                 <li>
-                    <a style="color: azure; text-decoration: none;" href="{% url 'lista_salas' %}">
+                    <a style="color: azure; text-decoration: none;" href="{% url 'parking' %}">
                         <i class="fa fa-building"></i> Zonas comunes
                     </a>
                 </li>

@@ -1,17 +1,26 @@
 # accounts/views.py
+# accounts/views.py
 from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.views import View
 from django import forms
-from .forms import LoginForm
-from django.contrib.auth.views import LogoutView as DjangoLogoutView
+from django.contrib.auth.views import (
+    LogoutView as DjangoLogoutView,
+    PasswordResetView,
+    PasswordResetConfirmView
+)
+from django.urls import reverse_lazy
+from django.contrib.auth.forms import SetPasswordForm  # Agregar esta importación
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
+from django.utils.translation import gettext as _  # Para traducciones
 from .utils import role_required
+from .forms import LoginForm
 from accounts.models import Usuario
+from django.contrib.auth.views import LogoutView as DjangoLogoutView
 
 
 @method_decorator(role_required(['administrador']), name='dispatch')
@@ -53,7 +62,6 @@ class LoginView(View):
     template_name = 'accounts/login.html'
 
     def get(self, request):
-        # Si el usuario ya está autenticado, redirigir según su tipo
         if request.user.is_authenticated:
             return self._redirect_by_user_type(request.user)
             
@@ -63,22 +71,31 @@ class LoginView(View):
     def post(self, request):
         form = LoginForm(request.POST)
         if form.is_valid():
-            usuario = form.cleaned_data.get('usuario')
+            cedula = form.cleaned_data.get('cedula')
+            conjunto = form.cleaned_data.get('conjunto')
             password = form.cleaned_data.get('password')
 
-            user = authenticate(request, username=usuario, password=password)
+            # Autenticar usando el backend personalizado
+            user = authenticate(
+                request, 
+                cedula=cedula, 
+                conjunto=conjunto, 
+                password=password
+            )
 
             if user is not None:
                 login(request, user)
-                # Establecer la cookie de sesión como segura si usas HTTPS
                 if request.is_secure():
                     request.session.cookie_secure = True
+                
+                # Registrar el último acceso
+                user.save()
                 
                 return self._redirect_by_user_type(user)
             else:
                 messages.error(
                     request, 
-                    'Credenciales inválidas. Por favor, verifica que tu nombre de usuario y contraseña sean correctos.'
+                    'Credenciales inválidas. Por favor, verifique su cédula y contraseña.'
                 )
 
         return render(request, self.template_name, {'form': form})
@@ -86,11 +103,11 @@ class LoginView(View):
     def _redirect_by_user_type(self, user):
         """Helper method para manejar las redirecciones según el tipo de usuario"""
         redirects = {
-            'propietario': 'visor_propietario',
-            'administrador': 'visor_admin',
-            'porteria': 'control_porteria'
+            'propietario': 'accounts:visor_propietario',
+            'administrador': 'accounts:visor_admin',
+            'porteria': 'accounts:control_porteria'
         }
-        return redirect(redirects.get(user.user_type, 'login'))
+        return redirect(redirects.get(user.user_type, 'accounts:login'))
 
 @method_decorator(csrf_protect, name='dispatch')
 class LogoutView(DjangoLogoutView):
@@ -103,7 +120,7 @@ class LogoutView(DjangoLogoutView):
             messages.success(request, 'Has cerrado sesión correctamente.')
         
         # Redirigir a la página de inicio o login
-        return redirect('login')  # Puedes cambiar '/' por el nombre de tu URL, ejemplo: 'login'
+        return redirect('accounts:login')  # Puedes cambiar '/' por el nombre de tu URL, ejemplo: 'login'
 
     def get_next_page(self):
         return 'login'  # O la URL que desees
@@ -111,27 +128,25 @@ class LogoutView(DjangoLogoutView):
 from django.contrib.auth.views import PasswordResetView
 
 class CustomPasswordResetView(PasswordResetView):
-    template_name = 'accounts/reset_password.html'  
-    email_template_name = 'accounts/password_reset_email.html'  
-    success_url = '/accounts/password_reset_done/'  
+    template_name = 'accounts/reset_password.html'  # Agregado accounts/
+    email_template_name = 'accounts/password_reset_email.html'  # Agregado accounts/
+    subject_template_name = 'accounts/password_reset_subject.txt'  # Agregado accounts/
+    success_url = reverse_lazy('accounts:password_reset_done')  # Usar reverse_lazy
 
     def form_valid(self, form):
         email = form.cleaned_data['email']
         if not Usuario.objects.filter(email=email).exists():
             messages.error(self.request, 'No hay una cuenta asociada a ese correo electrónico.')
-            return self.form_invalid(form)  # Asegúrate de devolver el formulario no válido
+            return self.form_invalid(form)
 
         response = super().form_valid(form)
         messages.success(self.request, 'Se ha enviado un enlace para restablecer la contraseña al correo electrónico mencionado.')
         return response
 
-from django.contrib.auth.forms import SetPasswordForm
-
 class CustomSetPasswordForm(SetPasswordForm):
     def clean_new_password1(self):
         new_password1 = self.cleaned_data.get('new_password1')
         
-        # Validación de longitud mínima (puedes ajustarla o quitarla)
         if len(new_password1) < 8:
             raise forms.ValidationError(_("La contraseña debe tener al menos 8 caracteres."))
 
@@ -142,7 +157,6 @@ class CustomSetPasswordForm(SetPasswordForm):
         new_password1 = cleaned_data.get('new_password1')
         new_password2 = cleaned_data.get('new_password2')
 
-        # Verifica si las contraseñas coinciden
         if new_password1 and new_password2 and new_password1 != new_password2:
             raise forms.ValidationError(_("Las contraseñas no coinciden."))
 
@@ -160,9 +174,8 @@ class CustomPasswordChangeView(View):
         if form.is_valid():
             form.save()
             messages.success(request, 'Tu contraseña ha sido cambiada con éxito.')
-            return redirect('login')  # Redirige a la página de inicio de sesión u otra página
+            return redirect('accounts:login')  # Agregado namespace
         else:
-            # Si el formulario no es válido, los errores se manejarán automáticamente
             messages.error(request, 'Por favor, corrige los errores a continuación.')
         
         return render(request, 'accounts/reset_password.html', {'form': form})
@@ -173,4 +186,4 @@ class CustomPasswordChangeView(View):
 from django.views.generic import TemplateView
 
 class PasswordResetDoneView(TemplateView):
-    template_name = 'accounts/password_reset_done.html'    
+    template_name = 'accounts/password_reset_done.html'

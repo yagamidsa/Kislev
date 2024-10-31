@@ -630,6 +630,12 @@ def notificaciones(request):
     return render(request, 'notificaciones.html')
 
 
+@login_required
+@role_required(['porteria', 'administrador'])
+def parking(request):
+    return render(request, 'parking/inicio_parqueo.html')
+
+
 
 # Clave secreta para encriptar/desencriptar
 SECRET_KEY = b'Gm1U9cXOTymMtcdHpD8eFwXVVHF7o4F6AoIVJGAJ5K4='

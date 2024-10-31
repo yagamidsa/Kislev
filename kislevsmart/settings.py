@@ -48,7 +48,7 @@ if DEBUG:
 else:
     # Configuraciones para producción
     SECURE_SSL_REDIRECT = True
-    SESSION_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = not DEBUG
     CSRF_COOKIE_SECURE = True
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
@@ -147,6 +147,7 @@ else:
 AUTH_USER_MODEL = 'accounts.Usuario'
 
 AUTHENTICATION_BACKENDS = (
+    'accounts.backends.CedulaConjuntoBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
 
@@ -157,6 +158,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {
+            'min_length': 8,
+        }
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
@@ -221,6 +225,7 @@ SENDGRID_CATEGORIES = ['notificaciones_servicios']
 
 # URL de login
 LOGIN_URL = '/accounts/login/'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
 
 # Configuración de caché
 CACHES = {

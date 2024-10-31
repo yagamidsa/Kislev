@@ -13,31 +13,42 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+# kislevsmart/urls.py
 from django.contrib import admin
-from django.shortcuts import render
-from .views import bienvenida
-from django.urls import path, include  # Asegúrate de incluir 'include'
-from django.contrib.auth import views as auth_views
+from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 from . import views
-
-
-
+from django.shortcuts import render
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', lambda request: render(request, 'index.html'), name='home'),  # Pantalla principal
-    path('bienvenida/', views.bienvenida, name='bienvenida'),  # Ruta para la vista de bienvenida
-    path('accounts/', include('accounts.urls')),  # Incluir las rutas de la app 'accounts'
-    path('validar_qr/<str:encrypted_token>/', views.validar_qr, name='validar_qr'),  # Enlace con token encriptado
+    
+    # Ruta raíz
+    path('', lambda request: render(request, 'index.html'), name='home'),
+    
+    # Incluir las URLs de accounts con su namespace
+    path('accounts/', include('accounts.urls', namespace='accounts')),
+    
+    # Rutas existentes de la aplicación
+    path('bienvenida/', views.bienvenida, name='bienvenida'),
+    path('validar_qr/<str:encrypted_token>/', views.validar_qr, name='validar_qr'),
     path('valqr/<str:email_b64>/', views.success_page, name='valqr'),
-    path('leerscaner/', views.leerscaner, name='leerscaner'),  # Ruta para la vista de bienvenida
+    path('leerscaner/', views.leerscaner, name='leerscaner'),
     path('notificaciones/', views.notificaciones, name='notificaciones'),
+    path('parking/', views.parking, name='parking'),
+    
+    # Rutas de notificaciones
     path('noti_generales/', views.noti_generales, name='noti_generales'),
     path('noti_individual/', views.noti_individual, name='noti_individual'),
     path('noti_publicos/', views.noti_publicos, name='noti_publicos'),
     path('dashboard/', views.dashboard, name='dashboard'),
+    
+    # APIs
     path('api/send-service-notification/', views.send_service_notification, name='send_service_notification'),
     path('notifications/send/', views.procesar_envio, name='procesar_envio'),
+    
+    # Rutas de salas
     path('salas/', views.SalaListView.as_view(), name='lista_salas'),
     path('sala/<int:sala_id>/calendario/', views.calendario_sala, name='calendario_sala'),
     path('api/sala/<int:sala_id>/reservas/', views.get_reservas_sala, name='api_reservas_sala'),
@@ -48,9 +59,6 @@ urlpatterns = [
     path('visitor-stats/', views.get_visitor_stats, name='visitor-stats'),
 ]
 
-# Solo para desarrollo: permite servir archivos media desde MEDIA_URL
-from django.conf import settings
-from django.conf.urls.static import static
-
+# Configuración de archivos estáticos y media para desarrollo
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

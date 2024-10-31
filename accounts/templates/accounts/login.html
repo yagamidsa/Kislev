@@ -14,7 +14,7 @@
     {% if messages %}
     <div class="message-container" role="alert">
         {% for message in messages %}
-        <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
         {% endfor %}
     </div>
     {% endif %}
@@ -25,7 +25,7 @@
     </div>
     {% endif %}
 
-    <form method="POST" id="loginForm">
+    <form method="POST" id="loginForm" action="{% url 'accounts:login' %}">
         {% csrf_token %}
         <div class="container">
             <div class="form">
@@ -34,25 +34,35 @@
                     <h1>Iniciar Sesión</h1>
 
                     <div class="form-field">
-                        <label for="id_usuario">Usuario:</label>
-                        <input type="text" name="usuario" id="id_usuario" required 
-                               autocomplete="username">
-                        {% if form.usuario.errors %}
-                        <div class="error" role="alert">{{ form.usuario.errors }}</div>
+                        <label for="id_conjunto">Conjunto Residencial:</label>
+                        {{ form.conjunto }}
+                        {% if form.conjunto.errors %}
+                        <div class="error" role="alert">{{ form.conjunto.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-field">
+                        <label for="id_cedula">Cédula:</label>
+                        <input type="text" name="cedula" id="id_cedula" required 
+                               autocomplete="username" 
+                               placeholder="Ingrese su cédula">
+                        {% if form.cedula.errors %}
+                        <div class="error" role="alert">{{ form.cedula.errors }}</div>
                         {% endif %}
                     </div>
 
                     <div class="form-field">
                         <label for="id_password">Contraseña:</label>
                         <input type="password" name="password" id="id_password" required 
-                               autocomplete="current-password">
+                               autocomplete="current-password"
+                               placeholder="Ingrese su contraseña">
                         {% if form.password.errors %}
                         <div class="error" role="alert">{{ form.password.errors }}</div>
                         {% endif %}
                     </div>
 
                     <div class="form-options">
-                        <a href="{% url 'reset_password' %}">Olvidé mi contraseña</a>
+                        <a href="{% url 'accounts:reset_password' %}">Olvidé mi contraseña</a>
                     </div>
 
                     <div class="form-field">
@@ -88,7 +98,32 @@
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
             const submitButton = document.getElementById('submit-button');
+            const conjunto = document.getElementById('id_conjunto');
+            const cedula = document.getElementById('id_cedula');
             
+            // Validar campos requeridos
+            if (!conjunto.value) {
+                e.preventDefault();
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-container';
+                errorDiv.setAttribute('role', 'alert');
+                errorDiv.textContent = 'Por favor seleccione un conjunto residencial';
+                document.body.insertBefore(errorDiv, document.body.firstChild);
+                handleMessages();
+                return false;
+            }
+
+            if (!cedula.value) {
+                e.preventDefault();
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-container';
+                errorDiv.setAttribute('role', 'alert');
+                errorDiv.textContent = 'Por favor ingrese su cédula';
+                document.body.insertBefore(errorDiv, document.body.firstChild);
+                handleMessages();
+                return false;
+            }
+
             // Verificar que el token CSRF existe
             if (!csrfToken) {
                 e.preventDefault();
