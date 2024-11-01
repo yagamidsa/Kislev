@@ -106,3 +106,47 @@ document.addEventListener('DOMContentLoaded', function() {
         ease: 'none'
     });
 });
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const cards = document.querySelectorAll('.zone-card');
+
+    cards.forEach(card => {
+        // Añadir manejo de eventos táctiles
+        card.addEventListener('touchstart', handleTouch, { passive: true });
+        card.addEventListener('touchend', removeTouch);
+
+        // Crear el elemento para el efecto ripple
+        const ripple = document.createElement('div');
+        ripple.className = 'touch-ripple';
+        card.appendChild(ripple);
+    });
+
+    function handleTouch(e) {
+        const card = this;
+        const touch = e.touches[0];
+        const rect = card.getBoundingClientRect();
+        
+        // Añadir clase para activar efectos
+        card.classList.add('touched');
+        
+        // Calcular posición del ripple
+        const ripple = card.querySelector('.touch-ripple');
+        const x = touch.clientX - rect.left;
+        const y = touch.clientY - rect.top;
+        
+        // Posicionar y animar el ripple
+        ripple.style.top = `${y}px`;
+        ripple.style.left = `${x}px`;
+        ripple.style.animation = 'rippleEffect 0.8s ease-out';
+        
+        // Limpiar animación después de completarse
+        setTimeout(() => {
+            ripple.style.animation = '';
+        }, 800);
+    }
+
+    function removeTouch() {
+        this.classList.remove('touched');
+    }
+});
