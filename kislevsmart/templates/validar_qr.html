@@ -7,7 +7,6 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/restricciones.css' %}">
     <link rel="stylesheet" href="{% static 'css/validar_qr.css' %}">
-    <!-- Asegúrate de incluir el enlace a Font Awesome en tu HTML -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
@@ -33,7 +32,18 @@
             <p><strong>Email:</strong> <span class="info">{{ visitante.email }}</span></p>
             <p><strong>Celular:</strong> <span class="info">{{ visitante.celular }}</span></p>
             <p><strong>Motivo:</strong> <span class="info">{{ visitante.motivo }}</span></p>
-            <p><strong>Última lectura:</strong> <span class="info">{{ visitante.ultima_lectura }}</span></p>
+            {% if visitante.tipo_vehiculo %}
+                <p><strong>Tipo de Vehículo:</strong> <span class="info">{{ visitante.get_tipo_vehiculo_display }}</span></p>
+                <p><strong>Placa:</strong> <span class="info">{{ visitante.placa }}</span></p>
+                {% if visitante.segunda_lectura %}
+                    <p><strong>Entrada:</strong> <span class="info">{{ visitante.ultima_lectura }}</span></p>
+                    <p><strong>Salida:</strong> <span class="info">{{ visitante.segunda_lectura }}</span></p>
+                {% else %}
+                    <p><strong>Última lectura:</strong> <span class="info">{{ visitante.ultima_lectura }}</span></p>
+                {% endif %}
+            {% else %}
+                <p><strong>Última lectura:</strong> <span class="info">{{ visitante.ultima_lectura }}</span></p>
+            {% endif %}
         </div>
         <p class="success-message">¡Acceso permitido!</p>
         <a href="{% url 'accounts:control_porteria' %}" class="btn">Volver</a>

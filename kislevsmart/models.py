@@ -53,6 +53,110 @@ class Visitante(models.Model):
             
         super().save(*args, **kwargs)
 
+
+
+
+
+class VisitanteVehicular(models.Model):
+    """
+    Modelo para visitantes con vehículo, mantiene los mismos campos que Visitante
+    más los campos específicos para vehículos
+    """
+    email_creador = models.EmailField()
+    nombre = models.CharField(max_length=100)
+    email = models.EmailField()
+    celular = models.CharField(max_length=15)
+    cedula = models.CharField(max_length=20)
+    motivo = models.CharField(max_length=255)
+    token = models.CharField(max_length=100, unique=True)
+    fecha_generacion = models.DateTimeField(default=timezone.now)
+    ultima_lectura = models.DateTimeField(null=True, blank=True)
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
+    nombre_log = models.CharField(max_length=100)
+    numper = models.CharField(max_length=20)
+    
+    # Campos adicionales para vehículos
+    tipo_vehiculo = models.CharField(max_length=20, choices=[
+        ('carro', 'Carro'),
+        ('moto', 'Moto'),
+        ('cicla', 'Cicla'),
+        ('otro', 'Otro'),
+    ])
+    placa = models.CharField(max_length=10)
+    segunda_lectura = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.nombre} - {self.placa}"
+
+    def get_tiempo_actual(self):
+        """Obtiene el tiempo actual en la zona horaria local"""
+        return timezone.localtime(timezone.now())
+
+    def get_fecha_generacion_local(self):
+        """Obtiene la fecha de generación en la zona horaria local"""
+        return timezone.localtime(self.fecha_generacion)
+
+    def save(self, *args, **kwargs):
+        """Sobrescribe el método save para manejar zonas horarias"""
+        if not self.pk:
+            self.fecha_generacion = self.get_tiempo_actual()
+            
+        # Asegurar zona horaria correcta para ultima_lectura y segunda_lectura
+        if self.ultima_lectura and timezone.is_naive(self.ultima_lectura):
+            self.ultima_lectura = timezone.make_aware(
+                self.ultima_lectura, 
+                timezone.get_current_timezone()
+            )
+            
+        if self.segunda_lectura and timezone.is_naive(self.segunda_lectura):
+            self.segunda_lectura = timezone.make_aware(
+                self.segunda_lectura, 
+                timezone.get_current_timezone()
+            )
+            
+        super().save(*args, **kwargs)
+
+    def esta_completado(self):
+        """Verifica si el visitante ya realizó las dos lecturas"""
+        return bool(self.ultima_lectura and self.segunda_lectura)
+
+    def puede_leer(self):
+        """Verifica si el QR puede ser leído nuevamente"""
+        return not self.esta_completado()
+
+    def registrar_lectura(self):
+        """
+        Registra una nueva lectura del QR.
+        Retorna True si la lectura fue exitosa, False si ya no se permiten más lecturas
+        """
+        if not self.puede_leer():
+            return False
+
+        tiempo_actual = self.get_tiempo_actual()
+        
+        if not self.ultima_lectura:
+            self.ultima_lectura = tiempo_actual
+        else:
+            self.segunda_lectura = tiempo_actual
+            
+        self.save()
+        return True
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
 
 

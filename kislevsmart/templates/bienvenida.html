@@ -45,6 +45,15 @@
             <div class="container">
                 <h1 class="front-text-principal">Bienvenid@, {{ user.nombre }}!</h1>
                 <h2 class="front-text">Aqui puedes generar el codigo QR para Visitante</h2>
+                <div class="tipo-visitante">
+                    <button type="button" class="tipo-button active" data-tipo="peatonal">
+                        <i class="fas fa-walking"></i> Peatonal
+                    </button>
+                    <button type="button" class="tipo-button" data-tipo="vehicular">
+                        <i class="fas fa-car"></i> Vehicular
+                    </button>
+                </div>
+                <input type="hidden" name="tipo_visitante" id="tipo_visitante" value="peatonal">
                 <label class="btn-open" for="frmContactForm"><i class="far fa-envelope"></i><span class="ml-half">Abrir
                         Formulario</span></label>
             </div>
@@ -73,6 +82,7 @@
                                 <h2 class="p-none m-none mb-quarter text-white"><i class="fa fa-address-card"></i><span
                                         class="ml-half">Datos Visitante</span></h2>
                             </div>
+                            <!-- Campos comunes -->
                             <div class="form-item">
                                 <input type="text" placeholder=" " id="nombre" name="nombre" required>
                                 <label class="lbl-floating" for="nombre">Nombre visitante</label><i
@@ -99,6 +109,28 @@
                                 <label class="lbl-floating" for="numper">Numero de personas:</label><i
                                     class="icon text-white fa fa-id-card"></i>
                             </div>
+
+                            <!-- Campos para vehículos -->
+                            <div class="campos-vehiculo">
+                                <div class="form-item">
+                                    <input type="text" placeholder=" " id="placa" name="placa">
+                                    <label class="lbl-floating" for="placa">Placa del Vehículo:</label><i
+                                        class="icon text-white fa fa-car"></i>
+                                </div>
+                                <div class="form-item2">
+                                    <i class="informativo fa fa-car" style="margin-bottom: 20px; color: aliceblue;"></i>
+                                    <label class="text-white" for="tipo_vehiculo" style="margin-left: 10px;">
+                                        Tipo de Vehículo:
+                                    </label>
+                                    <select id="tipo_vehiculo" name="tipo_vehiculo">
+                                        <option value="carro">Carro</option>
+                                        <option value="moto">Moto</option>
+                                        <option value="camion">Camión</option>
+                                        <option value="otro">Otro</option>
+                                    </select>
+                                </div>
+                            </div>
+
                             <div class="form-item2">
                                 <i class="informativo fa fa-info-circle"
                                     style="margin-bottom: 20px; color: aliceblue;"></i>
@@ -130,6 +162,8 @@
             </div>
         </form>
     </div>
+
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Configuración y Variables Globales
@@ -138,10 +172,10 @@
             const QR_CONFIG = {
                 minSize: 40,
                 maxSize: 80,
-                minDuration: 5000,  // Reducido de 10000
-                maxDuration: 10000, // Reducido de 20000
-                maxQRs: 8,         // Reducido de 15
-                spawnInterval: 3000 // Aumentado de 2000
+                minDuration: 5000,
+                maxDuration: 10000,
+                maxQRs: 8,
+                spawnInterval: 3000
             };
 
             let lastSubmitTime = 0;
@@ -152,6 +186,49 @@
             const emailInput = form.querySelector('input[name="email"]');
             const celularInput = document.getElementById('celular');
             const submitBtn = form.querySelector('#submitBtn');
+            const tipoButtons = document.querySelectorAll('.tipo-button');
+            const camposVehiculo = document.querySelector('.campos-vehiculo');
+            const tipoVisitanteInput = document.getElementById('tipo_visitante');
+            const placaInput = document.getElementById('placa');
+            const tipoVehiculoSelect = document.getElementById('tipo_vehiculo');
+
+            // Inicialización de campos vehiculares
+            function initializeVehicularFields() {
+                if (camposVehiculo) {
+                    camposVehiculo.style.display = 'none';
+                    camposVehiculo.classList.remove('visible');
+                }
+
+                if (placaInput && tipoVehiculoSelect) {
+                    placaInput.required = false;
+                    placaInput.disabled = true;
+                    placaInput.value = '';
+                    tipoVehiculoSelect.required = false;
+                    tipoVehiculoSelect.disabled = true;
+                    tipoVehiculoSelect.selectedIndex = 0;
+                }
+            }
+
+            // Inicializar campos al cargar
+            initializeVehicularFields();
+
+            // Event listener para el checkbox del formulario
+            const formCheckbox = document.getElementById('frmContactForm');
+            formCheckbox.addEventListener('change', function () {
+                if (!this.checked) {
+                    // Cuando se cierra el formulario, reiniciar los campos
+                    initializeVehicularFields();
+                    // Reiniciar botones
+                    tipoButtons.forEach(b => {
+                        if (b.dataset.tipo === 'peatonal') {
+                            b.classList.add('active');
+                        } else {
+                            b.classList.remove('active');
+                        }
+                    });
+                    tipoVisitanteInput.value = 'peatonal';
+                }
+            });
 
             // Crear elemento para mensajes de error
             const errorDiv = document.createElement('div');
@@ -171,7 +248,7 @@
     `;
             document.body.appendChild(errorDiv);
 
-            // Funciones de utilidad mejoradas
+            // Funciones de utilidad
             const showError = (message) => {
                 errorDiv.textContent = message;
                 errorDiv.style.display = 'block';
@@ -191,7 +268,6 @@
                     '<i class="fas fa-spinner fa-spin"></i> Enviando...' :
                     'Generar QR <i class="far fa-paper-plane"></i>';
 
-                // Añadir/remover clase para estilo visual
                 if (isLoading) {
                     submitBtn.classList.add('loading');
                 } else {
@@ -199,8 +275,9 @@
                 }
             };
 
-            // Funciones de validación mejoradas
+            // Funciones de validación
             const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            const placaPattern = /^[A-Z0-9]{6,7}$/;
 
             const isEmailValid = (email) => {
                 return emailPattern.test(email) && email.length <= MAX_EMAIL_LENGTH;
@@ -210,9 +287,14 @@
                 return /^\d{10}$/.test(celular);
             };
 
+            const isPlacaValid = (placa) => {
+                return placaPattern.test(placa.toUpperCase());
+            };
+
             const validateForm = () => {
                 const email = emailInput.value;
                 const celular = celularInput.value;
+                const tipoVisitante = tipoVisitanteInput.value;
 
                 if (!email || !celular) {
                     showError('Todos los campos son obligatorios');
@@ -229,10 +311,59 @@
                     return false;
                 }
 
+                if (tipoVisitante === 'vehicular') {
+                    const placa = placaInput.value.trim().toUpperCase();
+                    if (!placa) {
+                        showError('Por favor ingresa la placa del vehículo');
+                        return false;
+                    }
+                    if (!isPlacaValid(placa)) {
+                        showError('Por favor ingresa una placa válida (6-7 caracteres alfanuméricos)');
+                        return false;
+                    }
+                    if (!tipoVehiculoSelect.value) {
+                        showError('Por favor selecciona el tipo de vehículo');
+                        return false;
+                    }
+                }
+
                 return true;
             };
 
-            // Event Listeners para validación en tiempo real
+            // Event Listeners para tipo de visitante
+            tipoButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    tipoButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+
+                    const tipo = this.dataset.tipo;
+                    tipoVisitanteInput.value = tipo;
+
+                    if (tipo === 'vehicular') {
+                        camposVehiculo.classList.add('visible');
+                        camposVehiculo.style.display = 'block';
+                        if (placaInput && tipoVehiculoSelect) {
+                            placaInput.required = true;
+                            placaInput.disabled = false;
+                            tipoVehiculoSelect.required = true;
+                            tipoVehiculoSelect.disabled = false;
+                        }
+                    } else {
+                        camposVehiculo.classList.remove('visible');
+                        camposVehiculo.style.display = 'none';
+                        if (placaInput && tipoVehiculoSelect) {
+                            placaInput.required = false;
+                            placaInput.disabled = true;
+                            placaInput.value = '';
+                            tipoVehiculoSelect.required = false;
+                            tipoVehiculoSelect.disabled = true;
+                            tipoVehiculoSelect.selectedIndex = 0;
+                        }
+                    }
+                });
+            });
+
+            // Validación en tiempo real
             emailInput.addEventListener('input', function (e) {
                 const email = e.target.value;
                 if (!isEmailValid(email)) {
@@ -244,14 +375,13 @@
                     e.target.setCustomValidity('');
                 }
 
-                // Actualizar estado visual
                 this.classList.toggle('is-valid', isEmailValid(email));
                 this.classList.toggle('is-invalid', !isEmailValid(email));
             });
 
             celularInput.addEventListener('input', function (e) {
                 const celular = e.target.value.replace(/\D/g, '');
-                e.target.value = celular; // Actualizar valor limpio
+                e.target.value = celular;
 
                 if (!isCelularValid(celular)) {
                     e.target.setCustomValidity("El número debe tener 10 dígitos");
@@ -259,12 +389,27 @@
                     e.target.setCustomValidity('');
                 }
 
-                // Actualizar estado visual
                 this.classList.toggle('is-valid', isCelularValid(celular));
                 this.classList.toggle('is-invalid', !isCelularValid(celular));
             });
 
-            // Reemplaza el manejo del formulario actual por este
+            if (placaInput) {
+                placaInput.addEventListener('input', function (e) {
+                    const placa = e.target.value.toUpperCase();
+                    e.target.value = placa;
+
+                    if (!isPlacaValid(placa)) {
+                        e.target.setCustomValidity("La placa debe tener 6-7 caracteres alfanuméricos");
+                    } else {
+                        e.target.setCustomValidity('');
+                    }
+
+                    this.classList.toggle('is-valid', isPlacaValid(placa));
+                    this.classList.toggle('is-invalid', !isPlacaValid(placa));
+                });
+            }
+
+            // Manejo del formulario
             form.addEventListener('submit', async function (e) {
                 e.preventDefault();
 
@@ -305,18 +450,15 @@
                     }
 
                     try {
-                        // Intentar parsear como JSON primero
                         const data = await response.json();
                         if (data.status === 'success' && data.redirect_url) {
                             window.location.href = data.redirect_url;
                             return;
                         }
                     } catch (e) {
-                        // Si no es JSON, podría ser una redirección directa
                         console.log("No es una respuesta JSON, intentando redirección directa");
                     }
 
-                    // Si llegamos aquí, usar la URL de la respuesta
                     const redirectUrl = response.headers.get('Location') || response.url;
                     if (redirectUrl) {
                         console.log("Redirigiendo a:", redirectUrl);
@@ -369,7 +511,6 @@
                     qr.appendChild(square);
                 });
 
-                // Posición y animación inicial
                 const startX = Math.random() * window.innerWidth;
                 const startY = Math.random() * window.innerHeight;
                 qr.style.left = `${startX}px`;
@@ -397,7 +538,7 @@
                 setTimeout(createQR, i * 200);
             }
 
-            // Eventos de mouse para QRs con throttling
+            // Manejo de eventos de mouse para QR
             let lastMouseMove = 0;
             document.addEventListener('mousemove', (e) => {
                 const now = Date.now();
@@ -433,7 +574,7 @@
                 }
             });
 
-            // Manejo de eventos de ventana
+            // Manejar eventos de ventana
             let resizeTimeout;
             window.addEventListener('resize', () => {
                 clearTimeout(resizeTimeout);

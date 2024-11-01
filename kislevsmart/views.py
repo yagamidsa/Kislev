@@ -36,7 +36,7 @@ from django.contrib import messages
 from django.db import DatabaseError, transaction
 from django.http import HttpResponse
 from django.views.decorators.vary import vary_on_headers
-
+from .models import VisitanteVehicular
 
 # Configurar logger
 logger = logging.getLogger(__name__)
@@ -650,28 +650,43 @@ def bienvenida(request):
                 # Generar token único
                 uuid_token = str(uuid.uuid4())
                 
-                # Crear visitante
-                visitante = Visitante.objects.create(
-                    email=request.POST['email'],
-                    nombre=request.POST['nombre'],
-                    celular=request.POST['celular'],
-                    cedula=request.POST['cedula'],
-                    motivo=request.POST['motivo'],
-                    email_creador=request.POST['email_creador'],
-                    nombre_log=request.POST['nombre_log'],
-                    token=uuid_token,
-                    fecha_generacion=timezone.now(),
-                    numper=request.POST['numper'],
-                    ultima_lectura=None
-                )
+                # Obtener el tipo de visitante
+                tipo_visitante = request.POST.get('tipo_visitante', 'peatonal')
                 
-                logger.info(f"Visitante creado - ID: {visitante.id}")
+                # Datos comunes para ambos tipos de visitantes
+                datos_visitante = {
+                    'email': request.POST['email'],
+                    'nombre': request.POST['nombre'],
+                    'celular': request.POST['celular'],
+                    'cedula': request.POST['cedula'],
+                    'motivo': request.POST['motivo'],
+                    'email_creador': request.POST['email_creador'],
+                    'nombre_log': request.POST['nombre_log'],
+                    'token': uuid_token,
+                    'fecha_generacion': timezone.now(),
+                    'numper': request.POST['numper'],
+                    'usuario_id': request.user.conjunto_id,
+                    'ultima_lectura': None
+                }
+                
+                # Crear el visitante según el tipo
+                if tipo_visitante == 'vehicular':
+                    visitante = VisitanteVehicular.objects.create(
+                        **datos_visitante,
+                        tipo_vehiculo=request.POST['tipo_vehiculo'],
+                        placa=request.POST['placa'].upper(),
+                        segunda_lectura=None
+                    )
+                else:
+                    visitante = Visitante.objects.create(**datos_visitante)
+                
+                logger.info(f"Visitante {tipo_visitante} creado - ID: {visitante.id}")
 
                 # Generar y enviar QR
-                raw_token = f"Kislev_{uuid_token}"
+                raw_token = f"Kislev_{tipo_visitante}_{uuid_token}"  # Incluimos el tipo en el token
                 encrypted_token = cipher.encrypt(raw_token.encode()).decode()
                 
-                # Generar URL del QR
+                # Generar URL del QR - Ahora siempre usa validar_qr
                 base_url = f"https://{request.get_host()}" if 'railway.app' in request.get_host() else request.build_absolute_uri('/').rstrip('/')
                 enlace_qr = f"{base_url}{reverse('validar_qr', args=[encrypted_token])}"
 
@@ -687,11 +702,16 @@ def bienvenida(request):
                 qr_img = qr.make_image(fill_color="black", back_color="white")
                 qr_img.save(qr_file_path)
 
+                # Preparar mensaje de email según tipo de visitante
+                mensaje_adicional = ""
+                if tipo_visitante == 'vehicular':
+                    mensaje_adicional = f"\n\nNota: Este código QR es válido para registrar tanto la entrada como la salida del vehículo."
+
                 # Enviar email
                 try:
                     email_message = EmailMessage(
                         "Tu Código QR de Visitante",
-                        f"Hola {visitante.nombre},\n\nAdjunto encontrarás tu código QR para la visita.",
+                        f"Hola {visitante.nombre},\n\nAdjunto encontrarás tu código QR para la visita.{mensaje_adicional}",
                         settings.DEFAULT_FROM_EMAIL,
                         [visitante.email]
                     )
@@ -711,10 +731,9 @@ def bienvenida(request):
                 
                 # Si es una petición AJAX, devolver JSON
                 if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                    # Si es una petición AJAX
                     return JsonResponse({
                         'status': 'success',
-                        'redirect_url': reverse('valqr', kwargs={'email_b64': email_b64}),
+                        'redirect_url': redirect_url,
                         'message': 'QR generado exitosamente'
                     })
                 
@@ -752,7 +771,7 @@ def validar_qr(request, encrypted_token):
 
     if is_ios_prefetch:
         logger.info("Detectada pre-carga de iOS - ignorando validación")
-        return HttpResponse(status=204)  # No Content
+        return HttpResponse(status=204)
 
     source = request.GET.get('source', '')
     if source != 'scan':
@@ -768,53 +787,92 @@ def validar_qr(request, encrypted_token):
             logger.error("Token inválido: prefijo incorrecto")
             return render(request, 'error_qr.html', {'mensaje': 'Token no válido.'})
 
-        original_token = decrypted_token[len("Kislev_"):]
+        # Extraer tipo y token
+        parts = decrypted_token[len("Kislev_"):].split('_', 1)
+        if len(parts) != 2:
+            logger.error("Token inválido: formato incorrecto")
+            return render(request, 'error_qr.html', {'mensaje': 'Token no válido.'})
+
+        tipo_visitante, original_token = parts
         
-        # Obtener visitante con bloqueo
+        # Obtener visitante con bloqueo según tipo
         with transaction.atomic():
-            visitante = get_object_or_404(
-                Visitante.objects.select_for_update(nowait=True),
-                token=original_token
-            )
+            if tipo_visitante == 'vehicular':
+                visitante = get_object_or_404(
+                    VisitanteVehicular.objects.select_for_update(nowait=True),
+                    token=original_token
+                )
+            else:
+                visitante = get_object_or_404(
+                    Visitante.objects.select_for_update(nowait=True),
+                    token=original_token
+                )
             
-            # Verificar estado directamente en la base de datos
             visitante.refresh_from_db()
             
-            # Verificación especial para Safari/iOS
-            is_safari = 'Safari' in request.headers.get('User-Agent', '')
-            request_id = request.GET.get('req')
-            
-            if is_safari and visitante.ultima_lectura is not None:
-                # Si es Safari y tiene una lectura muy reciente (menos de 5 segundos)
-                ultima_lectura = timezone.localtime(visitante.ultima_lectura)
-                tiempo_actual = timezone.localtime(timezone.now())
-                diferencia = tiempo_actual - ultima_lectura
+            # Lógica específica para visitantes vehiculares
+            if tipo_visitante == 'vehicular':
+                if visitante.segunda_lectura:
+                    return render(request, 'qr_desactivado.html', {
+                        'mensaje': 'Este código QR ya completó sus dos lecturas.',
+                        'ultima_lectura': visitante.segunda_lectura
+                    })
                 
-                if diferencia.total_seconds() < 5:
-                    logger.info("Detectada doble lectura de Safari - permitiendo acceso")
-                    return render(request, 'validar_qr.html', {'visitante': visitante})
-            
-            if visitante.ultima_lectura is not None:
-                logger.warning(f"QR ya utilizado el: {visitante.ultima_lectura}")
-                return render(request, 'qr_desactivado.html', {
-                    'mensaje': 'Este código QR ya ha sido utilizado.',
-                    'ultima_lectura': visitante.ultima_lectura
-                })
+                tiempo_actual = timezone.now()
+                if not visitante.ultima_lectura:
+                    # Primera lectura (entrada)
+                    visitante.ultima_lectura = tiempo_actual
+                    mensaje = "Entrada registrada"
+                else:
+                    # Segunda lectura (salida)
+                    visitante.segunda_lectura = tiempo_actual
+                    mensaje = "Salida registrada"
+                
+                visitante.nombre_log = request.user.email
+                visitante.save()
+                
+            # Lógica para visitantes peatonales
+            else:
+                # Verificación especial para Safari/iOS
+                is_safari = 'Safari' in request.headers.get('User-Agent', '')
+                if is_safari and visitante.ultima_lectura is not None:
+                    ultima_lectura = timezone.localtime(visitante.ultima_lectura)
+                    tiempo_actual = timezone.localtime(timezone.now())
+                    if (tiempo_actual - ultima_lectura).total_seconds() < 5:
+                        return render(request, 'validar_qr.html', {'visitante': visitante})
 
-            # El resto del código permanece exactamente igual
-            tiempo_actual = timezone.now()
-            visitante.ultima_lectura = tiempo_actual
-            visitante.nombre_log = request.user.email
-            visitante.save()
-            
+                if visitante.ultima_lectura is not None:
+                    return render(request, 'qr_desactivado.html', {
+                        'mensaje': 'Este código QR ya ha sido utilizado.',
+                        'ultima_lectura': visitante.ultima_lectura
+                    })
+
+                tiempo_actual = timezone.now()
+                visitante.ultima_lectura = tiempo_actual
+                visitante.nombre_log = request.user.email
+                visitante.save()
+                mensaje = "Visita registrada"
+
             # Enviar notificación por email
             try:
-                email_subject = "Tu visitante ya está en la portería"
+                email_subject = "Registro de visitante"
+                if tipo_visitante == 'vehicular':
+                    email_subject = f"Registro vehicular - {mensaje}"
+                
                 email_body = f"""
                 Hola,
                 
-                Tu visitante {visitante.nombre} se encuentra en la portería.
-                Fecha y hora de llegada: {timezone.localtime(visitante.ultima_lectura).strftime('%Y-%m-%d %H:%M:%S')}
+                Tu visitante {visitante.nombre} {mensaje.lower()}.
+                Fecha y hora: {timezone.localtime(visitante.ultima_lectura).strftime('%Y-%m-%d %H:%M:%S')}
+                """
+
+                if tipo_visitante == 'vehicular':
+                    email_body += f"""
+                    Vehículo: {visitante.get_tipo_vehiculo_display()}
+                    Placa: {visitante.placa}
+                    """
+
+                email_body += f"""
                 Motivo de la visita: {visitante.motivo}
                 
                 Saludos,
@@ -832,10 +890,11 @@ def validar_qr(request, encrypted_token):
                 logger.info(f"Notificación enviada a {visitante.email_creador}")
             except Exception as e:
                 logger.error(f"Error enviando notificación por email: {str(e)}")
-                # Continuar aunque falle el envío del email
 
-            logger.info(f"Lectura registrada exitosamente: {visitante.ultima_lectura}")
-            return render(request, 'validar_qr.html', {'visitante': visitante})
+            return render(request, 'validar_qr.html', {
+                'visitante': visitante,
+                'mensaje': mensaje
+            })
 
     except Exception as e:
         logger.error(f"Error procesando QR: {str(e)}")
@@ -1148,3 +1207,119 @@ def get_visitor_stats(request):
         'labels': labels,
         'data': data
     })
+    
+ 
+ 
+ 
+@login_required
+@role_required(['porteria', 'administrador'])
+def validar_qr_vehicular(request, encrypted_token):
+    """
+    Vista separada para validar QRs de visitantes vehiculares.
+    Mantiene la lógica similar a validar_qr pero permite dos lecturas.
+    """
+    logger.info("Iniciando validación de QR vehicular")
+    
+    # Verificar si es una pre-carga de Safari/iOS
+    is_ios_prefetch = (
+        'purpose' in request.headers and 
+        request.headers['purpose'] == 'prefetch'
+    ) or (
+        'Sec-Purpose' in request.headers and 
+        request.headers['Sec-Purpose'] == 'prefetch'
+    )
+
+    if is_ios_prefetch:
+        logger.info("Detectada pre-carga de iOS - ignorando validación")
+        return HttpResponse(status=204)
+
+    source = request.GET.get('source', '')
+    if source != 'scan':
+        logger.warning("Intento de acceso sin escaneo")
+        return render(request, 'error_qr.html', {
+            'mensaje': 'Acceso no autorizado. Escanea el QR desde la aplicación.'
+        })
+
+    try:
+        # Desencriptar token
+        decrypted_token = cipher.decrypt(encrypted_token.encode()).decode()
+        if not decrypted_token.startswith("Kislev_"):
+            logger.error("Token inválido: prefijo incorrecto")
+            return render(request, 'error_qr.html', {'mensaje': 'Token no válido.'})
+
+        original_token = decrypted_token[len("Kislev_"):]
+        
+        # Obtener visitante con bloqueo
+        with transaction.atomic():
+            visitante = get_object_or_404(
+                VisitanteVehicular.objects.select_for_update(nowait=True),
+                token=original_token
+            )
+            
+            # Verificar estado directamente en la base de datos
+            visitante.refresh_from_db()
+            
+            if not visitante.puede_leer():
+                return render(request, 'qr_desactivado.html', {
+                    'mensaje': 'Este código QR ya completó sus dos lecturas.',
+                    'ultima_lectura': visitante.segunda_lectura or visitante.ultima_lectura
+                })
+
+            # Registrar la lectura
+            lectura_exitosa = visitante.registrar_lectura()
+            if not lectura_exitosa:
+                return render(request, 'error_qr.html', {
+                    'mensaje': 'Error al registrar la lectura del QR.'
+                })
+
+            # Determinar si es entrada o salida
+            es_entrada = not visitante.segunda_lectura
+            mensaje = 'Entrada registrada' if es_entrada else 'Salida registrada'
+
+            # Enviar notificación por email
+            try:
+                email_subject = f"Registro vehicular - {mensaje}"
+                email_body = f"""
+                Hola,
+                
+                Tu visitante {visitante.nombre} ha registrado un movimiento en portería.
+                Estado: {mensaje}
+                Fecha y hora: {timezone.localtime(visitante.ultima_lectura).strftime('%Y-%m-%d %H:%M:%S')}
+                Vehículo: {visitante.get_tipo_vehiculo_display()}
+                Placa: {visitante.placa}
+                Motivo de la visita: {visitante.motivo}
+                
+                Saludos,
+                Kislev
+                """
+                
+                email = EmailMessage(
+                    email_subject,
+                    email_body,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [visitante.email_creador],
+                    headers={'X-Priority': '1'}
+                )
+                email.send(fail_silently=False)
+                logger.info(f"Notificación enviada a {visitante.email_creador}")
+            except Exception as e:
+                logger.error(f"Error enviando notificación por email: {str(e)}")
+
+            return render(request, 'validar_qr.html', {
+                'visitante': visitante,
+                'mensaje': mensaje,
+                'es_vehicular': True,
+                'es_entrada': es_entrada
+            })
+
+    except Exception as e:
+        logger.error(f"Error procesando QR vehicular: {str(e)}")
+        return render(request, 'error_qr.html', {
+            'mensaje': f'Error al procesar el QR: {str(e)}'
+        })
+    
+    
+    
+    
+    
+    

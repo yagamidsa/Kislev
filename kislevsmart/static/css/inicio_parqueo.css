@@ -35,7 +35,7 @@ body {
         radial-gradient(circle at 20% 20%, rgba(190, 24, 93, 0.15) 0%, transparent 60%),
         radial-gradient(circle at 80% 80%, rgba(190, 24, 93, 0.15) 0%, transparent 60%);
     filter: blur(80px);
-    z-index: -1;
+    z-index: -2;
 }
 
 .floating-particles {
@@ -374,4 +374,33 @@ body {
     .icon-container {
         width: 45%;
     }
+}
+
+.background-icons {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.floating-icon {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+}
+
+.floating-icon svg {
+    width: 100%;
+    height: 100%;
+    fill: rgba(255, 20, 147, 0.8); /* Mayor opacidad */
+    filter: 
+        drop-shadow(0 0 5px rgba(255, 20, 147, 0.8))
+        drop-shadow(0 0 10px rgba(255, 20, 147, 0.5))
+        drop-shadow(0 0 15px rgba(255, 20, 147, 0.3))
+        brightness(1.5); /* Hace el color más brillante */
+    mix-blend-mode: screen; /* Mejora el efecto de brillo */
 }

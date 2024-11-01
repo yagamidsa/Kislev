@@ -2,6 +2,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,8 +10,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/inicio_parqueo.css' %}">
 </head>
+
 <body>
-    <div class="light-effect"></div>
+    <div class="background-icons"></div>
     
     <div class="container">
         <header class="header">
@@ -53,55 +55,55 @@
                 <stop offset="0%" style="stop-color:#FF1493;stop-opacity:1" />
                 <stop offset="100%" style="stop-color:#C71585;stop-opacity:1" />
             </linearGradient>
-            
+
             <linearGradient id="carWindows" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" style="stop-color:rgba(255,255,255,0.3)" />
                 <stop offset="100%" style="stop-color:rgba(255,255,255,0.1)" />
             </linearGradient>
-            
+
             <linearGradient id="carDetails" x1="0%" y1="0%" x2="100%" y2="0%">
                 <stop offset="0%" style="stop-color:#FF69B4;stop-opacity:1" />
                 <stop offset="100%" style="stop-color:#FF1493;stop-opacity:1" />
             </linearGradient>
-    
+
             <!-- Gradientes para la moto -->
             <linearGradient id="motoBody" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" style="stop-color:#FF1493;stop-opacity:1" />
                 <stop offset="100%" style="stop-color:#C71585;stop-opacity:1" />
             </linearGradient>
         </defs>
-    
+
         <!-- Carro mejorado -->
         <!-- Definiciones de gradientes -->
-    <defs>
-        <!-- Gradiente principal del carro -->
-        <linearGradient id="carBody" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:#FF1493;stop-opacity:1" />
-            <stop offset="100%" style="stop-color:#C71585;stop-opacity:1" />
-        </linearGradient>
-        
-        <!-- Gradiente para vidrios -->
-        <linearGradient id="carWindows" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style="stop-color:rgba(255,255,255,0.3)" />
-            <stop offset="100%" style="stop-color:rgba(255,255,255,0.1)" />
-        </linearGradient>
-        
-        <!-- Gradiente para detalles -->
-        <linearGradient id="carDetails" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" style="stop-color:#FF69B4;stop-opacity:1" />
-            <stop offset="100%" style="stop-color:#FF1493;stop-opacity:1" />
-        </linearGradient>
-    </defs>
+        <defs>
+            <!-- Gradiente principal del carro -->
+            <linearGradient id="carBody" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#FF1493;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#C71585;stop-opacity:1" />
+            </linearGradient>
 
-    <!-- Carro más detallado -->
-    <symbol id="car" viewBox="0 0 200 120">
-        <!-- Sombra del carro -->
-        <ellipse cx="100" cy="110" rx="85" ry="10" fill="rgba(0,0,0,0.2)" />
-        
-        <!-- Cuerpo principal -->
-        <g class="car-body">
-            <!-- Base del carro -->
-            <path d="M25 85 
+            <!-- Gradiente para vidrios -->
+            <linearGradient id="carWindows" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:rgba(255,255,255,0.3)" />
+                <stop offset="100%" style="stop-color:rgba(255,255,255,0.1)" />
+            </linearGradient>
+
+            <!-- Gradiente para detalles -->
+            <linearGradient id="carDetails" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style="stop-color:#FF69B4;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#FF1493;stop-opacity:1" />
+            </linearGradient>
+        </defs>
+
+        <!-- Carro más detallado -->
+        <symbol id="car" viewBox="0 0 200 120">
+            <!-- Sombra del carro -->
+            <ellipse cx="100" cy="110" rx="85" ry="10" fill="rgba(0,0,0,0.2)" />
+
+            <!-- Cuerpo principal -->
+            <g class="car-body">
+                <!-- Base del carro -->
+                <path d="M25 85 
                      L45 85 
                      C45 85 50 65 65 65
                      L135 65
@@ -114,225 +116,210 @@
                      L55 95
                      C55 95 55 105 45 105
                      C35 105 35 95 35 95
-                     L25 95 Z" 
-                  fill="url(#carBody)" 
-                  class="vehicle-body main-body"/>
+                     L25 95 Z" fill="url(#carBody)" class="vehicle-body main-body" />
 
-            <!-- Capó -->
-            <path d="M45 85
+                <!-- Capó -->
+                <path d="M45 85
                      C45 85 50 65 65 65
                      L75 55
                      C75 55 90 45 100 45
                      L120 45
                      C130 45 145 55 145 55
-                     L155 85"
-                  fill="url(#carBody)"
-                  class="vehicle-body hood"/>
+                     L155 85" fill="url(#carBody)" class="vehicle-body hood" />
 
-            <!-- Techo -->
-            <path d="M75 55
+                <!-- Techo -->
+                <path d="M75 55
                      L85 35
                      C85 35 95 25 115 25
                      C135 25 145 35 145 35
-                     L155 55"
-                  fill="url(#carBody)"
-                  class="vehicle-body roof"/>
-        </g>
+                     L155 55" fill="url(#carBody)" class="vehicle-body roof" />
+            </g>
 
-        <!-- Vidrios -->
-        <g class="car-windows">
-            <!-- Parabrisas -->
-            <path d="M85 35
+            <!-- Vidrios -->
+            <g class="car-windows">
+                <!-- Parabrisas -->
+                <path d="M85 35
                      C85 35 95 28 115 28
                      C135 28 145 35 145 35
                      L135 52
-                     L95 52 Z"
-                  fill="url(#carWindows)"
-                  class="vehicle-windows windshield"/>
+                     L95 52 Z" fill="url(#carWindows)" class="vehicle-windows windshield" />
 
-            <!-- Ventanas laterales -->
-            <path d="M75 55
+                <!-- Ventanas laterales -->
+                <path d="M75 55
                      L85 35
                      L95 52
-                     L85 65 Z"
-                  fill="url(#carWindows)"
-                  class="vehicle-windows side-window"/>
-                  
-            <path d="M145 35
+                     L85 65 Z" fill="url(#carWindows)" class="vehicle-windows side-window" />
+
+                <path d="M145 35
                      L135 52
                      L145 65
-                     L155 55 Z"
-                  fill="url(#carWindows)"
-                  class="vehicle-windows side-window"/>
-        </g>
+                     L155 55 Z" fill="url(#carWindows)" class="vehicle-windows side-window" />
+            </g>
 
-        <!-- Luces -->
-        <g class="car-lights">
-            <!-- Faros delanteros -->
-            <path d="M35 75
+            <!-- Luces -->
+            <g class="car-lights">
+                <!-- Faros delanteros -->
+                <path d="M35 75
                      C35 75 40 70 45 70
                      L50 75
                      L45 80
-                     L35 80 Z"
-                  class="vehicle-lights headlight"/>
+                     L35 80 Z" class="vehicle-lights headlight" />
 
-            <!-- Luces traseras -->
-            <path d="M150 70
+                <!-- Luces traseras -->
+                <path d="M150 70
                      L165 70
                      L165 80
-                     L150 80 Z"
-                  class="vehicle-lights taillight"/>
-        </g>
+                     L150 80 Z" class="vehicle-lights taillight" />
+            </g>
 
-        <!-- Parrilla -->
-        <path d="M45 75
+            <!-- Parrilla -->
+            <path d="M45 75
                  C45 75 50 72 55 72
                  L65 72
                  C70 72 70 78 65 78
                  L55 78
-                 C50 78 45 75 45 75"
-              fill="url(#carDetails)"
-              class="vehicle-detail grille"/>
+                 C50 78 45 75 45 75" fill="url(#carDetails)" class="vehicle-detail grille" />
 
-        <!-- Ruedas con efecto 3D -->
-        <g class="wheel-group" transform="translate(45,95)">
-            <!-- Aro exterior -->
-            <circle cx="0" cy="0" r="15" class="vehicle-wheel"/>
-            <!-- Rin -->
-            <circle cx="0" cy="0" r="9" class="wheel-inner"/>
-            <!-- Centro -->
-            <circle cx="0" cy="0" r="3" class="wheel-center"/>
-            <!-- Rayos -->
-            <g class="wheel-spokes">
-                <line x1="-9" y1="0" x2="9" y2="0"/>
-                <line x1="0" y1="-9" x2="0" y2="9"/>
-                <line x1="-6" y1="-6" x2="6" y2="6"/>
-                <line x1="-6" y1="6" x2="6" y2="-6"/>
+            <!-- Ruedas con efecto 3D -->
+            <g class="wheel-group" transform="translate(45,95)">
+                <!-- Aro exterior -->
+                <circle cx="0" cy="0" r="15" class="vehicle-wheel" />
+                <!-- Rin -->
+                <circle cx="0" cy="0" r="9" class="wheel-inner" />
+                <!-- Centro -->
+                <circle cx="0" cy="0" r="3" class="wheel-center" />
+                <!-- Rayos -->
+                <g class="wheel-spokes">
+                    <line x1="-9" y1="0" x2="9" y2="0" />
+                    <line x1="0" y1="-9" x2="0" y2="9" />
+                    <line x1="-6" y1="-6" x2="6" y2="6" />
+                    <line x1="-6" y1="6" x2="6" y2="-6" />
+                </g>
             </g>
-        </g>
 
-        <g class="wheel-group" transform="translate(155,95)">
-            <circle cx="0" cy="0" r="15" class="vehicle-wheel"/>
-            <circle cx="0" cy="0" r="9" class="wheel-inner"/>
-            <circle cx="0" cy="0" r="3" class="wheel-center"/>
-            <g class="wheel-spokes">
-                <line x1="-9" y1="0" x2="9" y2="0"/>
-                <line x1="0" y1="-9" x2="0" y2="9"/>
-                <line x1="-6" y1="-6" x2="6" y2="6"/>
-                <line x1="-6" y1="6" x2="6" y2="-6"/>
+            <g class="wheel-group" transform="translate(155,95)">
+                <circle cx="0" cy="0" r="15" class="vehicle-wheel" />
+                <circle cx="0" cy="0" r="9" class="wheel-inner" />
+                <circle cx="0" cy="0" r="3" class="wheel-center" />
+                <g class="wheel-spokes">
+                    <line x1="-9" y1="0" x2="9" y2="0" />
+                    <line x1="0" y1="-9" x2="0" y2="9" />
+                    <line x1="-6" y1="-6" x2="6" y2="6" />
+                    <line x1="-6" y1="6" x2="6" y2="-6" />
+                </g>
             </g>
-        </g>
 
-        <!-- Detalles adicionales -->
-        <g class="car-details">
-            <!-- Manijas de puertas -->
-            <path d="M100 60 L105 60" class="vehicle-detail handle"/>
-            <path d="M125 60 L130 60" class="vehicle-detail handle"/>
-            
-            <!-- Líneas de diseño -->
-            <path d="M65 65 L155 65" class="vehicle-detail"/>
-            <path d="M75 55 L145 55" class="vehicle-detail"/>
-            
-            <!-- Espejo lateral -->
-            <path d="M85 55 
-                     C85 55 80 50 85 45"
-                  class="vehicle-detail mirror"/>
-        </g>
-    </symbol>
-        
+            <!-- Detalles adicionales -->
+            <g class="car-details">
+                <!-- Manijas de puertas -->
+                <path d="M100 60 L105 60" class="vehicle-detail handle" />
+                <path d="M125 60 L130 60" class="vehicle-detail handle" />
+
+                <!-- Líneas de diseño -->
+                <path d="M65 65 L155 65" class="vehicle-detail" />
+                <path d="M75 55 L145 55" class="vehicle-detail" />
+
+                <!-- Espejo lateral -->
+                <path d="M85 55 
+                     C85 55 80 50 85 45" class="vehicle-detail mirror" />
+            </g>
+        </symbol>
+
         <!-- Moto -->
         <symbol id="motorcycle" viewBox="0 0 200 120">
             <!-- Sombra -->
             <ellipse cx="100" cy="110" rx="70" ry="10" fill="rgba(0,0,0,0.2)" />
-            
+
             <!-- Rueda trasera -->
             <g class="wheel-group" transform="translate(50,90)">
-                <circle cx="0" cy="0" r="20" class="vehicle-wheel"/>
-                <circle cx="0" cy="0" r="12" class="wheel-inner"/>
-                <circle cx="0" cy="0" r="4" class="wheel-center"/>
+                <circle cx="0" cy="0" r="20" class="vehicle-wheel" />
+                <circle cx="0" cy="0" r="12" class="wheel-inner" />
+                <circle cx="0" cy="0" r="4" class="wheel-center" />
                 <!-- Rayos -->
                 <g class="wheel-spokes">
-                    <line x1="-12" y1="0" x2="12" y2="0"/>
-                    <line x1="0" y1="-12" x2="0" y2="12"/>
-                    <line x1="-8" y1="-8" x2="8" y2="8"/>
-                    <line x1="-8" y1="8" x2="8" y2="-8"/>
+                    <line x1="-12" y1="0" x2="12" y2="0" />
+                    <line x1="0" y1="-12" x2="0" y2="12" />
+                    <line x1="-8" y1="-8" x2="8" y2="8" />
+                    <line x1="-8" y1="8" x2="8" y2="-8" />
                 </g>
             </g>
-            
+
             <!-- Rueda delantera -->
             <g class="wheel-group" transform="translate(150,90)">
-                <circle cx="0" cy="0" r="20" class="vehicle-wheel"/>
-                <circle cx="0" cy="0" r="12" class="wheel-inner"/>
-                <circle cx="0" cy="0" r="4" class="wheel-center"/>
+                <circle cx="0" cy="0" r="20" class="vehicle-wheel" />
+                <circle cx="0" cy="0" r="12" class="wheel-inner" />
+                <circle cx="0" cy="0" r="4" class="wheel-center" />
                 <!-- Rayos -->
                 <g class="wheel-spokes">
-                    <line x1="-12" y1="0" x2="12" y2="0"/>
-                    <line x1="0" y1="-12" x2="0" y2="12"/>
-                    <line x1="-8" y1="-8" x2="8" y2="8"/>
-                    <line x1="-8" y1="8" x2="8" y2="-8"/>
+                    <line x1="-12" y1="0" x2="12" y2="0" />
+                    <line x1="0" y1="-12" x2="0" y2="12" />
+                    <line x1="-8" y1="-8" x2="8" y2="8" />
+                    <line x1="-8" y1="8" x2="8" y2="-8" />
                 </g>
             </g>
-            
+
             <!-- Chasis principal -->
             <path d="M50 90 
                      L70 90 
                      L80 70 
                      C80 70 90 40 110 40 
-                     C130 40 140 70 150 90" 
-                  fill="url(#motoBody)" 
-                  class="vehicle-body"/>
-                  
+                     C130 40 140 70 150 90" fill="url(#motoBody)" class="vehicle-body" />
+
             <!-- Tanque de gasolina -->
             <path d="M80 70 
                      C80 70 90 50 110 50 
-                     C130 50 120 70 120 70" 
-                  fill="url(#motoBody)" 
-                  class="vehicle-body"/>
-                  
+                     C130 50 120 70 120 70" fill="url(#motoBody)" class="vehicle-body" />
+
             <!-- Asiento -->
             <path d="M90 55 
                      L110 55 
                      C120 55 120 65 110 65 
-                     L90 65 Z" 
-                  class="vehicle-seat"/>
-                  
+                     L90 65 Z" class="vehicle-seat" />
+
             <!-- Manubrio -->
             <g class="handlebar-group">
                 <path d="M140 60 
-                         C140 60 150 40 170 40" 
-                      class="vehicle-handlebar"/>
+                         C140 60 150 40 170 40" class="vehicle-handlebar" />
                 <path d="M140 60 
-                         C140 60 145 35 165 35" 
-                      class="vehicle-handlebar"/>
+                         C140 60 145 35 165 35" class="vehicle-handlebar" />
             </g>
-                  
+
             <!-- Horquilla delantera -->
-            <path d="M150 45 L150 85" 
-                  class="vehicle-fork" 
-                  stroke-width="3"/>
-            
+            <path d="M150 45 L150 85" class="vehicle-fork" stroke-width="3" />
+
             <!-- Motor -->
             <path d="M70 75 
                      L90 75 
                      L90 85 
-                     L70 85 Z" 
-                  class="vehicle-engine"/>
-            
+                     L70 85 Z" class="vehicle-engine" />
+
             <!-- Escape -->
             <g class="exhaust-group">
                 <path d="M60 80 
-                         C60 80 50 85 45 90" 
-                      class="vehicle-exhaust"/>
+                         C60 80 50 85 45 90" class="vehicle-exhaust" />
                 <path d="M45 90 
-                         C40 95 40 100 45 100" 
-                      class="vehicle-exhaust"/>
+                         C40 95 40 100 45 100" class="vehicle-exhaust" />
             </g>
-    
+
             <!-- Luces -->
-            <circle cx="150" cy="65" r="5" class="vehicle-lights"/>
+            <circle cx="150" cy="65" r="5" class="vehicle-lights" />
         </symbol>
     </svg>
-
+    <svg style="display: none;">
+        <symbol id="parking-icon" viewBox="0 0 24 24">
+            <path
+                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+        </symbol>
+        <symbol id="car-small" viewBox="0 0 24 24">
+            <path
+                d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.85 7h10.29l1.04 3H5.81l1.04-3zM19 17H5v-5h14v5z" />
+            <circle cx="7.5" cy="14.5" r="1.5" />
+            <circle cx="16.5" cy="14.5" r="1.5" />
+        </symbol>
+    </svg>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    {% load static %}
     <script src="{% static 'js/inicio_parqueo.js' %}"></script>
 </body>
+
 </html>
