@@ -13,6 +13,7 @@
 </head>
 
 <body>
+    {% csrf_token %}
     <!-- Patrón de sobres en el fondo -->
     <div class="envelope-pattern">
         <!-- 24 sobres para crear un patrón uniforme -->
@@ -162,16 +163,52 @@
     </div>
 
     <script>
+        window.CSRF_TOKEN = "{{ csrf_token }}";
         // Variables globales
         let currentService = '';
         const ANIMATION_DURATION = 300;
+        let progressModal = null;
+        let currentProgress = 0;
+        let isSubmitting = false;
+
+        // Función mejorada para obtener el CSRF token
+        function getCsrfToken() {
+            // Primero intentar obtener el token de la variable global
+            if (window.CSRF_TOKEN) {
+                return window.CSRF_TOKEN;
+            }
+
+            // Si no está en la variable global, intentar obtenerlo del input hidden
+            const csrfInput = document.querySelector('input[name="csrfmiddlewaretoken"]');
+            if (csrfInput) {
+                return csrfInput.value;
+            }
+
+            // Si aún no lo encontramos, buscarlo en las cookies
+            return getCookie('csrftoken');
+        }
+
+        // Función para obtener cookies
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
 
         // Función para inicializar efectos visuales
         function initializeVisualEffects() {
             // Crear efecto de desplazamiento aleatorio para los sobres
             const envelopes = document.querySelectorAll('.envelope');
             envelopes.forEach((envelope, index) => {
-                // Posición inicial aleatoria
                 const randomX = Math.random() * 20 - 10;
                 const randomY = Math.random() * 20 - 10;
                 const randomDelay = Math.random() * 2;
@@ -219,12 +256,10 @@
             }
         }
 
-
         function hideConfirmation() {
             const modal = document.getElementById('confirmModal');
             const modalContent = modal.querySelector('.modal');
 
-            // Animación de salida
             modalContent.classList.remove('modal-enter');
             modalContent.classList.add('modal-leave');
             modal.style.opacity = '0';
@@ -235,10 +270,10 @@
             }, ANIMATION_DURATION);
         }
 
-        // Función para enviar notificación
-        // Actualiza la función sendNotification
-        // Actualizar tu función sendNotification
+        // Función actualizada para enviar notificación
         async function sendNotification() {
+            if (isSubmitting) return;
+
             try {
                 const button = document.querySelector(`.send-button[onclick*="${currentService}"]`);
                 if (!button) {
@@ -246,25 +281,35 @@
                     return;
                 }
 
+                const csrfToken = getCsrfToken();
+                if (!csrfToken) {
+                    throw new Error('CSRF token no encontrado');
+                }
+
+                isSubmitting = true;
                 button.disabled = true;
                 showProgressModal();
 
                 const response = await fetch('/api/send-service-notification/', {
                     method: 'POST',
+                    credentials: 'same-origin',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken'),
+                        'X-CSRFToken': csrfToken,
                     },
                     body: JSON.stringify({
                         service_type: currentService
                     })
                 });
 
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+
                 const data = await response.json();
                 hideConfirmation();
 
                 if (data.status === 'success') {
-                    // Actualizar progreso final
                     updateProgress(data.successful_sends, data.total_processed);
 
                     setTimeout(() => {
@@ -289,7 +334,7 @@
             } catch (error) {
                 console.error('Error:', error);
                 hideProgressModal();
-                showError('Error en el proceso de envío');
+                showError(`Error en el proceso de envío: ${error.message}`);
             } finally {
                 const button = document.querySelector(`.send-button[onclick*="${currentService}"]`);
                 if (button) {
@@ -301,44 +346,13 @@
                 Enviar Notificación
             `;
                 }
+                setTimeout(() => {
+                    isSubmitting = false;
+                }, 2000);
             }
         }
 
-        // Modificar los botones en el HTML
-        document.addEventListener('DOMContentLoaded', () => {
-            // Inicializar los botones correctamente
-            const buttons = document.querySelectorAll('.send-button');
-            buttons.forEach(button => {
-                const service = button.closest('.service-card').querySelector('.service-name').textContent;
-                button.setAttribute('data-service', service);
-            });
-
-            // Resto de tu código de inicialización...
-            initializeVisualEffects();
-        });
-
-
-
-
-
-        // Función para obtener el CSRF token
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
-
-
-        // Actualizar las funciones de notificación
+        // Funciones de notificación
         function showSuccess(message) {
             const successDiv = document.createElement('div');
             successDiv.className = 'success-notification';
@@ -358,8 +372,6 @@
             }, 3000);
         }
 
-
-        // Añade una función para mostrar errores
         function showError(message) {
             const errorDiv = document.createElement('div');
             errorDiv.className = 'error-notification';
@@ -379,73 +391,8 @@
             }, 3000);
         }
 
-        // Event Listeners
-        document.addEventListener('DOMContentLoaded', () => {
-            initializeVisualEffects();
-
-            // Cerrar modal al hacer click fuera
-            document.getElementById('confirmModal')?.addEventListener('click', (e) => {
-                if (e.target.id === 'confirmModal') {
-                    hideConfirmation();
-                }
-            });
-
-            // Cerrar modal con ESC
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    hideConfirmation();
-                }
-            });
-
-            // Hover effects para las tarjetas
-            document.querySelectorAll('.service-card').forEach(card => {
-                card.addEventListener('mousemove', (e) => {
-                    const rect = card.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-
-                    const centerX = rect.width / 2;
-                    const centerY = rect.height / 2;
-
-                    const rotateX = (y - centerY) / 20;
-                    const rotateY = (centerX - x) / 20;
-
-                    card.style.transform = `
-                perspective(1000px)
-                rotateX(${rotateX}deg)
-                rotateY(${rotateY}deg)
-                translateZ(10px)
-            `;
-                });
-
-                card.addEventListener('mouseleave', () => {
-                    card.style.transform = 'none';
-                });
-            });
-        });
-
-        // Prevenir múltiples envíos
-        let isSubmitting = false;
-        function throttleSubmit(fn) {
-            return function () {
-                if (isSubmitting) return;
-                isSubmitting = true;
-                fn.apply(this, arguments);
-                setTimeout(() => {
-                    isSubmitting = false;
-                }, 2000);
-            }
-        }
-
-        const throttledSend = throttleSubmit(sendNotification);
-
-
-        let progressModal = null;
-        let currentProgress = 0;
-
-        // Función para mostrar el modal de progreso
+        // Funciones del modal de progreso
         function showProgressModal() {
-            // Eliminar modal existente si hay uno
             if (progressModal) {
                 progressModal.remove();
             }
@@ -485,7 +432,6 @@
             progressModal = document.getElementById('progressModal');
         }
 
-        // Función para actualizar el progreso
         function updateProgress(sent, total) {
             if (!progressModal) return;
 
@@ -501,7 +447,6 @@
             if (totalCount) totalCount.textContent = total;
         }
 
-        // Función para ocultar el modal de progreso
         function hideProgressModal() {
             if (progressModal && progressModal.parentElement) {
                 progressModal.classList.add('fade-out');
@@ -512,7 +457,6 @@
             }
         }
 
-        // Función para mostrar notificación de resultado
         function showResultNotification(success, message, stats) {
             const notification = document.createElement('div');
             notification.className = `result-notification ${success ? 'success' : 'error'}`;
@@ -551,6 +495,63 @@
             }, 5000);
         }
 
+        // Inicialización y event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            // Verificar que el CSRF token esté disponible
+            const csrfToken = getCsrfToken();
+            if (!csrfToken) {
+                console.warn('CSRF token no encontrado. La funcionalidad puede estar limitada.');
+            }
+
+            // Inicializar botones
+            const buttons = document.querySelectorAll('.send-button');
+            buttons.forEach(button => {
+                const service = button.closest('.service-card').querySelector('.service-name').textContent;
+                button.setAttribute('data-service', service);
+            });
+
+            // Inicializar efectos visuales
+            initializeVisualEffects();
+
+            // Event listeners para el modal
+            document.getElementById('confirmModal')?.addEventListener('click', (e) => {
+                if (e.target.id === 'confirmModal') {
+                    hideConfirmation();
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    hideConfirmation();
+                }
+            });
+
+            // Hover effects para las tarjetas
+            document.querySelectorAll('.service-card').forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+
+                    const rotateX = (y - centerY) / 20;
+                    const rotateY = (centerX - x) / 20;
+
+                    card.style.transform = `
+                perspective(1000px)
+                rotateX(${rotateX}deg)
+                rotateY(${rotateY}deg)
+                translateZ(10px)
+            `;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'none';
+                });
+            });
+        });
 
     </script>
 

@@ -1,0 +1,296 @@
+/* zonas_comunes.css */
+:root {
+    --primary-color: #be185d; /* pink-700 */
+    --secondary-color: rgba(190, 24, 93, 0.8); /* pink-700 con transparencia */
+    --background-color: #0F172A;
+    --card-background: rgba(190, 24, 93, 0.15); /* pink-700 muy transparente */
+    --text-primary: #FFFFFF;
+    --text-secondary: #FFFFFF;
+    --neon-glow: 0 0 10px #be185d, 0 0 20px #be185d, 0 0 30px #be185d;
+    --transition-speed: 0.3s;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--background-color);
+    background-image: 
+    radial-gradient(circle at 20% 20%, rgba(219, 39, 119, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(219, 39, 119, 0.1) 0%, transparent 40%);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: fixed;
+    width: 100%;
+}
+
+.background-grid {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(to right, rgba(190, 24, 93, 0.1) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(190, 24, 93, 0.1) 1px, transparent 1px);
+    background-size: 50px 50px;
+    z-index: -2;
+    pointer-events: none;
+}
+
+.background-gradient {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, 
+                              rgba(190, 24, 93, 0.2) 0%,
+                              rgba(15, 15, 15, 0.95) 70%);
+    z-index: -1;
+    animation: gradientPulse 8s ease infinite;
+    pointer-events: none;
+}
+
+.main-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    z-index: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.main-header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.title {
+    font-size: clamp(1.75rem, 5vw, 3rem);
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: white; /* Cambiado a blanco */
+    text-shadow: 
+        0 0 7px var(--primary-color),
+        0 0 10px var(--primary-color),
+        0 0 21px var(--primary-color),
+        0 0 42px var(--primary-color);
+    animation: neonPulse 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes neonPulse {
+    0% { 
+        text-shadow: 
+            0 0 7px var(--primary-color),
+            0 0 10px var(--primary-color),
+            0 0 21px var(--primary-color),
+            0 0 42px var(--primary-color);
+    }
+    100% {
+        text-shadow: 
+            0 0 10px var(--primary-color),
+            0 0 15px var(--primary-color),
+            0 0 25px var(--primary-color),
+            0 0 45px var(--primary-color);
+    }
+}
+
+.subtitle {
+    font-size: clamp(1rem, 3vw, 1.2rem);
+    color: var(--text-secondary);
+    text-shadow: 0 0 5px var(--secondary-color);
+}
+
+.zones-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+    gap: clamp(1rem, 3vw, 2rem);
+    padding: 1rem;
+    width: 100%;
+    max-width: 100%;
+}
+
+.zone-card {
+    position: relative;
+    aspect-ratio: 4/3;
+    cursor: pointer;
+    perspective: 1000px;
+    touch-action: pan-y pinch-zoom;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+}
+
+.card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: var(--card-background);
+    border-radius: 1rem;
+    padding: clamp(1rem, 4vw, 2rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-speed) ease;
+    transform-style: preserve-3d;
+    border: 1px solid rgba(190, 24, 93, 0.3);
+    box-shadow: 0 0 15px rgba(190, 24, 93, 0.2);
+    backface-visibility: hidden;
+}
+
+/* Efectos solo para dispositivos no táctiles */
+@media (hover: hover) {
+    .zone-card:hover .card-inner {
+        transform: translateY(-10px) rotateX(10deg);
+        border-color: var(--primary-color);
+        box-shadow: 0 0 20px rgba(190, 24, 93, 0.4);
+    }
+    
+    .zone-card:hover .glow-effect {
+        opacity: 0.3;
+        animation: neonPulse 2s infinite;
+    }
+    
+    .zone-card:hover h2 {
+        transform: translateZ(20px);
+    }
+    
+    .zone-card:hover .zone-icon {
+        transform: translateZ(30px);
+    }
+    
+    .zone-card:hover .card-overlay {
+        opacity: 1;
+    }
+}
+
+/* Desactivar efectos en dispositivos táctiles */
+@media (hover: none) {
+    .card-inner {
+        transform: none !important;
+    }
+    
+    .zone-card h2 {
+        transform: none !important;
+    }
+    
+    .zone-icon {
+        transform: none !important;
+    }
+}
+
+.icon-wrapper {
+    position: relative;
+    width: clamp(80px, 15vw, 120px);
+    height: clamp(80px, 15vw, 120px);
+    margin-bottom: 1.5rem;
+    transition: transform var(--transition-speed) ease;
+}
+
+.glow-effect {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, var(--primary-color) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity var(--transition-speed) ease;
+    pointer-events: none;
+}
+
+.zone-icon {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 8px var(--primary-color));
+    transition: transform var(--transition-speed) ease;
+    pointer-events: none;
+}
+
+.zone-card h2 {
+    font-size: clamp(1.25rem, 4vw, 1.5rem);
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: center;
+    transition: all var(--transition-speed) ease;
+    text-shadow: 0 0 5px var(--primary-color);
+}
+
+.card-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, 
+                              rgba(190, 24, 93, 0.1), 
+                              rgba(190, 24, 93, 0.1));
+    border-radius: 1rem;
+    opacity: 0;
+    transition: opacity var(--transition-speed) ease;
+    pointer-events: none;
+}
+
+@keyframes neonPulse {
+    0% { 
+        text-shadow: 0 0 7px var(--primary-color),
+                     0 0 10px var(--primary-color),
+                     0 0 21px var(--primary-color),
+                     0 0 42px var(--primary-color);
+    }
+    100% {
+        text-shadow: 0 0 10px var(--primary-color),
+                     0 0 15px var(--primary-color),
+                     0 0 25px var(--primary-color),
+                     0 0 45px var(--primary-color);
+    }
+}
+
+@keyframes gradientPulse {
+    0% { opacity: 0.7; }
+    50% { opacity: 0.9; }
+    100% { opacity: 0.7; }
+}
+
+/* Efectos de hover para la card */
+@keyframes floatEffect {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
+}
+
+/* Media queries */
+@media (max-width: 360px) {
+    .main-container {
+        padding: 0.75rem;
+    }
+
+    .zones-grid {
+        gap: 1rem;
+        padding: 0.5rem;
+    }
+
+    .zone-card {
+        aspect-ratio: 3/2;
+    }
+
+    .card-inner {
+        padding: 1rem;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+    .zones-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

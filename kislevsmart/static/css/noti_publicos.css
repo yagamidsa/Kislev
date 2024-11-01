@@ -512,3 +512,252 @@ h1::after {
     font-size: 0.9em;
     color: #666;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Estilos base para todas las notificaciones */
+.result-notification {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    min-width: 300px;
+    max-width: 450px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 
+                0 5px 15px rgba(0, 0, 0, 0.1),
+                0 0 0 1px rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(10px);
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.result-notification::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(to right, #4CAF50, #45a049);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 1.5s ease-in-out;
+}
+
+.result-notification.error::before {
+    background: linear-gradient(to right, #f44336, #d32f2f);
+}
+
+.result-notification.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.result-notification.show::before {
+    transform: scaleX(1);
+}
+
+.notification-content {
+    padding: 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.notification-icon {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    margin-top: 3px;
+}
+
+.notification-icon svg {
+    width: 24px;
+    height: 24px;
+    animation: iconPop 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.notification-message {
+    flex-grow: 1;
+}
+
+.notification-message h4 {
+    margin: 0 0 8px 0;
+    color: #2c3e50;
+    font-size: 1.1em;
+    font-weight: 600;
+}
+
+.notification-message p {
+    margin: 0;
+    color: #5d6d7e;
+    font-size: 0.95em;
+    line-height: 1.5;
+}
+
+.notification-stats {
+    margin-top: 12px;
+    display: flex;
+    gap: 12px;
+    font-size: 0.9em;
+}
+
+.notification-stats span {
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: rgba(76, 175, 80, 0.1);
+    color: #4CAF50;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.notification-stats span:nth-child(2) {
+    background: rgba(244, 67, 54, 0.1);
+    color: #f44336;
+}
+
+/* Animaciones */
+@keyframes iconPop {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Efectos hover */
+.result-notification:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2),
+                0 8px 20px rgba(0, 0, 0, 0.15),
+                0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+/* Media queries para responsividad */
+@media (max-width: 768px) {
+    .result-notification {
+        left: 20px;
+        right: 20px;
+        bottom: 20px;
+        min-width: auto;
+        max-width: none;
+    }
+    
+    .notification-content {
+        padding: 15px;
+    }
+    
+    .notification-message h4 {
+        font-size: 1em;
+    }
+    
+    .notification-message p {
+        font-size: 0.9em;
+    }
+    
+    .notification-stats {
+        flex-wrap: wrap;
+    }
+}
+
+/* Animación para la barra de progreso en la notificación */
+.result-notification.success::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    width: 100%;
+    background: linear-gradient(to right, #4CAF50, #45a049);
+    animation: progressBar 5s linear;
+}
+
+.result-notification.error::after {
+    background: linear-gradient(to right, #f44336, #d32f2f);
+}
+
+@keyframes progressBar {
+    0% {
+        width: 100%;
+    }
+    100% {
+        width: 0%;
+    }
+}
+
+/* Estilos para tema oscuro */
+@media (prefers-color-scheme: dark) {
+    .result-notification {
+        background: rgba(30, 30, 30, 0.95);
+    }
+    
+    .notification-message h4 {
+        color: #ecf0f1;
+    }
+    
+    .notification-message p {
+        color: #bdc3c7;
+    }
+    
+    .notification-stats span {
+        background: rgba(76, 175, 80, 0.2);
+    }
+    
+    .notification-stats span:nth-child(2) {
+        background: rgba(244, 67, 54, 0.2);
+    }
+}
+
+/* Animación de entrada y salida */
+.result-notification.show {
+    animation: slideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.result-notification.hide {
+    animation: slideOut 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+@keyframes slideIn {
+    0% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    0% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}

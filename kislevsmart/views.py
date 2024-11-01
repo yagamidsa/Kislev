@@ -2,6 +2,7 @@ import base64
 from django.urls import reverse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.conf import settings
+from django.views.decorators.csrf import csrf_protect
 import qrcode
 import uuid, os
 from io import BytesIO
@@ -473,17 +474,38 @@ def procesar_envio(request):
 BATCH_SIZE = 500  # Tamaño del lote
 DELAY_BETWEEN_BATCHES = 2  # Segundos entre lotes
 
+@login_required
+@csrf_protect
 @require_POST
 def send_service_notification(request):
     try:
+        # Validar que la petición sea JSON
+        if not request.content_type == 'application/json':
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Content-Type debe ser application/json'
+            }, status=400)
+
         data = json.loads(request.body)
         service_type = data.get('service_type')
         
+        if not service_type:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Tipo de servicio no especificado'
+            }, status=400)
+
         # Obtener todos los propietarios
         propietarios = list(Usuario.objects.filter(
             user_type='propietario',
             is_active=True
         ))
+
+        if not propietarios:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'No hay propietarios activos para enviar notificaciones'
+            }, status=404)
 
         total_users = len(propietarios)
         sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
@@ -491,7 +513,7 @@ def send_service_notification(request):
         failed_sends = 0
         errors = []
 
-        # Dividir en lotes de 500
+        # Dividir en lotes
         batches = [propietarios[i:i + BATCH_SIZE] for i in range(0, total_users, BATCH_SIZE)]
         total_batches = len(batches)
 
@@ -516,7 +538,7 @@ def send_service_notification(request):
                         Por favor, pase a retirarla en horario de atención.
                         
                         Saludos cordiales,
-                        Tu Empresa
+                        Administración Conjunto Residencial
                     """
 
                     # Crear mensaje con configuraciones anti-spam
@@ -534,7 +556,7 @@ def send_service_notification(request):
                         html_content=HtmlContent(html_content)
                     )
 
-                    # Añadir headers anti-spam
+                    # Añadir headers anti-spam y metadatos
                     message.header = Header("List-Unsubscribe", f"<mailto:{settings.DEFAULT_FROM_EMAIL}?subject=unsubscribe>")
                     message.header = Header("Precedence", "bulk")
                     message.header = Header("X-Auto-Response-Suppress", "OOF, AutoReply")
@@ -543,7 +565,7 @@ def send_service_notification(request):
                     message.custom_arg = CustomArg("service", service_type)
                     message.reply_to = settings.DEFAULT_FROM_EMAIL
 
-                    # Enviar email
+                    # Enviar email y verificar respuesta
                     response = sg.send(message)
                     
                     if response.status_code in [200, 201, 202]:
@@ -552,32 +574,29 @@ def send_service_notification(request):
                     else:
                         batch_failed += 1
                         failed_sends += 1
-                        errors.append(f"Error con {propietario.email}: Status code {response.status_code}")
+                        errors.append({
+                            'email': propietario.email,
+                            'error': f"Status code {response.status_code}",
+                            'timestamp': time.strftime('%Y-%m-%d %H:%M:%S')
+                        })
 
                 except Exception as e:
                     batch_failed += 1
                     failed_sends += 1
-                    errors.append(f"Error con {propietario.email}: {str(e)}")
+                    errors.append({
+                        'email': propietario.email,
+                        'error': str(e),
+                        'timestamp': time.strftime('%Y-%m-%d %H:%M:%S')
+                    })
 
-            # Calcular progreso después de cada lote
+            # Calcular y enviar progreso después de cada lote
             progress = (batch_index / total_batches) * 100
             
-            # Devolver progreso parcial
-            progress_data = {
-                'status': 'processing',
-                'batch_index': batch_index,
-                'total_batches': total_batches,
-                'progress': round(progress, 1),
-                'successful_sends': successful_sends,
-                'failed_sends': failed_sends,
-                'total_users': total_users,
-                'current_batch_size': len(batch),
-                'remaining_batches': total_batches - batch_index
-            }
+            # Registrar progreso para debugging
+            print(f"Lote {batch_index}/{total_batches}: {progress:.1f}% completado. "
+                  f"Exitosos: {successful_sends}, Fallidos: {failed_sends}")
 
-            print(f"Progreso: {progress_data}")  # Para debugging
-
-            # Esperar entre lotes para no sobrecargar
+            # Esperar entre lotes
             if batch_index < total_batches:
                 time.sleep(DELAY_BETWEEN_BATCHES)
 
@@ -589,16 +608,21 @@ def send_service_notification(request):
             'failed_sends': failed_sends,
             'total_processed': total_users,
             'total_batches': total_batches,
-            'errors': errors[:5] if errors else None,  # Mostrar solo los primeros 5 errores
+            'errors': errors[:5] if errors else None,
             'completion_percentage': 100
         }
 
         return JsonResponse(final_response)
 
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Error en el formato de la petición JSON'
+        }, status=400)
     except Exception as e:
         return JsonResponse({
             'status': 'error',
-            'message': f'Error en el proceso: {str(e)}',
+            'message': f'Error en el servidor: {str(e)}',
             'successful_sends': successful_sends if 'successful_sends' in locals() else 0,
             'failed_sends': failed_sends if 'failed_sends' in locals() else 0,
             'total_users': total_users if 'total_users' in locals() else 0
@@ -635,6 +659,10 @@ def notificaciones(request):
 def parking(request):
     return render(request, 'parking/inicio_parqueo.html')
 
+
+@login_required
+def zonas_comunes(request):
+    return render(request, 'zonas_comunes.html')
 
 
 # Clave secreta para encriptar/desencriptar

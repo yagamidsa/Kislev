@@ -37,6 +37,7 @@ urlpatterns = [
     path('leerscaner/', views.leerscaner, name='leerscaner'),
     path('notificaciones/', views.notificaciones, name='notificaciones'),
     path('parking/', views.parking, name='parking'),
+    path('zonas_comunes/', views.zonas_comunes, name='zonas_comunes'),
     
     # Rutas de notificaciones
     path('noti_generales/', views.noti_generales, name='noti_generales'),
