@@ -38,6 +38,8 @@ urlpatterns = [
     path('notificaciones/', views.notificaciones, name='notificaciones'),
     path('parking/', views.parking, name='parking'),
     path('zonas_comunes/', views.zonas_comunes, name='zonas_comunes'),
+    path('carros/', views.disponibilidad_carros, name='disponibilidad_carros'),
+    path('motos/', views.disponibilidad_motos, name='disponibilidad_motos'),
     
     # Rutas de notificaciones
     path('noti_generales/', views.noti_generales, name='noti_generales'),

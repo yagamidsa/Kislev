@@ -1,15 +1,26 @@
-/* zonas_comunes.css */
+/* Variables globales */
 :root {
-    --primary-color: #be185d; /* pink-700 */
-    --secondary-color: rgba(190, 24, 93, 0.8); /* pink-700 con transparencia */
+    --primary-color: #be185d;
+    --secondary-color: #ff1493;
+    --glow-color: #ff69b4;
     --background-color: #0F172A;
-    --card-background: rgba(190, 24, 93, 0.15); /* pink-700 muy transparente */
+    --card-background: rgba(255, 255, 255, 0.05);
+    --card-border: rgba(255, 255, 255, 0.1);
     --text-primary: #FFFFFF;
-    --text-secondary: #FFFFFF;
-    --neon-glow: 0 0 10px #be185d, 0 0 20px #be185d, 0 0 30px #be185d;
+    --text-secondary: rgba(255, 255, 255, 0.8);
+    --neon-glow: 0 0 10px var(--primary-color),
+                 0 0 20px var(--secondary-color),
+                 0 0 30px var(--glow-color);
+    --frosted-blur: blur(16px);
     --transition-speed: 0.3s;
+    --neon-border: 0 0 2px #be185d,
+                  0 0 4px #be185d,
+                  0 0 6px #be185d,
+                  0 0 8px #be185d,
+                  0 0 10px #be185d;
 }
 
+/* Reset y estilos base */
 * {
     margin: 0;
     padding: 0;
@@ -17,31 +28,42 @@
     -webkit-tap-highlight-color: transparent;
 }
 
+html {
+    scroll-behavior: smooth;
+    height: 100%;
+}
+
 body {
     font-family: 'Inter', sans-serif;
     background-color: var(--background-color);
-    background-image: 
-    radial-gradient(circle at 20% 20%, rgba(219, 39, 119, 0.15) 0%, transparent 40%),
-    radial-gradient(circle at 80% 80%, rgba(219, 39, 119, 0.1) 0%, transparent 40%);
     color: var(--text-primary);
     min-height: 100vh;
     overflow-x: hidden;
     position: fixed;
     width: 100%;
+    height: 100%;
 }
 
+/* Efectos de fondo */
 .background-grid {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: -1;
-    background: 
-        linear-gradient(rgba(190, 30, 97, 0.884) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(206, 38, 197, 0.4) 1px, transparent 1px);
-    background-size: 50px 50px;
-    background-color: rgba(10, 10, 36, 0.911);
+    z-index: -2;
+    background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 30px 30px;
+    mask-image: radial-gradient(circle at center, 
+        rgba(0, 0, 0, 1) 0%,
+        rgba(0, 0, 0, 0.8) 40%,
+        rgba(0, 0, 0, 0) 80%);
+    -webkit-mask-image: radial-gradient(circle at center, 
+        rgba(0, 0, 0, 1) 0%,
+        rgba(0, 0, 0, 0.8) 40%,
+        rgba(0, 0, 0, 0) 80%);
 }
 
 .background-gradient {
@@ -50,31 +72,35 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: radial-gradient(circle at center, 
-                              rgba(20, 9, 58, 0.685) 0%,
-                              rgba(28, 10, 61, 0.95) 70%);
     z-index: -1;
-    animation: gradientPulse 8s ease infinite;
+    background: radial-gradient(circle at 50% -20%, 
+        rgba(238, 56, 139, 0.12) 0%, 
+        rgba(127, 17, 224, 0.12) 25%,
+        rgba(45, 13, 83, 0.12) 50%,
+        rgba(16, 20, 54, 0.12) 75%);
     pointer-events: none;
 }
 
+/* Contenedor principal actualizado */
 .main-container {
-    position: absolute;
-    width: 90%;
+    position: relative;
+    width: 100%;
     height: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
     padding: 2rem;
-    z-index: 1;
     overflow-y: auto;
     overflow-x: hidden;
-    left: 50%;
-    transform: translateX(-50%);
 }
 
+/* Header actualizado */
 .main-header {
+    width: 100%;
     text-align: center;
-    margin-bottom: 4rem;
+    margin-bottom: 2rem;
+    padding: 0 1rem;
 }
 
 .title {
@@ -96,159 +122,175 @@ body {
     text-shadow: 0 0 5px var(--secondary-color);
 }
 
+/* Grid actualizado */
 .zones-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: clamp(1rem, 3vw, 2rem);
-    padding: 1rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem;
     width: 100%;
-    max-width: 100%;
+    max-width: 1800px;
+    padding: 1rem;
+    flex: 1;
+    align-items: stretch;
 }
 
+/* Estilos de card actualizados */
 .zone-card {
-    position: relative;
+    width: 100%;
     aspect-ratio: 4/3;
+    position: relative;
     cursor: pointer;
-    perspective: 1000px;
-    touch-action: pan-y pinch-zoom;
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
+    perspective: 1500px;
 }
 
 .card-inner {
     position: relative;
     width: 100%;
     height: 100%;
-    background: var(--card-background);
-    border-radius: 1rem;
-    padding: clamp(1rem, 4vw, 2rem);
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: var(--frosted-blur);
+    -webkit-backdrop-filter: var(--frosted-blur);
+    border-radius: 1.5rem;
+    padding: 2rem;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    transition: all var(--transition-speed) ease;
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
     transform-style: preserve-3d;
-    border: 1px solid rgba(190, 24, 93, 0.89);
-    box-shadow: 0 0 15px rgba(190, 24, 93, 0.658);
-    backface-visibility: hidden;
+    border: 1px solid var(--card-border);
+    box-shadow: 
+        0 4px 24px -1px rgba(0, 0, 0, 0.2),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    overflow: hidden;
 }
 
+/* Iconos y efectos */
 .icon-wrapper {
     position: relative;
-    width: clamp(80px, 15vw, 120px);
-    height: clamp(80px, 15vw, 120px);
-    margin-bottom: 1.5rem;
-    transition: transform var(--transition-speed) ease;
+    width: clamp(80px, 25%, 140px);
+    height: clamp(80px, 25%, 140px);
+    margin-bottom: 2rem;
+    transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    z-index: 2;
 }
 
 .glow-effect {
     position: absolute;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle, var(--primary-color) 0%, transparent 70%);
+    width: 150%;
+    height: 150%;
+    top: -25%;
+    left: -25%;
+    background: radial-gradient(circle,
+        rgba(255, 20, 147, 0.4) 0%,
+        rgba(255, 20, 147, 0.1) 50%,
+        transparent 70%);
     opacity: 0;
-    transition: opacity var(--transition-speed) ease;
-    pointer-events: none;
+    transition: opacity 0.5s ease;
+    filter: blur(15px);
 }
 
 .zone-icon {
     width: 100%;
     height: 100%;
     filter: drop-shadow(0 0 8px var(--primary-color));
-    transition: transform var(--transition-speed) ease;
-    pointer-events: none;
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    transform: translateZ(20px);
 }
 
 .zone-card h2 {
-    font-size: clamp(1.25rem, 4vw, 1.5rem);
-    font-weight: 600;
+    font-size: clamp(1.25rem, 3vw, 1.8rem);
+    font-weight: 700;
     color: var(--text-primary);
     text-align: center;
-    transition: all var(--transition-speed) ease;
-    text-shadow: 0 0 5px var(--primary-color);
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    text-shadow: 0 0 10px var(--primary-color);
+    position: relative;
+    z-index: 2;
 }
 
 /* Media Queries actualizados */
-/* Laptops medianas (1366px - típico en laptops de 14") */
-@media screen and (max-width: 1366px) {
+/* Pantallas extra grandes */
+@media screen and (min-width: 1921px) {
     .main-container {
-        width: 95%;
-        padding: 1.5rem;
+        padding: 3rem;
+    }
+    
+    .zones-grid {
+        gap: 3rem;
+        width: 90%;
+    }
+
+    .card-inner {
+        padding: 3rem;
+    }
+}
+
+/* Pantallas grandes */
+@media screen and (min-width: 1441px) and (max-width: 1920px) {
+    .zones-grid {
+        gap: 2.5rem;
+        width: 90%;
+    }
+}
+
+/* Laptops y pantallas medianas */
+@media screen and (min-width: 1024px) and (max-width: 1440px) {
+    .main-container {
+        padding: 2rem;
     }
 
     .zones-grid {
+        gap: 2rem;
+        width: 95%;
+    }
+}
+
+/* Tablets y pantallas pequeñas */
+@media screen and (max-width: 1023px) {
+    .zones-grid {
+        grid-template-columns: minmax(0, 600px);
         gap: 1.5rem;
+        width: 95%;
     }
 
-    .icon-wrapper {
-        width: clamp(70px, 12vw, 100px);
-        height: clamp(70px, 12vw, 100px);
+    .main-container {
+        padding: 1.5rem;
+    }
+}
+
+/* Tablets pequeñas y móviles grandes */
+@media screen and (max-width: 768px) {
+    .main-container {
+        padding: 1rem;
+    }
+
+    .zones-grid {
+        gap: 1.25rem;
+        padding: 0.5rem;
     }
 
     .card-inner {
         padding: 1.5rem;
     }
+
+    .zone-card {
+        aspect-ratio: 16/10;
+    }
 }
 
-/* Tablets y laptops pequeñas */
-@media screen and (max-width: 1024px) {
-    .zones-grid {
-        gap: 1rem;
-        grid-template-columns: repeat(2, 1fr);
+/* Móviles */
+@media screen and (max-width: 480px) {
+    .main-container {
+        padding: 0.75rem;
     }
 
-    .icon-wrapper {
-        width: clamp(60px, 10vw, 90px);
-        height: clamp(60px, 10vw, 90px);
+    .zones-grid {
+        gap: 1rem;
     }
 
     .card-inner {
         padding: 1.25rem;
-    }
-}
-
-/* Tablets en vertical y móviles grandes */
-@media screen and (max-width: 768px) {
-    .zones-grid {
-        grid-template-columns: 1fr;
-        max-width: 500px;
-        margin: 1.5rem auto 0;
-        gap: 1.25rem;
-    }
-
-    .main-container {
-        padding: 1rem;
-    }
-
-    .icon-wrapper {
-        width: clamp(50px, 8vw, 80px);
-        height: clamp(50px, 8vw, 80px);
-    }
-
-    .card-inner {
-        padding: 1rem;
-    }
-
-    .main-header {
-        margin-bottom: 2rem;
-    }
-}
-
-/* Móviles medianos */
-@media screen and (max-width: 576px) {
-    .main-container {
-        width: 100%;
-        padding: 1rem 0.5rem;
-    }
-
-    .zones-grid {
-        gap: 0.75rem;
-        padding: 0.5rem;
-    }
-
-    .icon-wrapper {
-        width: clamp(40px, 7vw, 70px);
-        height: clamp(40px, 7vw, 70px);
     }
 
     .zone-card {
@@ -256,65 +298,25 @@ body {
     }
 }
 
-/* Móviles pequeños */
-@media screen and (max-width: 320px) {
-    .main-container {
-        padding: 0.75rem 0.25rem;
-    }
-
-    .zones-grid {
-        gap: 0.5rem;
-    }
-
-    .icon-wrapper {
-        width: clamp(35px, 6vw, 60px);
-        height: clamp(35px, 6vw, 60px);
-        margin-bottom: 1rem;
-    }
-
-    .card-inner {
-        padding: 0.75rem;
-    }
-}
-
-/* Mantener los efectos hover solo para dispositivos no táctiles */
+/* Efectos hover */
 @media (hover: hover) {
     .zone-card:hover .card-inner {
-        transform: translateY(-10px) rotateX(10deg);
-        border-color: var(--primary-color);
-        box-shadow: 0 0 20px rgba(190, 24, 93, 0.938);
-    }
-    
-    .zone-card:hover .glow-effect {
-        opacity: 0.3;
-        animation: neonPulse 2s infinite;
-    }
-    
-    .zone-card:hover h2 {
-        transform: translateZ(20px);
-    }
-    
-    .zone-card:hover .zone-icon {
-        transform: translateZ(30px);
-    }
-    
-    .zone-card:hover .card-overlay {
-        opacity: 1;
+        border: 2px solid var(--primary-color);
+        box-shadow: var(--neon-border);
+        transform: translateY(-5px);
     }
 }
 
-/* Desactivar efectos en dispositivos táctiles */
-@media (hover: none) {
-    .card-inner {
-        transform: none !important;
-    }
-    
-    .zone-card h2 {
-        transform: none !important;
-    }
-    
+/* Soporte Safari */
+@supports (-webkit-touch-callout: none) {
     .zone-icon {
-        transform: none !important;
+        fill: var(--primary-color);
+    }
+    
+    .zone-icon path,
+    .zone-icon rect,
+    .zone-icon circle {
+        fill: inherit;
     }
 }
 
@@ -331,132 +333,5 @@ body {
                      0 0 15px var(--primary-color),
                      0 0 25px var(--primary-color),
                      0 0 45px var(--primary-color);
-    }
-}
-
-@keyframes gradientPulse {
-    0% { opacity: 0.7; }
-    50% { opacity: 0.9; }
-    100% { opacity: 0.7; }
-}
-
-
-/* Efectos existentes para desktop */
-@media (hover: hover) {
-    .zone-card:hover .card-inner {
-        transform: translateY(-10px) rotateX(10deg);
-        border-color: var(--primary-color);
-        box-shadow: 0 0 20px rgba(190, 24, 93, 0.938);
-    }
-    
-    .zone-card:hover .glow-effect {
-        opacity: 0.3;
-        animation: neonPulse 2s infinite;
-    }
-    
-    .zone-card:hover h2 {
-        transform: translateZ(20px);
-    }
-    
-    .zone-card:hover .zone-icon {
-        transform: translateZ(30px);
-    }
-    
-    .zone-card:hover .card-overlay {
-        opacity: 1;
-    }
-}
-
-/* Nuevos efectos para dispositivos táctiles */
-@media (hover: none) {
-    /* Clase que se añadirá con JavaScript al tocar */
-    .zone-card.touched .card-inner {
-        animation: touchPulse 0.5s ease-out;
-        border-color: var(--primary-color);
-        box-shadow: 0 0 25px rgba(190, 24, 93, 0.95);
-    }
-
-    .zone-card.touched .glow-effect {
-        opacity: 0.4;
-        animation: touchGlow 0.5s ease-out;
-    }
-
-    .zone-card.touched .zone-icon {
-        animation: touchBounce 0.5s ease-out;
-    }
-
-    .zone-card.touched h2 {
-        animation: touchScale 0.5s ease-out;
-    }
-
-    /* Ripple effect container */
-    .zone-card {
-        overflow: hidden;
-    }
-
-    .touch-ripple {
-        position: absolute;
-        border-radius: 50%;
-        background: radial-gradient(circle, rgba(190, 24, 93, 0.7) 0%, rgba(190, 24, 93, 0) 70%);
-        transform: scale(0);
-        pointer-events: none;
-        z-index: 2;
-    }
-}
-
-/* Animaciones para efectos táctiles */
-@keyframes touchPulse {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(0.98);
-        box-shadow: 0 0 30px rgba(190, 24, 93, 1);
-    }
-    100% {
-        transform: scale(1);
-    }
-}
-
-@keyframes touchGlow {
-    0% {
-        opacity: 0;
-    }
-    50% {
-        opacity: 0.6;
-    }
-    100% {
-        opacity: 0.4;
-    }
-}
-
-@keyframes touchBounce {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.1);
-    }
-    100% {
-        transform: scale(1);
-    }
-}
-
-@keyframes touchScale {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.05);
-    }
-    100% {
-        transform: scale(1);
-    }
-}
-
-@keyframes rippleEffect {
-    to {
-        transform: scale(15);
-        opacity: 0;
     }
 }

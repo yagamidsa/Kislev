@@ -38,6 +38,9 @@ from django.db import DatabaseError, transaction
 from django.http import HttpResponse
 from django.views.decorators.vary import vary_on_headers
 from .models import VisitanteVehicular
+from .models import ParqueaderoCarro, ParqueaderoMoto
+
+
 
 # Configurar logger
 logger = logging.getLogger(__name__)
@@ -1351,3 +1354,91 @@ def validar_qr_vehicular(request, encrypted_token):
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+@login_required
+def disponibilidad_carros(request):
+    """Vista para mostrar solo la disponibilidad de carros"""
+    conjunto_id = request.user.conjunto_id
+    
+    # Obtener o crear registro de parqueadero para el conjunto
+    parqueadero, created = ParqueaderoCarro.objects.get_or_create(
+        conjunto_id=conjunto_id,
+        defaults={'total_espacios': 0}
+    )
+    
+    # Obtener disponibilidad
+    disponibilidad = ParqueaderoCarro.get_disponibilidad(conjunto_id)
+    
+    # Obtener vehículos activos
+    vehiculos_activos = VisitanteVehicular.objects.filter(
+        usuario_id=conjunto_id,  # Cambiado para usar usuario_id directamente
+        tipo_vehiculo='carro',
+        ultima_lectura__isnull=False,
+        segunda_lectura__isnull=True
+    ).order_by('-ultima_lectura')
+    
+    context = {
+        'disponibilidad': disponibilidad,
+        'vehiculos_activos': vehiculos_activos,
+        'conjunto': request.user.conjunto,
+    }
+    
+    return render(request, 'parking/disponibilidad_tipo.html', context)
+
+@login_required
+def disponibilidad_motos(request):
+    """Vista para mostrar solo la disponibilidad de motos"""
+    conjunto_id = request.user.conjunto_id
+    
+    # Obtener o crear registro de parqueadero para el conjunto
+    parqueadero, created = ParqueaderoMoto.objects.get_or_create(
+        conjunto_id=conjunto_id,
+        defaults={'total_espacios': 0}
+    )
+    
+    # Obtener disponibilidad
+    disponibilidad = ParqueaderoMoto.get_disponibilidad(conjunto_id)
+    
+    # Obtener vehículos activos
+    vehiculos_activos = VisitanteVehicular.objects.filter(
+        usuario_id=conjunto_id,  # Cambiado para usar usuario_id directamente
+        tipo_vehiculo='moto',
+        ultima_lectura__isnull=False,
+        segunda_lectura__isnull=True
+    ).order_by('-ultima_lectura')
+    
+    context = {
+        'disponibilidad': disponibilidad,
+        'vehiculos_activos': vehiculos_activos,
+        'conjunto': request.user.conjunto,
+    }
+    
+    return render(request, 'parking/disponibilidad_tipo.html', context)
+
+@login_required
+def historial_vehiculos(request, tipo_vehiculo):
+    """Vista para mostrar el historial de movimientos de vehículos"""
+    conjunto_id = request.user.conjunto_id
+    
+    # Obtener todos los movimientos del tipo de vehículo especificado
+    movimientos = VisitanteVehicular.objects.filter(
+        usuario__conjunto_id=conjunto_id,
+        tipo_vehiculo=tipo_vehiculo,
+        ultima_lectura__isnull=False
+    ).select_related('usuario').order_by('-ultima_lectura')
+    
+    context = {
+        'movimientos': movimientos,
+        'tipo_vehiculo': 'Carros' if tipo_vehiculo == 'carro' else 'Motos',
+        'conjunto': request.user.conjunto
+    }
+    
+    return render(request, 'parking/historial_vehiculos.html', context)

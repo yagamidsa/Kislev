@@ -1,3 +1,4 @@
+// static/js/inicio_parqueo.js
 document.addEventListener('DOMContentLoaded', function() {
     // Crear iconos de fondo
     const backgroundIcons = document.querySelector('.background-icons');
@@ -171,38 +172,39 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        // Click con animación mejorada
+        // Click con animación mejorada y navegación Django
         card.addEventListener('click', function() {
-            const url = this.dataset.url;
-            if (url) {
-                gsap.timeline()
-                    .to(this, {
-                        duration: 0.1,
-                        scale: 0.95,
-                        ease: "power2.in"
-                    })
-                    .to(this, {
-                        duration: 0.2,
-                        scale: 1.05,
-                        ease: "power2.out"
-                    })
-                    .to(this, {
-                        duration: 0.1,
-                        scale: 1,
-                        onComplete: () => {
-                            gsap.to(this, {
-                                duration: 0.3,
-                                opacity: 0,
-                                scale: 0.8,
-                                y: -50,
-                                ease: "power2.in",
-                                onComplete: () => {
-                                    window.location.href = url;
-                                }
-                            });
-                        }
-                    });
-            }
+            // Obtener el tipo de vehículo de la URL
+            const vehicleType = this.dataset.url.replace('/', ''); // 'carros' o 'motos'
+            const djangoUrl = `/${vehicleType}`; // Ajusta esto según tu configuración de URLs
+
+            gsap.timeline()
+                .to(this, {
+                    duration: 0.1,
+                    scale: 0.95,
+                    ease: "power2.in"
+                })
+                .to(this, {
+                    duration: 0.2,
+                    scale: 1.05,
+                    ease: "power2.out"
+                })
+                .to(this, {
+                    duration: 0.1,
+                    scale: 1,
+                    onComplete: () => {
+                        gsap.to(this, {
+                            duration: 0.3,
+                            opacity: 0,
+                            scale: 0.8,
+                            y: -50,
+                            ease: "power2.in",
+                            onComplete: () => {
+                                window.location.href = djangoUrl;
+                            }
+                        });
+                    }
+                });
         });
     });
 
