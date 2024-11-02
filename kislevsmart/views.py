@@ -969,199 +969,164 @@ def success_page(request, email_b64):
 
 
 @login_required
-@role_required(['porteria', 'administrador'])
+@role_required(['administrador'])
 def dashboard(request):
-    # Configuración inicial de fechas
-    fecha_actual = timezone.localtime(timezone.now()).date()
-    año_actual = fecha_actual.year
-    años_disponibles = [año_actual, año_actual - 1, año_actual - 2]
-
-    # Obtener fecha y año seleccionados
-    fecha_seleccionada = request.GET.get('fecha')
-    año_seleccionado = request.GET.get('año')
-
-    # Procesar fecha seleccionada
     try:
-        if fecha_seleccionada:
-            # Convertir la fecha string a datetime con zona horaria
-            fecha_base = datetime.strptime(fecha_seleccionada, '%Y-%m-%d')
-            fecha_inicio = timezone.make_aware(
-                datetime.combine(fecha_base.date(), time.min)
-            )
-            fecha_fin = timezone.make_aware(
-                datetime.combine(fecha_base.date(), time.max)
-            )
-        else:
-            fecha_inicio = timezone.make_aware(
-                datetime.combine(fecha_actual, time.min)
-            )
-            fecha_fin = timezone.make_aware(
-                datetime.combine(fecha_actual, time.max)
-            )
-    except ValueError:
-        fecha_inicio = timezone.make_aware(
-            datetime.combine(fecha_actual, time.min)
-        )
-        fecha_fin = timezone.make_aware(
-            datetime.combine(fecha_actual, time.max)
-        )
+        # Obtener el conjunto_id del usuario logueado
+        conjunto_id = request.user.conjunto_id
 
-    # Procesar año seleccionado
-    try:
-        if año_seleccionado:
-            año_seleccionado = int(año_seleccionado)
-        else:
-            año_seleccionado = año_actual
-    except ValueError:
-        año_seleccionado = año_actual
+        # Configuración inicial de fechas
+        fecha_actual = timezone.localtime(timezone.now()).date()
+        año_actual = fecha_actual.year
+        años_disponibles = [año_actual, año_actual - 1, año_actual - 2]
 
-    # Consultas base - usando rango de fecha en lugar de __date
-    visitantes_dia = Visitante.objects.filter(
-        fecha_generacion__range=(fecha_inicio, fecha_fin)
-    )
+        # Obtener fecha y año seleccionados
+        fecha_seleccionada = request.GET.get('fecha')
+        año_seleccionado = request.GET.get('año')
 
-    # Análisis de visitantes recurrentes
-    correos_recurrentes = Visitante.objects.values('email').annotate(
-        total=Count('email')
-    ).filter(total__gt=1).values_list('email', flat=True)
-
-    # Conteos para el día seleccionado
-    visitantes_recurrentes = visitantes_dia.filter(email__in=correos_recurrentes).count()
-    visitantes_nuevos = visitantes_dia.exclude(email__in=correos_recurrentes).count()
-    ingresos = visitantes_dia.exclude(ultima_lectura=None).count()
-
-    # Calcular pendientes incluyendo las últimas 24 horas
-    tiempo_limite = timezone.now() - timedelta(hours=24)
-
-    # Pendientes del día actual
-    pendientes_hoy = visitantes_dia.filter(ultima_lectura=None).count()
-
-    # Pendientes anteriores pero aún válidos (dentro de 24 horas)
-    pendientes_anteriores = Visitante.objects.filter(
-        ultima_lectura=None,
-        fecha_generacion__lt=fecha_inicio,
-        fecha_generacion__gte=tiempo_limite
-    ).count()
-
-    # Total de pendientes
-    total_pendientes = pendientes_hoy + pendientes_anteriores
-
-    # Datos para el gráfico por año seleccionado
-    año_inicio = timezone.make_aware(datetime(año_seleccionado, 1, 1))
-    año_fin = timezone.make_aware(datetime(año_seleccionado, 12, 31, 23, 59, 59))
-    
-    visitantes_por_mes = Visitante.objects.filter(
-        ultima_lectura__isnull=False,
-        ultima_lectura__range=(año_inicio, año_fin)
-    ).annotate(
-        mes=ExtractMonth('ultima_lectura')
-    ).values('mes').annotate(
-        total=Count('id')
-    ).order_by('mes')
-
-    # Preparar datos del gráfico
-    meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
-    datos_grafico = [0] * 12
-    for item in visitantes_por_mes:
-        datos_grafico[item['mes']-1] = item['total']
-
-    
-    # Obtener visitantes por motivo y día
-    # Conteo de visitantes por motivo para el día seleccionado
-    visitantes_por_motivo = visitantes_dia.values('motivo').annotate(
-        total=Count('id')
-    ).order_by('-total')  # Ordenar por cantidad descendente
-
-    # En tu vista, después de la consulta de visitantes_por_motivo
-    total_visitantes_dia = visitantes_dia.count()
-
-    # Conteo de visitantes por motivo para el día seleccionado
-    visitantes_por_motivo = visitantes_dia.values('motivo').annotate(
-        total=Count('id')
-    ).order_by('-total')
-    
-    
-    
-    
-    # Configuración inicial de fechas
-    fecha_actual = timezone.localtime(timezone.now()).date()
-    año_actual = fecha_actual.year
-    años_disponibles = [año_actual, año_actual - 1, año_actual - 2]
-
-    # Obtener fecha y año seleccionados
-    fecha_seleccionada = request.GET.get('fecha')
-    año_seleccionado = request.GET.get('año')
-
-    # Procesar fecha seleccionada
-    try:
-        if fecha_seleccionada:
-            fecha_base = datetime.strptime(fecha_seleccionada, '%Y-%m-%d')
-            fecha_inicio = timezone.make_aware(
-                datetime.combine(fecha_base.date(), time.min)
-            )
-            fecha_fin = timezone.make_aware(
-                datetime.combine(fecha_base.date(), time.max)
-            )
-        else:
+        # Procesar fecha seleccionada
+        try:
+            if fecha_seleccionada:
+                fecha_base = datetime.strptime(fecha_seleccionada, '%Y-%m-%d')
+                fecha_inicio = timezone.make_aware(
+                    datetime.combine(fecha_base.date(), time.min)
+                )
+                fecha_fin = timezone.make_aware(
+                    datetime.combine(fecha_base.date(), time.max)
+                )
+            else:
+                fecha_inicio = timezone.make_aware(
+                    datetime.combine(fecha_actual, time.min)
+                )
+                fecha_fin = timezone.make_aware(
+                    datetime.combine(fecha_actual, time.max)
+                )
+        except ValueError:
             fecha_inicio = timezone.make_aware(
                 datetime.combine(fecha_actual, time.min)
             )
             fecha_fin = timezone.make_aware(
                 datetime.combine(fecha_actual, time.max)
             )
-    except ValueError:
-        fecha_inicio = timezone.make_aware(
-            datetime.combine(fecha_actual, time.min)
-        )
-        fecha_fin = timezone.make_aware(
-            datetime.combine(fecha_actual, time.max)
-        )
 
-    # Procesar año seleccionado
-    try:
-        if año_seleccionado:
-            año_seleccionado = int(año_seleccionado)
-        else:
+        # Procesar año seleccionado
+        try:
+            if año_seleccionado:
+                año_seleccionado = int(año_seleccionado)
+            else:
+                año_seleccionado = año_actual
+        except ValueError:
             año_seleccionado = año_actual
-    except ValueError:
-        año_seleccionado = año_actual
 
+        # Consultas base - Filtradas por conjunto_id
+        visitantes_dia = Visitante.objects.filter(
+            fecha_generacion__range=(fecha_inicio, fecha_fin),
+            usuario_id=conjunto_id
+        )
 
+        # Análisis de visitantes recurrentes - Filtrado por conjunto
+        correos_recurrentes = Visitante.objects.filter(
+            usuario_id=conjunto_id
+        ).values('email').annotate(
+            total=Count('email')
+        ).filter(total__gt=1).values_list('email', flat=True)
 
-    # Obtener visitantes por día de la semana y hora
+        # Conteos para el día seleccionado
+        visitantes_recurrentes = visitantes_dia.filter(email__in=correos_recurrentes).count()
+        visitantes_nuevos = visitantes_dia.exclude(email__in=correos_recurrentes).count()
+        ingresos = visitantes_dia.exclude(ultima_lectura=None).count()
 
+        # Calcular pendientes incluyendo las últimas 24 horas
+        tiempo_limite = timezone.now() - timedelta(hours=24)
 
+        # Pendientes del día actual
+        pendientes_hoy = visitantes_dia.filter(ultima_lectura=None).count()
+
+        # Pendientes anteriores pero aún válidos (dentro de 24 horas)
+        pendientes_anteriores = Visitante.objects.filter(
+            ultima_lectura=None,
+            fecha_generacion__lt=fecha_inicio,
+            fecha_generacion__gte=tiempo_limite,
+            usuario_id=conjunto_id
+        ).count()
+
+        # Total de pendientes
+        total_pendientes = pendientes_hoy + pendientes_anteriores
+
+        # Datos para el gráfico por año seleccionado
+        año_inicio = timezone.make_aware(datetime(año_seleccionado, 1, 1))
+        año_fin = timezone.make_aware(datetime(año_seleccionado, 12, 31, 23, 59, 59))
         
-    # Contexto para el template
-    context = {
-        'fecha_seleccionada': fecha_inicio.date(),  # Convertimos a date para el template
-        'fecha_actual': fecha_actual,
-        'ingresos': ingresos,
-        'pendientes_hoy': pendientes_hoy,
-        'pendientes_anteriores': pendientes_anteriores,
-        'total_pendientes': total_pendientes,
-        'visitantes_recurrentes': visitantes_recurrentes,
-        'visitantes_nuevos': visitantes_nuevos,
-        'meses': meses,
-        'datos_grafico': datos_grafico,
-        'años_disponibles': años_disponibles,
-        'año_seleccionado': año_seleccionado,
-        'visitantes_por_motivo': visitantes_por_motivo,
-        'total_visitantes_dia': total_visitantes_dia,
-    }
-    
-    return render(request, 'dashboard.html', context)
+        visitantes_por_mes = Visitante.objects.filter(
+            ultima_lectura__isnull=False,
+            ultima_lectura__range=(año_inicio, año_fin),
+            usuario_id=conjunto_id
+        ).annotate(
+            mes=ExtractMonth('ultima_lectura')
+        ).values('mes').annotate(
+            total=Count('id')
+        ).order_by('mes')
+
+        # Preparar datos del gráfico
+        meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
+        datos_grafico = [0] * 12
+        for item in visitantes_por_mes:
+            datos_grafico[item['mes']-1] = item['total']
+
+        # Obtener visitantes por motivo y día
+        visitantes_por_motivo = visitantes_dia.values('motivo').annotate(
+            total=Count('id')
+        ).order_by('-total')
+
+        # Total de visitantes por día
+        total_visitantes_dia = visitantes_dia.count()
+        
+        # Contexto para el template
+        context = {
+            'fecha_seleccionada': fecha_inicio.date(),
+            'fecha_actual': fecha_actual,
+            'ingresos': ingresos,
+            'pendientes_hoy': pendientes_hoy,
+            'pendientes_anteriores': pendientes_anteriores,
+            'total_pendientes': total_pendientes,
+            'visitantes_recurrentes': visitantes_recurrentes,
+            'visitantes_nuevos': visitantes_nuevos,
+            'meses': meses,
+            'datos_grafico': datos_grafico,
+            'años_disponibles': años_disponibles,
+            'año_seleccionado': año_seleccionado,
+            'visitantes_por_motivo': visitantes_por_motivo,
+            'total_visitantes_dia': total_visitantes_dia,
+            'conjunto': request.user.conjunto,
+            'conjunto_id': conjunto_id
+        }
+        
+        return render(request, 'dashboard.html', context)
+        
+    except Exception as e:
+        logger.error(f"Error en dashboard: {str(e)}")
+        messages.error(request, f"Error al cargar el dashboard: {str(e)}")
+        return render(request, 'dashboard.html', {
+            'error': 'Error al cargar el dashboard',
+            'conjunto': request.user.conjunto,
+            'conjunto_id': request.user.conjunto_id
+        })
 
 
 #consulta por hora
 def get_visitor_stats(request):
+    # Obtener el conjunto_id del usuario logueado
+    conjunto_id = request.user.conjunto_id
+    
     # Obtener el tipo de filtro desde la solicitud
     filter_type = request.GET.get('filter_type', 'week')
     selected_month = int(request.GET.get('month', datetime.now().month))
     selected_year = int(request.GET.get('year', datetime.now().year))
     
-    # Consulta base
-    base_query = Visitante.objects.exclude(ultima_lectura__isnull=True)
+    # Consulta base filtrada por conjunto
+    base_query = Visitante.objects.filter(
+        usuario_id=conjunto_id
+    ).exclude(ultima_lectura__isnull=True)
     
     if filter_type == 'week':
         # Consulta por día de la semana
@@ -1182,7 +1147,6 @@ def get_visitor_stats(request):
             7: 'Sábado'
         }
         
-        # Asegurarse de que todos los días estén representados
         all_data = {day: 0 for day in range(1, 8)}
         for stat in stats:
             all_data[stat['day']] = stat['count']
@@ -1207,7 +1171,6 @@ def get_visitor_stats(request):
             10: 'Octubre', 11: 'Noviembre', 12: 'Diciembre'
         }
         
-        # Asegurarse de que todos los meses estén representados
         all_data = {month: 0 for month in range(1, 13)}
         for stat in stats:
             all_data[stat['month']] = stat['count']
@@ -1226,7 +1189,6 @@ def get_visitor_stats(request):
             count=Count('id')
         ).order_by('hour')
         
-        # Asegurarse de que todas las horas estén representadas
         all_data = {hour: 0 for hour in range(24)}
         for stat in stats:
             all_data[stat['hour']] = stat['count']

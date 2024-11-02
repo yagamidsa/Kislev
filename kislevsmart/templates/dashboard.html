@@ -15,6 +15,7 @@
 
 <body class="min-h-screen">
     <!-- Pasar datos de Django a JavaScript -->
+    {{ conjunto_id|json_script:"conjunto-id-data" }}
     {{ meses|json_script:"meses-data" }}
     {{ datos_grafico|json_script:"visitantes-data" }}
 
@@ -113,6 +114,7 @@
                         <!-- Mensaje de bienvenida -->
                         <div class="text-center mb-8">
                             <h1 class="text-4xl font-bold text-white mb-2">¡Bienvenid@ al Tablero!</h1>
+                            <p class="subtle-text text-lg">{{ conjunto.nombre }}</p>
                             <p class="subtle-text text-lg">Gestión de visitantes</p>
                         </div>
 
@@ -518,28 +520,34 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <script>
-        // Toggle menú en móviles
-        const menuButton = document.getElementById('menuButton');
-        const aside = document.querySelector('aside');
+        // Obtener el ID del conjunto del usuario logueado
+const conjuntoId = JSON.parse(document.getElementById('conjunto-id-data').textContent);
 
-        menuButton.addEventListener('click', () => {
-            aside.classList.toggle('hidden');
-            aside.classList.toggle('absolute');
-            aside.classList.toggle('inset-y-0');
-            aside.classList.toggle('left-0');
-            aside.classList.toggle('z-50');
-        });
-
-        // Configuración del gráfico principal de visitantes
-const ctx = document.getElementById('visitantesChart').getContext('2d');
+// Cargar datos para los gráficos
 const meses = JSON.parse(document.getElementById('meses-data').textContent);
 const datosGrafico = JSON.parse(document.getElementById('visitantes-data').textContent);
+
+// Toggle menú en móviles
+const menuButton = document.getElementById('menuButton');
+const aside = document.querySelector('aside');
+
+menuButton.addEventListener('click', () => {
+    aside.classList.toggle('hidden');
+    aside.classList.toggle('absolute');
+    aside.classList.toggle('inset-y-0');
+    aside.classList.toggle('left-0');
+    aside.classList.toggle('z-50');
+});
+
+// Configuración del gráfico principal de visitantes
+const ctx = document.getElementById('visitantesChart').getContext('2d');
 
 // Crear gradientes
 const gradientFill = ctx.createLinearGradient(0, 0, 0, 400);
 gradientFill.addColorStop(0, 'rgba(96, 165, 250, 0.3)');
 gradientFill.addColorStop(1, 'rgba(96, 165, 250, 0.02)');
 
+// Crear el gráfico principal
 new Chart(ctx, {
     type: 'line',
     data: {
@@ -559,7 +567,6 @@ new Chart(ctx, {
             pointHoverBorderColor: 'rgba(37, 99, 235, 1)',
             pointRadius: 6,
             pointHoverRadius: 8,
-            // Agregar un área de interacción más grande alrededor de los puntos
             pointHitRadius: 20
         }]
     },
@@ -571,11 +578,9 @@ new Chart(ctx, {
             easing: 'easeOutQuart'
         },
         interaction: {
-            // Mejorar la interacción táctil
             mode: 'nearest',
             axis: 'xy',
             intersect: false,
-            // Añadir un área más grande para la detección de interacción
             radius: 20
         },
         plugins: {
@@ -584,7 +589,6 @@ new Chart(ctx, {
             },
             tooltip: {
                 enabled: true,
-                // Mejorar el comportamiento del tooltip en dispositivos táctiles
                 events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove'],
                 backgroundColor: 'rgba(255, 255, 255, 0.95)',
                 titleColor: '#1e3a8a',
@@ -651,123 +655,120 @@ new Chart(ctx, {
     }
 });
 
-        // Al inicio de tu sección de scripts
-        document.addEventListener('DOMContentLoaded', function () {
-            // Función para manejar la navegación entre slides
-            function showSlide(slideId) {
-                console.log('showSlide called with slideId:', slideId);
-    // Ocultar todos los slides
-    document.querySelectorAll('.slide-content').forEach(slide => {
-        slide.classList.add('hidden');
-    });
+// Manejo de navegación y slides
+document.addEventListener('DOMContentLoaded', function () {
+    function showSlide(slideId) {
+        console.log('showSlide called with slideId:', slideId);
+        // Ocultar todos los slides
+        document.querySelectorAll('.slide-content').forEach(slide => {
+            slide.classList.add('hidden');
+        });
 
-    // Mostrar el slide seleccionado
-    const selectedSlide = document.getElementById(`slide-${slideId}`);
-    if (selectedSlide) {
-        selectedSlide.classList.remove('hidden');
-    }
-
-    // Actualizar estado activo en el menú
-    document.querySelectorAll('.menu-item').forEach(item => {
-        if (item.dataset.slide === slideId) {
-            item.classList.add('active');
-        } else {
-            item.classList.remove('active');
+        // Mostrar el slide seleccionado
+        const selectedSlide = document.getElementById(`slide-${slideId}`);
+        if (selectedSlide) {
+            selectedSlide.classList.remove('hidden');
         }
+
+        // Actualizar estado activo en el menú
+        document.querySelectorAll('.menu-item').forEach(item => {
+            if (item.dataset.slide === slideId) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+
+        // Si está en móvil, cerrar el menú después de seleccionar
+        if (window.innerWidth < 768) {
+            document.querySelector('aside').classList.add('hidden');
+        }
+    }
+
+    // Agregar event listeners a los elementos del menú
+    document.querySelectorAll('.menu-item').forEach(item => {
+        item.addEventListener('click', function (e) {
+            e.preventDefault();
+            showSlide(this.dataset.slide);
+        });
     });
 
-    // Si está en móvil, cerrar el menú después de seleccionar
-    if (window.innerWidth < 768) {
-        document.querySelector('aside').classList.add('hidden');
+    // Mostrar el slide inicial
+    showSlide('visitantes');
+});
+
+// Función para actualizar el año
+function actualizarAño(año) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const fecha = urlParams.get('fecha');
+    let nuevaUrl = new URL(window.location.pathname, window.location.origin);
+
+    nuevaUrl.searchParams.set('año', año);
+    nuevaUrl.searchParams.set('conjunto_id', conjuntoId); // Añadir conjunto_id
+    if (fecha) {
+        nuevaUrl.searchParams.set('fecha', fecha);
     }
+
+    window.location.href = nuevaUrl.toString();
 }
 
-            // Agregar event listeners a los elementos del menú
-document.querySelectorAll('.menu-item').forEach(item => {
-    item.addEventListener('click', function (e) {
-        e.preventDefault();
-        showSlide(this.dataset.slide);
+// Inicializar el año seleccionado
+document.addEventListener('DOMContentLoaded', function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const añoSeleccionado = urlParams.get('año');
+    if (añoSeleccionado) {
+        document.getElementById('selectAño').value = añoSeleccionado;
+    }
+});
+
+// Manejo del menú móvil
+document.addEventListener('DOMContentLoaded', function () {
+    const menuButton = document.getElementById('menuButton');
+    const aside = document.querySelector('aside');
+    const body = document.body;
+
+    // Crear overlay para el menú
+    const overlay = document.createElement('div');
+    overlay.classList.add('menu-overlay');
+    body.appendChild(overlay);
+
+    // Toggle menú
+    function toggleMenu() {
+        aside.classList.toggle('show-menu');
+        overlay.classList.toggle('show');
+        body.classList.toggle('menu-open');
+    }
+
+    // Event listeners
+    menuButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleMenu();
+    });
+
+    // Cerrar menú al hacer click en el overlay
+    overlay.addEventListener('click', toggleMenu);
+
+    // Cerrar menú al seleccionar una opción
+    document.querySelectorAll('.menu-item').forEach(item => {
+        item.addEventListener('click', () => {
+            if (window.innerWidth <= 768) {
+                toggleMenu();
+            }
+        });
+    });
+
+    // Cerrar menú al redimensionar la ventana a desktop
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 768 && aside.classList.contains('show-menu')) {
+            toggleMenu();
+        }
     });
 });
 
-            // Mostrar el slide inicial
-            showSlide('visitantes');
-        });
+// Variables y configuración del gráfico de visitantes por hora/semana
+let visitorsChart = null;
 
-        // filtro año visitantes por mes 
-        // Función para actualizar el año
-        function actualizarAño(año) {
-            const urlParams = new URLSearchParams(window.location.search);
-            const fecha = urlParams.get('fecha');
-            let nuevaUrl = new URL(window.location.pathname, window.location.origin);
-
-            nuevaUrl.searchParams.set('año', año);
-            if (fecha) {
-                nuevaUrl.searchParams.set('fecha', fecha);
-            }
-
-            window.location.href = nuevaUrl.toString();
-        }
-
-        // Inicializar el año seleccionado
-        document.addEventListener('DOMContentLoaded', function () {
-            const urlParams = new URLSearchParams(window.location.search);
-            const añoSeleccionado = urlParams.get('año');
-            if (añoSeleccionado) {
-                document.getElementById('selectAño').value = añoSeleccionado;
-            }
-        });
-
-
-        // Agregar después de tu script actual
-        document.addEventListener('DOMContentLoaded', function () {
-            const menuButton = document.getElementById('menuButton');
-            const aside = document.querySelector('aside');
-            const body = document.body;
-
-            // Crear overlay para el menú
-            const overlay = document.createElement('div');
-            overlay.classList.add('menu-overlay');
-            body.appendChild(overlay);
-
-            // Toggle menú
-            function toggleMenu() {
-                aside.classList.toggle('show-menu');
-                overlay.classList.toggle('show');
-                body.classList.toggle('menu-open');
-            }
-
-            // Event listeners
-            menuButton.addEventListener('click', (e) => {
-                e.stopPropagation();
-                toggleMenu();
-            });
-
-            // Cerrar menú al hacer click en el overlay
-            overlay.addEventListener('click', toggleMenu);
-
-            // Cerrar menú al seleccionar una opción
-            document.querySelectorAll('.menu-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    if (window.innerWidth <= 768) {
-                        toggleMenu();
-                    }
-                });
-            });
-
-            // Cerrar menú al redimensionar la ventana a desktop
-            window.addEventListener('resize', () => {
-                if (window.innerWidth > 768 && aside.classList.contains('show-menu')) {
-                    toggleMenu();
-                }
-            });
-        });
-
-
-        // grafico horas * semana
-        let visitorsChart = null;
-
-        // Configuración del gráfico de análisis de visitantes
+// Configuración del gráfico de análisis de visitantes
 function initializeVisitorsChart() {
     const ctx = document.getElementById('visitorsAnalyticsChart').getContext('2d');
     
@@ -794,7 +795,6 @@ function initializeVisitorsChart() {
                 pointHoverBorderColor: 'rgba(37, 99, 235, 1)',
                 pointRadius: 6,
                 pointHoverRadius: 8,
-                // Agregar un área de interacción más grande alrededor de los puntos
                 pointHitRadius: 20
             }]
         },
@@ -808,11 +808,9 @@ function initializeVisitorsChart() {
                 }
             },
             interaction: {
-                // Mejorar la interacción táctil
                 mode: 'nearest',
                 axis: 'xy',
                 intersect: false,
-                // Añadir un área más grande para la detección de interacción
                 radius: 20
             },
             plugins: {
@@ -821,7 +819,6 @@ function initializeVisitorsChart() {
                 },
                 tooltip: {
                     enabled: true,
-                    // Mejorar el comportamiento del tooltip en dispositivos táctiles
                     events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove'],
                     backgroundColor: 'rgba(255, 255, 255, 0.95)',
                     titleColor: '#1e3a8a',
@@ -888,47 +885,48 @@ function initializeVisitorsChart() {
     });
 }
 
-        function updateChart(filterType) {
-            const month = document.getElementById('monthSelect')?.value || '';
-            const year = new Date().getFullYear();
+// Función para actualizar el gráfico
+function updateChart(filterType) {
+    const month = document.getElementById('monthSelect')?.value || '';
+    const year = new Date().getFullYear();
 
-            fetch(`/visitor-stats/?filter_type=${filterType}&month=${month}&year=${year}`)
-                .then(response => response.json())
-                .then(data => {
-                    visitorsChart.data.labels = data.labels;
-                    visitorsChart.data.datasets[0].data = data.data;
-                    visitorsChart.update();
-                })
-                .catch(error => console.error('Error:', error));
+    fetch(`/visitor-stats/?filter_type=${filterType}&month=${month}&year=${year}&conjunto_id=${conjuntoId}`)
+        .then(response => response.json())
+        .then(data => {
+            visitorsChart.data.labels = data.labels;
+            visitorsChart.data.datasets[0].data = data.data;
+            visitorsChart.update();
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+// Event Listeners para el gráfico de análisis
+document.addEventListener('DOMContentLoaded', function () {
+    initializeVisitorsChart();
+
+    // Manejar cambios en el tipo de filtro
+    document.getElementById('filterType').addEventListener('change', function (e) {
+        const filterType = e.target.value;
+        const monthFilter = document.getElementById('monthFilter');
+
+        // Mostrar/ocultar filtro de mes según corresponda
+        if (filterType === 'hour') {
+            monthFilter.classList.remove('hidden');
+        } else {
+            monthFilter.classList.add('hidden');
         }
 
-        // Event Listeners
-        document.addEventListener('DOMContentLoaded', function () {
-            initializeVisitorsChart();
+        updateChart(filterType);
+    });
 
-            // Manejar cambios en el tipo de filtro
-            document.getElementById('filterType').addEventListener('change', function (e) {
-                const filterType = e.target.value;
-                const monthFilter = document.getElementById('monthFilter');
+    // Manejar cambios en el mes seleccionado
+    document.getElementById('monthSelect')?.addEventListener('change', function () {
+        updateChart('hour');
+    });
 
-                // Mostrar/ocultar filtro de mes según corresponda
-                if (filterType === 'hour') {
-                    monthFilter.classList.remove('hidden');
-                } else {
-                    monthFilter.classList.add('hidden');
-                }
-
-                updateChart(filterType);
-            });
-
-            // Manejar cambios en el mes seleccionado
-            document.getElementById('monthSelect')?.addEventListener('change', function () {
-                updateChart('hour');
-            });
-
-            // Cargar datos iniciales
-            updateChart('week');
-        });
+    // Cargar datos iniciales
+    updateChart('week');
+});
 
     </script>
 </body>
