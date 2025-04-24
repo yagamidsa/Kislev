@@ -1,0 +1,377 @@
+:root {
+    --primary-color: #FF1493;
+    --neon-color: #FF69B4;
+    --neon-glow: 0 0 5px #FF1493, 0 0 15px #FF1493, 0 0 30px #FF1493;
+    --bg-dark: #0F172A;
+    --card-bg: rgba(255, 255, 255, 0.05);
+    --card-border: rgba(255, 255, 255, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    position: relative;
+    min-height: 100vh;
+    background: var(--bg-dark);
+    overflow-x: hidden;
+    padding: 2rem;
+}
+
+/* Efectos de fondo mejorados */
+.light-effect {
+    position: fixed;
+    inset: 0;
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(190, 24, 93, 0.15) 0%, transparent 60%),
+        radial-gradient(circle at 80% 80%, rgba(190, 24, 93, 0.15) 0%, transparent 60%);
+    filter: blur(80px);
+    z-index: -1;
+}
+
+.floating-particles {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+}
+
+.floating-particles::before,
+.floating-particles::after {
+    content: '';
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.1;
+    animation: floatParticle 20s infinite;
+}
+
+.floating-particles::after {
+    right: 0;
+    animation-delay: -10s;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.header h1 {
+    color: white;
+    font-size: 3.5rem;
+    font-weight: 700;
+    text-shadow: var(--neon-glow);
+    opacity: 0;
+    transform: translateY(-20px);
+    animation: fadeInDown 0.8s forwards;
+}
+
+.header p {
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 1rem;
+    font-size: 1.2rem;
+    opacity: 0;
+    animation: fadeInUp 0.8s 0.2s forwards;
+}
+
+.parking-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 1rem;
+    flex: 1;
+}
+
+.parking-card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    position: relative;
+    backdrop-filter: blur(25px);
+    border: 1px solid var(--card-border);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    aspect-ratio: 1;
+    cursor: pointer;
+    animation: fadeInUp 0.8s forwards;
+    opacity: 0;
+    transform: perspective(1000px) rotateX(0deg);
+}
+
+.parking-card:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 1.5rem;
+    transform-style: preserve-3d;
+}
+
+.icon-container {
+    width: 60%;
+    aspect-ratio: 1;
+    position: relative;
+    margin-bottom: 1.5rem;
+    transform: translateZ(20px);
+    perspective: 1000px;
+}
+
+.glow-effect {
+    position: absolute;
+    inset: -20px;
+    background: radial-gradient(circle at center, 
+        rgba(255, 20, 147, 0.2), 
+        transparent 70%);
+    filter: blur(20px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    transform: translateZ(10px);
+}
+
+/* Estilos 3D mejorados para los vehículos */
+.vehicle-icon {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.3));
+    transition: all 0.3s ease;
+    transform-style: preserve-3d;
+}
+
+.vehicle-body {
+    fill: url("#carBody");
+    stroke: var(--primary-color);
+    stroke-width: 1.5;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
+}
+
+.vehicle-windows {
+    fill: url("#carWindows");
+    stroke: var(--primary-color);
+    stroke-width: 1;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
+}
+
+.vehicle-detail {
+    stroke: var(--primary-color);
+    stroke-width: 1.5;
+    fill: none;
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.1));
+}
+
+.wheel-group {
+    filter: drop-shadow(1px 2px 2px rgba(0, 0, 0, 0.2));
+    transform-style: preserve-3d;
+}
+
+.vehicle-wheel {
+    stroke: var(--primary-color);
+    stroke-width: 2;
+    fill: none;
+}
+
+.wheel-inner {
+    stroke: var(--primary-color);
+    stroke-width: 1.5;
+    fill: rgba(255, 20, 147, 0.1);
+}
+
+.wheel-center {
+    fill: var(--primary-color);
+}
+
+.wheel-spokes {
+    stroke: var(--primary-color);
+    stroke-width: 1.5;
+    transform-origin: center;
+}
+
+.vehicle-lights {
+    fill: var(--neon-color);
+    filter: drop-shadow(0 0 4px var(--neon-color));
+}
+
+.vehicle-handlebar, 
+.vehicle-fork {
+    stroke: var(--primary-color);
+    stroke-width: 2;
+    fill: none;
+    filter: drop-shadow(1px 2px 2px rgba(0, 0, 0, 0.2));
+}
+
+.vehicle-seat {
+    fill: var(--primary-color);
+    stroke: var(--primary-color);
+    stroke-width: 1;
+    filter: drop-shadow(1px 2px 2px rgba(0, 0, 0, 0.2));
+}
+
+.vehicle-engine,
+.vehicle-exhaust {
+    stroke: var(--primary-color);
+    stroke-width: 1.5;
+    fill: rgba(255, 20, 147, 0.1);
+    filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.15));
+}
+
+.parking-card h2 {
+    color: white;
+    font-size: 1.8rem;
+    font-weight: 600;
+    text-align: center;
+    text-shadow: 0 0 10px rgba(190, 24, 93, 0.5);
+    margin-bottom: 1rem;
+    transform: translateZ(30px);
+}
+
+.card-indicator {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
+    opacity: 0;
+    transform: translateY(10px) translateZ(20px);
+    transition: all 0.3s ease;
+}
+
+/* Efectos hover mejorados para 3D */
+.parking-card:hover {
+    transform: perspective(1000px) rotateX(5deg) translateY(-10px);
+    border-color: var(--primary-color);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2),
+                0 0 20px rgba(255, 20, 147, 0.3);
+}
+
+.parking-card:hover .glow-effect {
+    opacity: 1;
+}
+
+.parking-card:hover .vehicle-icon {
+    transform: scale(1.1) translateY(-5px) translateZ(30px);
+    filter: drop-shadow(4px 8px 12px rgba(0, 0, 0, 0.4))
+           drop-shadow(0 0 20px var(--neon-color));
+}
+
+.parking-card:hover .wheel-spokes {
+    animation: wheelSpin 4s linear infinite;
+}
+
+.parking-card:hover .vehicle-lights {
+    filter: drop-shadow(0 0 8px var(--neon-color))
+           drop-shadow(0 0 16px var(--primary-color));
+}
+
+.parking-card:hover .card-indicator {
+    opacity: 1;
+    transform: translateY(0) translateZ(20px);
+}
+
+/* Animaciones */
+@keyframes fadeInDown {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes floatParticle {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(100px, 100px); }
+    50% { transform: translate(0, 200px); }
+    75% { transform: translate(-100px, 100px); }
+}
+
+@keyframes wheelSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    body {
+        padding: 0;
+        overflow-y: auto;
+    }
+
+    .container {
+        padding: 1rem;
+        min-height: 100vh;
+    }
+
+    .header {
+        margin-bottom: 2rem;
+    }
+
+    .header h1 {
+        font-size: 2rem;
+    }
+
+    .header p {
+        font-size: 1rem;
+    }
+
+    .parking-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        padding: 0.5rem;
+    }
+
+    .parking-card {
+        min-height: 200px;
+        aspect-ratio: auto;
+    }
+
+    .icon-container {
+        width: 50%;
+        margin-bottom: 1rem;
+    }
+}
+
+/* Ajustes para pantallas muy pequeñas */
+@media (max-width: 360px) {
+    .header h1 {
+        font-size: 1.75rem;
+    }
+
+    .parking-card {
+        min-height: 180px;
+    }
+
+    .icon-container {
+        width: 45%;
+    }
+}

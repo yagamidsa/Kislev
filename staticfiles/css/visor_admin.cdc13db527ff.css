@@ -1,0 +1,333 @@
+body {
+  background-image: linear-gradient(45deg, #6015ab, #ffaf19);
+  background-size: cover;
+  background-repeat: no-repeat;
+  min-height: 120vh;
+  margin: 0;
+  padding: 0;
+  position: relative; /* Importante para el posicionamiento absoluto */
+  overflow-x: hidden;
+}
+
+
+
+/* Contenedor principal para el contenido centrado */
+.main-content {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  perspective: 400px;
+}
+
+
+
+  h2.subtitle {
+    font-size: 1.5rem;
+    color: #fff;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: 2px;
+    text-shadow: 
+      1px 1px 2px rgba(255, 255, 255, 0.2), 
+      2px 2px 4px rgba(0, 0, 0, 0.4), 
+      3px 3px 6px rgba(77, 71, 77, 0.6), 
+      4px 4px 8px rgba(43, 48, 48, 0.6),
+      5px 5px 10px rgba(20, 20, 18, 0.7);
+    animation: glow 2s infinite alternate;
+  }
+
+
+ 
+
+
+  h1.Welcome {
+    margin: -25% 10% 1% 10%;
+    font-size: 2.5rem;
+    color: #fff;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: 2px;
+    text-shadow: 
+      1px 1px 2px rgba(255, 255, 255, 0.2), 
+      2px 2px 4px rgba(0, 0, 0, 0.4), 
+      3px 3px 6px rgba(77, 71, 77, 0.6), 
+      4px 4px 8px rgba(43, 48, 48, 0.6),
+      5px 5px 10px rgba(20, 20, 18, 0.7);
+    animation: glow 2s infinite alternate;
+  }
+  
+  /* Animación para un efecto de brillo */
+  @keyframes glow {
+    0% {
+      text-shadow: 
+      1px 1px 2px rgba(255, 255, 255, 0.2), 
+      2px 2px 4px rgba(0, 0, 0, 0.4), 
+      3px 3px 6px rgba(77, 71, 77, 0.6), 
+      4px 4px 8px rgba(43, 48, 48, 0.6),
+      5px 5px 10px rgba(20, 20, 18, 0.7);
+    }
+    100% {
+      text-shadow: 
+      1px 1px 2px rgba(255, 255, 255, 0.2), 
+      2px 2px 4px rgba(0, 0, 0, 0.4), 
+      3px 3px 6px rgba(77, 71, 77, 0.6), 
+      4px 4px 8px rgba(43, 48, 48, 0.6),
+      5px 5px 10px rgba(20, 20, 18, 0.7);
+    }
+  }
+
+
+   /* Estilos para pantallas más pequeñas (por ejemplo, teléfonos) */
+   @media (max-width: 768px) {
+    h1.Welcome {
+        margin: -75% 10% 1% 10%;
+    }
+  }
+
+
+  .dropholder {
+    display: flex; /* Usar flexbox para la alineación */
+    align-items: center; /* Centra verticalmente */
+    justify-content: center;
+    width: 322px;
+    height: 60px;
+    margin: 50px auto;
+    padding: 0 0 0 20px;
+    border-radius: 10px;
+    font: 18px arial;
+    color: #fff;
+    position: relative;
+    box-sizing: border-box;
+    cursor: pointer;
+    background: #7f00ff;
+    background: -webkit-linear-gradient(to right, #e100ff, #7f00ff);
+    background: linear-gradient(to right, #e100ff, #7f00ff);
+    box-shadow: 0px 5px 15px 5px #840fe440;
+    color: #fff;
+    animation: move 3s ease-in-out infinite;
+    position: relative;
+  }
+  .dropholder:hover,
+  .dropholder:hover:after {
+    animation-play-state: paused;
+  }
+  .dropholder:after {
+    content: "";
+    position: absolute;
+    width: 250px;
+    height: 5px;
+    background: rgba(0, 0, 0, 0);
+    display: block;
+    top: 100px;
+    left: 37px;
+    margin: auto;
+    border-radius: 50%;
+    box-shadow: 0 15px 10px rgba(0, 0, 0, 0.4);
+    animation: moveShadow 3s ease-in-out infinite;
+  }
+  p {
+    margin-right: 15px;
+    margin-bottom: 15px;
+    align-items: center;
+    float: left;
+    line-height: 60px;
+  }
+
+
+
+  .dropdown > p {
+    font-size: 18px;
+    margin-top: -2px;
+    margin-left: 20px;
+  }
+  .dropdown,
+  .dropholder {
+    background: linear-gradient(#da4df8, #9b0db9);
+  }
+  .dropdown {
+    margin-left: 20px;
+    float: left;
+    width: 208px;
+    padding: 0 0 0 20px;
+    border-radius: 0 10px 10px 0;
+    cursor: pointer;
+    height: 58px;
+    border-left: 1px solid #da4df8;
+    position: relative;
+  }
+  .dropdown:hover {
+    background: linear-gradient(#da4df8, #b11cd0);
+  }
+  .dropdown:after {
+    font-size: 18px;
+    position: absolute;
+    right: 20px;
+    top: 18px;
+    display: block;
+  }
+  
+  .menu {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    width: 228px;
+    cursor: pointer;
+    opacity: 0;
+    transform-style: preserve-3d;
+    transform: rotatey(180deg) rotateX(5deg) translatey(100px);
+    backface-visibility: hidden;
+    cursor: pointer;
+    background: #8000ff57;
+    background: -webkit-linear-gradient(to right, #e100ff4f, #8000ff44);
+    background: linear-gradient(to right, #e100ff36, #8000ff49);
+    box-shadow: 0px 5px 15px 5px #840fe440;
+    color: #fff;
+    border: 2px solid #5c055750;
+    backdrop-filter: blur(0.4em);
+    border-radius: 20px;
+    transition: all 0.8s;
+    z-index: 5;
+    overflow: hidden;
+  }
+
+  .menu a {
+    display: block;
+  }
+
+  .menu li {
+    display: block;
+    padding: 15px 10px;
+    border-bottom: 1px dotted #fff;
+    color: #e8f8ff;
+    transition: all 0.3s;
+  }
+  .menu li:hover {
+    background: #381c3875;
+    padding-left: 20px;
+  }
+  .menu li:last-child {
+    border: none;
+  }
+  
+  .showMenu {
+    opacity: 1;
+    transform: rotateX(0deg) translatey(0px);
+  }
+  li > i {
+    float: left;
+    padding-top: 3px;
+    padding-right: 8px;
+  }
+  p > i {
+    position: relative;
+    top: 2px;
+  }
+  i {
+    opacity: 0.7;
+  }
+  @keyframes move {
+    0%,
+    100% {
+      transform: translateY(-10px);
+    }
+    50% {
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes moveShadow {
+    0%,
+    100% {
+      transform: translateY(10px);
+      opacity: 0.4;
+    }
+    50% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+
+  /* Actualiza los estilos del botón logout */
+/* Estilos específicos para el botón de logout */
+.logout-button {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  width: auto;
+  display: block;
+}
+
+.apple-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  text-decoration: none;
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.apple-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.apple-btn:active {
+  transform: translateY(0px);
+}
+
+.apple-btn i {
+  font-size: 16px;
+  transition: transform 0.3s ease;
+}
+
+.apple-btn:hover i {
+  transform: translateX(3px);
+}
+
+.logout-form {
+  margin: 0;
+  padding: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .logout-button {
+      top: 15px;
+      right: 15px;
+  }
+
+  .apple-btn {
+      padding: 10px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      justify-content: center;
+  }
+  
+  .apple-btn span {
+      display: none;
+  }
+
+  .apple-btn i {
+      margin: 0;
+      font-size: 18px;
+  }
+}

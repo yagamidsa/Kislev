@@ -1,0 +1,450 @@
+:root {
+    --primary-color: #FF1493;
+    --neon-color: #FF69B4; /* Color secundario para efectos */
+    --neon-glow: 0 0 5px #FF1493, 0 0 15px #FF1493, 0 0 30px #FF1493;
+    --bg-dark: #0F172A;
+    --card-bg: rgba(255, 255, 255, 0.05);
+    --card-border: rgba(255, 255, 255, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    position: relative;
+    min-height: 100vh;
+    background-color: var(--bg-dark);
+    background-image: radial-gradient(circle at center,
+            #1E293B 0%,
+            var(--bg-dark) 100%);
+    padding: 2rem;
+    overflow-x: hidden;
+    z-index: 0;
+}
+
+.light-effect {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at 20% 20%, rgba(190, 24, 93, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(190, 24, 93, 0.1) 0%, transparent 50%);
+    filter: blur(50px);
+    z-index: -1; /* Cambiar a negativo para que esté detrás de todo */
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    position: relative;
+    z-index: 2;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.header h1 {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-shadow: var(--neon-glow);
+    opacity: 0;
+    transform: translateY(-20px);
+    animation: fadeInDown 0.8s forwards;
+}
+
+.header p {
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 1rem;
+    font-size: 1.1rem;
+    opacity: 0;
+    animation: fadeInUp 0.8s 0.2s forwards;
+}
+
+.salas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 1rem;
+}
+
+.sala-card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    position: relative;
+    backdrop-filter: blur(25px) saturate(180%);
+    -webkit-backdrop-filter: blur(25px) saturate(180%);
+    border: 1px solid var(--card-border);
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -1px rgba(0, 0, 0, 0.06),
+        inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: translateY(20px);
+    overflow: hidden;
+}
+
+/* Efecto de brillo en los bordes */
+.sala-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 20px;
+    padding: 1px;
+    background: linear-gradient(var(--card-border),
+            rgba(255, 255, 255, 0.05));
+    mask: linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+}
+
+.sala-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--primary-color);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.2),
+        inset 0 1px 2px rgba(255, 255, 255, 0.15);
+}
+
+.sala-card:hover::before {
+    background: linear-gradient(var(--primary-color),
+            rgba(255, 255, 255, 0.1));
+    opacity: 0.8;
+}
+
+.sala-image {
+    width: 100%;
+    height: 200px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.sala-image::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(15, 23, 42, 0.8) 100%
+    );
+}
+
+.sala-content {
+    padding: 1.5rem;
+    color: white;
+}
+
+.sala-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: white;
+    text-shadow: 0 0 10px rgba(190, 24, 93, 0.5);
+}
+
+.sala-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.sala-info i {
+    color: var(--primary-color);
+    filter: drop-shadow(0 0 5px var(--neon-color));
+}
+
+.sala-button {
+    display: inline-block;
+    background: var(--primary-color);
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border-radius: 12px;
+    text-decoration: none;
+    margin-top: 1.5rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(190, 24, 93, 0.5);
+}
+
+.sala-button:hover {
+    box-shadow: 0 0 20px rgba(190, 24, 93, 0.8);
+    transform: translateY(-2px);
+}
+
+/* Animaciones para las cards */
+.sala-card:nth-child(1) { animation: fadeInUp 0.8s 0.2s forwards; }
+.sala-card:nth-child(2) { animation: fadeInUp 0.8s 0.4s forwards; }
+.sala-card:nth-child(3) { animation: fadeInUp 0.8s 0.6s forwards; }
+.sala-card:nth-child(4) { animation: fadeInUp 0.8s 0.8s forwards; }
+
+@keyframes fadeInDown {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 1rem;
+    }
+
+    .container {
+        padding: 1rem;
+    }
+
+    .header h1 {
+        font-size: 2rem;
+    }
+
+    .salas-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .sala-card {
+        margin-bottom: 1rem;
+    }
+}
+
+
+
+
+
+
+/* Contenedor de los símbolos flotantes */
+.floating-symbols {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1; /* Asegurarnos que esté por encima del fondo pero debajo del contenido */
+    overflow: visible; /* Cambiar a visible */
+}
+
+/* Mejorar la visibilidad de los símbolos */
+.symbol {
+    position: absolute;
+    width: 65px;
+    height: 65px;
+    opacity: 1;
+    mix-blend-mode: normal; /* Asegurar que no se mezcle con el fondo */
+}
+
+
+.symbol svg {
+    width: 100%;
+    height: 100%;
+    stroke: var(--primary-color);
+    fill: none;
+    stroke-width: 3; /* Aumentar el grosor */
+    /* Simplificar y mejorar el efecto de sombra */
+    filter: 
+        drop-shadow(0 0 5px var(--primary-color))
+        drop-shadow(0 0 10px var(--primary-color));
+    animation: neonPulse 4s infinite ease-in-out;
+}
+.symbol::before {
+    display: none;
+}
+
+/* Posiciones y animaciones diferentes para cada símbolo */
+.symbol:nth-child(1) {
+    top: 15%;
+    left: 15%;
+    animation: floatSymbol1 30s infinite ease-in-out;
+}
+
+.symbol:nth-child(2) {
+    top: 25%;
+    left: 80%;
+    animation: floatSymbol2 32s infinite ease-in-out;
+}
+
+.symbol:nth-child(3) {
+    top: 70%;
+    left: 20%;
+    animation: floatSymbol1 28s infinite ease-in-out;
+}
+
+.symbol:nth-child(4) {
+    top: 40%;
+    left: 75%;
+    animation: floatSymbol2 35s infinite ease-in-out;
+}
+
+.symbol:nth-child(5) {
+    top: 65%;
+    left: 45%;
+    animation: floatSymbol1 33s infinite ease-in-out;
+}
+
+.symbol:nth-child(6) {
+    top: 85%;
+    left: 85%;
+    animation: floatSymbol2 31s infinite ease-in-out;
+}
+
+.symbol:nth-child(7) {
+    top: 35%;
+    left: 30%;
+    animation: floatSymbol1 29s infinite ease-in-out;
+}
+
+.symbol:nth-child(8) {
+    top: 80%;
+    left: 65%;
+    animation: floatSymbol2 34s infinite ease-in-out;
+}
+
+.symbol:nth-child(9) {
+    top: 20%;
+    left: 50%;
+    animation: floatSymbol1 27s infinite ease-in-out;
+}
+
+.symbol:nth-child(10) {
+    top: 55%;
+    left: 90%;
+    animation: floatSymbol2 36s infinite ease-in-out;
+}
+
+/* Animaciones de flotación mejoradas */
+@keyframes floatSymbol1 {
+    0%, 100% {
+        transform: translate(0, 0) rotate(0deg);
+        opacity: 0.8;
+    }
+    25% {
+        transform: translate(40px, -20px) rotate(90deg);
+        opacity: 0.6;
+    }
+    50% {
+        transform: translate(0, -40px) rotate(180deg);
+        opacity: 0.8;
+    }
+    75% {
+        transform: translate(-40px, -20px) rotate(270deg);
+        opacity: 0.6;
+    }
+}
+
+@keyframes floatSymbol2 {
+    0%, 100% {
+        transform: translate(0, 0) rotate(0deg);
+        opacity: 0.8;
+    }
+    25% {
+        transform: translate(-40px, -30px) rotate(-90deg);
+        opacity: 0.6;
+    }
+    50% {
+        transform: translate(0, -50px) rotate(-180deg);
+        opacity: 0.8;
+    }
+    75% {
+        transform: translate(40px, -30px) rotate(-270deg);
+        opacity: 0.6;
+    }
+}
+
+/* Animación de brillo neón mejorada */
+@keyframes neonPulse {
+    0%, 100% {
+        filter: 
+            drop-shadow(0 0 5px var(--primary-color))
+            drop-shadow(0 0 10px var(--primary-color));
+        opacity: 0.9;
+    }
+    50% {
+        filter: 
+            drop-shadow(0 0 8px var(--primary-color))
+            drop-shadow(0 0 15px var(--primary-color))
+            drop-shadow(0 0 20px var(--neon-color));
+        opacity: 1;
+    }
+}
+/* Ajustes adicionales para mejorar la visibilidad */
+
+
+/* Ajuste para dispositivos móviles */
+@media (max-width: 768px) {
+    .symbol {
+        width: 45px;
+        height: 45px;
+    }
+    
+    /* Animaciones reducidas para móviles */
+    @keyframes floatSymbol1 {
+        0%, 100% {
+            transform: translate(0, 0) rotate(0deg);
+            opacity: 1;
+        }
+        25% {
+            transform: translate(40px, -20px) rotate(90deg);
+            opacity: 0.95;
+        }
+        50% {
+            transform: translate(0, -40px) rotate(180deg);
+            opacity: 1;
+        }
+        75% {
+            transform: translate(-40px, -20px) rotate(270deg);
+            opacity: 0.95;
+        }
+    }
+    
+    @keyframes floatSymbol2 {
+        0%, 100% {
+            transform: translate(0, 0) rotate(0deg);
+            opacity: 1;
+        }
+        25% {
+            transform: translate(-40px, -30px) rotate(-90deg);
+            opacity: 0.95;
+        }
+        50% {
+            transform: translate(0, -50px) rotate(-180deg);
+            opacity: 1;
+        }
+        75% {
+            transform: translate(40px, -30px) rotate(-270deg);
+            opacity: 0.95;
+        }
+    }
+}

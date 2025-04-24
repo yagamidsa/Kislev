@@ -8,7 +8,8 @@ from .views import (
     PasswordResetDoneView, 
     VisorAdminView, 
     ControlPorteriaView, 
-    ControlpropietarioView
+    ControlpropietarioView,
+    SelectConjuntoView
 )
 
 app_name = 'accounts'  # Namespace para las URLs de accounts
@@ -17,6 +18,7 @@ urlpatterns = [
     # Rutas de autenticación principales
     path('login/', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
+    path('select-conjunto/', SelectConjuntoView.as_view(), name='select_conjunto'),
     
     # Rutas de recuperación de contraseña
     path('password_reset/', CustomPasswordResetView.as_view(

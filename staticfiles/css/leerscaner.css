@@ -1,0 +1,223 @@
+@import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;600&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html {
+    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: #070229;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    overflow: hidden;
+}
+
+.container {
+    width: 100%;
+    max-width: 390px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    gap: 20px;
+}
+
+h1 {
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+}
+
+.scanner-container {
+    width: 90%;
+    max-width: 320px;
+    aspect-ratio: 1 / 1;
+    position: relative;
+    overflow: hidden;
+    border-radius: 30px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    background-color: #000;
+}
+
+#video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 30px;
+}
+
+/* Mensaje de error estilo iOS */
+.error-message {
+    position: fixed;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 16px;
+    padding: 16px 24px;
+    min-width: 300px;
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    display: flex;
+    flex-direction: column;
+    align-items: center;     /* Centra los elementos horizontalmente */
+    justify-content: center; /* Centra los elementos verticalmente */
+    gap: 8px;
+    z-index: 1000;
+    animation: slideDown 0.3s ease-out;
+    text-align: center;      /* Asegura que todo el texto esté centrado */
+}
+
+
+.error-message p {
+    color: #ffffff;
+    font-weight: 500;
+    font-size: 15px;
+    width: 100%;            /* Asegura que el párrafo tome todo el ancho */
+    text-align: center;     /* Centra el texto */
+    margin: 0;
+}
+
+.error-message .error-icon {
+    width: 24px;
+    height: 24px;
+    filter: invert(31%) sepia(93%) saturate(7391%) hue-rotate(322deg) brightness(95%) contrast(111%);
+    display: block;         /* Hace que el icono sea un bloque */
+    margin: 0 auto;        /* Centra el icono */
+}
+
+
+@keyframes slideDown {
+    from {
+        transform: translate(-50%, -100%);
+        opacity: 0;
+    }
+    to {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+}
+
+#message {
+    margin-top: 24px;
+    font-weight: 400;
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.8);
+    text-align: center;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.return-button {
+    margin-top: 24px;
+    padding: 14px 28px;
+    background: linear-gradient(135deg, #e100ff, #7f00ff);
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 16px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 20px rgba(225, 0, 255, 0.3);
+}
+
+.return-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(225, 0, 255, 0.4);
+}
+
+.return-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(225, 0, 255, 0.4);
+}
+
+@media (max-width: 390px) {
+    .container {
+        padding: 20px 10px;
+        gap: 10px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    .scanner-container {
+        width: 100%;
+    }
+
+    .return-button {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+
+    .error-message {
+        width: 90%;
+        min-width: auto;
+    }
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+    .container {
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .scanner-container {
+        width: 50vh;
+    }
+
+    h1 {
+        font-size: 20px;
+    }
+
+    .error-message {
+        top: 20px;
+    }
+}
+
+
+.scan-animation {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Importante: esto hace que no interfiera con el video */
+    z-index: 1;
+}
+
+.scan-line {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(to right, 
+        rgba(225, 0, 255, 0) 0%,
+        rgba(225, 0, 255, 0.8) 50%,
+        rgba(225, 0, 255, 0) 100%
+    );
+    box-shadow: 0 0 12px rgba(225, 0, 255, 0.5);
+    animation: scan 2s linear infinite;
+}
+
+@keyframes scan {
+    0% {
+        top: 5%;
+    }
+    50% {
+        top: 95%;
+    }
+    100% {
+        top: 5%;
+    }
+}

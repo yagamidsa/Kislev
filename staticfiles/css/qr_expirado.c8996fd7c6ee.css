@@ -1,0 +1,72 @@
+/* Fondo general */
+body {
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(145deg, #e0e5ec, #ffffff);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Tarjeta contenedora */
+.card {
+    width: 90%;
+    max-width: 400px;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    padding: 2rem;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Contenedor del ícono */
+.icon-container {
+    background-color: rgba(255, 77, 202, 0.2);
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+}
+
+.icon {
+    width: 50px;
+    height: 50px;
+    color: #9423e0f3;
+}
+
+/* Botón */
+.btn {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 10px 20px;
+    background: #7f00ff;
+    background: -webkit-linear-gradient(to right, #e100ff, #7f00ff);
+    background: linear-gradient(to right, #e100ff, #7f00ff);
+    color: white;
+    text-decoration: none;
+    border-radius: 25px;
+    transition: background 0.3s;
+}
+
+.btn:hover {
+    background-color: #357ABD;
+    transform: scale(1.05); /* Efecto de zoom */
+}
+/* Animación */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

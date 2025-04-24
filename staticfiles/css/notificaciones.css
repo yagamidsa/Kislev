@@ -1,0 +1,393 @@
+:root {
+    --primary-color: #BE185D;
+    --neon-color: #BE185D;
+    --neon-glow: 0 0 10px #BE185D, 0 0 20px #BE185D, 0 0 30px #BE185D;
+    --bg-dark: #0F172A;
+    --card-bg: rgba(255, 255, 255, 0.05);
+    --card-border: rgba(255, 255, 255, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    background-color: var(--bg-dark);
+    background-image: radial-gradient(circle at center,
+            #1E293B 0%,
+            var(--bg-dark) 100%);
+    padding: 2rem;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Fondo con patrón de iconos de email neón */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 24 24' fill='none' stroke='%23BE185D' stroke-width='1'%3E%3Crect x='2' y='4' width='20' height='16' rx='2'/%3E%3Cpath d='m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7'/%3E%3C/svg%3E");
+    opacity: 0.1;
+    filter: drop-shadow(0 0 5px var(--neon-color));
+    animation: floating 8s ease-in-out infinite;
+    pointer-events: none;
+}
+
+/* Nuevo patrón de sobres animados */
+.envelope-pattern {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.envelope {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    animation: floatEnvelope 10s infinite linear;
+}
+
+/* Crear múltiples sobres con diferentes posiciones y animaciones */
+.envelope:nth-child(1) {
+    top: 10%;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.envelope:nth-child(2) {
+    top: 20%;
+    left: 80%;
+    animation-delay: -2s;
+}
+
+.envelope:nth-child(3) {
+    top: 80%;
+    left: 15%;
+    animation-delay: -4s;
+}
+
+.envelope:nth-child(4) {
+    top: 40%;
+    left: 70%;
+    animation-delay: -6s;
+}
+
+.envelope:nth-child(5) {
+    top: 65%;
+    left: 40%;
+    animation-delay: -8s;
+}
+
+.envelope:nth-child(6) {
+    top: 75%;
+    left: 85%;
+    animation-delay: -1s;
+}
+
+.envelope:nth-child(7) {
+    top: 35%;
+    left: 25%;
+    animation-delay: -3s;
+}
+
+.envelope:nth-child(8) {
+    top: 90%;
+    left: 90%;
+    animation-delay: -5s;
+}
+
+.envelope:nth-child(9) {
+    top: 15%;
+    left: 45%;
+    animation-delay: -7s;
+}
+
+.envelope:nth-child(10) {
+    top: 50%;
+    left: 60%;
+    animation-delay: -9s;
+}
+
+.envelope svg {
+    width: 100%;
+    height: 100%;
+    stroke: #BE185D;
+    stroke-width: 1;
+    fill: none;
+    filter: drop-shadow(0 0 8px #BE185D) drop-shadow(0 0 16px #BE185D) drop-shadow(0 0 24px #BE185D);
+    opacity: 0.3;
+    animation: neonPulse 2s infinite ease-in-out;
+}
+
+@keyframes floatEnvelope {
+    0% {
+        transform: translate(0, 0) rotate(0deg) scale(1);
+    }
+
+    33% {
+        transform: translate(20px, -30px) rotate(10deg) scale(1.1);
+    }
+
+    66% {
+        transform: translate(-20px, -15px) rotate(-5deg) scale(0.9);
+    }
+
+    100% {
+        transform: translate(0, 0) rotate(0deg) scale(1);
+    }
+}
+
+@keyframes neonPulse {
+
+    0%,
+    100% {
+        opacity: 0.3;
+        filter: drop-shadow(0 0 8px #BE185D) drop-shadow(0 0 16px #BE185D);
+    }
+
+    50% {
+        opacity: 0.8;
+        filter: drop-shadow(0 0 12px #BE185D) drop-shadow(0 0 24px #BE185D) drop-shadow(0 0 36px #BE185D);
+    }
+}
+
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+h1 {
+    text-align: center;
+    color: white;
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+    text-shadow: var(--neon-glow);
+    opacity: 0;
+    transform: translateY(-20px);
+    animation: fadeInDown 0.8s forwards;
+}
+
+.cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 1rem;
+}
+
+.card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 2rem;
+    position: relative;
+    backdrop-filter: blur(25px) saturate(180%);
+    -webkit-backdrop-filter: blur(25px) saturate(180%);
+    border: 1px solid var(--card-border);
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -1px rgba(0, 0, 0, 0.06),
+        inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: translateY(20px);
+    padding-bottom: 5rem;
+    min-height: 250px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Efecto de brillo en los bordes */
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 20px;
+    padding: 1px;
+    background: linear-gradient(var(--card-border),
+            rgba(255, 255, 255, 0.05));
+    mask: linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    border-color: var(--primary-color);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.2),
+        inset 0 1px 2px rgba(255, 255, 255, 0.15);
+}
+
+.card:hover::before {
+    background: linear-gradient(var(--primary-color),
+            rgba(255, 255, 255, 0.1));
+    opacity: 0.8;
+}
+
+.card:nth-child(1) {
+    animation: fadeInUp 0.8s 0.2s forwards;
+}
+
+.card:nth-child(2) {
+    animation: fadeInUp 0.8s 0.4s forwards;
+}
+
+.card:nth-child(3) {
+    animation: fadeInUp 0.8s 0.6s forwards;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+}
+
+.card-title {
+    color: white;
+    font-size: 1.25rem;
+    font-weight: 600;
+    text-shadow: 0 0 10px rgba(190, 24, 93, 0.5);
+}
+
+.card-icon {
+    width: 48px;
+    height: 48px;
+    color: var(--primary-color);
+    filter: drop-shadow(0 0 5px var(--neon-color));
+}
+
+.card-content {
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.6;
+    flex: 1;
+}
+
+.card-button {
+    position: absolute;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(190, 24, 93, 0.5);
+}
+
+.card-button:hover {
+    box-shadow: 0 0 20px rgba(190, 24, 93, 0.8);
+    transform: translateY(-2px);
+}
+
+@keyframes floating {
+
+    0%,
+    100% {
+        transform: translateY(0) scale(1);
+    }
+
+    50% {
+        transform: translateY(-10px) scale(1.05);
+    }
+}
+
+@keyframes fadeInDown {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Agregar efectos de luz ambiental */
+.light-effect {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at 20% 20%, rgba(190, 24, 93, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(190, 24, 93, 0.1) 0%, transparent 50%);
+    filter: blur(50px);
+    z-index: 0;
+}
+
+@media (max-width: 768px) {
+body {
+    padding: 1rem;
+}
+
+h1 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+}
+
+.cards-container {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+.card {
+    padding: 1.5rem;
+    /* Mantenemos el padding-bottom para el botón */
+    padding-bottom: 5rem;
+    /* Aseguramos altura mínima en mobile */
+    min-height: 200px;
+}
+
+.card-button {
+    /* Ajustamos la posición del botón en mobile */
+    bottom: 1.5rem;
+    right: 1.5rem;
+    padding: 0.6rem 1.2rem;
+}
+
+/* Ajustamos el espaciado del contenido en mobile */
+.card-content {
+    margin-bottom: 0.5rem;
+}
+
+.card-header {
+    margin-bottom: 1rem;
+}
+}
+
+/* Soporte específico para Safari */
+@supports (-webkit-backdrop-filter: none) {
+    .card {
+        -webkit-backdrop-filter: blur(25px) saturate(180%);
+    }
+}

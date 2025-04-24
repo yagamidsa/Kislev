@@ -34,17 +34,11 @@
                     <h1>Iniciar Sesión</h1>
 
                     <div class="form-field">
-                        <label for="id_conjunto">Conjunto Residencial:</label>
-                        {{ form.conjunto }}
-                        {% if form.conjunto.errors %}
-                        <div class="error" role="alert">{{ form.conjunto.errors }}</div>
-                        {% endif %}
-                    </div>
-
-                    <div class="form-field">
                         <label for="id_cedula">Cédula:</label>
                         <input type="text" name="cedula" id="id_cedula" required 
                                autocomplete="username" 
+                               pattern="[0-9]*"
+                               inputmode="numeric"
                                placeholder="Ingrese su cédula">
                         {% if form.cedula.errors %}
                         <div class="error" role="alert">{{ form.cedula.errors }}</div>
@@ -98,21 +92,9 @@
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
             const submitButton = document.getElementById('submit-button');
-            const conjunto = document.getElementById('id_conjunto');
             const cedula = document.getElementById('id_cedula');
             
             // Validar campos requeridos
-            if (!conjunto.value) {
-                e.preventDefault();
-                const errorDiv = document.createElement('div');
-                errorDiv.className = 'error-container';
-                errorDiv.setAttribute('role', 'alert');
-                errorDiv.textContent = 'Por favor seleccione un conjunto residencial';
-                document.body.insertBefore(errorDiv, document.body.firstChild);
-                handleMessages();
-                return false;
-            }
-
             if (!cedula.value) {
                 e.preventDefault();
                 const errorDiv = document.createElement('div');

@@ -16,16 +16,6 @@ class LoginForm(forms.Form):
         })
     )
     
-    conjunto = forms.ModelChoiceField(
-        queryset=ConjuntoResidencial.objects.filter(estado=True),
-        label='Conjunto Residencial',
-        empty_label="Seleccione un conjunto",
-        widget=forms.Select(attrs={
-            'class': 'form-control',
-            'aria-label': 'Seleccione su conjunto residencial'  # Mejora accesibilidad
-        })
-    )
-    
     password = forms.CharField(
         label='Contraseña',
         widget=forms.PasswordInput(attrs={
@@ -43,27 +33,21 @@ class LoginForm(forms.Form):
             raise forms.ValidationError('La cédula debe contener solo números.')
         return cedula
 
-    def clean(self):
-        cleaned_data = super().clean()
-        cedula = cleaned_data.get('cedula')
-        conjunto = cleaned_data.get('conjunto')
-        
-        if cedula and conjunto:
-            from .models import Usuario
-            try:
-                usuario = Usuario.objects.get(cedula=cedula, conjunto=conjunto)
-                cleaned_data['usuario'] = usuario
-            except Usuario.DoesNotExist:
-                raise forms.ValidationError(
-                    'No existe un usuario con esta cédula en el conjunto seleccionado.'
-                )
-            except Exception as e:
-                # Log the error if you have logging configured
-                raise forms.ValidationError(
-                    'Error al validar las credenciales. Por favor, intente nuevamente.'
-                )
-        
-        return cleaned_data
-
     class Meta:
-        fields = ['conjunto', 'cedula', 'password']
+        fields = ['cedula', 'password']
+
+
+class SelectConjuntoForm(forms.Form):
+    conjunto = forms.ModelChoiceField(
+        queryset=None,  # Se establecerá dinámicamente
+        label='Conjunto Residencial',
+        empty_label=None,  # No queremos opción vacía
+        widget=forms.Select(attrs={
+            'class': 'form-control',
+            'aria-label': 'Seleccione su conjunto residencial'
+        })
+    )
+    
+    def __init__(self, conjuntos, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['conjunto'].queryset = conjuntos
