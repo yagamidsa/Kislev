@@ -5018,3 +5018,19 @@ Watching for file changes with StatReloader
 "GET /api/torres/6/apartamentos/ HTTP/1.1" 200 403
 "GET /api/torres/11/apartamentos/ HTTP/1.1" 200 403
 "GET /api/torres/8/apartamentos/ HTTP/1.1" 200 409
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 200 5141
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/select-conjunto/ HTTP/1.1" 200 2551
+"POST /accounts/select-conjunto/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /noti_publicos/ HTTP/1.1" 200 23620
+"POST /api/send-service-notification/ HTTP/1.1" 200 198
+"POST /api/send-service-notification/ HTTP/1.1" 200 198
+"GET /noti_individual/ HTTP/1.1" 200 37995
+"GET /api/torres/ HTTP/1.1" 200 703
+"GET /api/torres/7/apartamentos/ HTTP/1.1" 200 408
+"POST /api/send-individual-notification/ HTTP/1.1" 200 155
