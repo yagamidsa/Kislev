@@ -10,6 +10,110 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/restricciones.css' %}">
     <link rel="stylesheet" href="{% static 'css/noti_generales.css' %}">
+    <style>
+        /* Estilos para la lista de archivos */
+        .file-list {
+            margin-top: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.15);
+            border-radius: 5px;
+            padding: 8px 12px;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: white;
+        }
+        
+        .file-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .remove-file {
+            cursor: pointer;
+            color: #ff4d4d;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            padding: 0 5px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        
+        .remove-file:hover {
+            opacity: 1;
+        }
+        
+        .file-preview {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+        }
+        
+        .file-icon {
+            margin-right: 8px;
+            opacity: 0.7;
+        }
+        
+        .file-name {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+        }
+        
+        .file-size {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin-left: 8px;
+        }
+
+        /* Estilos para cuando no hay archivos */
+        .no-files {
+            color: rgba(255, 255, 255, 0.7);
+            text-align: center;
+            padding: 10px;
+            font-style: italic;
+        }
+
+        /* Animación para añadir archivos */
+        @keyframes fileAddedAnimation {
+            0% { transform: translateY(10px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        
+        .file-item {
+            animation: fileAddedAnimation 0.3s ease-out forwards;
+        }
+        
+        .files-section {
+            margin-top: 20px;
+        }
+        
+        .files-section-title {
+            display: flex;
+            align-items: center;
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 10px;
+            color: white;
+        }
+        
+        .files-section-title svg {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+        }
+    </style>
 </head>
 
 <body>
@@ -58,8 +162,6 @@
         </div>
     </div>
 
-
-
     <div class="container">
         <h1>Notificaciones Generales</h1>
 
@@ -70,16 +172,29 @@
                 <textarea id="message" name="message" placeholder="Escribe tu mensaje aquí..." data-gramm="false"
                     data-gramm_editor="false" data-enable-grammarly="false" spellcheck="false"></textarea>
             </div>
+            
+            <!-- Nueva sección para archivos adjuntos -->
+            <div class="files-section">
+                <div class="files-section-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l8.57-8.57A4 4 0 1118 8.84l-8.59 8.57a2 2 0 01-2.83-2.83l8.49-8.48" />
+                    </svg>
+                    Documentos Adjuntos
+                </div>
+                
+                <div id="fileList" class="file-list">
+                    <div class="no-files">No hay documentos adjuntos</div>
+                </div>
+            </div>
 
             <div class="buttons-container">
-                <input type="file" id="fileInput" name="fileInput" class="file-input"
-                    accept=".pdf,.doc,.docx,.xls,.xlsx">
+                <input type="file" id="fileInput" name="files[]" class="file-input" accept="*/*" multiple>
                 <label for="fileInput" class="btn btn-secondary file-label">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path
                             d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l8.57-8.57A4 4 0 1118 8.84l-8.59 8.57a2 2 0 01-2.83-2.83l8.49-8.48" />
                     </svg>
-                    Adjuntar Archivo
+                    Adjuntar Documentos
                 </label>
 
                 <button type="button" class="btn btn-primary" onclick="showConfirmation()">
@@ -105,180 +220,251 @@
         </div>
     </div>
 
-    <!-- Reemplaza todos los bloques de script actuales con este único bloque -->
-<script>
-    // Función principal de envío
-    async function sendMessage() {
-    const loadingScreen = document.getElementById('loadingScreen');
-    const loadingStatus = document.getElementById('loadingStatus');
-    const messageInput = document.getElementById('message');
-    const fileInput = document.getElementById('fileInput');
-
-    // Validación inicial
-    if (!messageInput || !messageInput.value.trim()) {
-        if (loadingStatus) {
-            loadingStatus.innerHTML = `
-                <div class="progress-status">
-                    <div class="loading-text" style="color: #ff4646;">Error</div>
-                    <div class="loading-subtext">Por favor, escribe un mensaje</div>
-                </div>
-            `;
-        }
-        hideConfirmation();
-        return;
-    }
-
-    if (loadingScreen) loadingScreen.style.display = 'flex';
-    hideConfirmation();
-
-    // Actualizar todo el contenedor de loading
-    const loadingContainer = loadingScreen.querySelector('.loading-container');
-    if (loadingContainer) {
-        loadingContainer.innerHTML = `
-            <div class="loading-spinner"></div>
-            <p class="loading-text">Enviando notificaciones...</p>
-            <p class="loading-subtext">Preparando envío</p>
-        `;
-    }
-
-    const formData = new FormData();
-    formData.append('message', messageInput.value);
-    
-    if (fileInput && fileInput.files && fileInput.files.length > 0) {
-        formData.append('fileInput', fileInput.files[0]);
-    }
-
-    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
-    if (!csrfToken) return;
-
-    try {
-        const response = await fetch('/notifications/send/', {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': csrfToken.value
-            },
-            body: formData
-        });
-
-        if (!response.ok) {
-            throw new Error('Error en la respuesta del servidor');
-        }
-
-        const data = await response.json();
+    <script>
+        // Para almacenar los archivos seleccionados
+        let selectedFiles = [];
+        const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+        const MAX_FILES = 5; // Máximo 5 archivos
         
-        if (data.status === 'success' && loadingContainer) {
-            loadingContainer.innerHTML = `
-                <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
-                    <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
-                    <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
-                </svg>
-                <div class="loading-text">¡Envío completado!</div>
-                <div class="loading-subtext success-text">
-                    ${data.enviados || 0} de ${data.total || 0} correos enviados exitosamente
-                </div>
-                <button onclick="closeSuccessMessage()" class="btn btn-primary" style="margin-top: 20px;">
-                    Cerrar
-                </button>
-            `;
-            
-            // Limpiar el formulario pero mantener el mensaje visible
-            if (messageInput) messageInput.value = '';
-            if (fileInput) fileInput.value = '';
-            const fileLabel = document.querySelector('.file-label');
-            if (fileLabel) {
-                fileLabel.innerHTML = `
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l8.57-8.57A4 4 0 1118 8.84l-8.59 8.57a2 2 0 01-2.83-2.83l8.49-8.48"/>
-                    </svg>
-                    Adjuntar Archivo
-                `;
-            }
-        } else {
-            throw new Error(data.message || 'Error en el envío');
-        }
-    } catch (error) {
-        if (loadingContainer) {
-            loadingContainer.innerHTML = `
-                <svg class="error-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="11" fill="none"/>
-                    <path d="M15 9l-6 6M9 9l6 6"/>
-                </svg>
-                <div class="loading-text">Error en el envío</div>
-                <div class="loading-subtext error-text">
-                    ${error.message || 'Error desconocido'}
-                </div>
-                <button onclick="closeSuccessMessage()" class="btn btn-primary" style="margin-top: 20px;">
-                    Cerrar
-                </button>
-            `;
-        }
-    }
-}
-
-// Función para cerrar el mensaje
-function closeSuccessMessage() {
-    const loadingScreen = document.getElementById('loadingScreen');
-    if (loadingScreen) {
-        loadingScreen.style.display = 'none';
-    }
-}
-    
-    // Funciones de modal
-    function showConfirmation() {
+        // Elementos del DOM
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
         const messageInput = document.getElementById('message');
-        const confirmModal = document.getElementById('confirmModal');
+        const loadingScreen = document.getElementById('loadingScreen');
+        const loadingStatus = document.getElementById('loadingStatus');
         
-        if (!messageInput || !messageInput.value.trim()) {
-            const loadingStatus = document.getElementById('loadingStatus');
-            if (loadingStatus) {
-                loadingStatus.innerHTML = `
-                    <div class="progress-status">
-                        <div class="loading-text" style="color: #ff4646;">Error</div>
-                        <div class="loading-subtext">Por favor, escribe un mensaje</div>
+        // Función para formatear el tamaño del archivo
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        // Función para obtener el ícono según el tipo de archivo
+        function getFileIcon(fileType) {
+            if (!fileType) {
+                return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>';
+            } else if (fileType.includes('pdf')) {
+                return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>';
+            } else if (fileType.includes('word') || fileType.includes('doc')) {
+                return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>';
+            } else if (fileType.includes('excel') || fileType.includes('sheet')) {
+                return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="12" x2="8" y2="12"></line><line x1="16" y1="16" x2="8" y2="16"></line><line x1="16" y1="8" x2="8" y2="8"></line></svg>';
+            } else if (fileType.includes('image') || fileType.includes('png') || fileType.includes('jpg') || fileType.includes('jpeg') || fileType.includes('gif')) {
+                return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>';
+            } else if (fileType.includes('video') || fileType.includes('mp4') || fileType.includes('avi') || fileType.includes('mov')) {
+                return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>';
+            } else if (fileType.includes('audio') || fileType.includes('mp3') || fileType.includes('wav')) {
+                return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>';
+            } else if (fileType.includes('zip') || fileType.includes('rar') || fileType.includes('tar') || fileType.includes('7z')) {
+                return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>';
+            } else if (fileType.includes('text') || fileType.includes('txt')) {
+                return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>';
+            } else {
+                return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>';
+            }
+        }
+        
+        // Manejador del input de archivo
+        fileInput.addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            
+            if (selectedFiles.length + files.length > MAX_FILES) {
+                alert(`Solo puede adjuntar un máximo de ${MAX_FILES} archivos.`);
+                return;
+            }
+            
+            // Validar cada archivo
+            const validFiles = files.filter(file => {
+                // Validar solo el tamaño
+                if (file.size > MAX_FILE_SIZE) {
+                    alert(`El archivo "${file.name}" supera el límite de 10MB.`);
+                    return false;
+                }
+                
+                return true;
+            });
+            
+            // Agregar los archivos válidos a la lista
+            validFiles.forEach(file => {
+                // Crear un objeto con ID único para cada archivo
+                const fileObj = {
+                    id: 'file_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9),
+                    file: file
+                };
+                
+                selectedFiles.push(fileObj);
+            });
+            
+            // Actualizar la UI
+            updateFileList();
+            
+            // Limpiar el input para permitir seleccionar el mismo archivo
+            fileInput.value = '';
+        });
+        
+        // Función para actualizar la lista de archivos en la UI
+        function updateFileList() {
+            // Limpiar la lista
+            fileList.innerHTML = '';
+            
+            if (selectedFiles.length === 0) {
+                fileList.innerHTML = '<div class="no-files">No hay documentos adjuntos</div>';
+                return;
+            }
+            
+            // Agregar cada archivo a la lista
+            selectedFiles.forEach(fileObj => {
+                const file = fileObj.file;
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.dataset.id = fileObj.id;
+                fileItem.innerHTML = `
+                    <div class="file-preview">
+                        <span class="file-icon">${getFileIcon(file.type)}</span>
+                        <span class="file-name">${file.name}</span>
+                        <span class="file-size">${formatFileSize(file.size)}</span>
                     </div>
+                    <button type="button" class="remove-file" onclick="removeFile('${fileObj.id}')">×</button>
+                `;
+                fileList.appendChild(fileItem);
+            });
+        }
+        
+        // Función para eliminar un archivo
+        window.removeFile = function(fileId) {
+            selectedFiles = selectedFiles.filter(fileObj => fileObj.id !== fileId);
+            updateFileList();
+        };
+        
+        // Función principal de envío
+        async function sendMessage() {
+            if (!messageInput.value.trim()) {
+                alert("Por favor, escribe un mensaje");
+                return;
+            }
+            
+            if (loadingScreen) loadingScreen.style.display = 'flex';
+            hideConfirmation();
+            
+            // Actualizar todo el contenedor de loading
+            const loadingContainer = loadingScreen.querySelector('.loading-container');
+            if (loadingContainer) {
+                loadingContainer.innerHTML = `
+                    <div class="loading-spinner"></div>
+                    <p class="loading-text">Enviando notificaciones...</p>
+                    <p class="loading-subtext">Preparando envío</p>
                 `;
             }
-            return;
-        }
-        
-        if (confirmModal) {
-            confirmModal.style.display = 'flex';
-        }
-    }
-    
-    function hideConfirmation() {
-        const confirmModal = document.getElementById('confirmModal');
-        if (confirmModal) {
-            confirmModal.style.display = 'none';
-        }
-    }
-    
-    // Manejo del archivo
-    const fileInput = document.getElementById('fileInput');
-    if (fileInput) {
-        fileInput.addEventListener('change', function(e) {
-            if (this.files && this.files[0]) {
-                const fileName = this.files[0].name;
-                const fileLabel = document.querySelector('.file-label');
-                if (fileLabel) {
-                    fileLabel.innerHTML = `
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l8.57-8.57A4 4 0 1118 8.84l-8.59 8.57a2 2 0 01-2.83-2.83l8.49-8.48"/>
+            
+            const formData = new FormData();
+            formData.append('message', messageInput.value);
+            
+            // Agregar todos los archivos seleccionados
+            // Usamos el mismo nombre de campo para todos los archivos
+            // El backend debe usar request.FILES.getlist('fileInput')
+            selectedFiles.forEach((fileObj) => {
+                formData.append('fileInput', fileObj.file);
+            });
+            
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+            if (!csrfToken) {
+                alert("Error: No se encontró el token CSRF");
+                return;
+            }
+            
+            try {
+                const response = await fetch('/notifications/send/', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrfToken.value
+                    },
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Error en la respuesta del servidor');
+                }
+                
+                const data = await response.json();
+                
+                if (data.status === 'success' && loadingContainer) {
+                    loadingContainer.innerHTML = `
+                        <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                            <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+                            <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
                         </svg>
-                        ${fileName}
+                        <div class="loading-text">¡Envío completado!</div>
+                        <div class="loading-subtext success-text">
+                            ${data.enviados || 0} de ${data.total || 0} correos enviados exitosamente
+                        </div>
+                        <button onclick="closeSuccessMessage()" class="btn btn-primary" style="margin-top: 20px;">
+                            Cerrar
+                        </button>
+                    `;
+                    
+                    // Limpiar el formulario
+                    messageInput.value = '';
+                    selectedFiles = [];
+                    updateFileList();
+                } else {
+                    throw new Error(data.message || 'Error en el envío');
+                }
+            } catch (error) {
+                if (loadingContainer) {
+                    loadingContainer.innerHTML = `
+                        <svg class="error-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="11" fill="none"/>
+                            <path d="M15 9l-6 6M9 9l6 6"/>
+                        </svg>
+                        <div class="loading-text">Error en el envío</div>
+                        <div class="loading-subtext error-text">
+                            ${error.message || 'Error desconocido'}
+                        </div>
+                        <button onclick="closeSuccessMessage()" class="btn btn-primary" style="margin-top: 20px;">
+                            Cerrar
+                        </button>
                     `;
                 }
             }
-        });
-    }
-    
-    // Inicialización
-    document.addEventListener('DOMContentLoaded', () => {
-        const loadingScreen = document.getElementById('loadingScreen');
-        if (loadingScreen) {
-            loadingScreen.style.display = 'none';
         }
-    });
+        
+        // Función para cerrar el mensaje
+        function closeSuccessMessage() {
+            if (loadingScreen) {
+                loadingScreen.style.display = 'none';
+            }
+        }
+        
+        // Funciones de modal
+        function showConfirmation() {
+            if (!messageInput.value.trim()) {
+                alert("Por favor, escribe un mensaje");
+                return;
+            }
+            
+            const confirmModal = document.getElementById('confirmModal');
+            if (confirmModal) {
+                confirmModal.style.display = 'flex';
+            }
+        }
+        
+        function hideConfirmation() {
+            const confirmModal = document.getElementById('confirmModal');
+            if (confirmModal) {
+                confirmModal.style.display = 'none';
+            }
+        }
+        
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            if (loadingScreen) {
+                loadingScreen.style.display = 'none';
+            }
+            updateFileList();
+        });
     </script>
 </body>
 

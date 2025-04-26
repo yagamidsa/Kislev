@@ -17,7 +17,7 @@ from .utils import role_required
 from django.db.models import Count, F
 from django.db.models.functions import ExtractMonth, ExtractWeekDay, ExtractHour
 import json
-from accounts.models import Usuario
+from accounts.models import Usuario, ConjuntoResidencial, Torre
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.template.loader import render_to_string
@@ -332,7 +332,7 @@ def procesar_envio(request):
                 'message': 'El mensaje es requerido'
             })
 
-        # 2. Preparar mensaje
+        # 2. Preparar mensaje (conservar formato HTML)
         mensaje_usuario = mensaje_usuario.replace('\n', '<br>')
 
         # 3. Obtener propietarios
@@ -351,24 +351,59 @@ def procesar_envio(request):
         # 4. Inicializar SendGrid
         sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
         
-        # 5. Procesar archivo adjunto si existe
-        attachment = None
-        if request.FILES.get('fileInput'):
+        # 5. Procesar archivos adjuntos si existen
+        attachments = []
+        files = request.FILES.getlist('fileInput')
+        total_size = 0
+        MAX_ATTACHMENT_SIZE = 25 * 1024 * 1024  # 25MB máximo total
+        MAX_SINGLE_FILE_SIZE = 10 * 1024 * 1024  # 10MB máximo por archivo
+        MAX_FILES = 10  # Máximo número de archivos
+        
+        # Verificar número de archivos
+        if len(files) > MAX_FILES:
+            logger.warning(f"Intento de enviar demasiados archivos: {len(files)}")
+            return JsonResponse({
+                'status': 'error',
+                'message': f'No se pueden adjuntar más de {MAX_FILES} archivos'
+            })
+        
+        # Procesar archivos adjuntos
+        for archivo in files:
             try:
-                archivo = request.FILES['fileInput']
-                encoded_file = base64.b64encode(archivo.read()).decode()
+                # Verificar tamaño individual
+                if archivo.size > MAX_SINGLE_FILE_SIZE:
+                    logger.warning(f"Archivo demasiado grande: {archivo.name} ({archivo.size/(1024*1024):.2f}MB)")
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': f'El archivo {archivo.name} supera el límite de 10MB'
+                    })
+                
+                # Verificar tamaño total acumulado
+                total_size += archivo.size
+                if total_size > MAX_ATTACHMENT_SIZE:
+                    logger.warning(f"Tamaño total de archivos excedido: {total_size/(1024*1024):.2f}MB")
+                    return JsonResponse({
+                        'status': 'error',
+                        'message': f'El tamaño total de los archivos supera el límite de 25MB'
+                    })
+                
+                # Procesar archivo y crear adjunto
+                archivo_contenido = archivo.read()
+                encoded_file = base64.b64encode(archivo_contenido).decode()
                 
                 attachment = Attachment()
                 attachment.file_content = FileContent(encoded_file)
                 attachment.file_name = FileName(archivo.name)
                 attachment.file_type = FileType(archivo.content_type)
                 attachment.disposition = Disposition('attachment')
-                logger.info(f"Archivo adjunto procesado: {archivo.name}")
+                attachments.append(attachment)
+                
+                logger.info(f"Archivo adjunto procesado: {archivo.name} ({archivo.size/(1024*1024):.2f}MB)")
             except Exception as e:
-                logger.error(f"Error procesando archivo: {str(e)}")
+                logger.error(f"Error procesando archivo {archivo.name}: {str(e)}")
                 return JsonResponse({
                     'status': 'error',
-                    'message': 'Error procesando el archivo adjunto'
+                    'message': f'Error procesando el archivo {archivo.name}: {str(e)}'
                 })
 
         # 6. Preparar envío por lotes
@@ -376,98 +411,381 @@ def procesar_envio(request):
         total_enviados = 0
         propietarios_list = list(propietarios)
         
+        # Registrar inicio del proceso
+        total_lotes = (len(propietarios_list) + BATCH_SIZE - 1) // BATCH_SIZE
+        logger.info(f"Iniciando envío a {total_propietarios} propietarios en {total_lotes} lotes con {len(attachments)} archivos adjuntos")
+        
         # 7. Procesar cada lote
         for i in range(0, len(propietarios_list), BATCH_SIZE):
+            # Obtener el lote actual
             batch = propietarios_list[i:i + BATCH_SIZE]
+            batch_num = i // BATCH_SIZE + 1
             first_prop = batch[0]
             other_props = batch[1:]
             
-            # 8. Construir mensaje HTML
-            mensaje_html = f"""
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            </head>
-            <body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
-                <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-                    <div style="margin-bottom: 20px;">
-                        <p style="font-size: 16px; color: #333; margin: 0;">Estimado(a) {first_prop['nombre']},</p>
-                    </div>
-                    
-                    <div style="margin: 30px 0; line-height: 1.6; color: #444;">
-                        {mensaje_usuario}
-                    </div>
-                    
-                    <div style="border-top: 1px solid #eee; padding-top: 20px; margin-top: 30px;">
-                        <p style="font-size: 14px; color: #666; margin: 5px 0;">
-                            Este es un mensaje oficial de la administración.
-                        </p>
-                        <div style="margin: 15px 0;">
-                            <p style="font-size: 14px; color: #444; margin: 3px 0;">📞 (601) XXX-XXXX</p>
-                            <p style="font-size: 14px; color: #444; margin: 3px 0;">📧 admin@conjunto.com</p>
-                        </div>
-                        <p style="font-size: 12px; color: #888; margin-top: 20px;">
-                            © 2024 Administración Conjunto Residencial<br>
-                            Recibió este email porque está registrado como propietario en nuestro sistema.
-                            Para dejar de recibir estos mensajes, por favor contacte a la administración.
-                        </p>
-                    </div>
-                </div>
-            </body>
-            </html>
-            """
+            # Preparar el contexto para el template
+            context = {
+                'nombre': first_prop['nombre'],
+                'mensaje': mensaje_usuario,
+                'fecha': datetime.now().strftime('%d/%m/%Y'),
+                'conjunto': getattr(request.user, 'conjunto', None)
+            }
+            
+            # Versión en texto plano del mensaje
+            plain_content = f"""
+Estimado/a {first_prop['nombre']},
 
-            # 9. Crear mensaje de correo
+{mensaje_usuario.replace('<br>', '\n')}
+
+Atentamente,
+Administración Conjunto Residencial
+
+---------------------------------------------
+Teléfono: (601) XXX-XXXX
+Email: admin@conjunto.com
+Horario: Lunes a Viernes de 8:00 AM a 6:00 PM
+         Sábados de 9:00 AM a 1:00 PM
+
+© 2024 Administración Conjunto Residencial
+Recibió este email porque está registrado como propietario.
+"""
+            
+            # Renderizar plantilla HTML
+            try:
+                html_content = render_to_string('emails/general_notification.html', context)
+                logger.debug("Plantilla HTML renderizada correctamente")
+            except Exception as e:
+                logger.warning(f"Error al renderizar plantilla: {str(e)}. Usando plantilla alternativa.")
+                
+                # Plantilla alternativa en caso de error
+                html_content = f"""
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notificación</title>
+</head>
+<body style="margin:0;padding:0;font-family:Arial,sans-serif;background-color:#f7f9fc;color:#333;">
+    <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+        <!-- Encabezado -->
+        <div style="background:linear-gradient(45deg,#6015ab,#ffaf19);padding:25px;text-align:center;">
+            <h1 style="color:white;margin:0;font-size:24px;font-weight:600;">Notificación General</h1>
+        </div>
+        
+        <!-- Contenido -->
+        <div style="padding:30px;">
+            <p style="font-size:16px;margin-bottom:25px;">Estimado(a) <strong>{first_prop['nombre']}</strong>,</p>
+            
+            <div style="background:#f8f9fd;border-left:4px solid #6015ab;padding:20px;margin:25px 0;border-radius:4px;">
+                {mensaje_usuario}
+            </div>
+            
+            <div style="margin-top:30px;padding-top:20px;border-top:1px solid #eee;">
+                <p style="margin:5px 0;">Atentamente,</p>
+                <p style="font-weight:bold;font-size:16px;color:#333;">Administración Conjunto Residencial</p>
+            </div>
+        </div>
+        
+        <!-- Información de contacto -->
+        <div style="background:#f8f9fd;padding:20px;border-top:1px solid #eee;">
+            <div style="margin-bottom:15px;">
+                <h3 style="font-size:15px;color:#555;margin:0 0 10px 0;">Contacto</h3>
+                <p style="font-size:14px;color:#666;margin:5px 0;">📞 (601) XXX-XXXX</p>
+                <p style="font-size:14px;color:#666;margin:5px 0;">📧 admin@conjunto.com</p>
+            </div>
+            
+            <div>
+                <h3 style="font-size:15px;color:#555;margin:0 0 10px 0;">Horario de Atención</h3>
+                <p style="font-size:14px;color:#666;margin:5px 0;">Lunes a Viernes: 8:00 AM - 6:00 PM</p>
+                <p style="font-size:14px;color:#666;margin:5px 0;">Sábados: 9:00 AM - 1:00 PM</p>
+            </div>
+        </div>
+        
+        <!-- Pie de página -->
+        <div style="background:#333;color:#fff;padding:20px;text-align:center;">
+            <p style="margin:5px 0;font-size:13px;">© 2024 Administración Conjunto Residencial</p>
+            <p style="margin:5px 0;font-size:12px;opacity:0.7;">
+                Recibió este email porque está registrado como propietario en nuestro sistema.
+                Para dejar de recibir estos mensajes, por favor contacte a la administración.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
+"""
+
+            # Crear mensaje de correo con configuraciones avanzadas
             message = Mail(
-                from_email=Email(settings.DEFAULT_FROM_EMAIL),
-                to_emails=To(first_prop['email']),
-                subject='Notificación General',
-                html_content=mensaje_html,
-                plain_text_content=mensaje_usuario.replace('<br>', '\n')
+                from_email=From(
+                    email=settings.DEFAULT_FROM_EMAIL,
+                    name="Administración Conjunto Residencial"
+                ),
+                to_emails=To(
+                    email=first_prop['email'],
+                    name=first_prop['nombre']
+                ),
+                subject=Subject('Notificación General'),
+                plain_text_content=PlainTextContent(plain_content),
+                html_content=HtmlContent(html_content)
             )
 
-            # 10. Agregar destinatarios BCC
+            # Añadir headers anti-spam y metadatos para mejorar la entrega
+            message.header = Header("List-Unsubscribe", f"<mailto:{settings.DEFAULT_FROM_EMAIL}?subject=unsubscribe>")
+            message.header = Header("Precedence", "bulk")
+            message.header = Header("X-Auto-Response-Suppress", "OOF, AutoReply")
+            message.header = Header("X-Priority", "1")
+            message.header = Header("Importance", "High")
+            message.category = Category("notificaciones_generales")
+            message.custom_arg = CustomArg("type", "general_notification")
+            message.custom_arg = CustomArg("batch", str(batch_num))
+            message.reply_to = settings.DEFAULT_FROM_EMAIL
+
+            # Agregar destinatarios BCC
             for prop in other_props:
                 message.add_bcc(prop['email'])
 
-            # 11. Agregar adjunto si existe
-            if attachment:
+            # Agregar todos los archivos adjuntos
+            for attachment in attachments:
                 message.add_attachment(attachment)
 
-            # 12. Enviar lote
+            # 8. Enviar lote
             try:
                 response = sg.send(message)
                 if response.status_code in [200, 201, 202]:
                     total_enviados += len(batch)
-                    logger.info(f"Lote enviado: {i//BATCH_SIZE + 1}, Total: {total_enviados}/{total_propietarios}")
+                    logger.info(f"Lote {batch_num}/{total_lotes} enviado: {len(batch)} destinatarios. Total: {total_enviados}/{total_propietarios}")
                 else:
-                    logger.warning(f"Respuesta inesperada en lote {i//BATCH_SIZE + 1}: {response.status_code}")
+                    logger.warning(f"Respuesta inesperada en lote {batch_num}: {response.status_code}")
             except Exception as e:
-                logger.error(f"Error enviando lote {i//BATCH_SIZE + 1}: {str(e)}")
+                logger.error(f"Error enviando lote {batch_num}: {str(e)}")
                 continue
 
-        # 13. Retornar resultado
+        # 9. Retornar resultado
         if total_enviados > 0:
+            success_message = f"Se enviaron {total_enviados} de {total_propietarios} notificaciones"
+            
+            if attachments:
+                archivo_texto = "archivo" if len(attachments) == 1 else "archivos"
+                success_message += f" con {len(attachments)} {archivo_texto} adjuntos ({round(total_size/(1024*1024), 2)}MB)"
+            
+            logger.info(success_message)
+            
             return JsonResponse({
                 'status': 'success',
                 'enviados': total_enviados,
-                'total': total_propietarios
+                'total': total_propietarios,
+                'files_attached': len(attachments),
+                'total_size_mb': round(total_size/(1024*1024), 2)
             })
         else:
+            logger.error("No se pudo completar el envío de mensajes")
             return JsonResponse({
                 'status': 'error',
                 'message': 'No se pudo completar el envío de mensajes'
             })
 
     except Exception as e:
-        logger.error(f"Error general: {str(e)}")
+        logger.error(f"Error general en procesar_envio: {str(e)}")
         return JsonResponse({
             'status': 'error',
-            'message': 'Error en el sistema'
+            'message': f'Error en el sistema: {str(e)}'
         })
 
+# views.py --- notification individual
+
+
+@require_http_methods(["POST"])
+@login_required
+@role_required(['porteria', 'administrador'])
+def enviar_notificacion_individual(request):
+    """
+    Vista para enviar notificaciones individuales a propietarios según su ubicación.
+    """
+    logger.info("Iniciando envío de notificación individual")
+    try:
+        # Extraer datos de la solicitud
+        torre_id = request.POST.get('torre_id')
+        apartamento = request.POST.get('apartamento')
+        mensaje = request.POST.get('message')
+        
+        # Validar datos
+        if not torre_id or not apartamento or not mensaje:
+            logger.warning("Datos de notificación individual incompletos")
+            return JsonResponse({
+                'status': 'error', 
+                'message': 'Todos los campos son requeridos'
+            }, status=400)
+        
+        # Obtener la torre
+        try:
+            torre = Torre.objects.get(
+                id=torre_id,
+                conjunto=request.user.conjunto,
+                activo=True
+            )
+        except Torre.DoesNotExist:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'La torre seleccionada no existe o no pertenece a su conjunto'
+            }, status=404)
+        
+        # Buscar propietarios que coincidan con la ubicación
+        propietarios = Usuario.objects.filter(
+            user_type='propietario',
+            is_active=True,
+            conjunto=request.user.conjunto,
+            torre=torre,
+            apartamento=apartamento
+        )
+        
+        if not propietarios.exists():
+            logger.warning(f"No se encontraron propietarios en {torre.nombre} - Apto {apartamento}")
+            return JsonResponse({
+                'status': 'error',
+                'message': f"No se encontraron propietarios en la ubicación especificada"
+            }, status=404)
+        
+        # Procesar archivos adjuntos
+        archivos = []
+        for file in request.FILES.getlist('files[]'):
+            # Verificar tamaño
+            if file.size > 10 * 1024 * 1024:  # 10MB
+                return JsonResponse({
+                    'status': 'error',
+                    'message': f'El archivo {file.name} supera el límite de 10MB'
+                }, status=400)
+            
+            # Guardar temporalmente para procesar
+            archivo_contenido = file.read()
+            encoded_file = base64.b64encode(archivo_contenido).decode()
+            
+            attachment = Attachment()
+            attachment.file_content = FileContent(encoded_file)
+            attachment.file_name = FileName(file.name)
+            attachment.file_type = FileType(file.content_type)
+            attachment.disposition = Disposition('attachment')
+            archivos.append(attachment)
+            
+            logger.info(f"Archivo adjunto procesado: {file.name} ({file.size/(1024*1024):.2f}MB)")
+        
+        # Inicializar Sendgrid
+        sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
+        
+        # Enviar notificación a cada propietario
+        enviados = 0
+        for propietario in propietarios:
+            try:
+                # Preparar contexto para la plantilla
+                context = {
+                    'nombre': propietario.nombre,
+                    'mensaje': mensaje,
+                    'ubicacion': propietario.get_ubicacion_completa(),
+                    'conjunto': request.user.conjunto
+                }
+                
+                # Renderizar plantilla HTML
+                try:
+                    html_content = render_to_string('emails/individual_notification.html', context)
+                except Exception as e:
+                    logger.warning(f"Error al renderizar plantilla: {str(e)}. Usando plantilla alternativa.")
+                    html_content = f"""
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    </head>
+                    <body style="margin:0;padding:0;font-family:Arial,sans-serif;background:#f5f7fa;">
+                        <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:8px;padding:20px;">
+                            <h2 style="color:#6015ab;">Notificación Individual</h2>
+                            <p>Estimado(a) {propietario.nombre},</p>
+                            <p>{mensaje}</p>
+                            <p>Esta notificación es exclusiva para su apartamento: {propietario.get_ubicacion_completa()}</p>
+                            <p>Atentamente,<br>Administración {request.user.conjunto.nombre}</p>
+                        </div>
+                    </body>
+                    </html>
+                    """
+                
+                # Versión texto plano
+                plain_content = f"""
+                Estimado/a {propietario.nombre},
+                
+                {mensaje.replace('<br>', '\n')}
+                
+                Esta notificación es exclusiva para su apartamento: {propietario.get_ubicacion_completa()}
+                
+                Atentamente,
+                Administración {request.user.conjunto.nombre}
+                
+                ---------------------------------------------
+                {request.user.conjunto.nombre}
+                Teléfono: {request.user.conjunto.telefono or "(No disponible)"}
+                Email: {request.user.conjunto.email_contacto or "(No disponible)"}
+                """
+                
+                # Crear mensaje de correo
+                message = Mail(
+                    from_email=From(
+                        email=settings.DEFAULT_FROM_EMAIL,
+                        name=f"Administración {request.user.conjunto.nombre}"
+                    ),
+                    to_emails=To(
+                        email=propietario.email,
+                        name=propietario.nombre
+                    ),
+                    subject=Subject('Notificación Individual para su Apartamento'),
+                    plain_text_content=PlainTextContent(plain_content),
+                    html_content=HtmlContent(html_content)
+                )
+                
+                # Añadir metadatos
+                message.header = Header("List-Unsubscribe", f"<mailto:{settings.DEFAULT_FROM_EMAIL}?subject=unsubscribe>")
+                message.header = Header("Precedence", "bulk")
+                message.header = Header("X-Priority", "1")
+                message.header = Header("Importance", "High")
+                message.category = Category("notificaciones_individuales")
+                message.custom_arg = CustomArg("type", "individual_notification")
+                message.reply_to = settings.DEFAULT_FROM_EMAIL
+                
+                # Agregar archivos adjuntos
+                for attachment in archivos:
+                    message.add_attachment(attachment)
+                
+                # Enviar correo
+                response = sg.send(message)
+                if response.status_code in [200, 201, 202]:
+                    enviados += 1
+                    logger.info(f"Notificación individual enviada a {propietario.email}")
+                else:
+                    logger.warning(f"Error al enviar notificación a {propietario.email}: Status {response.status_code}")
+                
+            except Exception as e:
+                logger.error(f"Error procesando notificación para {propietario.email}: {str(e)}")
+                continue
+        
+        # Construir respuesta
+        if enviados > 0:
+            return JsonResponse({
+                'status': 'success',
+                'message': f'Notificación enviada exitosamente a {enviados} propietario(s)',
+                'enviados': enviados,
+                'total': propietarios.count(),
+                'ubicacion': f"{torre.nombre} - Apto {apartamento}"
+            })
+        else:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'No se pudo enviar la notificación a ningún propietario'
+            }, status=500)
+            
+    except Exception as e:
+        logger.error(f"Error general en enviar_notificacion_individual: {str(e)}")
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Error en el servidor: {str(e)}'
+        }, status=500)
 
 
 
@@ -481,6 +799,10 @@ DELAY_BETWEEN_BATCHES = 2  # Segundos entre lotes
 @csrf_protect
 @require_POST
 def send_service_notification(request):
+    """
+    Envía notificaciones sobre disponibilidad de servicios públicos a los propietarios.
+    Versión mejorada que utiliza la nueva plantilla HTML unificada.
+    """
     try:
         # Validar que la petición sea JSON
         if not request.content_type == 'application/json':
@@ -517,8 +839,13 @@ def send_service_notification(request):
         errors = []
 
         # Dividir en lotes
+        BATCH_SIZE = 500
+        DELAY_BETWEEN_BATCHES = 2  # Segundos entre lotes
         batches = [propietarios[i:i + BATCH_SIZE] for i in range(0, total_users, BATCH_SIZE)]
         total_batches = len(batches)
+        
+        # Registrar inicio del proceso
+        logger.info(f"Iniciando envío de notificaciones de {service_type} a {total_users} propietarios en {total_batches} lotes")
 
         for batch_index, batch in enumerate(batches, 1):
             batch_successful = 0
@@ -526,23 +853,58 @@ def send_service_notification(request):
 
             for propietario in batch:
                 try:
-                    # Crear contenido HTML
-                    html_content = render_to_string('emails/service_notification.html', {
+                    # Preparar contexto para la plantilla
+                    context = {
                         'nombre': propietario.nombre,
-                        'service_type': service_type
-                    })
+                        'service_type': service_type,
+                        'fecha': datetime.now().strftime('%d/%m/%Y'),
+                        'conjunto': getattr(propietario, 'conjunto', None)
+                    }
+                    
+                    # Crear contenido HTML utilizando la plantilla
+                    try:
+                        html_content = render_to_string('emails/service_notification.html', context)
+                        logger.debug(f"Plantilla HTML renderizada correctamente para {propietario.email}")
+                    except Exception as e:
+                        logger.warning(f"Error al renderizar plantilla: {str(e)}. Usando plantilla alternativa.")
+                        # Plantilla alternativa simple en caso de error
+                        html_content = f"""
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        </head>
+                        <body style="margin:0;padding:0;font-family:Arial,sans-serif;background:#f5f7fa;">
+                            <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:8px;padding:20px;">
+                                <h2 style="color:#6015ab;">Notificación de {service_type}</h2>
+                                <p>Estimado(a) {propietario.nombre},</p>
+                                <p>Su factura de {service_type} está disponible para retiro en portería.</p>
+                                <p>Por favor, pase a retirarla en horario de atención.</p>
+                                <p>Atentamente,<br>Administración Conjunto Residencial</p>
+                            </div>
+                        </body>
+                        </html>
+                        """
                     
                     # Crear versión texto plano
                     plain_content = f"""
-                        Estimado/a {propietario.nombre},
-                        
-                        Su factura de {service_type} está disponible para retiro en portería.
-                        
-                        Por favor, pase a retirarla en horario de atención.
-                        
-                        Saludos cordiales,
-                        Administración Conjunto Residencial
-                    """
+Estimado/a {propietario.nombre},
+
+Su factura de {service_type} está disponible para retiro en portería.
+Por favor, pase a retirarla en horario de atención.
+
+Atentamente,
+Administración Conjunto Residencial
+
+---------------------------------------------
+Teléfono: (601) XXX-XXXX
+Email: admin@conjunto.com
+Horario: Lunes a Viernes de 8:00 AM a 6:00 PM
+         Sábados de 9:00 AM a 1:00 PM
+
+© 2024 Administración Conjunto Residencial
+"""
 
                     # Crear mensaje con configuraciones anti-spam
                     message = Mail(
@@ -563,6 +925,8 @@ def send_service_notification(request):
                     message.header = Header("List-Unsubscribe", f"<mailto:{settings.DEFAULT_FROM_EMAIL}?subject=unsubscribe>")
                     message.header = Header("Precedence", "bulk")
                     message.header = Header("X-Auto-Response-Suppress", "OOF, AutoReply")
+                    message.header = Header("X-Priority", "1")
+                    message.header = Header("Importance", "High")
                     message.category = Category("notificaciones_servicios")
                     message.custom_arg = CustomArg("type", "service_notification")
                     message.custom_arg = CustomArg("service", service_type)
@@ -574,14 +938,16 @@ def send_service_notification(request):
                     if response.status_code in [200, 201, 202]:
                         batch_successful += 1
                         successful_sends += 1
+                        logger.debug(f"Email enviado exitosamente a {propietario.email}")
                     else:
                         batch_failed += 1
                         failed_sends += 1
                         errors.append({
                             'email': propietario.email,
                             'error': f"Status code {response.status_code}",
-                            'timestamp': time.strftime('%Y-%m-%d %H:%M:%S')
+                            'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                         })
+                        logger.warning(f"Error al enviar email a {propietario.email}: Status code {response.status_code}")
 
                 except Exception as e:
                     batch_failed += 1
@@ -589,17 +955,16 @@ def send_service_notification(request):
                     errors.append({
                         'email': propietario.email,
                         'error': str(e),
-                        'timestamp': time.strftime('%Y-%m-%d %H:%M:%S')
+                        'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     })
+                    logger.error(f"Excepción al enviar email a {propietario.email}: {str(e)}")
 
-            # Calcular y enviar progreso después de cada lote
+            # Calcular y registrar progreso del lote
             progress = (batch_index / total_batches) * 100
-            
-            # Registrar progreso para debugging
-            print(f"Lote {batch_index}/{total_batches}: {progress:.1f}% completado. "
-                  f"Exitosos: {successful_sends}, Fallidos: {failed_sends}")
+            logger.info(f"Lote {batch_index}/{total_batches}: {progress:.1f}% completado. "
+                      f"Exitosos: {batch_successful}, Fallidos: {batch_failed}")
 
-            # Esperar entre lotes
+            # Esperar entre lotes para no sobrecargar la API
             if batch_index < total_batches:
                 time.sleep(DELAY_BETWEEN_BATCHES)
 
@@ -610,19 +975,25 @@ def send_service_notification(request):
             'successful_sends': successful_sends,
             'failed_sends': failed_sends,
             'total_processed': total_users,
-            'total_batches': total_batches,
-            'errors': errors[:5] if errors else None,
-            'completion_percentage': 100
+            'completion_percentage': 100,
+            'service_type': service_type
         }
-
+        
+        # Incluir algunos errores si los hay, pero limitar el número para no hacer la respuesta demasiado grande
+        if errors:
+            final_response['errors_sample'] = errors[:5] if len(errors) > 5 else errors
+            
+        logger.info(f"Envío de notificaciones de {service_type} completado: {successful_sends} exitosos, {failed_sends} fallidos")
         return JsonResponse(final_response)
 
     except json.JSONDecodeError:
+        logger.error("Error en el formato de la petición JSON")
         return JsonResponse({
             'status': 'error',
             'message': 'Error en el formato de la petición JSON'
         }, status=400)
     except Exception as e:
+        logger.error(f"Error general en send_service_notification: {str(e)}")
         return JsonResponse({
             'status': 'error',
             'message': f'Error en el servidor: {str(e)}',
@@ -1404,3 +1775,61 @@ def historial_vehiculos(request, tipo_vehiculo):
     }
     
     return render(request, 'parking/historial_vehiculos.html', context)
+
+
+
+@login_required
+def get_torres(request):
+    """API para obtener las torres del conjunto del usuario logueado"""
+    try:
+        conjunto = request.user.conjunto
+        
+        # Obtener todas las torres activas del conjunto
+        torres = Torre.objects.filter(
+            conjunto=conjunto,
+            activo=True
+        ).values('id', 'nombre')
+        
+        return JsonResponse({
+            'status': 'success',
+            'torres': list(torres)
+        })
+    except Exception as e:
+        logger.error(f"Error al obtener torres: {str(e)}")
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Error al cargar las torres'
+        }, status=500)
+
+@login_required
+def get_apartamentos(request, torre_id):
+    """API para obtener los apartamentos de una torre específica"""
+    try:
+        # Verificar que la torre pertenece al conjunto del usuario
+        torre = get_object_or_404(
+            Torre, 
+            id=torre_id, 
+            conjunto=request.user.conjunto,
+            activo=True
+        )
+        
+        # Generar lista de apartamentos según la configuración de la torre
+        apartamentos = torre.get_apartamentos()
+        
+        # También obtener los apartamentos que ya están ocupados
+        ocupados = Usuario.objects.filter(
+            torre=torre,
+            is_active=True
+        ).values_list('apartamento', flat=True)
+        
+        return JsonResponse({
+            'status': 'success',
+            'apartamentos': apartamentos,
+            'ocupados': list(ocupados)
+        })
+    except Exception as e:
+        logger.error(f"Error al obtener apartamentos: {str(e)}")
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Error al cargar los apartamentos'
+        }, status=500)

@@ -19,6 +19,34 @@ class ConjuntoResidencial(models.Model):
     def __str__(self):
         return self.nombre
 
+
+
+class Torre(models.Model):
+    """Modelo para representar las torres o interiores de un conjunto"""
+    conjunto = models.ForeignKey(ConjuntoResidencial, on_delete=models.CASCADE, related_name='torres')
+    nombre = models.CharField(max_length=100, help_text="Nombre de la torre o interior (ej: Torre 1, Interior A)")
+    numero_pisos = models.PositiveIntegerField(default=1, help_text="Número de pisos en esta torre")
+    aptos_por_piso = models.PositiveIntegerField(default=4, help_text="Número de apartamentos por piso")
+    activo = models.BooleanField(default=True)
+    
+    class Meta:
+        verbose_name = 'Torre/Interior'
+        verbose_name_plural = 'Torres/Interiores'
+        unique_together = [['conjunto', 'nombre']]
+        
+    def __str__(self):
+        return f"{self.nombre} - {self.conjunto.nombre}"
+    
+    def get_apartamentos(self):
+        """Genera la lista de todos los apartamentos en esta torre"""
+        apartamentos = []
+        for piso in range(1, self.numero_pisos + 1):
+            for apto in range(1, self.aptos_por_piso + 1):
+                num_apto = f"{piso}{apto:02d}"  # Por ejemplo: 101, 102, 201, 202
+                apartamentos.append(num_apto)
+        return apartamentos
+
+
 class UsuarioManager(BaseUserManager):
     def create_user(self, cedula, nombre, email, password=None, **extra_fields):
         if not cedula:
@@ -84,6 +112,21 @@ class Usuario(AbstractBaseUser):
         ],
         default='propietario'
     )
+    # Relación con torre (en lugar de un campo fijo)
+    torre = models.ForeignKey(
+    'Torre',  # Usando el nombre como string evita problemas de importación circular
+    on_delete=models.SET_NULL, 
+    null=True, 
+    blank=True,
+    related_name='residentes'
+    )
+    # Campo para el número de apartamento
+    apartamento = models.CharField(
+        max_length=10,
+        blank=True,
+        default='',
+        help_text="Número de apartamento"
+    )
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
@@ -113,3 +156,10 @@ class Usuario(AbstractBaseUser):
 
     def has_module_perms(self, app_label):
         return self.is_superuser
+
+    def get_ubicacion_completa(self):
+        """Método para obtener la ubicación completa del propietario"""
+        if self.user_type != 'propietario' or not self.torre or not self.apartamento:
+            return "Sin ubicación asignada"
+        
+        return f"{self.torre.nombre} - Apto {self.apartamento}"

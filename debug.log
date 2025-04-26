@@ -4514,3 +4514,507 @@ Watching for file changes with StatReloader
 "GET /notificaciones/ HTTP/1.1" 200 6054
 "POST /accounts/logout/ HTTP/1.1" 302 0
 "GET /accounts/login/ HTTP/1.1" 200 5292
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 200 5141
+"POST /accounts/login/ HTTP/1.1" 200 5304
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/select-conjunto/ HTTP/1.1" 200 2551
+"POST /accounts/select-conjunto/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"POST /accounts/logout/ HTTP/1.1" 302 0
+"GET /accounts/login/ HTTP/1.1" 200 5292
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"GET /leerscaner/ HTTP/1.1" 200 4734
+"GET /static/css/leerscaner.css HTTP/1.1" 200 4800
+"GET /validar_qr/gAAAAABoBZmeZBMbM55WXfXITak3l_dGP5CrXjc-Vz6TYRGpEVTSSn6EBDenYoNSgn4qDFdpQ4b8FEqd5shZWAqGzEAHNWj3GI11KqFnMg9A0YvEFGhO9HESEJ8qgHvdODB4BEOPZhF3sxl6rjfHoix9zT3MXZau0Q==/?source=scan HTTP/1.1" 200 2166
+"GET /static/css/validar_qr.css HTTP/1.1" 200 3534
+"GET /static/js/canvas.js HTTP/1.1" 200 1050
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"GET /leerscaner/ HTTP/1.1" 200 4734
+"GET /validar_qr/gAAAAABoBZmeZBMbM55WXfXITak3l_dGP5CrXjc-Vz6TYRGpEVTSSn6EBDenYoNSgn4qDFdpQ4b8FEqd5shZWAqGzEAHNWj3GI11KqFnMg9A0YvEFGhO9HESEJ8qgHvdODB4BEOPZhF3sxl6rjfHoix9zT3MXZau0Q==/?source=scan HTTP/1.1" 200 2268
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"GET /leerscaner/ HTTP/1.1" 302 0
+"GET /accounts/login/?next=/leerscaner/ HTTP/1.1" 200 5141
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /leerscaner/ HTTP/1.1" 200 4734
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"GET /leerscaner/ HTTP/1.1" 200 4734
+"GET /validar_qr/gAAAAABoBZmeZBMbM55WXfXITak3l_dGP5CrXjc-Vz6TYRGpEVTSSn6EBDenYoNSgn4qDFdpQ4b8FEqd5shZWAqGzEAHNWj3GI11KqFnMg9A0YvEFGhO9HESEJ8qgHvdODB4BEOPZhF3sxl6rjfHoix9zT3MXZau0Q==/?source=scan HTTP/1.1" 200 477
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"GET /leerscaner/ HTTP/1.1" 200 4734
+"GET /validar_qr/gAAAAABoBZmeZBMbM55WXfXITak3l_dGP5CrXjc-Vz6TYRGpEVTSSn6EBDenYoNSgn4qDFdpQ4b8FEqd5shZWAqGzEAHNWj3GI11KqFnMg9A0YvEFGhO9HESEJ8qgHvdODB4BEOPZhF3sxl6rjfHoix9zT3MXZau0Q==/?source=scan HTTP/1.1" 200 477
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"GET /leerscaner/ HTTP/1.1" 200 4734
+"GET /validar_qr/gAAAAABoBZmeZBMbM55WXfXITak3l_dGP5CrXjc-Vz6TYRGpEVTSSn6EBDenYoNSgn4qDFdpQ4b8FEqd5shZWAqGzEAHNWj3GI11KqFnMg9A0YvEFGhO9HESEJ8qgHvdODB4BEOPZhF3sxl6rjfHoix9zT3MXZau0Q==/?source=scan HTTP/1.1" 200 477
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"GET /zonas_comunes/ HTTP/1.1" 200 9022
+"GET /salas/ HTTP/1.1" 200 8073
+"GET /sala/1/calendario/ HTTP/1.1" 200 14976
+"GET /static/css/calendario.css HTTP/1.1" 304 0
+"GET /api/sala/1/reservas/?start=2025-03-31&end=2025-05-12&_=1745516877671 HTTP/1.1" 200 4021
+"GET /api/sala/1/horarios/2025-04-24/ HTTP/1.1" 200 379
+"GET /sala/3/calendario/ HTTP/1.1" 200 14990
+"GET /api/sala/3/reservas/?start=2025-03-31&end=2025-05-12&_=1745516915930 HTTP/1.1" 200 3999
+"GET /sala/2/calendario/ HTTP/1.1" 200 14978
+"GET /api/sala/2/reservas/?start=2025-03-31&end=2025-05-12&_=1745516921466 HTTP/1.1" 200 4021
+"GET /zonas_comunes/ HTTP/1.1" 200 9022
+"GET /salas/ HTTP/1.1" 200 8073
+"GET /zonas_comunes/ HTTP/1.1" 200 9022
+"GET /parking/ HTTP/1.1" 200 13006
+"GET /carros/ HTTP/1.1" 200 4897
+"GET /parking/ HTTP/1.1" 200 13006
+"GET /motos/ HTTP/1.1" 200 4897
+"GET /parking/ HTTP/1.1" 200 13006
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /noti_generales/ HTTP/1.1" 200 11232
+"GET /static/css/noti_generales.css HTTP/1.1" 200 13609
+"POST /notifications/send/ HTTP/1.1" 200 80
+"POST /notifications/send/ HTTP/1.1" 200 80
+"GET /noti_individual/ HTTP/1.1" 200 10897
+"GET /static/css/noti_individual.css HTTP/1.1" 200 13427
+"GET /noti_publicos/ HTTP/1.1" 200 23620
+"GET /static/css/noti_publicos.css HTTP/1.1" 200 14885
+Internal Server Error: /api/send-service-notification/
+"POST /api/send-service-notification/ HTTP/1.1" 500 197
+Internal Server Error: /api/send-service-notification/
+"POST /api/send-service-notification/ HTTP/1.1" 500 197
+Internal Server Error: /api/send-service-notification/
+"POST /api/send-service-notification/ HTTP/1.1" 500 197
+Internal Server Error: /api/send-service-notification/
+"POST /api/send-service-notification/ HTTP/1.1" 500 197
+Internal Server Error: /api/send-service-notification/
+"POST /api/send-service-notification/ HTTP/1.1" 500 197
+Internal Server Error: /api/send-service-notification/
+"POST /api/send-service-notification/ HTTP/1.1" 500 197
+Internal Server Error: /api/send-service-notification/
+"POST /api/send-service-notification/ HTTP/1.1" 500 197
+Internal Server Error: /api/send-service-notification/
+"POST /api/send-service-notification/ HTTP/1.1" 500 197
+Internal Server Error: /api/send-service-notification/
+"POST /api/send-service-notification/ HTTP/1.1" 500 197
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /noti_publicos/ HTTP/1.1" 200 23620
+Internal Server Error: /api/send-service-notification/
+"POST /api/send-service-notification/ HTTP/1.1" 500 197
+Internal Server Error: /api/send-service-notification/
+"POST /api/send-service-notification/ HTTP/1.1" 500 197
+Internal Server Error: /api/send-service-notification/
+"POST /api/send-service-notification/ HTTP/1.1" 500 197
+Internal Server Error: /api/send-service-notification/
+"POST /api/send-service-notification/ HTTP/1.1" 500 197
+Internal Server Error: /api/send-service-notification/
+"POST /api/send-service-notification/ HTTP/1.1" 500 197
+Internal Server Error: /api/send-service-notification/
+"POST /api/send-service-notification/ HTTP/1.1" 500 197
+Internal Server Error: /api/send-service-notification/
+"POST /api/send-service-notification/ HTTP/1.1" 500 197
+C:\Users\AlipioD\KAP\Kislev\kislevsmart\settings.py changed, reloading.
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /noti_publicos/ HTTP/1.1" 200 23620
+Internal Server Error: /api/send-service-notification/
+"POST /api/send-service-notification/ HTTP/1.1" 500 197
+C:\Users\AlipioD\KAP\Kislev\kislevsmart\settings.py changed, reloading.
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /noti_publicos/ HTTP/1.1" 200 23620
+Internal Server Error: /api/send-service-notification/
+"POST /api/send-service-notification/ HTTP/1.1" 500 197
+C:\Users\AlipioD\KAP\Kislev\kislevsmart\settings.py changed, reloading.
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /noti_publicos/ HTTP/1.1" 200 23620
+Internal Server Error: /api/send-service-notification/
+"POST /api/send-service-notification/ HTTP/1.1" 500 197
+C:\Users\AlipioD\KAP\Kislev\kislevsmart\settings.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\AlipioD\KAP\Kislev\kislevsmart\settings.py changed, reloading.
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /noti_generales/ HTTP/1.1" 200 11232
+"POST /notifications/send/ HTTP/1.1" 200 80
+"POST /notifications/send/ HTTP/1.1" 200 80
+"GET /noti_publicos/ HTTP/1.1" 200 23620
+Internal Server Error: /api/send-service-notification/
+"POST /api/send-service-notification/ HTTP/1.1" 500 197
+Internal Server Error: /api/send-service-notification/
+"POST /api/send-service-notification/ HTTP/1.1" 500 197
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /noti_generales/ HTTP/1.1" 200 11232
+"POST /notifications/send/ HTTP/1.1" 200 80
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"POST /accounts/logout/ HTTP/1.1" 302 0
+"GET /accounts/login/ HTTP/1.1" 200 5292
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/select-conjunto/ HTTP/1.1" 200 2551
+"POST /accounts/select-conjunto/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /noti_generales/ HTTP/1.1" 200 11232
+"POST /notifications/send/ HTTP/1.1" 200 80
+C:\Users\AlipioD\KAP\Kislev\kislevsmart\settings.py changed, reloading.
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /noti_publicos/ HTTP/1.1" 200 23620
+Internal Server Error: /api/send-service-notification/
+"POST /api/send-service-notification/ HTTP/1.1" 500 197
+C:\Users\AlipioD\KAP\Kislev\kislevsmart\settings.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\AlipioD\KAP\Kislev\kislevsmart\settings.py changed, reloading.
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"POST /accounts/logout/ HTTP/1.1" 302 0
+"GET /accounts/login/ HTTP/1.1" 200 5292
+"POST /accounts/login/ HTTP/1.1" 200 5314
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/select-conjunto/ HTTP/1.1" 200 2551
+"POST /accounts/select-conjunto/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /noti_generales/ HTTP/1.1" 200 11232
+"POST /notifications/send/ HTTP/1.1" 200 48
+"GET /noti_publicos/ HTTP/1.1" 200 23620
+"POST /api/send-service-notification/ HTTP/1.1" 200 208
+"POST /accounts/logout/ HTTP/1.1" 302 0
+"GET /accounts/login/ HTTP/1.1" 200 5292
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/select-conjunto/ HTTP/1.1" 200 2551
+"POST /accounts/select-conjunto/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /noti_generales/ HTTP/1.1" 200 11232
+"POST /notifications/send/ HTTP/1.1" 200 48
+"GET /noti_individual/ HTTP/1.1" 200 10897
+"GET /noti_generales/ HTTP/1.1" 200 11232
+Forbidden (CSRF token missing or incorrect.): /api/send-service-notification/
+"POST /api/send-service-notification/ HTTP/1.1" 403 2530
+Forbidden (CSRF token missing or incorrect.): /api/send-service-notification/
+"POST /api/send-service-notification/ HTTP/1.1" 403 2530
+Forbidden (CSRF token missing or incorrect.): /api/send-service-notification/
+"POST /api/send-service-notification/ HTTP/1.1" 403 2530
+Forbidden (CSRF token missing or incorrect.): /api/send-service-notification/
+"POST /api/send-service-notification/ HTTP/1.1" 403 2530
+"GET /notificaciones/ HTTP/1.1" 302 0
+"GET /accounts/login/?next=/notificaciones/ HTTP/1.1" 200 5141
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/select-conjunto/ HTTP/1.1" 200 2551
+"POST /accounts/select-conjunto/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /noti_publicos/ HTTP/1.1" 200 23620
+"POST /api/send-service-notification/ HTTP/1.1" 200 208
+"POST /api/send-service-notification/ HTTP/1.1" 200 208
+"POST /api/send-service-notification/ HTTP/1.1" 200 208
+"GET /dashboard/ HTTP/1.1" 200 43402
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 127
+"GET /dashboard/ HTTP/1.1" 200 43402
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 127
+"POST /accounts/logout/ HTTP/1.1" 302 0
+"GET /accounts/login/ HTTP/1.1" 200 5292
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/select-conjunto/ HTTP/1.1" 200 2551
+"POST /accounts/select-conjunto/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /dashboard/ HTTP/1.1" 200 43404
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=2 HTTP/1.1" 200 127
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"POST /accounts/logout/ HTTP/1.1" 302 0
+"GET /accounts/login/ HTTP/1.1" 200 5292
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/select-conjunto/ HTTP/1.1" 200 2551
+"POST /accounts/select-conjunto/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /dashboard/ HTTP/1.1" 200 43402
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 127
+"GET /dashboard/?fecha=2025-04-23 HTTP/1.1" 200 43402
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 127
+"GET /dashboard/?fecha=2025-04-22 HTTP/1.1" 200 43402
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 127
+"GET /dashboard/?fecha=2025-04-24 HTTP/1.1" 200 43402
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 127
+"GET /dashboard/?a%C3%B1o=2024&conjunto_id=1&fecha=2025-04-24 HTTP/1.1" 200 43402
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 127
+"GET /visitor-stats/?filter_type=hour&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 310
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"POST /bienvenida/ HTTP/1.1" 200 124
+"GET /valqr/ZGF2aWQucm9qYXNAa2lzbGV2Lm5ldC5jbw==/ HTTP/1.1" 200 1665
+"GET /static/css/formenvioQR.css HTTP/1.1" 200 2578
+"GET /static/images/QR.png HTTP/1.1" 200 151426
+"GET /accounts/visor_admin/? HTTP/1.1" 200 2482
+"POST /accounts/logout/ HTTP/1.1" 302 0
+"GET /accounts/login/ HTTP/1.1" 200 5292
+"POST /accounts/login/ HTTP/1.1" 200 5304
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"GET /leerscaner/ HTTP/1.1" 200 4734
+"GET /validar_qr/gAAAAABoCrMQyKpYvu8C733vu2_4xARozTH2EAcAn1WCq33A5WP2bGDmB5J5gQhI1R_QevP4GH_GUYoFnuKmn35YnPKq1q-SO6ZI3Ove_XQ5oTBFVrn4qq9I--UUwm2NZ0vTsIFZzDLKuS0MFCJRi-8NimoQlZV3gQ==/?source=scan HTTP/1.1" 200 2170
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"GET /leerscaner/ HTTP/1.1" 200 4734
+"GET /validar_qr/gAAAAABoCrMQyKpYvu8C733vu2_4xARozTH2EAcAn1WCq33A5WP2bGDmB5J5gQhI1R_QevP4GH_GUYoFnuKmn35YnPKq1q-SO6ZI3Ove_XQ5oTBFVrn4qq9I--UUwm2NZ0vTsIFZzDLKuS0MFCJRi-8NimoQlZV3gQ==/?source=scan HTTP/1.1" 200 2272
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"POST /accounts/logout/ HTTP/1.1" 302 0
+"GET /accounts/login/ HTTP/1.1" 200 5292
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/select-conjunto/ HTTP/1.1" 200 2551
+"POST /accounts/select-conjunto/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /dashboard/ HTTP/1.1" 200 43402
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 127
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /zonas_comunes/ HTTP/1.1" 200 9022
+"GET /parking/ HTTP/1.1" 200 13006
+"GET /carros/ HTTP/1.1" 200 4897
+"GET /parking/ HTTP/1.1" 200 13006
+"POST /accounts/logout/ HTTP/1.1" 302 0
+"GET /accounts/login/ HTTP/1.1" 200 5292
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"GET /leerscaner/ HTTP/1.1" 200 4734
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"GET /bienvenida/ HTTP/1.1" 200 26745
+"POST /bienvenida/ HTTP/1.1" 200 116
+"GET /valqr/eWFnYW1pZHNhQGhvdG1haWwuY29t/ HTTP/1.1" 200 1665
+"GET /accounts/control_porteria/? HTTP/1.1" 200 2487
+"GET /leerscaner/ HTTP/1.1" 302 0
+"GET /accounts/login/?next=/leerscaner/ HTTP/1.1" 200 5141
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"GET /leerscaner/ HTTP/1.1" 200 4734
+"GET /validar_qr/gAAAAABoCrPqztqa-9bzjm3EwGWHqSNKWFaNTvPDvYwjhfMpBfnTKIQW542_UyLG73h9L-yw4W0XKA5sSslzFvYRSqTVaB-GKtGKZP6wKkJ5iFey-tuVyHeQ6SFVObdl5zsLUz0DjI0NsLsbghx4RKfsJViDz9n91A==/?source=scan HTTP/1.1" 200 1957
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"GET /leerscaner/ HTTP/1.1" 200 4734
+"GET /validar_qr/gAAAAABoCrPqztqa-9bzjm3EwGWHqSNKWFaNTvPDvYwjhfMpBfnTKIQW542_UyLG73h9L-yw4W0XKA5sSslzFvYRSqTVaB-GKtGKZP6wKkJ5iFey-tuVyHeQ6SFVObdl5zsLUz0DjI0NsLsbghx4RKfsJViDz9n91A==/?source=scan HTTP/1.1" 200 477
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"POST /accounts/logout/ HTTP/1.1" 302 0
+"GET /accounts/login/ HTTP/1.1" 200 5292
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/select-conjunto/ HTTP/1.1" 200 2551
+"POST /accounts/select-conjunto/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /dashboard/ HTTP/1.1" 200 46017
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 127
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /dashboard/ HTTP/1.1" 200 46017
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 127
+"GET /visitor-stats/?filter_type=hour&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 310
+"GET /visitor-stats/?filter_type=hour&month=4&year=2025&conjunto_id=1 HTTP/1.1" 200 310
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /noti_generales/ HTTP/1.1" 200 11232
+"POST /notifications/send/ HTTP/1.1" 200 48
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /zonas_comunes/ HTTP/1.1" 200 9022
+"GET /salas/ HTTP/1.1" 200 8073
+"GET /sala/1/calendario/ HTTP/1.1" 200 14976
+"GET /api/sala/1/reservas/?start=2025-03-31&end=2025-05-12&_=1745540361715 HTTP/1.1" 200 4021
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /zonas_comunes/ HTTP/1.1" 200 9022
+"GET /parking/ HTTP/1.1" 200 13006
+"GET /motos/ HTTP/1.1" 200 4897
+"GET /parking/ HTTP/1.1" 200 13006
+"GET /parking/ HTTP/1.1" 200 13006
+"POST /accounts/logout/ HTTP/1.1" 302 0
+"GET /accounts/login/ HTTP/1.1" 200 5292
+"GET /accounts/password_reset/ HTTP/1.1" 200 955
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 200 5141
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/select-conjunto/ HTTP/1.1" 200 2551
+"POST /accounts/select-conjunto/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /zonas_comunes/ HTTP/1.1" 200 9022
+"GET /salas/ HTTP/1.1" 200 8073
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /noti_publicos/ HTTP/1.1" 200 23620
+"POST /api/send-service-notification/ HTTP/1.1" 200 208
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /noti_generales/ HTTP/1.1" 200 11232
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 200 5141
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/select-conjunto/ HTTP/1.1" 200 2551
+"POST /accounts/select-conjunto/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /noti_generales/ HTTP/1.1" 200 11232
+"GET /noti_individual/ HTTP/1.1" 200 20954
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /noti_generales/ HTTP/1.1" 200 21171
+"POST /notifications/send/ HTTP/1.1" 200 48
+"POST /notifications/send/ HTTP/1.1" 200 48
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /noti_generales/ HTTP/1.1" 200 21404
+"POST /notifications/send/ HTTP/1.1" 200 48
+C:\Users\AlipioD\KAP\Kislev\kislevsmart\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\AlipioD\KAP\Kislev\kislevsmart\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /noti_generales/ HTTP/1.1" 200 21308
+"POST /notifications/send/ HTTP/1.1" 200 92
+"POST /notifications/send/ HTTP/1.1" 200 92
+C:\Users\AlipioD\KAP\Kislev\kislevsmart\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\AlipioD\KAP\Kislev\kislevsmart\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /noti_generales/ HTTP/1.1" 200 21308
+"POST /notifications/send/ HTTP/1.1" 200 91
+C:\Users\AlipioD\KAP\Kislev\kislevsmart\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /noti_generales/ HTTP/1.1" 200 21308
+"POST /notifications/send/ HTTP/1.1" 200 92
+C:\Users\AlipioD\KAP\Kislev\kislevsmart\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 200 5141
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/select-conjunto/ HTTP/1.1" 200 2551
+"POST /accounts/select-conjunto/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /noti_publicos/ HTTP/1.1" 200 23620
+"POST /api/send-service-notification/ HTTP/1.1" 200 196
+"POST /api/send-service-notification/ HTTP/1.1" 200 195
+"POST /api/send-service-notification/ HTTP/1.1" 200 195
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /noti_publicos/ HTTP/1.1" 200 23620
+"POST /api/send-service-notification/ HTTP/1.1" 200 195
+"POST /api/send-service-notification/ HTTP/1.1" 200 195
+"POST /api/send-service-notification/ HTTP/1.1" 200 196
+"GET /noti_generales/ HTTP/1.1" 200 21308
+"GET /noti_publicos/ HTTP/1.1" 200 23620
+"GET /noti_individual/ HTTP/1.1" 200 20954
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+- Broken pipe from ('127.0.0.1', 50259)
+
+"GET /dashboard/ HTTP/1.1" 200 43402
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 127
+"GET /dashboard/?fecha=2025-04-24 HTTP/1.1" 200 46017
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 127
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 200 5141
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/select-conjunto/ HTTP/1.1" 200 2551
+"POST /accounts/select-conjunto/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /noti_generales/ HTTP/1.1" 200 21308
+"POST /notifications/send/ HTTP/1.1" 200 91
+"GET /noti_publicos/ HTTP/1.1" 200 23620
+"POST /api/send-service-notification/ HTTP/1.1" 200 195
+"POST /api/send-service-notification/ HTTP/1.1" 200 195
+"POST /api/send-service-notification/ HTTP/1.1" 200 196
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /noti_generales/ HTTP/1.1" 200 21308
+"POST /notifications/send/ HTTP/1.1" 200 91
+C:\Users\AlipioD\KAP\Kislev\accounts\models.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\AlipioD\KAP\Kislev\accounts\models.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\AlipioD\KAP\Kislev\accounts\models.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\AlipioD\KAP\Kislev\kislevsmart\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\AlipioD\KAP\Kislev\kislevsmart\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\AlipioD\KAP\Kislev\kislevsmart\views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 200 5141
+"POST /accounts/login/ HTTP/1.1" 200 5304
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/select-conjunto/ HTTP/1.1" 200 2551
+"POST /accounts/select-conjunto/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /noti_individual/ HTTP/1.1" 200 37995
+Not Found: /api/torres/
+"GET /api/torres/ HTTP/1.1" 404 5771
+C:\Users\AlipioD\KAP\Kislev\kislevsmart\urls.py changed, reloading.
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /noti_individual/ HTTP/1.1" 200 37995
+"GET /api/torres/ HTTP/1.1" 200 703
+"GET /api/torres/1/apartamentos/ HTTP/1.1" 200 403
+"GET /api/torres/16/apartamentos/ HTTP/1.1" 200 403
+"GET /api/torres/1/apartamentos/ HTTP/1.1" 200 403
+"GET /api/torres/7/apartamentos/ HTTP/1.1" 200 408
+"POST /api/send-individual-notification/ HTTP/1.1" 200 155
+"GET /api/torres/8/apartamentos/ HTTP/1.1" 200 409
+"GET /api/torres/9/apartamentos/ HTTP/1.1" 200 415
+"GET /api/torres/10/apartamentos/ HTTP/1.1" 200 403
+"GET /api/torres/16/apartamentos/ HTTP/1.1" 200 403
+"GET /api/torres/10/apartamentos/ HTTP/1.1" 200 403
+"GET /api/torres/5/apartamentos/ HTTP/1.1" 200 403
+"GET /api/torres/6/apartamentos/ HTTP/1.1" 200 403
+"GET /api/torres/11/apartamentos/ HTTP/1.1" 200 403
+"GET /api/torres/8/apartamentos/ HTTP/1.1" 200 409

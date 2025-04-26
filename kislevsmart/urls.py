@@ -50,6 +50,9 @@ urlpatterns = [
     # APIs
     path('api/send-service-notification/', views.send_service_notification, name='send_service_notification'),
     path('notifications/send/', views.procesar_envio, name='procesar_envio'),
+    path('api/torres/', views.get_torres, name='get_torres'),
+    path('api/torres/<int:torre_id>/apartamentos/', views.get_apartamentos, name='get_apartamentos'),
+    path('api/send-individual-notification/', views.enviar_notificacion_individual, name='enviar_notificacion_individual'),
     
     # Rutas de salas
     path('salas/', views.SalaListView.as_view(), name='lista_salas'),

@@ -10,9 +10,247 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/restricciones.css' %}">
     <link rel="stylesheet" href="{% static 'css/noti_individual.css' %}">
+    <style>
+        /* Estilos adicionales para la lista de archivos */
+        .file-list {
+            margin-top: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 8px;
+        }
+        
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.15);
+            border-radius: 5px;
+            padding: 8px 12px;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: white;
+        }
+        
+        .file-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .remove-file {
+            cursor: pointer;
+            color: #ff4d4d;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            padding: 0 5px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        
+        .remove-file:hover {
+            opacity: 1;
+        }
+        
+        .file-preview {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+        }
+        
+        .file-icon {
+            margin-right: 8px;
+            opacity: 0.7;
+        }
+        
+        .file-name {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+        }
+        
+        .file-size {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin-left: 8px;
+        }
+
+        /* Estilos para cuando no hay archivos */
+        .no-files {
+            color: rgba(255, 255, 255, 0.7);
+            text-align: center;
+            padding: 10px;
+            font-style: italic;
+        }
+
+        /* Animación para añadir archivos */
+        @keyframes fileAddedAnimation {
+            0% { transform: translateY(10px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        
+        .file-item {
+            animation: fileAddedAnimation 0.3s ease-out forwards;
+        }
+        
+        /* Estilos para el indicador de carga */
+        .loading-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            color: white;
+            font-size: 18px;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid #7f00ff;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Estilos para notificaciones de éxito */
+        .success-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            border-radius: 10px;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            z-index: 9998;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+            max-width: 400px;
+        }
+
+        .notification-icon {
+            background: linear-gradient(to right, #e100ff, #7f00ff);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 18px;
+        }
+
+        .notification-message {
+            flex: 1;
+        }
+
+        .notification-message p {
+            margin: 0;
+            color: #333;
+            font-size: 15px;
+        }
+
+        .notification-details {
+            margin-top: 5px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        /* Estilos para el spinner dentro del botón */
+        .btn .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 2px solid white;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+        
+        /* Estilos para los select */
+        select:disabled {
+            background-color: rgba(255, 255, 255, 0.1);
+            cursor: not-allowed;
+        }
+        
+        /* Estilos para opciones en el select */
+        select option[data-ocupado="true"] {
+            background-color: rgba(126, 0, 255, 0.1);
+            font-weight: bold;
+        }
+        
+        select option[data-ocupado="false"] {
+            color: #888;
+            font-style: italic;
+        }
+        
+        /* Loader para los selects mientras cargan */
+        .select-loading {
+            position: relative;
+        }
+        
+        .select-loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 2px solid #7f00ff;
+            animation: spin 1s linear infinite;
+        }
+        
+        /* Estilos para el badge de destinatario */
+        .destinatario-badge {
+            display: inline-block;
+            background: linear-gradient(45deg, rgba(126, 0, 255, 0.1), rgba(225, 0, 255, 0.1));
+            padding: 10px 15px;
+            border-radius: 20px;
+            margin-top: 10px;
+            border: 1px solid rgba(126, 0, 255, 0.2);
+            color: white;
+            font-weight: 500;
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+        
+        .destinatario-badge.error {
+            background: linear-gradient(45deg, rgba(255, 0, 0, 0.1), rgba(255, 100, 0, 0.1));
+            border: 1px solid rgba(255, 0, 0, 0.2);
+        }
+        
+        .destinatario-badge .icon {
+            margin-right: 8px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
 
 <body>
+
     {% csrf_token %}
     <div class="envelope-background">
         <!-- Repetir 6 veces para diferentes sobres -->
@@ -67,30 +305,23 @@
                         <path
                             d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1" />
                     </svg>
-                    Ubicación
+                    Ubicación del Propietario
                 </h2>
                 <div class="selects-container">
                     <div class="select-group">
-                        <label for="tower">Interior/Torre</label>
+                        <label for="tower">Torre/Interior</label>
                         <select id="tower" required>
-                            <option value="">Seleccionar...</option>
-                            <option value="int1">Interior 1</option>
-                            <option value="int2">Interior 2</option>
-                            <option value="torre1">Torre 1</option>
-                            <option value="torre2">Torre 2</option>
+                            <option value="">Cargando torres...</option>
                         </select>
                     </div>
                     <div class="select-group">
                         <label for="apartment">Apartamento</label>
-                        <select id="apartment" required>
-                            <option value="">Seleccionar...</option>
-                            <option value="101">101</option>
-                            <option value="102">102</option>
-                            <option value="201">201</option>
-                            <option value="202">202</option>
+                        <select id="apartment" required disabled>
+                            <option value="">Seleccione torre primero</option>
                         </select>
                     </div>
                 </div>
+                <div id="destinatario-info" style="display: none;"></div>
             </div>
 
             <!-- Sección de mensaje -->
@@ -105,23 +336,38 @@
                 <textarea id="message" placeholder="Escribe tu mensaje aquí..." required></textarea>
             </div>
 
-            <!-- Sección de botones -->
-            <div class="buttons-container">
-                <input type="file" id="fileInput" class="file-input" accept=".pdf,.doc,.docx,.xls,.xlsx">
-                <label for="fileInput" class="btn btn-secondary">
+            <!-- Sección de archivos adjuntos -->
+            <div class="files-section">
+                <h2 class="form-section-title">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path
                             d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l8.57-8.57A4 4 0 1118 8.84l-8.59 8.57a2 2 0 01-2.83-2.83l8.49-8.48" />
                     </svg>
-                    Adjuntar Archivo
-                </label>
+                    Documentos Adjuntos
+                </h2>
+                
+                <div id="fileList" class="file-list">
+                    <div class="no-files">No hay archivos adjuntos</div>
+                </div>
+                
+                <!-- Sección de botones -->
+                <div class="buttons-container">
+                    <input type="file" id="fileInput" class="file-input" accept="*/*" multiple>
+                    <label for="fileInput" class="btn btn-secondary">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path
+                                d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l8.57-8.57A4 4 0 1118 8.84l-8.59 8.57a2 2 0 01-2.83-2.83l8.49-8.48" />
+                        </svg>
+                        Adjuntar Documentos
+                    </label>
 
-                <button type="button" class="btn btn-primary" onclick="showConfirmation()">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
-                    </svg>
-                    Enviar Mensaje
-                </button>
+                    <button type="button" class="btn btn-primary" onclick="showConfirmation()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+                        </svg>
+                        Enviar Mensaje
+                    </button>
+                </div>
             </div>
         </form>
     </div>
@@ -144,46 +390,121 @@
         // Elementos del DOM
         const form = document.getElementById('notificationForm');
         const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
         const modalBackdrop = document.getElementById('confirmModal');
+        
+        // Para almacenar los archivos seleccionados
+        let selectedFiles = [];
 
         // Configuración
-        const ALLOWED_FILE_TYPES = [
-            'application/pdf',
-            'application/msword',
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            'application/vnd.ms-excel',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        ];
         const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+        const MAX_FILES = 5; // Máximo 5 archivos
+
+        // Función para formatear el tamaño del archivo
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Función para obtener el ícono según el tipo de archivo
+        function getFileIcon(fileType) {
+            if (!fileType) {
+                return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>';
+            } else if (fileType.includes('pdf')) {
+                return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>';
+            } else if (fileType.includes('word') || fileType.includes('doc')) {
+                return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>';
+            } else if (fileType.includes('excel') || fileType.includes('sheet')) {
+                return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="12" x2="8" y2="12"></line><line x1="16" y1="16" x2="8" y2="16"></line><line x1="16" y1="8" x2="8" y2="8"></line></svg>';
+            } else if (fileType.includes('image') || fileType.includes('png') || fileType.includes('jpg') || fileType.includes('jpeg') || fileType.includes('gif')) {
+                return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>';
+            } else if (fileType.includes('video') || fileType.includes('mp4') || fileType.includes('avi') || fileType.includes('mov')) {
+                return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>';
+            } else if (fileType.includes('audio') || fileType.includes('mp3') || fileType.includes('wav')) {
+                return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>';
+            } else if (fileType.includes('zip') || fileType.includes('rar') || fileType.includes('tar') || fileType.includes('7z')) {
+                return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>';
+            } else if (fileType.includes('text') || fileType.includes('txt')) {
+                return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>';
+            } else {
+                return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>';
+            }
+        }
 
         // Manejador del input de archivo
-        fileInput.addEventListener('change', function (e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            // Validar tipo de archivo
-            if (!ALLOWED_FILE_TYPES.includes(file.type)) {
-                alert('Por favor, seleccione un archivo PDF, Word o Excel.');
-                fileInput.value = '';
+        fileInput.addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            
+            if (selectedFiles.length + files.length > MAX_FILES) {
+                alert(`Solo puede adjuntar un máximo de ${MAX_FILES} archivos.`);
                 return;
             }
-
-            // Validar tamaño
-            if (file.size > MAX_FILE_SIZE) {
-                alert('El archivo no debe superar los 10MB.');
-                fileInput.value = '';
-                return;
-            }
-
-            // Mostrar nombre del archivo seleccionado
-            const label = document.querySelector('.file-label');
-            label.innerHTML = `
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l8.57-8.57A4 4 0 1118 8.84l-8.59 8.57a2 2 0 01-2.83-2.83l8.49-8.48"/>
-        </svg>
-        ${file.name}
-    `;
+            
+            // Validar cada archivo
+            const validFiles = files.filter(file => {
+                // Validar solo el tamaño
+                if (file.size > MAX_FILE_SIZE) {
+                    alert(`El archivo "${file.name}" supera el límite de 10MB.`);
+                    return false;
+                }
+                
+                return true;
+            });
+            
+            // Agregar los archivos válidos a la lista
+            validFiles.forEach(file => {
+                // Crear un objeto con ID único para cada archivo
+                const fileObj = {
+                    id: 'file_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9),
+                    file: file
+                };
+                
+                selectedFiles.push(fileObj);
+                
+                // Actualizar la UI
+                updateFileList();
+            });
+            
+            // Limpiar el input para permitir seleccionar el mismo archivo
+            fileInput.value = '';
         });
+
+        // Función para actualizar la lista de archivos en la UI
+        function updateFileList() {
+            // Limpiar la lista
+            fileList.innerHTML = '';
+            
+            if (selectedFiles.length === 0) {
+                fileList.innerHTML = '<div class="no-files">No hay archivos adjuntos</div>';
+                return;
+            }
+            
+            // Agregar cada archivo a la lista
+            selectedFiles.forEach(fileObj => {
+                const file = fileObj.file;
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.dataset.id = fileObj.id;
+                fileItem.innerHTML = `
+                    <div class="file-preview">
+                        <span class="file-icon">${getFileIcon(file.type)}</span>
+                        <span class="file-name">${file.name}</span>
+                        <span class="file-size">${formatFileSize(file.size)}</span>
+                    </div>
+                    <button type="button" class="remove-file" onclick="removeFile('${fileObj.id}')">×</button>
+                `;
+                fileList.appendChild(fileItem);
+            });
+        }
+
+        // Función para eliminar un archivo
+        window.removeFile = function(fileId) {
+            selectedFiles = selectedFiles.filter(fileObj => fileObj.id !== fileId);
+            updateFileList();
+        };
 
         // Funciones para el modal
         function showConfirmation() {
@@ -194,6 +515,13 @@
 
             if (!tower || !apartment || !message.trim()) {
                 alert('Por favor complete todos los campos requeridos.');
+                return;
+            }
+
+            // Verificar que el apartamento seleccionado tenga propietarios
+            const apartmentOption = document.getElementById('apartment').options[document.getElementById('apartment').selectedIndex];
+            if (apartmentOption.getAttribute('data-ocupado') !== 'true') {
+                alert('No hay propietarios registrados en este apartamento.');
                 return;
             }
 
@@ -213,56 +541,332 @@
             }, 300);
         }
 
+        // Función para cargar torres del conjunto
+        function cargarTorres() {
+            const towerSelect = document.getElementById('tower');
+            towerSelect.classList.add('select-loading');
+            
+            fetch('/api/torres/')
+                .then(response => response.json())
+                .then(data => {
+                    towerSelect.classList.remove('select-loading');
+                    
+                    if (data.status === 'success') {
+                        // Limpiar opciones actuales
+                        towerSelect.innerHTML = '<option value="">Seleccionar...</option>';
+                        
+                        // Agregar cada torre como opción
+                        data.torres.forEach(torre => {
+                            const option = document.createElement('option');
+                            option.value = torre.id;
+                            option.textContent = torre.nombre;
+                            towerSelect.appendChild(option);
+                        });
+                    } else {
+                        console.error('Error al cargar torres:', data.message);
+                        towerSelect.innerHTML = '<option value="">Error al cargar torres</option>';
+                    }
+                })
+                .catch(error => {
+                    towerSelect.classList.remove('select-loading');
+                    console.error('Error en la solicitud:', error);
+                    towerSelect.innerHTML = '<option value="">Error de conexión</option>';
+                });
+        }
+
+        // Función para cargar apartamentos según la torre seleccionada
+        function cargarApartamentos(torreId) {
+            const apartmentSelect = document.getElementById('apartment');
+            
+            if (!torreId) {
+                // Si no hay torre seleccionada, limpiar la lista de apartamentos
+                apartmentSelect.innerHTML = '<option value="">Seleccione torre primero</option>';
+                apartmentSelect.disabled = true;
+                return;
+            }
+            
+            apartmentSelect.disabled = true;
+            apartmentSelect.innerHTML = '<option value="">Cargando apartamentos...</option>';
+            apartmentSelect.classList.add('select-loading');
+            
+            fetch(`/api/torres/${torreId}/apartamentos/`)
+                .then(response => response.json())
+                .then(data => {
+                    apartmentSelect.classList.remove('select-loading');
+                    apartmentSelect.disabled = false;
+                    
+                    if (data.status === 'success') {
+                        // Limpiar opciones actuales
+                        apartmentSelect.innerHTML = '<option value="">Seleccionar...</option>';
+                        
+                        // Agregar cada apartamento como opción
+                        data.apartamentos.forEach(apto => {
+                            const option = document.createElement('option');
+                            option.value = apto;
+                            option.textContent = apto;
+                            
+                            // Si el apartamento está ocupado, marcarlo
+                            if (data.ocupados.includes(apto)) {
+                                option.setAttribute('data-ocupado', 'true');
+                                option.textContent += ' ✓';  // Añadir un checkmark para indicar que está ocupado
+                                option.style.fontWeight = 'bold';
+                            } else {
+                                option.setAttribute('data-ocupado', 'false');
+                                option.style.color = '#999';  // Apartamentos sin propietario en gris
+                            }
+                            
+                            apartmentSelect.appendChild(option);
+                        });
+                    } else {
+                        console.error('Error al cargar apartamentos:', data.message);
+                        apartmentSelect.innerHTML = '<option value="">Error al cargar apartamentos</option>';
+                    }
+                })
+                .catch(error => {
+                    apartmentSelect.classList.remove('select-loading');
+                    apartmentSelect.disabled = false;
+                    console.error('Error en la solicitud:', error);
+                    apartmentSelect.innerHTML = '<option value="">Error de conexión</option>';
+                });
+        }
+
+        // Función para actualizar la interfaz de usuario para selección de destinatario
+        function actualizarUISeleccionDestinatario() {
+            const apartmentSelect = document.getElementById('apartment');
+            const messageContainer = document.querySelector('.message-section');
+            const submitButton = document.querySelector('.btn-primary');
+            
+            // Verificar si hay un apartamento seleccionado y si está ocupado
+            const selectedOption = apartmentSelect.options[apartmentSelect.selectedIndex];
+            
+            if (selectedOption && selectedOption.value) {
+                const ocupado = selectedOption.getAttribute('data-ocupado') === 'true';
+                
+                if (ocupado) {
+                    // Apartamento ocupado, permitir envío
+                    messageContainer.style.opacity = '1';
+                    messageContainer.style.pointerEvents = 'all';
+                    submitButton.disabled = false;
+                    
+                    // Mostrar información sobre el destinatario
+                    const destinatarioInfo = document.getElementById('destinatario-info');
+                    if (destinatarioInfo) {
+                        destinatarioInfo.style.display = 'block';
+                        const towerSelect = document.getElementById('tower');
+                        const towerName = towerSelect.options[towerSelect.selectedIndex].textContent;
+                        
+                        destinatarioInfo.innerHTML = `
+                            <div class="destinatario-badge">
+                                <span class="icon">📬</span> Enviar a: ${towerName} - Apto ${selectedOption.value}
+                            </div>
+                        `;
+                    }
+                } else {
+                    // Apartamento no ocupado, mostrar aviso
+                    messageContainer.style.opacity = '0.5';
+                    messageContainer.style.pointerEvents = 'none';
+                    submitButton.disabled = true;
+                    
+                    const destinatarioInfo = document.getElementById('destinatario-info');
+                    if (destinatarioInfo) {
+                        destinatarioInfo.style.display = 'block';
+                        destinatarioInfo.innerHTML = `
+                            <div class="destinatario-badge error">
+                                <span class="icon">⚠️</span> No hay propietarios registrados en este apartamento
+                            </div>
+                        `;
+                    }
+                }
+            } else {
+                // No hay apartamento seleccionado
+                messageContainer.style.opacity = '0.5';
+                messageContainer.style.pointerEvents = 'none';
+                submitButton.disabled = true;
+                
+                const destinatarioInfo = document.getElementById('destinatario-info');
+                if (destinatarioInfo) {
+                    destinatarioInfo.style.display = 'none';
+                }
+            }
+        }
+
+        // Event listener para cuando cambia la torre seleccionada
+        document.getElementById('tower').addEventListener('change', function(e) {
+            const apartmentSelect = document.getElementById('apartment');
+            apartmentSelect.innerHTML = '<option value="">Cargando apartamentos...</option>';
+            cargarApartamentos(this.value);
+        });
+
+        // Event listener para cuando cambia el apartamento seleccionado
+        document.getElementById('apartment').addEventListener('change', function(e) {
+            actualizarUISeleccionDestinatario();
+        });
+
         // Función para enviar el mensaje
         function sendMessage() {
-            const formData = new FormData(form);
+            const formData = new FormData();
+            
+            // Obtener CSRF token
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            
+            // Agregar datos del formulario
+            formData.append('torre_id', document.getElementById('tower').value);
+            formData.append('apartamento', document.getElementById('apartment').value);
+            formData.append('message', document.getElementById('message').value);
+            
+            // Agregar archivos
+            selectedFiles.forEach(fileObj => {
+                formData.append('files[]', fileObj.file);
+            });
 
-            // Aquí iría la lógica de envío al servidor
-            console.log('Enviando mensaje...');
-            console.log('Torre/Interior:', formData.get('tower'));
-            console.log('Apartamento:', formData.get('apartment'));
+            // Mostrar información de depuración en la consola
+            console.log('Enviando notificación individual...');
+            console.log('Torre ID:', formData.get('torre_id'));
+            console.log('Apartamento:', formData.get('apartamento'));
             console.log('Mensaje:', formData.get('message'));
-            console.log('Archivo:', fileInput.files[0]?.name || 'No hay archivo');
-
-            // Simular envío
-            setTimeout(() => {
-                alert('Mensaje enviado exitosamente');
-                hideConfirmation();
-                resetForm();
-            }, 1000);
+            console.log('Número de archivos:', selectedFiles.length);
+            
+            // Deshabilitar botón mientras se envía
+            const sendButton = document.querySelector('.btn-primary');
+            if (sendButton) {
+                sendButton.disabled = true;
+                sendButton.innerHTML = `
+                    <span class="spinner"></span> Enviando...
+                `;
+            }
+            
+            // Ocultar el modal de confirmación
+            hideConfirmation();
+            
+            // Mostrar un indicador de carga
+            const loadingIndicator = document.createElement('div');
+            loadingIndicator.className = 'loading-indicator';
+            loadingIndicator.innerHTML = `
+                <div class="loading-spinner"></div>
+                <p>Enviando notificación...</p>
+            `;
+            document.body.appendChild(loadingIndicator);
+            
+            // Enviar la solicitud al servidor
+            fetch('/api/send-individual-notification/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Eliminar indicador de carga
+                loadingIndicator.remove();
+                
+                // Restablecer botón
+                if (sendButton) {
+                    sendButton.disabled = false;
+                    sendButton.innerHTML = `
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+                        </svg>
+                        Enviar Mensaje
+                    `;
+                }
+                
+                // Mostrar notificación según resultado
+                if (data.status === 'success') {
+                    // Crear notificación de éxito
+                    const notification = document.createElement('div');
+                    notification.className = 'success-notification';
+                    notification.innerHTML = `
+                        <div class="notification-icon">✓</div>
+                        <div class="notification-message">
+                            <p>${data.message}</p>
+                            <p class="notification-details">Ubicación: ${data.ubicacion}</p>
+                        </div>
+                    `;
+                    document.body.appendChild(notification);
+                    
+                    // Eliminar la notificación después de 5 segundos
+                    setTimeout(() => {
+                        notification.style.opacity = '0';
+                        setTimeout(() => notification.remove(), 300);
+                    }, 5000);
+                    
+                    // Limpiar el formulario
+                    resetForm();
+                } else {
+                    // Mostrar error
+                    alert(`Error: ${data.message}`);
+                }
+            })
+            .catch(error => {
+                // Eliminar indicador de carga
+                loadingIndicator.remove();
+                
+                // Restablecer botón
+                if (sendButton) {
+                    sendButton.disabled = false;
+                    sendButton.innerHTML = `
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+                        </svg>
+                        Enviar Mensaje
+                    `;
+                }
+                
+                // Mostrar error
+                console.error('Error:', error);
+                alert('Error al enviar la notificación. Por favor, intente nuevamente.');
+            });
         }
 
         // Función para resetear el formulario
         function resetForm() {
-            form.reset();
-            const label = document.querySelector('.file-label');
-            label.innerHTML = `
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l8.57-8.57A4 4 0 1118 8.84l-8.59 8.57a2 2 0 01-2.83-2.83l8.49-8.48"/>
-        </svg>
-        Adjuntar Archivo
-    `;
+            // Limpiar campos
+            document.getElementById('message').value = '';
+            selectedFiles = [];
+            updateFileList();
+            
+            // Reset UI
+            actualizarUISeleccionDestinatario();
         }
 
         // Event Listeners
-        document.addEventListener('keydown', function (e) {
+        document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 hideConfirmation();
             }
         });
 
-        modalBackdrop.addEventListener('click', function (e) {
+        modalBackdrop.addEventListener('click', function(e) {
             if (e.target === modalBackdrop) {
                 hideConfirmation();
             }
         });
 
         // Prevenir cierre accidental
-        window.addEventListener('beforeunload', function (e) {
-            if (form.querySelector('textarea').value.trim()) {
+        window.addEventListener('beforeunload', function(e) {
+            if (form.querySelector('textarea').value.trim() || selectedFiles.length > 0) {
                 e.preventDefault();
                 e.returnValue = '';
             }
+        });
+        
+        // Inicializar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cargar torres al inicio
+            cargarTorres();
+            
+            // Deshabilitar sección de mensaje inicialmente
+            const messageSection = document.querySelector('.message-section');
+            messageSection.style.opacity = '0.5';
+            messageSection.style.pointerEvents = 'none';
+            
+            // Deshabilitar botón de envío inicialmente
+            const submitButton = document.querySelector('.btn-primary');
+            submitButton.disabled = true;
+            
+            // Inicializar la lista de archivos
+            updateFileList();
         });
     </script>
 </body>
