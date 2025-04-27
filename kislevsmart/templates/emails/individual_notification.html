@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notificación Individual - Kislev</title>
+    <style>
+
+        /* Reset y estilos base */
+        body, table, td, a { 
+            -webkit-text-size-adjust: 100%; 
+            -ms-text-size-adjust: 100%; 
+        }
+        table, td { 
+            mso-table-lspace: 0pt; 
+            mso-table-rspace: 0pt; 
+        }
+        img { 
+            -ms-interpolation-mode: bicubic; 
+            border: 0; 
+            height: auto; 
+            line-height: 100%; 
+            outline: none; 
+            text-decoration: none; 
+        }
+        
+        body {
+            width: 100% !important;
+            height: 100% !important;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        
+        .wrapper {
+            width: 100%;
+            table-layout: fixed;
+            background-color: #f4f4f4;
+            padding: 20px 0;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #7f00ff, #e100ff);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        
+        .content {
+            padding: 20px;
+            background-color: #ffffff;
+        }
+        
+        .location-info {
+            background-color: #f9f9f9;
+            border-left: 4px solid #7f00ff;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .message-content {
+            background-color: #f4f4f4;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .attachment-list {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .footer {
+            background-color: #f4f4f4;
+            color: #666;
+            text-align: center;
+            padding: 10px;
+            font-size: 12px;
+        }
+        
+        .file-icon {
+            margin-right: 10px;
+            vertical-align: middle;
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+        }
+        
+        ul {
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+        
+        li {
+            margin-bottom: 5px;
+        }
+        
+        @media screen and (max-width: 600px) {
+            .container {
+                width: 100% !important;
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <table class="container" cellspacing="0" cellpadding="0">
+            <tr>
+                <td class="header">
+                    <h1>Notificación Individual</h1>
+                </td>
+            </tr>
+            <tr>
+                <td class="content">
+                    <p>Estimado(a) {{ nombre_propietario }},</p>
+                    
+                    <div class="location-info">
+                        <strong>Ubicación:</strong>
+                        <div>Torre/Interior: {{ torre }}</div>
+                        <div>Apartamento: {{ apartamento }}</div>
+                    </div>
+                    
+                    <div class="message-content">
+                        <p>{{ mensaje }}</p>
+                    </div>
+                    
+                    {% if archivos %}
+                    <div class="attachment-list">
+                        <strong>Archivos Adjuntos:</strong>
+                        <ul>
+                            {% for archivo in archivos %}
+                            <li>
+                                {% if archivo.type == 'pdf' %}
+                                <svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    <polyline points="10 9 9 9 8 9"></polyline>
+                                </svg>
+                                {% elif archivo.type == 'doc' or archivo.type == 'docx' %}
+                                <svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    <polyline points="10 9 9 9 8 9"></polyline>
+                                </svg>
+                                {% elif archivo.type == 'xls' or archivo.type == 'xlsx' %}
+                                <svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="12" x2="8" y2="12"></line>
+                                    <line x1="16" y1="16" x2="8" y2="16"></line>
+                                    <line x1="16" y1="8" x2="8" y2="8"></line>
+                                </svg>
+                                {% else %}
+                                <svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                                    <polyline points="13 2 13 9 20 9"></polyline>
+                                </svg>
+                                {% endif %}
+                                {{ archivo.nombre }} ({{ archivo.tamano }})
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                    
+                    <p>Atentamente,<br>Administración {{ nombre_conjunto }}</p>
+                </td>
+            </tr>
+            <tr>
+                <td class="footer">
+                    © {{ year }} Kislev Smart. Todos los derechos reservados.<br>
+                    Este es un mensaje automático, por favor no responda.
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

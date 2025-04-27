@@ -5034,3 +5034,345 @@ Watching for file changes with StatReloader
 "GET /api/torres/ HTTP/1.1" 200 703
 "GET /api/torres/7/apartamentos/ HTTP/1.1" 200 408
 "POST /api/send-individual-notification/ HTTP/1.1" 200 155
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 200 5141
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/select-conjunto/ HTTP/1.1" 200 2551
+"POST /accounts/select-conjunto/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /noti_individual/ HTTP/1.1" 200 37995
+"GET /api/torres/ HTTP/1.1" 200 703
+"GET /api/torres/6/apartamentos/ HTTP/1.1" 200 403
+"GET /api/torres/7/apartamentos/ HTTP/1.1" 200 408
+"POST /api/send-individual-notification/ HTTP/1.1" 200 155
+C:\Users\AlipioD\KAP\Kislev\kislevsmart\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /noti_individual/ HTTP/1.1" 200 37995
+"GET /api/torres/ HTTP/1.1" 200 703
+"GET /api/torres/7/apartamentos/ HTTP/1.1" 200 408
+"POST /api/send-individual-notification/ HTTP/1.1" 200 155
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /noti_generales/ HTTP/1.1" 200 21308
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /noti_publicos/ HTTP/1.1" 200 23620
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /dashboard/ HTTP/1.1" 200 43402
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 127
+"GET /dashboard/ HTTP/1.1" 200 43402
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 127
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 6054
+"GET /dashboard/ HTTP/1.1" 200 43402
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 127
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8506
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /dashboard/ HTTP/1.1" 200 43402
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 127
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8506
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8506
+"GET /notificaciones/ HTTP/1.1" 200 8078
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8078
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8078
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8078
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8078
+"GET /noti_generales/ HTTP/1.1" 200 21308
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8078
+"GET /noti_generales/ HTTP/1.1" 200 21308
+"GET /notificaciones/ HTTP/1.1" 200 8078
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /dashboard/ HTTP/1.1" 200 43402
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 127
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8078
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8078
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8078
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /dashboard/ HTTP/1.1" 200 43402
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 127
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8078
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8078
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /dashboard/ HTTP/1.1" 200 43402
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 127
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8078
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8078
+"GET /noti_generales/ HTTP/1.1" 200 21308
+"GET /noti_publicos/ HTTP/1.1" 200 23620
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8078
+"GET /noti_generales/ HTTP/1.1" 200 21308
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /dashboard/ HTTP/1.1" 200 43402
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 127
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /dashboard/ HTTP/1.1" 200 43402
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 127
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8078
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /zonas_comunes/ HTTP/1.1" 200 9022
+"GET /salas/ HTTP/1.1" 200 8073
+"GET /sala/1/calendario/ HTTP/1.1" 200 14976
+"GET /api/sala/1/reservas/?start=2025-03-31&end=2025-05-12&_=1745683742180 HTTP/1.1" 200 4021
+"GET /api/sala/1/horarios/2025-04-26/ HTTP/1.1" 200 416
+"GET /notificaciones/ HTTP/1.1" 200 8078
+"GET /noti_generales/ HTTP/1.1" 200 21308
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /zonas_comunes/ HTTP/1.1" 200 9022
+"GET /salas/ HTTP/1.1" 200 8073
+"GET /sala/1/calendario/ HTTP/1.1" 200 14976
+"GET /api/sala/1/reservas/?start=2025-03-31&end=2025-05-12&_=1745683868216 HTTP/1.1" 200 4021
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+Internal Server Error: /accounts/visor_admin/
+Traceback (most recent call last):
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\core\handlers\exception.py", line 47, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\core\handlers\base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python312\Lib\contextlib.py", line 81, in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\views\generic\base.py", line 70, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\utils\decorators.py", line 43, in _wrapper
+    return bound_method(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\KAP\Kislev\accounts\utils.py", line 10, in _wrapped_view
+    return redirect('login')
+           ^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\shortcuts.py", line 41, in redirect
+    return redirect_class(resolve_url(to, *args, **kwargs))
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\shortcuts.py", line 130, in resolve_url
+    return reverse(to, args=args, kwargs=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\urls\base.py", line 86, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\urls\resolvers.py", line 698, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'login' not found. 'login' is not a valid view function or pattern name.
+- Broken pipe from ('127.0.0.1', 55310)
+
+Internal Server Error: /accounts/visor_admin/
+Traceback (most recent call last):
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\core\handlers\exception.py", line 47, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\core\handlers\base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python312\Lib\contextlib.py", line 81, in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\views\generic\base.py", line 70, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\utils\decorators.py", line 43, in _wrapper
+    return bound_method(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\KAP\Kislev\accounts\utils.py", line 10, in _wrapped_view
+    return redirect('login')
+           ^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\shortcuts.py", line 41, in redirect
+    return redirect_class(resolve_url(to, *args, **kwargs))
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\shortcuts.py", line 130, in resolve_url
+    return reverse(to, args=args, kwargs=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\urls\base.py", line 86, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\urls\resolvers.py", line 698, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'login' not found. 'login' is not a valid view function or pattern name.
+"GET /accounts/visor_admin/ HTTP/1.1" 500 102781
+Watching for file changes with StatReloader
+Internal Server Error: /accounts/visor_admin/
+Traceback (most recent call last):
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\core\handlers\exception.py", line 47, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\core\handlers\base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python312\Lib\contextlib.py", line 81, in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\views\generic\base.py", line 70, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\utils\decorators.py", line 43, in _wrapper
+    return bound_method(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\KAP\Kislev\accounts\utils.py", line 10, in _wrapped_view
+    return redirect('login')
+           ^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\shortcuts.py", line 41, in redirect
+    return redirect_class(resolve_url(to, *args, **kwargs))
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\shortcuts.py", line 130, in resolve_url
+    return reverse(to, args=args, kwargs=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\urls\base.py", line 86, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\urls\resolvers.py", line 698, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'login' not found. 'login' is not a valid view function or pattern name.
+"GET /accounts/visor_admin/ HTTP/1.1" 500 102382
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 200 5141
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/select-conjunto/ HTTP/1.1" 200 2551
+"POST /accounts/select-conjunto/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /dashboard/ HTTP/1.1" 200 43402
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 127
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8078
+"GET /noti_generales/ HTTP/1.1" 200 21308
+"GET /noti_individual/ HTTP/1.1" 200 37995
+"GET /api/torres/ HTTP/1.1" 200 703
+"GET /noti_publicos/ HTTP/1.1" 200 23620
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8078
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8078
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8078
+"GET /noti_individual/ HTTP/1.1" 200 37995
+"GET /api/torres/ HTTP/1.1" 200 703
+"GET /api/torres/7/apartamentos/ HTTP/1.1" 200 408
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /dashboard/ HTTP/1.1" 200 43402
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 127
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8078
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /zonas_comunes/ HTTP/1.1" 200 9022
+"GET /zonas_comunes/ HTTP/1.1" 200 9022
+"GET /parking/ HTTP/1.1" 200 13006
+"GET /carros/ HTTP/1.1" 200 4897
+"GET /parking/ HTTP/1.1" 200 13006
+"GET /motos/ HTTP/1.1" 200 4897
+"GET /parking/ HTTP/1.1" 200 13006
+"GET /parking/ HTTP/1.1" 200 13006
+"GET /carros/ HTTP/1.1" 200 4897
+"GET /parking/ HTTP/1.1" 200 13006
+"GET /carros/ HTTP/1.1" 200 4897
+"GET /parking/ HTTP/1.1" 200 13006
+"GET /carros/ HTTP/1.1" 200 4897
+"GET /parking/ HTTP/1.1" 200 13006
+"GET /motos/ HTTP/1.1" 200 4897
+"GET /parking/ HTTP/1.1" 200 13006
+"GET /carros/ HTTP/1.1" 200 4897
+"GET /parking/ HTTP/1.1" 200 13006
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"POST /bienvenida/ HTTP/1.1" 200 124
+"GET /valqr/ZGF2aWQucm9qYXNAa2lzbGV2Lm5ldC5jbw==/ HTTP/1.1" 200 1665
+"GET /accounts/visor_admin/? HTTP/1.1" 200 2482
+"POST /accounts/logout/ HTTP/1.1" 302 0
+"GET /accounts/login/ HTTP/1.1" 200 5292
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"GET /leerscaner/ HTTP/1.1" 200 4734
+"GET /validar_qr/gAAAAABoDR7dHUUw2kKlGaUklIwnl-xD5ypEyy2E8e15mgD4LNwEVVsHC0xWu50emUf9PDztKR8_O57Y6Lf_g1GOaVhd-cPLt6jMKbPd_4njP2soRQ7s5P4vF8vSuzj-TzyNly-kUYSx_w5iDn2v98MnwyGh_B-6rQ==/?source=scan HTTP/1.1" 200 1945
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"GET /notificaciones/ HTTP/1.1" 200 8078
+Internal Server Error: /accounts/visor_admin/
+Traceback (most recent call last):
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\core\handlers\exception.py", line 47, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\core\handlers\base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python312\Lib\contextlib.py", line 81, in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\views\generic\base.py", line 70, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\utils\decorators.py", line 43, in _wrapper
+    return bound_method(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\KAP\Kislev\accounts\utils.py", line 14, in _wrapped_view
+    return redirect('login')
+           ^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\shortcuts.py", line 41, in redirect
+    return redirect_class(resolve_url(to, *args, **kwargs))
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\shortcuts.py", line 130, in resolve_url
+    return reverse(to, args=args, kwargs=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\urls\base.py", line 86, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\urls\resolvers.py", line 698, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'login' not found. 'login' is not a valid view function or pattern name.
+"GET /accounts/visor_admin/ HTTP/1.1" 500 102758
+"GET /notificaciones/ HTTP/1.1" 200 8078
+"GET /bienvenida/ HTTP/1.1" 200 26745
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 200 5141
+"POST /accounts/login/ HTTP/1.1" 200 5304
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"GET /notificaciones/ HTTP/1.1" 200 8107
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"GET /notificaciones/ HTTP/1.1" 200 8107
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"GET /notificaciones/ HTTP/1.1" 200 8177
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"POST /accounts/logout/ HTTP/1.1" 302 0
+"GET /accounts/login/ HTTP/1.1" 200 5292
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/select-conjunto/ HTTP/1.1" 200 2551
+"POST /accounts/select-conjunto/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 302 0
+"GET /accounts/login/?next=/notificaciones/ HTTP/1.1" 200 5141

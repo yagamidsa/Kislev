@@ -678,10 +678,13 @@ def enviar_notificacion_individual(request):
             try:
                 # Preparar contexto para la plantilla
                 context = {
-                    'nombre': propietario.nombre,
+                    'nombre_propietario': propietario.nombre,
+                    'torre': torre.nombre,
+                    'apartamento': apartamento,
                     'mensaje': mensaje,
-                    'ubicacion': propietario.get_ubicacion_completa(),
-                    'conjunto': request.user.conjunto
+                    'year': datetime.now().year,
+                    'nombre_conjunto': request.user.conjunto.nombre,
+                    'archivos': [] 
                 }
                 
                 # Renderizar plantilla HTML
