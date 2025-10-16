@@ -212,16 +212,29 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Configuración de Email con SendGrid
-EMAIL_BACKEND = 'sendgrid_backend.SendgridBackend'
-SENDGRID_API_KEY = env('SENDGRID_API_KEY')  # Quita el valor por defecto
-DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='david.rojas@kislev.net.co')
-SENDGRID_SANDBOX_MODE_IN_DEBUG = False
-SENDGRID_TRACK_EMAIL_OPENS = True
-SENDGRID_TRACK_CLICKS = True
-SENDGRID_REPLY_TO = DEFAULT_FROM_EMAIL
-SENDGRID_MERGE_FIELD_FORMAT = None
-SENDGRID_CATEGORIES = ['notificaciones_servicios']
+# ============================================
+# CONFIGURACIÓN DE EMAIL CON AMAZON SES
+# ============================================
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'email-smtp.us-east-1.amazonaws.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get('AWS_SES_SMTP_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('AWS_SES_SMTP_PASSWORD', '')
+
+# Email por defecto para envíos
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'yagamidsa@hotmail.com')
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
+
+# Configuración adicional de email
+EMAIL_TIMEOUT = 10
+EMAIL_USE_LOCALTIME = False
+
+# Para debugging en desarrollo
+if DEBUG:
+    # Descomentar la siguiente línea para ver emails en consola en desarrollo
+    # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    pass
 
 # URL de login
 LOGIN_URL = '/accounts/login/'
