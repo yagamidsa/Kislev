@@ -7,11 +7,11 @@ def role_required(allowed_roles):
         def _wrapped_view(request, *args, **kwargs):
             # Verificar si el usuario está autenticado
             if not request.user.is_authenticated:
-                return redirect('login')
+                return redirect('accounts:login')
 
             # Verificar si el tipo de usuario está permitido
             if getattr(request.user, 'user_type', None) not in allowed_roles:
-                return redirect('login')
+                return redirect('accounts:login')
 
             return view_func(request, *args, **kwargs)
 
