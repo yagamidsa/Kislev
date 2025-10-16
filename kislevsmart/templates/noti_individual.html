@@ -10,6 +10,7 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/restricciones.css' %}">
     <link rel="stylesheet" href="{% static 'css/noti_individual.css' %}">
+
     <style>
         /* Estilos adicionales para la lista de archivos */
         .file-list {
@@ -20,7 +21,7 @@
             border-radius: 8px;
             padding: 8px;
         }
-        
+
         .file-item {
             display: flex;
             justify-content: space-between;
@@ -32,11 +33,11 @@
             font-size: 0.9rem;
             color: white;
         }
-        
+
         .file-item:last-child {
             margin-bottom: 0;
         }
-        
+
         .remove-file {
             cursor: pointer;
             color: #ff4d4d;
@@ -47,29 +48,29 @@
             opacity: 0.7;
             transition: opacity 0.2s;
         }
-        
+
         .remove-file:hover {
             opacity: 1;
         }
-        
+
         .file-preview {
             display: flex;
             align-items: center;
             flex-grow: 1;
         }
-        
+
         .file-icon {
             margin-right: 8px;
             opacity: 0.7;
         }
-        
+
         .file-name {
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             max-width: 200px;
         }
-        
+
         .file-size {
             font-size: 0.75rem;
             opacity: 0.7;
@@ -86,14 +87,21 @@
 
         /* Animación para añadir archivos */
         @keyframes fileAddedAnimation {
-            0% { transform: translateY(10px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
+            0% {
+                transform: translateY(10px);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
-        
+
         .file-item {
             animation: fileAddedAnimation 0.3s ease-out forwards;
         }
-        
+
         /* Estilos para el indicador de carga */
         .loading-indicator {
             position: fixed;
@@ -122,8 +130,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         /* Estilos para notificaciones de éxito */
@@ -183,29 +196,29 @@
             animation: spin 1s linear infinite;
             margin-right: 8px;
         }
-        
+
         /* Estilos para los select */
         select:disabled {
             background-color: rgba(255, 255, 255, 0.1);
             cursor: not-allowed;
         }
-        
+
         /* Estilos para opciones en el select */
         select option[data-ocupado="true"] {
             background-color: rgba(126, 0, 255, 0.1);
             font-weight: bold;
         }
-        
+
         select option[data-ocupado="false"] {
             color: #888;
             font-style: italic;
         }
-        
+
         /* Loader para los selects mientras cargan */
         .select-loading {
             position: relative;
         }
-        
+
         .select-loading::after {
             content: '';
             position: absolute;
@@ -219,7 +232,7 @@
             border-top: 2px solid #7f00ff;
             animation: spin 1s linear infinite;
         }
-        
+
         /* Estilos para el badge de destinatario */
         .destinatario-badge {
             display: inline-block;
@@ -232,19 +245,83 @@
             font-weight: 500;
             animation: fadeIn 0.3s ease-out forwards;
         }
-        
+
         .destinatario-badge.error {
             background: linear-gradient(45deg, rgba(255, 0, 0, 0.1), rgba(255, 100, 0, 0.1));
             border: 1px solid rgba(255, 0, 0, 0.2);
         }
-        
+
         .destinatario-badge .icon {
             margin-right: 8px;
         }
-        
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+    <!-- Botón de regreso al panel de notificaciones -->
+    <a href="{% url 'notificaciones' %}" class="back-button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 18l-6-6 6-6" />
+        </svg>
+        Volver a Notificaciones
+    </a>
+
+    <style>
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(126, 0, 255, 0.1);
+            color: #7f00ff;
+            padding: 10px 15px;
+            border-radius: 10px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(126, 0, 255, 0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            font-size: 14px;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .back-button:hover {
+            background: rgba(126, 0, 255, 0.2);
+            color: #e100ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(126, 0, 255, 0.1);
+        }
+
+        .back-button svg {
+            margin-right: 8px;
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+        }
+
+        /* Responsive */
+        @media screen and (max-width: 768px) {
+            .back-button {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+
+            .back-button svg {
+                width: 16px;
+                height: 16px;
+            }
         }
     </style>
 </head>
@@ -256,42 +333,42 @@
         <!-- Repetir 6 veces para diferentes sobres -->
         <div class="envelope-icon">
             <svg viewBox="0 0 24 24">
-                <rect x="2" y="4" width="20" height="16" rx="2"/>
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
             </svg>
         </div>
         <div class="envelope-icon">
             <svg viewBox="0 0 24 24">
-                <rect x="2" y="4" width="20" height="16" rx="2"/>
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
             </svg>
         </div>
         <div class="envelope-icon">
             <svg viewBox="0 0 24 24">
-                <rect x="2" y="4" width="20" height="16" rx="2"/>
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
             </svg>
         </div>
         <div class="envelope-icon">
             <svg viewBox="0 0 24 24">
-                <rect x="2" y="4" width="20" height="16" rx="2"/>
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
             </svg>
         </div>
         <div class="envelope-icon">
             <svg viewBox="0 0 24 24">
-                <rect x="2" y="4" width="20" height="16" rx="2"/>
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
             </svg>
         </div>
         <div class="envelope-icon">
             <svg viewBox="0 0 24 24">
-                <rect x="2" y="4" width="20" height="16" rx="2"/>
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
             </svg>
         </div>
     </div>
-        
+
 
     <!-- Contenedor principal -->
     <div class="container">
@@ -345,11 +422,11 @@
                     </svg>
                     Documentos Adjuntos
                 </h2>
-                
+
                 <div id="fileList" class="file-list">
                     <div class="no-files">No hay archivos adjuntos</div>
                 </div>
-                
+
                 <!-- Sección de botones -->
                 <div class="buttons-container">
                     <input type="file" id="fileInput" class="file-input" accept="*/*" multiple>
@@ -392,7 +469,7 @@
         const fileInput = document.getElementById('fileInput');
         const fileList = document.getElementById('fileList');
         const modalBackdrop = document.getElementById('confirmModal');
-        
+
         // Para almacenar los archivos seleccionados
         let selectedFiles = [];
 
@@ -435,14 +512,14 @@
         }
 
         // Manejador del input de archivo
-        fileInput.addEventListener('change', function(e) {
+        fileInput.addEventListener('change', function (e) {
             const files = Array.from(e.target.files);
-            
+
             if (selectedFiles.length + files.length > MAX_FILES) {
                 alert(`Solo puede adjuntar un máximo de ${MAX_FILES} archivos.`);
                 return;
             }
-            
+
             // Validar cada archivo
             const validFiles = files.filter(file => {
                 // Validar solo el tamaño
@@ -450,10 +527,10 @@
                     alert(`El archivo "${file.name}" supera el límite de 10MB.`);
                     return false;
                 }
-                
+
                 return true;
             });
-            
+
             // Agregar los archivos válidos a la lista
             validFiles.forEach(file => {
                 // Crear un objeto con ID único para cada archivo
@@ -461,13 +538,13 @@
                     id: 'file_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9),
                     file: file
                 };
-                
+
                 selectedFiles.push(fileObj);
-                
+
                 // Actualizar la UI
                 updateFileList();
             });
-            
+
             // Limpiar el input para permitir seleccionar el mismo archivo
             fileInput.value = '';
         });
@@ -476,12 +553,12 @@
         function updateFileList() {
             // Limpiar la lista
             fileList.innerHTML = '';
-            
+
             if (selectedFiles.length === 0) {
                 fileList.innerHTML = '<div class="no-files">No hay archivos adjuntos</div>';
                 return;
             }
-            
+
             // Agregar cada archivo a la lista
             selectedFiles.forEach(fileObj => {
                 const file = fileObj.file;
@@ -501,7 +578,7 @@
         }
 
         // Función para eliminar un archivo
-        window.removeFile = function(fileId) {
+        window.removeFile = function (fileId) {
             selectedFiles = selectedFiles.filter(fileObj => fileObj.id !== fileId);
             updateFileList();
         };
@@ -545,16 +622,16 @@
         function cargarTorres() {
             const towerSelect = document.getElementById('tower');
             towerSelect.classList.add('select-loading');
-            
+
             fetch('/api/torres/')
                 .then(response => response.json())
                 .then(data => {
                     towerSelect.classList.remove('select-loading');
-                    
+
                     if (data.status === 'success') {
                         // Limpiar opciones actuales
                         towerSelect.innerHTML = '<option value="">Seleccionar...</option>';
-                        
+
                         // Agregar cada torre como opción
                         data.torres.forEach(torre => {
                             const option = document.createElement('option');
@@ -577,34 +654,34 @@
         // Función para cargar apartamentos según la torre seleccionada
         function cargarApartamentos(torreId) {
             const apartmentSelect = document.getElementById('apartment');
-            
+
             if (!torreId) {
                 // Si no hay torre seleccionada, limpiar la lista de apartamentos
                 apartmentSelect.innerHTML = '<option value="">Seleccione torre primero</option>';
                 apartmentSelect.disabled = true;
                 return;
             }
-            
+
             apartmentSelect.disabled = true;
             apartmentSelect.innerHTML = '<option value="">Cargando apartamentos...</option>';
             apartmentSelect.classList.add('select-loading');
-            
+
             fetch(`/api/torres/${torreId}/apartamentos/`)
                 .then(response => response.json())
                 .then(data => {
                     apartmentSelect.classList.remove('select-loading');
                     apartmentSelect.disabled = false;
-                    
+
                     if (data.status === 'success') {
                         // Limpiar opciones actuales
                         apartmentSelect.innerHTML = '<option value="">Seleccionar...</option>';
-                        
+
                         // Agregar cada apartamento como opción
                         data.apartamentos.forEach(apto => {
                             const option = document.createElement('option');
                             option.value = apto;
                             option.textContent = apto;
-                            
+
                             // Si el apartamento está ocupado, marcarlo
                             if (data.ocupados.includes(apto)) {
                                 option.setAttribute('data-ocupado', 'true');
@@ -614,7 +691,7 @@
                                 option.setAttribute('data-ocupado', 'false');
                                 option.style.color = '#999';  // Apartamentos sin propietario en gris
                             }
-                            
+
                             apartmentSelect.appendChild(option);
                         });
                     } else {
@@ -635,26 +712,26 @@
             const apartmentSelect = document.getElementById('apartment');
             const messageContainer = document.querySelector('.message-section');
             const submitButton = document.querySelector('.btn-primary');
-            
+
             // Verificar si hay un apartamento seleccionado y si está ocupado
             const selectedOption = apartmentSelect.options[apartmentSelect.selectedIndex];
-            
+
             if (selectedOption && selectedOption.value) {
                 const ocupado = selectedOption.getAttribute('data-ocupado') === 'true';
-                
+
                 if (ocupado) {
                     // Apartamento ocupado, permitir envío
                     messageContainer.style.opacity = '1';
                     messageContainer.style.pointerEvents = 'all';
                     submitButton.disabled = false;
-                    
+
                     // Mostrar información sobre el destinatario
                     const destinatarioInfo = document.getElementById('destinatario-info');
                     if (destinatarioInfo) {
                         destinatarioInfo.style.display = 'block';
                         const towerSelect = document.getElementById('tower');
                         const towerName = towerSelect.options[towerSelect.selectedIndex].textContent;
-                        
+
                         destinatarioInfo.innerHTML = `
                             <div class="destinatario-badge">
                                 <span class="icon">📬</span> Enviar a: ${towerName} - Apto ${selectedOption.value}
@@ -666,7 +743,7 @@
                     messageContainer.style.opacity = '0.5';
                     messageContainer.style.pointerEvents = 'none';
                     submitButton.disabled = true;
-                    
+
                     const destinatarioInfo = document.getElementById('destinatario-info');
                     if (destinatarioInfo) {
                         destinatarioInfo.style.display = 'block';
@@ -682,7 +759,7 @@
                 messageContainer.style.opacity = '0.5';
                 messageContainer.style.pointerEvents = 'none';
                 submitButton.disabled = true;
-                
+
                 const destinatarioInfo = document.getElementById('destinatario-info');
                 if (destinatarioInfo) {
                     destinatarioInfo.style.display = 'none';
@@ -691,29 +768,29 @@
         }
 
         // Event listener para cuando cambia la torre seleccionada
-        document.getElementById('tower').addEventListener('change', function(e) {
+        document.getElementById('tower').addEventListener('change', function (e) {
             const apartmentSelect = document.getElementById('apartment');
             apartmentSelect.innerHTML = '<option value="">Cargando apartamentos...</option>';
             cargarApartamentos(this.value);
         });
 
         // Event listener para cuando cambia el apartamento seleccionado
-        document.getElementById('apartment').addEventListener('change', function(e) {
+        document.getElementById('apartment').addEventListener('change', function (e) {
             actualizarUISeleccionDestinatario();
         });
 
         // Función para enviar el mensaje
         function sendMessage() {
             const formData = new FormData();
-            
+
             // Obtener CSRF token
             const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-            
+
             // Agregar datos del formulario
             formData.append('torre_id', document.getElementById('tower').value);
             formData.append('apartamento', document.getElementById('apartment').value);
             formData.append('message', document.getElementById('message').value);
-            
+
             // Agregar archivos
             selectedFiles.forEach(fileObj => {
                 formData.append('files[]', fileObj.file);
@@ -725,7 +802,7 @@
             console.log('Apartamento:', formData.get('apartamento'));
             console.log('Mensaje:', formData.get('message'));
             console.log('Número de archivos:', selectedFiles.length);
-            
+
             // Deshabilitar botón mientras se envía
             const sendButton = document.querySelector('.btn-primary');
             if (sendButton) {
@@ -734,10 +811,10 @@
                     <span class="spinner"></span> Enviando...
                 `;
             }
-            
+
             // Ocultar el modal de confirmación
             hideConfirmation();
-            
+
             // Mostrar un indicador de carga
             const loadingIndicator = document.createElement('div');
             loadingIndicator.className = 'loading-indicator';
@@ -746,7 +823,7 @@
                 <p>Enviando notificación...</p>
             `;
             document.body.appendChild(loadingIndicator);
-            
+
             // Enviar la solicitud al servidor
             fetch('/api/send-individual-notification/', {
                 method: 'POST',
@@ -755,68 +832,68 @@
                 },
                 body: formData
             })
-            .then(response => response.json())
-            .then(data => {
-                // Eliminar indicador de carga
-                loadingIndicator.remove();
-                
-                // Restablecer botón
-                if (sendButton) {
-                    sendButton.disabled = false;
-                    sendButton.innerHTML = `
+                .then(response => response.json())
+                .then(data => {
+                    // Eliminar indicador de carga
+                    loadingIndicator.remove();
+
+                    // Restablecer botón
+                    if (sendButton) {
+                        sendButton.disabled = false;
+                        sendButton.innerHTML = `
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
                         </svg>
                         Enviar Mensaje
                     `;
-                }
-                
-                // Mostrar notificación según resultado
-                if (data.status === 'success') {
-                    // Crear notificación de éxito
-                    const notification = document.createElement('div');
-                    notification.className = 'success-notification';
-                    notification.innerHTML = `
+                    }
+
+                    // Mostrar notificación según resultado
+                    if (data.status === 'success') {
+                        // Crear notificación de éxito
+                        const notification = document.createElement('div');
+                        notification.className = 'success-notification';
+                        notification.innerHTML = `
                         <div class="notification-icon">✓</div>
                         <div class="notification-message">
                             <p>${data.message}</p>
                             <p class="notification-details">Ubicación: ${data.ubicacion}</p>
                         </div>
                     `;
-                    document.body.appendChild(notification);
-                    
-                    // Eliminar la notificación después de 5 segundos
-                    setTimeout(() => {
-                        notification.style.opacity = '0';
-                        setTimeout(() => notification.remove(), 300);
-                    }, 5000);
-                    
-                    // Limpiar el formulario
-                    resetForm();
-                } else {
-                    // Mostrar error
-                    alert(`Error: ${data.message}`);
-                }
-            })
-            .catch(error => {
-                // Eliminar indicador de carga
-                loadingIndicator.remove();
-                
-                // Restablecer botón
-                if (sendButton) {
-                    sendButton.disabled = false;
-                    sendButton.innerHTML = `
+                        document.body.appendChild(notification);
+
+                        // Eliminar la notificación después de 5 segundos
+                        setTimeout(() => {
+                            notification.style.opacity = '0';
+                            setTimeout(() => notification.remove(), 300);
+                        }, 5000);
+
+                        // Limpiar el formulario
+                        resetForm();
+                    } else {
+                        // Mostrar error
+                        alert(`Error: ${data.message}`);
+                    }
+                })
+                .catch(error => {
+                    // Eliminar indicador de carga
+                    loadingIndicator.remove();
+
+                    // Restablecer botón
+                    if (sendButton) {
+                        sendButton.disabled = false;
+                        sendButton.innerHTML = `
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
                         </svg>
                         Enviar Mensaje
                     `;
-                }
-                
-                // Mostrar error
-                console.error('Error:', error);
-                alert('Error al enviar la notificación. Por favor, intente nuevamente.');
-            });
+                    }
+
+                    // Mostrar error
+                    console.error('Error:', error);
+                    alert('Error al enviar la notificación. Por favor, intente nuevamente.');
+                });
         }
 
         // Función para resetear el formulario
@@ -825,46 +902,46 @@
             document.getElementById('message').value = '';
             selectedFiles = [];
             updateFileList();
-            
+
             // Reset UI
             actualizarUISeleccionDestinatario();
         }
 
         // Event Listeners
-        document.addEventListener('keydown', function(e) {
+        document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') {
                 hideConfirmation();
             }
         });
 
-        modalBackdrop.addEventListener('click', function(e) {
+        modalBackdrop.addEventListener('click', function (e) {
             if (e.target === modalBackdrop) {
                 hideConfirmation();
             }
         });
 
         // Prevenir cierre accidental
-        window.addEventListener('beforeunload', function(e) {
+        window.addEventListener('beforeunload', function (e) {
             if (form.querySelector('textarea').value.trim() || selectedFiles.length > 0) {
                 e.preventDefault();
                 e.returnValue = '';
             }
         });
-        
+
         // Inicializar la página
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Cargar torres al inicio
             cargarTorres();
-            
+
             // Deshabilitar sección de mensaje inicialmente
             const messageSection = document.querySelector('.message-section');
             messageSection.style.opacity = '0.5';
             messageSection.style.pointerEvents = 'none';
-            
+
             // Deshabilitar botón de envío inicialmente
             const submitButton = document.querySelector('.btn-primary');
             submitButton.disabled = true;
-            
+
             // Inicializar la lista de archivos
             updateFileList();
         });

@@ -3,55 +3,63 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Validación QR</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/restricciones.css' %}">
-    <!-- CSS -->
     <link rel="stylesheet" href="{% static 'css/formenvioQR.css' %}">
-
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body>
-    <div class="blur-container">
-        <div class="ticket">
-            <div class="ticket-inner">
-                <div class="header">
-                    <h1>¡Éxito!<br>{{ request.user.nombre }}</h1>
-                </div>
-                <div class="content">
-                    <p>Su QR fue realizado correctamente.</p>
-                    <p>Se ha enviado al correo {{ email }}. ¡No dudes en generar otro QR si es necesario!</p>
+    <div class="background-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
 
-                    <div class="qr-code">
-                        <img src="{% static 'images/QR.png' %}" alt="Código QR" />
-                    </div>
-
-                    <div class="buttons">
-                        <!-- Redirección según el tipo de usuario -->
-                        <form method="GET">
-                            {% if request.user.user_type == 'administrador' %}
-                                <button formaction="{% url 'accounts:visor_admin' %}" class="button exit">
-                                    Ir al Panel
-                                </button>
-                            {% elif request.user.user_type == 'propietario' %}
-                                <button formaction="{% url 'accounts:visor_propietario' %}" class="button exit">
-                                    Ir al Panel
-                                </button>
-                            {% elif request.user.user_type == 'porteria' %}
-                                <button formaction="{% url 'accounts:control_porteria' %}" class="button exit">
-                                    Ir al Panel
-                                </button>
-                            {% else %}
-                                <p>No tienes permisos para acceder a ningún panel.</p>
-                            {% endif %}
-                        </form>
-
-                        <a href="{% url 'bienvenida' %}" class="button new-ticket">Generar otro QR</a>
-                    </div>
-                </div>
+    <div class="success-card">
+        <div class="card-header">
+            <h1>¡Éxito!<span class="user-name">{{ request.user.nombre }}</span></h1>
+        </div>
+        
+        <div class="card-content">
+            <div class="success-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+            </div>
+            
+            <div class="message">
+                <p>Su QR fue generado correctamente</p>
+                <p>Se ha enviado al correo <strong>{{ email }}</strong></p>
+                <p>¡No dude en generar otro si es necesario!</p>
+            </div>
+            
+            <div class="qr-container">
+                <img src="{% static 'images/QR.png' %}" alt="Código QR" />
+            </div>
+            
+            <div class="buttons-container">
+                <!-- Redirección según el tipo de usuario -->
+                {% if request.user.user_type == 'administrador' %}
+                    <a href="{% url 'accounts:visor_admin' %}" class="btn primary-btn">
+                        Ir al Panel
+                    </a>
+                {% elif request.user.user_type == 'propietario' %}
+                    <a href="{% url 'accounts:visor_propietario' %}" class="btn primary-btn">
+                        Ir al Panel
+                    </a>
+                {% elif request.user.user_type == 'porteria' %}
+                    <a href="{% url 'accounts:control_porteria' %}" class="btn primary-btn">
+                        Ir al Panel
+                    </a>
+                {% else %}
+                    <p>No tienes permisos para acceder a ningún panel.</p>
+                {% endif %}
+                
+                <a href="{% url 'bienvenida' %}" class="btn secondary-btn">Generar otro QR</a>
             </div>
         </div>
     </div>

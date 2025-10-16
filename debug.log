@@ -5376,3 +5376,1580 @@ django.urls.exceptions.NoReverseMatch: Reverse for 'login' not found. 'login' is
 "GET /accounts/visor_admin/ HTTP/1.1" 200 2482
 "GET /notificaciones/ HTTP/1.1" 302 0
 "GET /accounts/login/?next=/notificaciones/ HTTP/1.1" 200 5141
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 200 5141
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/select-conjunto/ HTTP/1.1" 200 2551
+"POST /accounts/select-conjunto/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_individual/ HTTP/1.1" 200 37995
+"GET /api/torres/ HTTP/1.1" 200 703
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /dashboard/ HTTP/1.1" 200 46017
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 127
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /dashboard/ HTTP/1.1" 200 46017
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 127
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /dashboard/ HTTP/1.1" 200 46017
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 127
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /zonas_comunes/ HTTP/1.1" 200 9022
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_individual/ HTTP/1.1" 200 37995
+"GET /api/torres/ HTTP/1.1" 200 703
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_individual/ HTTP/1.1" 200 37995
+"GET /api/torres/ HTTP/1.1" 200 703
+"GET /noti_publicos/ HTTP/1.1" 200 25257
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_individual/ HTTP/1.1" 200 37995
+"GET /api/torres/ HTTP/1.1" 200 703
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_individual/ HTTP/1.1" 200 37995
+"GET /api/torres/ HTTP/1.1" 200 703
+"GET /noti_publicos/ HTTP/1.1" 200 25257
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /zonas_comunes/ HTTP/1.1" 200 9022
+"GET /salas/ HTTP/1.1" 200 8073
+"GET /sala/1/calendario/ HTTP/1.1" 200 14976
+"GET /api/sala/1/reservas/?start=2025-03-31&end=2025-05-12&_=1745726216959 HTTP/1.1" 200 4021
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_individual/ HTTP/1.1" 200 37995
+"GET /api/torres/ HTTP/1.1" 200 703
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_individual/ HTTP/1.1" 200 39171
+"GET /api/torres/ HTTP/1.1" 200 703
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_publicos/ HTTP/1.1" 200 26689
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_individual/ HTTP/1.1" 200 39171
+"GET /api/torres/ HTTP/1.1" 200 703
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_publicos/ HTTP/1.1" 200 26689
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_individual/ HTTP/1.1" 200 39171
+"GET /api/torres/ HTTP/1.1" 200 703
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_individual/ HTTP/1.1" 200 39171
+"GET /api/torres/ HTTP/1.1" 200 703
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_publicos/ HTTP/1.1" 200 26689
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /zonas_comunes/ HTTP/1.1" 200 9022
+"GET /salas/ HTTP/1.1" 200 8073
+"GET /sala/2/calendario/ HTTP/1.1" 200 14978
+"GET /api/sala/2/reservas/?start=2025-03-31&end=2025-05-12&_=1745726433318 HTTP/1.1" 200 4021
+"GET /api/sala/2/horarios/2025-04-28/ HTTP/1.1" 200 564
+"GET /sala/2/reservar/?fecha=2025-04-28&hora_inicio=08:00&hora_fin=09:00 HTTP/1.1" 200 6227
+"GET /static/css/reservar.css HTTP/1.1" 200 10092
+"POST /sala/2/reservar/?fecha=2025-04-28&hora_inicio=08:00&hora_fin=09:00 HTTP/1.1" 200 7485
+"GET /sala/2/calendario/ HTTP/1.1" 200 14978
+"GET /api/sala/2/reservas/?start=2025-03-31&end=2025-05-12&_=1745726474192 HTTP/1.1" 200 4043
+"GET /sala/2/reservar/?fecha=2025-04-28&hora_inicio=08:00&hora_fin=09:00 HTTP/1.1" 200 6227
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"POST /notifications/send/ HTTP/1.1" 200 80
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /zonas_comunes/ HTTP/1.1" 200 9022
+"GET /parking/ HTTP/1.1" 200 13006
+"GET /carros/ HTTP/1.1" 200 4897
+"GET /parking/ HTTP/1.1" 200 13006
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_individual/ HTTP/1.1" 200 39171
+"GET /api/torres/ HTTP/1.1" 200 703
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_publicos/ HTTP/1.1" 200 26689
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"POST /notifications/send/ HTTP/1.1" 200 80
+"POST /notifications/send/ HTTP/1.1" 200 80
+"POST /notifications/send/ HTTP/1.1" 200 80
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_publicos/ HTTP/1.1" 200 26689
+"POST /api/send-service-notification/ HTTP/1.1" 200 198
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"POST /notifications/send/ HTTP/1.1" 200 80
+"POST /notifications/send/ HTTP/1.1" 200 80
+"POST /notifications/send/ HTTP/1.1" 200 80
+C:\Users\AlipioD\KAP\Kislev\kislevsmart\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"POST /notifications/send/ HTTP/1.1" 200 80
+"POST /notifications/send/ HTTP/1.1" 200 80
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"POST /notifications/send/ HTTP/1.1" 200 80
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /dashboard/ HTTP/1.1" 200 46017
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 127
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"POST /notifications/send/ HTTP/1.1" 200 80
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"POST /notifications/send/ HTTP/1.1" 200 94
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"POST /notifications/send/ HTTP/1.1" 200 94
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"POST /notifications/send/ HTTP/1.1" 200 92
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"POST /accounts/logout/ HTTP/1.1" 302 0
+"GET /accounts/login/ HTTP/1.1" 200 5292
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2487
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2487
+"GET /dashboard/ HTTP/1.1" 200 43404
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=2 HTTP/1.1" 200 127
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2487
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"POST /notifications/send/ HTTP/1.1" 200 80
+"POST /notifications/send/ HTTP/1.1" 200 80
+"POST /notifications/send/ HTTP/1.1" 200 80
+"POST /notifications/send/ HTTP/1.1" 200 80
+"POST /notifications/send/ HTTP/1.1" 200 80
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2487
+"POST /accounts/logout/ HTTP/1.1" 302 0
+"GET /accounts/login/ HTTP/1.1" 200 5292
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2487
+"GET /dashboard/ HTTP/1.1" 200 43404
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=2 HTTP/1.1" 200 127
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2487
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"POST /notifications/send/ HTTP/1.1" 200 80
+Watching for file changes with StatReloader
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2487
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_publicos/ HTTP/1.1" 200 26689
+"POST /api/send-service-notification/ HTTP/1.1" 200 795
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"POST /notifications/send/ HTTP/1.1" 200 80
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 200 5141
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/select-conjunto/ HTTP/1.1" 200 2551
+"POST /accounts/select-conjunto/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"POST /notifications/send/ HTTP/1.1" 200 93
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_individual/ HTTP/1.1" 200 39171
+"GET /api/torres/ HTTP/1.1" 200 1151
+"GET /api/torres/27/apartamentos/ HTTP/1.1" 200 408
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /static/css/restricciones.css HTTP/1.1" 304 0
+"GET /static/css/index.css HTTP/1.1" 304 0
+"GET /static/js/index.js HTTP/1.1" 304 0
+"GET /accounts/login/ HTTP/1.1" 200 5141
+"GET /static/css/login.css HTTP/1.1" 304 0
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/select-conjunto/ HTTP/1.1" 200 2551
+"POST /accounts/select-conjunto/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /static/css/visor_admin.css HTTP/1.1" 304 0
+"GET /static/js/visor_admin.js HTTP/1.1" 304 0
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /static/css/notificaciones.css HTTP/1.1" 304 0
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"GET /static/css/noti_generales.css HTTP/1.1" 304 0
+"POST /notifications/send/ HTTP/1.1" 200 92
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"POST /accounts/logout/ HTTP/1.1" 302 0
+"GET /accounts/login/ HTTP/1.1" 200 5292
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/select-conjunto/ HTTP/1.1" 200 2551
+"POST /accounts/select-conjunto/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"POST /notifications/send/ HTTP/1.1" 200 94
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"POST /accounts/logout/ HTTP/1.1" 302 0
+"GET /accounts/login/ HTTP/1.1" 200 5292
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/select-conjunto/ HTTP/1.1" 200 2551
+"POST /accounts/select-conjunto/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"POST /notifications/send/ HTTP/1.1" 200 92
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_individual/ HTTP/1.1" 200 39171
+"GET /static/css/noti_individual.css HTTP/1.1" 304 0
+"GET /api/torres/ HTTP/1.1" 200 703
+C:\Users\AlipioD\KAP\Kislev\kislevsmart\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\AlipioD\KAP\Kislev\kislevsmart\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_publicos/ HTTP/1.1" 200 26689
+"GET /static/css/noti_publicos.css HTTP/1.1" 304 0
+Internal Server Error: /api/send-service-notification/
+"POST /api/send-service-notification/ HTTP/1.1" 500 154
+C:\Users\AlipioD\KAP\Kislev\kislevsmart\views.py changed, reloading.
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_publicos/ HTTP/1.1" 200 26689
+"POST /api/send-service-notification/ HTTP/1.1" 200 195
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"POST /accounts/logout/ HTTP/1.1" 302 0
+"GET /accounts/login/ HTTP/1.1" 200 5292
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/select-conjunto/ HTTP/1.1" 200 2551
+"POST /accounts/select-conjunto/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_publicos/ HTTP/1.1" 200 26689
+"POST /api/send-service-notification/ HTTP/1.1" 200 199
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /dashboard/ HTTP/1.1" 200 43404
+"GET /static/css/dashboard.css HTTP/1.1" 304 0
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=2 HTTP/1.1" 200 127
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"GET /noti_individual/ HTTP/1.1" 200 39171
+"GET /api/torres/ HTTP/1.1" 200 1151
+"GET /api/torres/21/apartamentos/ HTTP/1.1" 200 403
+"GET /api/torres/26/apartamentos/ HTTP/1.1" 200 403
+"GET /api/torres/27/apartamentos/ HTTP/1.1" 200 408
+"POST /api/send-individual-notification/ HTTP/1.1" 200 155
+"GET /api/torres/23/apartamentos/ HTTP/1.1" 200 408
+"POST /api/send-individual-notification/ HTTP/1.1" 200 155
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"POST /accounts/logout/ HTTP/1.1" 302 0
+"GET /accounts/login/ HTTP/1.1" 200 5292
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/select-conjunto/ HTTP/1.1" 200 2551
+"POST /accounts/select-conjunto/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_individual/ HTTP/1.1" 200 39171
+"GET /api/torres/ HTTP/1.1" 200 703
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"POST /accounts/logout/ HTTP/1.1" 302 0
+"GET /accounts/login/ HTTP/1.1" 200 5292
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/select-conjunto/ HTTP/1.1" 200 2551
+"POST /accounts/select-conjunto/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_individual/ HTTP/1.1" 200 39171
+"GET /api/torres/ HTTP/1.1" 200 703
+"GET /api/torres/9/apartamentos/ HTTP/1.1" 200 422
+"POST /api/send-individual-notification/ HTTP/1.1" 200 155
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_publicos/ HTTP/1.1" 200 26689
+"POST /api/send-service-notification/ HTTP/1.1" 200 196
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"POST /notifications/send/ HTTP/1.1" 200 92
+"GET /accounts/control_porteria/ HTTP/1.1" 302 0
+"GET /accounts/login/?next=/accounts/control_porteria/ HTTP/1.1" 200 5141
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/select-conjunto/ HTTP/1.1" 200 2551
+"POST /accounts/select-conjunto/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"GET /dashboard/ HTTP/1.1" 200 43402
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 127
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2482
+"POST /accounts/logout/ HTTP/1.1" 302 0
+"GET /accounts/login/ HTTP/1.1" 200 5292
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/visor_propietario/ HTTP/1.1" 200 2091
+"POST /accounts/logout/ HTTP/1.1" 302 0
+"GET /accounts/login/ HTTP/1.1" 200 5292
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"POST /accounts/logout/ HTTP/1.1" 302 0
+"GET /accounts/login/ HTTP/1.1" 200 5292
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/select-conjunto/ HTTP/1.1" 200 2551
+"POST /accounts/select-conjunto/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /leerscaner/ HTTP/1.1" 200 4734
+"GET /static/css/leerscaner.css HTTP/1.1" 304 0
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"POST /accounts/logout/ HTTP/1.1" 302 0
+"GET /accounts/login/ HTTP/1.1" 200 5292
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/select-conjunto/ HTTP/1.1" 200 2551
+"POST /accounts/select-conjunto/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /leerscaner/ HTTP/1.1" 200 4734
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /leerscaner/ HTTP/1.1" 200 4734
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /leerscaner/ HTTP/1.1" 200 4734
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"POST /accounts/logout/ HTTP/1.1" 302 0
+"GET /accounts/login/ HTTP/1.1" 200 5292
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/select-conjunto/ HTTP/1.1" 200 2551
+"POST /accounts/select-conjunto/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"GET /static/css/formQR.css HTTP/1.1" 304 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /bienvenida/ HTTP/1.1" 302 0
+"GET /accounts/login/?next=/bienvenida/ HTTP/1.1" 200 5141
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"GET /notificaciones/ HTTP/1.1" 200 8177
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"GET /bienvenida/ HTTP/1.1" 200 26745
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"GET /notificaciones/ HTTP/1.1" 200 8177
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"GET /notificaciones/ HTTP/1.1" 200 8177
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"GET /bienvenida/ HTTP/1.1" 200 26745
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"GET /bienvenida/ HTTP/1.1" 200 26745
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"GET /leerscaner/ HTTP/1.1" 200 4698
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"GET /leerscaner/ HTTP/1.1" 200 4698
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"GET /leerscaner/ HTTP/1.1" 200 4698
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"GET /zonas_comunes/ HTTP/1.1" 200 9022
+"GET /static/css/zonas_comunes.css HTTP/1.1" 304 0
+"GET /static/js/zonas_comunes.js HTTP/1.1" 304 0
+"GET /parking/ HTTP/1.1" 200 13006
+"GET /static/css/inicio_parqueo.css HTTP/1.1" 304 0
+"GET /static/js/inicio_parqueo.js HTTP/1.1" 304 0
+"GET /carros/ HTTP/1.1" 200 4897
+"GET /parking/ HTTP/1.1" 200 13006
+"GET /motos/ HTTP/1.1" 200 4897
+"GET /parking/ HTTP/1.1" 200 13006
+"GET /parking/ HTTP/1.1" 200 13006
+"GET /zonas_comunes/ HTTP/1.1" 200 9022
+"GET /salas/ HTTP/1.1" 200 8073
+"GET /static/css/lista_salas.css HTTP/1.1" 304 0
+"GET /sala/1/calendario/ HTTP/1.1" 200 14976
+"GET /static/css/calendario.css HTTP/1.1" 304 0
+"GET /api/sala/1/reservas/?start=2025-03-31&end=2025-05-12&_=1746050953760 HTTP/1.1" 200 4021
+Internal Server Error: /accounts/visor_admin/
+Traceback (most recent call last):
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\core\handlers\exception.py", line 47, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\core\handlers\base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python312\Lib\contextlib.py", line 81, in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\views\generic\base.py", line 70, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\utils\decorators.py", line 43, in _wrapper
+    return bound_method(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\KAP\Kislev\accounts\utils.py", line 14, in _wrapped_view
+    return redirect('login')
+           ^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\shortcuts.py", line 41, in redirect
+    return redirect_class(resolve_url(to, *args, **kwargs))
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\shortcuts.py", line 130, in resolve_url
+    return reverse(to, args=args, kwargs=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\urls\base.py", line 86, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\urls\resolvers.py", line 698, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'login' not found. 'login' is not a valid view function or pattern name.
+"GET /accounts/visor_admin/ HTTP/1.1" 500 102761
+"GET /sala/3/calendario/ HTTP/1.1" 200 14990
+"GET /api/sala/3/reservas/?start=2025-03-31&end=2025-05-12&_=1746050972601 HTTP/1.1" 200 3999
+Internal Server Error: /accounts/visor_admin/
+Traceback (most recent call last):
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\core\handlers\exception.py", line 47, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\core\handlers\base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python312\Lib\contextlib.py", line 81, in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\views\generic\base.py", line 70, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\utils\decorators.py", line 43, in _wrapper
+    return bound_method(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\KAP\Kislev\accounts\utils.py", line 14, in _wrapped_view
+    return redirect('login')
+           ^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\shortcuts.py", line 41, in redirect
+    return redirect_class(resolve_url(to, *args, **kwargs))
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\shortcuts.py", line 130, in resolve_url
+    return reverse(to, args=args, kwargs=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\urls\base.py", line 86, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\urls\resolvers.py", line 698, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'login' not found. 'login' is not a valid view function or pattern name.
+"GET /accounts/visor_admin/ HTTP/1.1" 500 102761
+"GET /zonas_comunes/ HTTP/1.1" 200 9022
+"GET /parking/ HTTP/1.1" 200 13006
+"GET /carros/ HTTP/1.1" 200 4897
+"GET /parking/ HTTP/1.1" 200 13006
+"GET /motos/ HTTP/1.1" 200 4897
+"GET /parking/ HTTP/1.1" 200 13006
+"GET /bienvenida/ HTTP/1.1" 200 26745
+"POST /bienvenida/ HTTP/1.1" 200 124
+"GET /valqr/ZGF2aWQucm9qYXNAa2lzbGV2Lm5ldC5jbw==/ HTTP/1.1" 200 1669
+"GET /static/css/formenvioQR.css HTTP/1.1" 304 0
+"GET /static/images/QR.png HTTP/1.1" 304 0
+"GET /valqr/ZGF2aWQucm9qYXNAa2lzbGV2Lm5ldC5jbw==/ HTTP/1.1" 200 1669
+"GET /accounts/control_porteria/? HTTP/1.1" 200 2487
+"GET /bienvenida/ HTTP/1.1" 200 26745
+"POST /bienvenida/ HTTP/1.1" 200 124
+"GET /valqr/ZGF2aWQucm9qYXNAa2lzbGV2Lm5ldC5jbw==/ HTTP/1.1" 200 1669
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"GET /bienvenida/ HTTP/1.1" 200 26745
+"POST /bienvenida/ HTTP/1.1" 200 124
+"GET /valqr/ZGF2aWQucm9qYXNAa2lzbGV2Lm5ldC5jbw==/ HTTP/1.1" 200 1669
+"GET /accounts/control_porteria/? HTTP/1.1" 200 2487
+"GET /bienvenida/ HTTP/1.1" 200 26745
+"POST /bienvenida/ HTTP/1.1" 200 124
+"GET /valqr/ZGF2aWQucm9qYXNAa2lzbGV2Lm5ldC5jbw==/ HTTP/1.1" 200 1892
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"GET /bienvenida/ HTTP/1.1" 200 26745
+"POST /bienvenida/ HTTP/1.1" 200 124
+"GET /valqr/ZGF2aWQucm9qYXNAa2lzbGV2Lm5ldC5jbw==/ HTTP/1.1" 200 1892
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"GET /bienvenida/ HTTP/1.1" 200 26745
+"POST /bienvenida/ HTTP/1.1" 200 124
+"GET /valqr/ZGF2aWQucm9qYXNAa2lzbGV2Lm5ldC5jbw==/ HTTP/1.1" 200 1892
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2487
+"POST /accounts/logout/ HTTP/1.1" 302 0
+"GET /accounts/login/ HTTP/1.1" 200 5292
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/select-conjunto/ HTTP/1.1" 200 2551
+"POST /accounts/select-conjunto/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"POST /bienvenida/ HTTP/1.1" 200 124
+"GET /valqr/ZGF2aWQucm9qYXNAa2lzbGV2Lm5ldC5jbw==/ HTTP/1.1" 200 1888
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"POST /bienvenida/ HTTP/1.1" 200 124
+"GET /valqr/ZGF2aWQucm9qYXNAa2lzbGV2Lm5ldC5jbw==/ HTTP/1.1" 200 1888
+"GET /valqr/ZGF2aWQucm9qYXNAa2lzbGV2Lm5ldC5jbw==/ HTTP/1.1" 200 1888
+"GET /static/css/restricciones.css HTTP/1.1" 200 3058
+"GET /static/css/formenvioQR.css HTTP/1.1" 200 6180
+"GET /static/images/QR.png HTTP/1.1" 200 151426
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 6243
+"GET /valqr/ZGF2aWQucm9qYXNAa2lzbGV2Lm5ldC5jbw==/ HTTP/1.1" 200 1888
+"GET /static/css/restricciones.css HTTP/1.1" 200 3058
+"GET /static/css/formenvioQR.css HTTP/1.1" 200 6180
+"GET /static/images/QR.png HTTP/1.1" 200 151426
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 6243
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"POST /bienvenida/ HTTP/1.1" 200 124
+"GET /valqr/ZGF2aWQucm9qYXNAa2lzbGV2Lm5ldC5jbw==/ HTTP/1.1" 200 1888
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /validar_qr/gAAAAABoErlAcXTYMqSOLELUnXj25YhhhAdfrkSlV7qcdlslPyj8AzafIJgYRRdK1EZi1iGUD-Yrb059jrmdddkY9rWCA5V567nzroMfyKsVmVifOjM6TydcGP8xWA-SmV2pMq4vGljSnHecUco7_PpofO9NH3BR_Q==/?source=scan HTTP/1.1" 200 2166
+"GET /static/css/validar_qr.css HTTP/1.1" 304 0
+"GET /static/js/canvas.js HTTP/1.1" 304 0
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /validar_qr/gAAAAABoErlAcXTYMqSOLELUnXj25YhhhAdfrkSlV7qcdlslPyj8AzafIJgYRRdK1EZi1iGUD-Yrb059jrmdddkY9rWCA5V567nzroMfyKsVmVifOjM6TydcGP8xWA-SmV2pMq4vGljSnHecUco7_PpofO9NH3BR_Q==/?source=scan HTTP/1.1" 200 2268
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /validar_qr/gAAAAABoErjjuh-W5BJPcp2awgunnWOBs2ehddlkl-aHWME8FzpZ4MNP-bjEHTijQ2gB-bAGgBn_3Z20HGD1Wr3o7mhURUaBCCSV2UAdwhwYyCZSk8qWVQwZtxR8s3gZyCbVg85Z4Qngh52dc3-kAmY6-9ww2C1a0g==/?source=scan HTTP/1.1" 200 1947
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /validar_qr/gAAAAABoErjjuh-W5BJPcp2awgunnWOBs2ehddlkl-aHWME8FzpZ4MNP-bjEHTijQ2gB-bAGgBn_3Z20HGD1Wr3o7mhURUaBCCSV2UAdwhwYyCZSk8qWVQwZtxR8s3gZyCbVg85Z4Qngh52dc3-kAmY6-9ww2C1a0g==/?source=scan HTTP/1.1" 200 477
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /validar_qr/gAAAAABoErjjuh-W5BJPcp2awgunnWOBs2ehddlkl-aHWME8FzpZ4MNP-bjEHTijQ2gB-bAGgBn_3Z20HGD1Wr3o7mhURUaBCCSV2UAdwhwYyCZSk8qWVQwZtxR8s3gZyCbVg85Z4Qngh52dc3-kAmY6-9ww2C1a0g==/?source=scan HTTP/1.1" 200 477
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /validar_qr/gAAAAABoErjjuh-W5BJPcp2awgunnWOBs2ehddlkl-aHWME8FzpZ4MNP-bjEHTijQ2gB-bAGgBn_3Z20HGD1Wr3o7mhURUaBCCSV2UAdwhwYyCZSk8qWVQwZtxR8s3gZyCbVg85Z4Qngh52dc3-kAmY6-9ww2C1a0g==/?source=scan HTTP/1.1" 200 477
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /validar_qr/gAAAAABoErjjuh-W5BJPcp2awgunnWOBs2ehddlkl-aHWME8FzpZ4MNP-bjEHTijQ2gB-bAGgBn_3Z20HGD1Wr3o7mhURUaBCCSV2UAdwhwYyCZSk8qWVQwZtxR8s3gZyCbVg85Z4Qngh52dc3-kAmY6-9ww2C1a0g==/?source=scan HTTP/1.1" 200 477
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /validar_qr/gAAAAABoEreFPjci8ULL-7YsFswFnpuyJ6Z8eMHQM980z2d5FSbFWdkK4a5XoE7IBt-TKwJPXCZQQkSesP3bhLFBcjq8uGYba0OS70-ycKIUXWLSV-R9OPAYxhv4kZZ5H3qG9g03Fdlq3JtH5mCqMX-J5BXqpViiZw==/?source=scan HTTP/1.1" 200 1948
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /validar_qr/gAAAAABoEreFPjci8ULL-7YsFswFnpuyJ6Z8eMHQM980z2d5FSbFWdkK4a5XoE7IBt-TKwJPXCZQQkSesP3bhLFBcjq8uGYba0OS70-ycKIUXWLSV-R9OPAYxhv4kZZ5H3qG9g03Fdlq3JtH5mCqMX-J5BXqpViiZw==/?source=scan HTTP/1.1" 200 477
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /validar_qr/gAAAAABoErcI7UI-NqeTtALuJIjr6JPm7FbqMpMTPvgM0e1HewRJdB8CykmmcdTUlSEuldEqWvBBfWsJOJ12PSO7ZcaTcPIqTayVl1M6lgGXKunIG6XUlrCONkf0Gfiux5aTguGWPsWy80o8WyQVSIGn-e_ctesj6w==/?source=scan HTTP/1.1" 200 1939
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /validar_qr/gAAAAABoErcI7UI-NqeTtALuJIjr6JPm7FbqMpMTPvgM0e1HewRJdB8CykmmcdTUlSEuldEqWvBBfWsJOJ12PSO7ZcaTcPIqTayVl1M6lgGXKunIG6XUlrCONkf0Gfiux5aTguGWPsWy80o8WyQVSIGn-e_ctesj6w==/?source=scan HTTP/1.1" 200 477
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /validar_qr/gAAAAABoErZMsvsV01mZ6LNGHa2gho8e1ZTBwYhdKeJjRbLrsy8vfr-xY3mkBYWU4iK7Lc7gR67p6YPnklwnlaGGPxuXIiIC3JjTu-NjVOINr_5JIHDVH5GU-hpfhgmycjvMGnn_jFj9ETmxHKe4kq1cjKjYkuKKwQ==/?source=scan HTTP/1.1" 200 1941
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /validar_qr/gAAAAABoErZMsvsV01mZ6LNGHa2gho8e1ZTBwYhdKeJjRbLrsy8vfr-xY3mkBYWU4iK7Lc7gR67p6YPnklwnlaGGPxuXIiIC3JjTu-NjVOINr_5JIHDVH5GU-hpfhgmycjvMGnn_jFj9ETmxHKe4kq1cjKjYkuKKwQ==/?source=scan HTTP/1.1" 200 477
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /validar_qr/gAAAAABoErXp_LQE0vclRDlDHt3esJHSMo9Ar1WCQrcwSgQCOwSqQgTKOOtuqA7bMVbNeTN8zC7lMmll7F9yzcAYC5cbOWy2X74xaY7Abckf2gmSy7iqGXhy1ATKcO3Lm_sVopoquW7lCuTjPqFpqVjz_iNN_qEn9A==/?source=scan HTTP/1.1" 200 1939
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /validar_qr/gAAAAABoErXp_LQE0vclRDlDHt3esJHSMo9Ar1WCQrcwSgQCOwSqQgTKOOtuqA7bMVbNeTN8zC7lMmll7F9yzcAYC5cbOWy2X74xaY7Abckf2gmSy7iqGXhy1ATKcO3Lm_sVopoquW7lCuTjPqFpqVjz_iNN_qEn9A==/?source=scan HTTP/1.1" 200 477
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /validar_qr/gAAAAABoErWPqFnxViAV5SubULSZ39tFn2Eo75xQYOyaANodnzvkqHhBluIb4pnfbVjR4AJDH9KcFe4yNUsQBoV5fYGKf0C9nUz8--FLym1JCmBLPmNCCbtNzFRrZY10cluIklyDyoKgWapVE8w_s4HTE2QBMyD__A==/?source=scan HTTP/1.1" 200 1945
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /validar_qr/gAAAAABoErVlfdfPF2xwAnGsqS-C_thpYw3stB3solrJfloC9c5zhSEtKT903H_Ftze6eAVGQU-d9eBHOaoW5P7ih1FHhym3CR1yAWYmDTLSeO9VojboIggbqYeRYEoPjtu99kpzKtn_enBqyx5JDPesECWah_VIUA==/?source=scan HTTP/1.1" 200 1945
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /validar_qr/gAAAAABoEq1X53Cz8gsV9GpGazMoDOgswI9K00aNLQjWro-Z55AnETCRgtg3_bTUP6oLgW-J9_W53GFUh-tJ1uB4548-IztdPYk1CmRgpWW2tKKdRqvhlpdjCrzN2k1nfUIcTydGB7A9UPEPPy4f3xDbpjFCCjM_Zw==/?source=scan HTTP/1.1" 200 1948
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"POST /bienvenida/ HTTP/1.1" 200 124
+"GET /valqr/ZGF2aWQucm9qYXNAa2lzbGV2Lm5ldC5jbw==/ HTTP/1.1" 200 1888
+"GET /static/css/formenvioQR.css HTTP/1.1" 304 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_individual/ HTTP/1.1" 200 39171
+"GET /api/torres/ HTTP/1.1" 200 703
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_publicos/ HTTP/1.1" 200 26689
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /dashboard/ HTTP/1.1" 200 54520
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 127
+"GET /visitor-stats/?filter_type=hour&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 310
+"GET /visitor-stats/?filter_type=hour&month=4&year=2025&conjunto_id=1 HTTP/1.1" 200 310
+"GET /visitor-stats/?filter_type=week&month=4&year=2025&conjunto_id=1 HTTP/1.1" 200 127
+"GET /dashboard/?fecha=2025-04-29 HTTP/1.1" 200 43403
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 127
+"GET /dashboard/?fecha=2025-04-28 HTTP/1.1" 200 43403
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 127
+"GET /dashboard/?fecha=2025-04-27 HTTP/1.1" 200 43403
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 127
+"GET /dashboard/?fecha=2025-04-25 HTTP/1.1" 200 43403
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 127
+"GET /dashboard/?fecha=2025-04-24 HTTP/1.1" 200 46018
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 127
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /validar_qr/gAAAAABoErxdrLQipQyAzx2BktfdYIZ20CDxYK1yfqUh8nrHl0oWC0k59ghOcy06ZIUxFIcM_V4CtisQ3ClY-AMh_Y5rmDZh_UXqN9_HHs6GT0e6-8uRRnduyUbQ2vdw3acgYZn4ggIVw2lYmYZf_5JWLquMNLK8-w==/?source=scan HTTP/1.1" 200 2159
+"GET /validar_qr/gAAAAABoErxdrLQipQyAzx2BktfdYIZ20CDxYK1yfqUh8nrHl0oWC0k59ghOcy06ZIUxFIcM_V4CtisQ3ClY-AMh_Y5rmDZh_UXqN9_HHs6GT0e6-8uRRnduyUbQ2vdw3acgYZn4ggIVw2lYmYZf_5JWLquMNLK8-w==/?source=scan HTTP/1.1" 200 5151
+"GET /static/css/restricciones.css HTTP/1.1" 200 3058
+"GET /static/css/validar_qr.css HTTP/1.1" 200 7420
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 6243
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"POST /bienvenida/ HTTP/1.1" 200 124
+"GET /valqr/ZGF2aWQucm9qYXNAa2lzbGV2Lm5ldC5jbw==/ HTTP/1.1" 200 1888
+"GET /static/css/formenvioQR.css HTTP/1.1" 304 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /validar_qr/gAAAAABoEtBaNtPidq2l4ECjGX5_KBHcZe_CSnI9vIH-29EVMWlCMBhmntXjCBp5axH5eKaTZOunWwa0bpE6L1H4RywQWVHAQSNZPg3Oh7P01zUgsueMGEiSQwzDwnZMpWnXEyXCQV4xRuSRQC73g7FjWSkUs2_vdw==/?source=scan HTTP/1.1" 200 4799
+"GET /static/css/validar_qr.css HTTP/1.1" 304 0
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /validar_qr/gAAAAABoEtBaNtPidq2l4ECjGX5_KBHcZe_CSnI9vIH-29EVMWlCMBhmntXjCBp5axH5eKaTZOunWwa0bpE6L1H4RywQWVHAQSNZPg3Oh7P01zUgsueMGEiSQwzDwnZMpWnXEyXCQV4xRuSRQC73g7FjWSkUs2_vdw==/?source=scan HTTP/1.1" 200 5164
+"GET /static/css/validar_qr.css HTTP/1.1" 304 0
+"GET /validar_qr/gAAAAABoEtBaNtPidq2l4ECjGX5_KBHcZe_CSnI9vIH-29EVMWlCMBhmntXjCBp5axH5eKaTZOunWwa0bpE6L1H4RywQWVHAQSNZPg3Oh7P01zUgsueMGEiSQwzDwnZMpWnXEyXCQV4xRuSRQC73g7FjWSkUs2_vdw==/?source=scan HTTP/1.1" 200 477
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /static/css/restricciones.css HTTP/1.1" 200 3058
+"GET /static/css/visor_admin.css HTTP/1.1" 200 7233
+"GET /static/js/visor_admin.js HTTP/1.1" 200 347
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 6243
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"POST /bienvenida/ HTTP/1.1" 200 124
+"GET /valqr/ZGF2aWQucm9qYXNAa2lzbGV2Lm5ldC5jbw==/ HTTP/1.1" 200 1888
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /validar_qr/gAAAAABoEtFHCAAFxg_WOdclUwEkyp5n572-0zOeNzQgZX5Cgn75lmGm-ITXQ0xSjT0x6HvmO53j06LKzwhAesVER1WH0x4xzE9nHSlsnAKOq3GWFJ_fVQ0tTunw81oENiMFoo7a6HH7DNiQzXJhuyKbA-WpIhTzTw==/?source=scan HTTP/1.1" 200 3943
+"GET /static/css/validar_qr.css HTTP/1.1" 304 0
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /validar_qr/gAAAAABoEtFHCAAFxg_WOdclUwEkyp5n572-0zOeNzQgZX5Cgn75lmGm-ITXQ0xSjT0x6HvmO53j06LKzwhAesVER1WH0x4xzE9nHSlsnAKOq3GWFJ_fVQ0tTunw81oENiMFoo7a6HH7DNiQzXJhuyKbA-WpIhTzTw==/?source=scan HTTP/1.1" 200 477
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"POST /bienvenida/ HTTP/1.1" 200 124
+"GET /valqr/ZGF2aWQucm9qYXNAa2lzbGV2Lm5ldC5jbw==/ HTTP/1.1" 200 1888
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /validar_qr/gAAAAABoEtGiuT4VmaDreWjGOAqgHK484pW-oX5UVMJYAKn52M-RQivLFxP_9QUk_4Lto8EGbwfYNPcfLHJ5m3L3X9EutYq4eWNVNTHQpBjicdvtBeMWKwnNIfE10NA7vvzpe8wjhHU0pvjzEDJKK7cRx0W1QhAoHA==/?source=scan HTTP/1.1" 200 4799
+"GET /static/css/validar_qr.css HTTP/1.1" 304 0
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /validar_qr/gAAAAABoEtGiuT4VmaDreWjGOAqgHK484pW-oX5UVMJYAKn52M-RQivLFxP_9QUk_4Lto8EGbwfYNPcfLHJ5m3L3X9EutYq4eWNVNTHQpBjicdvtBeMWKwnNIfE10NA7vvzpe8wjhHU0pvjzEDJKK7cRx0W1QhAoHA==/?source=scan HTTP/1.1" 200 5164
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"POST /bienvenida/ HTTP/1.1" 200 124
+"GET /valqr/ZGF2aWQucm9qYXNAa2lzbGV2Lm5ldC5jbw==/ HTTP/1.1" 200 1888
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /validar_qr/gAAAAABoEtGiuT4VmaDreWjGOAqgHK484pW-oX5UVMJYAKn52M-RQivLFxP_9QUk_4Lto8EGbwfYNPcfLHJ5m3L3X9EutYq4eWNVNTHQpBjicdvtBeMWKwnNIfE10NA7vvzpe8wjhHU0pvjzEDJKK7cRx0W1QhAoHA==/?source=scan HTTP/1.1" 200 477
+"GET /validar_qr/gAAAAABoEtGiuT4VmaDreWjGOAqgHK484pW-oX5UVMJYAKn52M-RQivLFxP_9QUk_4Lto8EGbwfYNPcfLHJ5m3L3X9EutYq4eWNVNTHQpBjicdvtBeMWKwnNIfE10NA7vvzpe8wjhHU0pvjzEDJKK7cRx0W1QhAoHA==/?source=scan HTTP/1.1" 200 1558
+"GET /static/css/restricciones.css HTTP/1.1" 200 3058
+"GET /static/css/error_qr.css HTTP/1.1" 200 5580
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 6243
+"GET /validar_qr/gAAAAABoEtGiuT4VmaDreWjGOAqgHK484pW-oX5UVMJYAKn52M-RQivLFxP_9QUk_4Lto8EGbwfYNPcfLHJ5m3L3X9EutYq4eWNVNTHQpBjicdvtBeMWKwnNIfE10NA7vvzpe8wjhHU0pvjzEDJKK7cRx0W1QhAoHA==/?source=scan HTTP/1.1" 200 1558
+"GET /static/css/restricciones.css HTTP/1.1" 200 3058
+"GET /static/css/error_qr.css HTTP/1.1" 200 5580
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 6243
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /validar_qr/gAAAAABoEtGiuT4VmaDreWjGOAqgHK484pW-oX5UVMJYAKn52M-RQivLFxP_9QUk_4Lto8EGbwfYNPcfLHJ5m3L3X9EutYq4eWNVNTHQpBjicdvtBeMWKwnNIfE10NA7vvzpe8wjhHU0pvjzEDJKK7cRx0W1QhAoHA==/?source=scan HTTP/1.1" 200 1558
+"GET /static/css/error_qr.css HTTP/1.1" 304 0
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"POST /bienvenida/ HTTP/1.1" 200 124
+"GET /valqr/ZGF2aWQucm9qYXNAa2lzbGV2Lm5ldC5jbw==/ HTTP/1.1" 200 1888
+"GET /static/css/formenvioQR.css HTTP/1.1" 304 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /dashboard/ HTTP/1.1" 200 54521
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 127
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"POST /bienvenida/ HTTP/1.1" 200 124
+"GET /valqr/ZGF2aWQucm9qYXNAa2lzbGV2Lm5ldC5jbw==/ HTTP/1.1" 200 1888
+"GET /static/css/formenvioQR.css HTTP/1.1" 304 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /validar_qr/gAAAAABoEtrf2wMxpTyz4Ay2DSRfH69ICgNh42tMrtmjcGeRziHXxm_X99Y1gyQfbvqmXHRFO0gU1uH55KZKF5Oq_eHWpCtgZRzIoG6PHUDcxxfap-b_xPgCLmRKVNoWqv1ExLIcXP0txSvBtq6TIuH-kOizJ5NwxA==/?source=scan HTTP/1.1" 200 3959
+"GET /static/css/validar_qr.css HTTP/1.1" 304 0
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /validar_qr/gAAAAABoEtrf2wMxpTyz4Ay2DSRfH69ICgNh42tMrtmjcGeRziHXxm_X99Y1gyQfbvqmXHRFO0gU1uH55KZKF5Oq_eHWpCtgZRzIoG6PHUDcxxfap-b_xPgCLmRKVNoWqv1ExLIcXP0txSvBtq6TIuH-kOizJ5NwxA==/?source=scan HTTP/1.1" 200 1558
+"GET /static/css/error_qr.css HTTP/1.1" 304 0
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"POST /bienvenida/ HTTP/1.1" 200 124
+"GET /valqr/ZGF2aWQucm9qYXNAa2lzbGV2Lm5ldC5jbw==/ HTTP/1.1" 200 1888
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /validar_qr/gAAAAABoEtuewRJTF4h8BQJHWrVTCnNqp0cuDbxxH1KVoiAoQKqZouEROmwEYSk1suaQ_uHgr5puuuxijx0LYAKW3c6TzrTE90lZTCSCZ8iaRPjabLJY-wjcI_c2X7BJuCUjEYu-U7arPDfvLnPO5wTQTrVMlb4rVA==/?source=scan HTTP/1.1" 200 3959
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /zonas_comunes/ HTTP/1.1" 200 9022
+"GET /salas/ HTTP/1.1" 200 8073
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_individual/ HTTP/1.1" 200 39171
+"GET /api/torres/ HTTP/1.1" 200 703
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /api/torres/14/apartamentos/ HTTP/1.1" 200 403
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+code 400, message Bad request version ("â\x9aÃÇ\x1båàA\x89\x17\x08\x97\x00´\x11\x93jUSJV\x1a¾=\x13ÎÍ\x89èpfk\x00(\x13\x02\x13\x01À,À+À0À/À$À#À(À'À")
+You're accessing the development server over HTTPS, but it only supports HTTP.
+
+- Broken pipe from ('127.0.0.1', 62490)
+
+Not Found: /developmentserver/metadatauploader
+- Broken pipe from ('127.0.0.1', 62489)
+
+Not Found: /developmentserver/metadatauploader
+"HEAD /developmentserver/metadatauploader HTTP/1.1" 404 6313
+code 400, message Bad request version ("û\x83PsÄÕ\x97*@7Oµ¢\x89Â\x9e\x97\x90×J®ê§ÚyÂ¯õî\xadÜ`\x00(\x13\x02\x13\x01À,À+À0À/À$À#À(À'À")
+You're accessing the development server over HTTPS, but it only supports HTTP.
+
+code 400, message Bad request version ("wVë\x8dh<ëAàw\x07÷ýé\x8f8\x8f\x02\x93{\x8eå\xad\x00(\x13\x02\x13\x01À,À+À0À/À$À#À(À'À")
+You're accessing the development server over HTTPS, but it only supports HTTP.
+
+- Broken pipe from ('127.0.0.1', 62580)
+
+Not Found: /developmentserver/metadatauploader
+"HEAD /developmentserver/metadatauploader HTTP/1.1" 404 6313
+code 400, message Bad request version ("\x00(\x13\x02\x13\x01À,À+À0À/À$À#À(À'À")
+You're accessing the development server over HTTPS, but it only supports HTTP.
+
+code 400, message Bad request version ("A\x07gÝ\x1aÓ©o÷Î\x8eQ½ûS]\x8f\x8d\x82ýX<>©F(q\x93\x88»H\x04\x00(\x13\x02\x13\x01À,À+À0À/À$À#À(À'À")
+You're accessing the development server over HTTPS, but it only supports HTTP.
+
+- Broken pipe from ('127.0.0.1', 53781)
+
+Watching for file changes with StatReloader
+"GET /dashboard/ HTTP/1.1" 302 0
+"GET /accounts/login/?next=/dashboard/ HTTP/1.1" 200 5141
+"GET /static/css/restricciones.css HTTP/1.1" 304 0
+"GET /static/css/login.css HTTP/1.1" 304 0
+"GET / HTTP/1.1" 200 3647
+"GET /static/css/index.css HTTP/1.1" 304 0
+"GET /static/js/index.js HTTP/1.1" 304 0
+"GET /accounts/login/ HTTP/1.1" 200 5141
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/select-conjunto/ HTTP/1.1" 200 2551
+"POST /accounts/select-conjunto/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /static/css/visor_admin.css HTTP/1.1" 304 0
+"GET /static/js/visor_admin.js HTTP/1.1" 304 0
+"GET /dashboard/ HTTP/1.1" 200 43403
+"GET /static/css/dashboard.css HTTP/1.1" 304 0
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 128
+"GET /dashboard/?fecha=2025-05-04 HTTP/1.1" 200 43403
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 128
+"GET /dashboard/?fecha=2025-05-03 HTTP/1.1" 200 43403
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 128
+"GET /dashboard/?fecha=2025-05-02 HTTP/1.1" 200 43403
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 128
+"GET /dashboard/?fecha=2025-04-28 HTTP/1.1" 200 43403
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 128
+"GET /dashboard/?fecha=2025-04-08 HTTP/1.1" 200 43403
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 128
+"GET /dashboard/?fecha=2025-03-30 HTTP/1.1" 200 43403
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 128
+"GET /dashboard/?fecha=2025-04-29 HTTP/1.1" 200 43403
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 128
+"GET /dashboard/?fecha=2025-04-28 HTTP/1.1" 200 43403
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 128
+"GET /dashboard/?fecha=2025-04-27 HTTP/1.1" 200 43403
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 128
+"GET /dashboard/?fecha=2025-04-26 HTTP/1.1" 200 46018
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 128
+"GET /dashboard/?fecha=2025-04-25 HTTP/1.1" 200 43403
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 128
+"GET /dashboard/?fecha=2025-04-26 HTTP/1.1" 200 46018
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 128
+"GET /visitor-stats/?filter_type=hour&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 310
+"GET /visitor-stats/?filter_type=hour&month=4&year=2025&conjunto_id=1 HTTP/1.1" 200 310
+"GET /visitor-stats/?filter_type=week&month=4&year=2025&conjunto_id=1 HTTP/1.1" 200 128
+"GET /dashboard/?fecha=2025-04-30 HTTP/1.1" 200 54520
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 128
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /static/css/restricciones.css HTTP/1.1" 304 0
+"GET /static/css/index.css HTTP/1.1" 304 0
+"GET /static/js/index.js HTTP/1.1" 304 0
+"GET /accounts/login/ HTTP/1.1" 200 5141
+"GET /static/css/login.css HTTP/1.1" 304 0
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/select-conjunto/ HTTP/1.1" 200 2551
+"POST /accounts/select-conjunto/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /static/css/visor_admin.css HTTP/1.1" 304 0
+"GET /static/js/visor_admin.js HTTP/1.1" 304 0
+"GET /dashboard/ HTTP/1.1" 200 43403
+"GET /static/css/dashboard.css HTTP/1.1" 304 0
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 128
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /static/css/notificaciones.css HTTP/1.1" 304 0
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"GET /static/css/noti_generales.css HTTP/1.1" 304 0
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_individual/ HTTP/1.1" 200 39171
+"GET /static/css/noti_individual.css HTTP/1.1" 304 0
+"GET /api/torres/ HTTP/1.1" 200 703
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_publicos/ HTTP/1.1" 200 26689
+"GET /static/css/noti_publicos.css HTTP/1.1" 304 0
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /static/css/leerscaner.css HTTP/1.1" 304 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"GET /static/css/formQR.css HTTP/1.1" 304 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /zonas_comunes/ HTTP/1.1" 200 9022
+"GET /static/css/zonas_comunes.css HTTP/1.1" 304 0
+"GET /static/js/zonas_comunes.js HTTP/1.1" 304 0
+"GET /salas/ HTTP/1.1" 200 8073
+"GET /static/css/lista_salas.css HTTP/1.1" 304 0
+"GET /sala/1/calendario/ HTTP/1.1" 200 14976
+"GET /static/css/calendario.css HTTP/1.1" 304 0
+"GET /api/sala/1/reservas/?start=2025-04-28&end=2025-06-09&_=1747085617919 HTTP/1.1" 200 3999
+"GET /api/sala/1/reservas/?start=2025-03-31&end=2025-05-12&_=1747085617920 HTTP/1.1" 200 4021
+"GET /api/sala/1/reservas/?start=2025-02-24&end=2025-04-07&_=1747085617921 HTTP/1.1" 200 3999
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_individual/ HTTP/1.1" 200 39171
+"GET /api/torres/ HTTP/1.1" 200 703
+"GET /api/torres/7/apartamentos/ HTTP/1.1" 200 408
+"GET /api/torres/6/apartamentos/ HTTP/1.1" 200 403
+"GET /api/torres/1/apartamentos/ HTTP/1.1" 200 403
+"GET /api/torres/6/apartamentos/ HTTP/1.1" 200 403
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_publicos/ HTTP/1.1" 200 26689
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /zonas_comunes/ HTTP/1.1" 200 9022
+"GET /parking/ HTTP/1.1" 200 13006
+"GET /static/js/inicio_parqueo.js HTTP/1.1" 304 0
+"GET /static/css/inicio_parqueo.css HTTP/1.1" 304 0
+"GET /motos/ HTTP/1.1" 200 4897
+"GET /parking/ HTTP/1.1" 200 13006
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /zonas_comunes/ HTTP/1.1" 200 9022
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_publicos/ HTTP/1.1" 200 26689
+"POST /api/send-service-notification/ HTTP/1.1" 200 195
+"GET /notificaciones/ HTTP/1.1" 200 8172
+Internal Server Error: /accounts/visor_admin/
+Traceback (most recent call last):
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\core\handlers\exception.py", line 47, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\core\handlers\base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python312\Lib\contextlib.py", line 81, in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\views\generic\base.py", line 70, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\utils\decorators.py", line 43, in _wrapper
+    return bound_method(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\KAP\Kislev\accounts\utils.py", line 10, in _wrapped_view
+    return redirect('login')
+           ^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\shortcuts.py", line 41, in redirect
+    return redirect_class(resolve_url(to, *args, **kwargs))
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\shortcuts.py", line 130, in resolve_url
+    return reverse(to, args=args, kwargs=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\urls\base.py", line 86, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\urls\resolvers.py", line 698, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'login' not found. 'login' is not a valid view function or pattern name.
+- Broken pipe from ('127.0.0.1', 61029)
+
+Internal Server Error: /accounts/visor_admin/
+Traceback (most recent call last):
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\core\handlers\exception.py", line 47, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\core\handlers\base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python312\Lib\contextlib.py", line 81, in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\views\generic\base.py", line 70, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\utils\decorators.py", line 43, in _wrapper
+    return bound_method(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\KAP\Kislev\accounts\utils.py", line 10, in _wrapped_view
+    return redirect('login')
+           ^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\shortcuts.py", line 41, in redirect
+    return redirect_class(resolve_url(to, *args, **kwargs))
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\shortcuts.py", line 130, in resolve_url
+    return reverse(to, args=args, kwargs=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\urls\base.py", line 86, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\urls\resolvers.py", line 698, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'login' not found. 'login' is not a valid view function or pattern name.
+"GET /accounts/visor_admin/ HTTP/1.1" 500 102463
+"GET /notificaciones/ HTTP/1.1" 302 0
+"GET /accounts/login/?next=/notificaciones/ HTTP/1.1" 200 5141
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/select-conjunto/ HTTP/1.1" 200 2551
+"POST /accounts/select-conjunto/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_publicos/ HTTP/1.1" 200 26689
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_individual/ HTTP/1.1" 200 39171
+"GET /api/torres/ HTTP/1.1" 200 703
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_publicos/ HTTP/1.1" 200 26689
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_publicos/ HTTP/1.1" 200 26689
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /zonas_comunes/ HTTP/1.1" 200 9022
+"GET /salas/ HTTP/1.1" 200 8073
+"GET /sala/1/calendario/ HTTP/1.1" 200 14976
+"GET /api/sala/1/reservas/?start=2025-04-28&end=2025-06-09&_=1747147683087 HTTP/1.1" 200 3999
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /zonas_comunes/ HTTP/1.1" 200 9022
+"GET /salas/ HTTP/1.1" 200 8073
+"GET /sala/3/calendario/ HTTP/1.1" 200 14990
+"GET /api/sala/3/reservas/?start=2025-04-28&end=2025-06-09&_=1747147717045 HTTP/1.1" 200 3999
+"GET /api/sala/3/horarios/2025-05-13/ HTTP/1.1" 200 490
+"GET /api/sala/3/horarios/2025-05-30/ HTTP/1.1" 200 564
+"GET /parking/ HTTP/1.1" 200 13006
+"GET /motos/ HTTP/1.1" 200 4897
+"GET /parking/ HTTP/1.1" 200 13006
+"GET /motos/ HTTP/1.1" 200 4897
+"GET /parking/ HTTP/1.1" 200 13006
+"GET /carros/ HTTP/1.1" 200 4897
+"GET /parking/ HTTP/1.1" 200 13006
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /zonas_comunes/ HTTP/1.1" 200 9022
+"GET /salas/ HTTP/1.1" 200 8073
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /validar_qr/gAAAAABoEtuewRJTF4h8BQJHWrVTCnNqp0cuDbxxH1KVoiAoQKqZouEROmwEYSk1suaQ_uHgr5puuuxijx0LYAKW3c6TzrTE90lZTCSCZ8iaRPjabLJY-wjcI_c2X7BJuCUjEYu-U7arPDfvLnPO5wTQTrVMlb4rVA==/?source=scan HTTP/1.1" 200 1558
+"GET /static/css/error_qr.css HTTP/1.1" 304 0
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /validar_qr/gAAAAABoEtLr69i1tJD4G5S_XqcF1XHIU656wQhOoYI4BELIRJk5HL0vNQeebChuNnfnLi7G_J2blfj-4jRIxj0Wqo8G5IPgizNRNfm75DD102H77BQvzfz1fjs7WvmZ6NnwjPik4vZLn_cH9YC30IJJ8RBS77u76A==/?source=scan HTTP/1.1" 200 4796
+"GET /static/css/validar_qr.css HTTP/1.1" 304 0
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /zonas_comunes/ HTTP/1.1" 200 9022
+"GET /parking/ HTTP/1.1" 200 13006
+"GET /carros/ HTTP/1.1" 200 5053
+"GET /parking/ HTTP/1.1" 200 13006
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /validar_qr/gAAAAABoEtLr69i1tJD4G5S_XqcF1XHIU656wQhOoYI4BELIRJk5HL0vNQeebChuNnfnLi7G_J2blfj-4jRIxj0Wqo8G5IPgizNRNfm75DD102H77BQvzfz1fjs7WvmZ6NnwjPik4vZLn_cH9YC30IJJ8RBS77u76A==/?source=scan HTTP/1.1" 200 5160
+"GET /accounts/control_porteria/ HTTP/1.1" 200 2488
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /dashboard/ HTTP/1.1" 200 43403
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 128
+"GET /dashboard/ HTTP/1.1" 200 43403
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 128
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /zonas_comunes/ HTTP/1.1" 200 9022
+"GET /parking/ HTTP/1.1" 200 13006
+"GET /carros/ HTTP/1.1" 200 4897
+"GET /parking/ HTTP/1.1" 200 13006
+- Broken pipe from ('127.0.0.1', 63283)
+
+"GET / HTTP/1.1" 200 3647
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /static/css/restricciones.css HTTP/1.1" 200 3058
+"GET /static/css/index.css HTTP/1.1" 200 25940
+"GET /static/js/index.js HTTP/1.1" 200 2122
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 6243
+"GET /accounts/login/ HTTP/1.1" 200 5141
+"GET /static/css/login.css HTTP/1.1" 200 5277
+"POST /accounts/login/ HTTP/1.1" 200 5304
+"POST /accounts/login/ HTTP/1.1" 200 5304
+"POST /accounts/login/ HTTP/1.1" 200 5304
+"GET /accounts/password_reset/ HTTP/1.1" 200 955
+"GET /static/css/reset_password.css HTTP/1.1" 200 2365
+Internal Server Error: /accounts/password_reset/
+Traceback (most recent call last):
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\core\handlers\exception.py", line 47, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\core\handlers\base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python312\Lib\contextlib.py", line 81, in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\views\generic\base.py", line 70, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\utils\decorators.py", line 43, in _wrapper
+    return bound_method(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\utils\decorators.py", line 130, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\contrib\auth\views.py", line 222, in dispatch
+    return super().dispatch(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\views\generic\base.py", line 98, in dispatch
+    return handler(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\views\generic\edit.py", line 142, in post
+    return self.form_valid(form)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\KAP\Kislev\accounts\views.py", line 288, in form_valid
+    response = super().form_valid(form)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\contrib\auth\views.py", line 235, in form_valid
+    form.save(**opts)
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\contrib\auth\forms.py", line 318, in save
+    self.send_mail(
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\contrib\auth\forms.py", line 268, in send_mail
+    email_message.send()
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\core\mail\message.py", line 284, in send
+    return self.get_connection(fail_silently).send_messages([self])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\sendgrid_backend\mail.py", line 167, in send_messages
+    resp = self.sg.client.mail.send.post(request_body=data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\python_http_client\client.py", line 277, in http_request
+    self._make_request(opener, request, timeout=timeout)
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\python_http_client\client.py", line 184, in _make_request
+    raise exc
+python_http_client.exceptions.UnauthorizedError: HTTP Error 401: Unauthorized
+"POST /accounts/password_reset/ HTTP/1.1" 500 148346
+"POST /accounts/login/ HTTP/1.1" 200 5304
+"POST /accounts/login/ HTTP/1.1" 200 5304
+"POST /accounts/login/ HTTP/1.1" 200 5304
+"POST /accounts/login/ HTTP/1.1" 200 5304
+"POST /accounts/login/ HTTP/1.1" 200 5304
+"POST /accounts/login/ HTTP/1.1" 200 5304
+"POST /accounts/login/ HTTP/1.1" 200 5304
+"POST /accounts/login/ HTTP/1.1" 200 5314
+"POST /accounts/login/ HTTP/1.1" 200 5304
+"POST /accounts/login/ HTTP/1.1" 200 5304
+"POST /accounts/login/ HTTP/1.1" 200 5304
+"POST /accounts/login/ HTTP/1.1" 200 5304
+"POST /accounts/login/ HTTP/1.1" 200 5304
+"GET /accounts/password_reset/ HTTP/1.1" 200 955
+Internal Server Error: /accounts/password_reset/
+Traceback (most recent call last):
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\core\handlers\exception.py", line 47, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\core\handlers\base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python312\Lib\contextlib.py", line 81, in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\views\generic\base.py", line 70, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\utils\decorators.py", line 43, in _wrapper
+    return bound_method(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\utils\decorators.py", line 130, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\contrib\auth\views.py", line 222, in dispatch
+    return super().dispatch(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\views\generic\base.py", line 98, in dispatch
+    return handler(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\views\generic\edit.py", line 142, in post
+    return self.form_valid(form)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\KAP\Kislev\accounts\views.py", line 288, in form_valid
+    response = super().form_valid(form)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\contrib\auth\views.py", line 235, in form_valid
+    form.save(**opts)
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\contrib\auth\forms.py", line 318, in save
+    self.send_mail(
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\contrib\auth\forms.py", line 268, in send_mail
+    email_message.send()
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\core\mail\message.py", line 284, in send
+    return self.get_connection(fail_silently).send_messages([self])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\sendgrid_backend\mail.py", line 167, in send_messages
+    resp = self.sg.client.mail.send.post(request_body=data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\python_http_client\client.py", line 277, in http_request
+    self._make_request(opener, request, timeout=timeout)
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\python_http_client\client.py", line 184, in _make_request
+    raise exc
+python_http_client.exceptions.UnauthorizedError: HTTP Error 401: Unauthorized
+"POST /accounts/password_reset/ HTTP/1.1" 500 148346
+"GET /accounts/login/ HTTP/1.1" 200 5141
+"GET /accounts/login/ HTTP/1.1" 200 5141
+"POST /accounts/login/ HTTP/1.1" 200 5304
+"POST /accounts/login/ HTTP/1.1" 200 5304
+"POST /accounts/login/ HTTP/1.1" 200 5304
+"POST /accounts/login/ HTTP/1.1" 200 5304
+"GET /accounts/password_reset/ HTTP/1.1" 200 955
+Internal Server Error: /accounts/password_reset/
+Traceback (most recent call last):
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\core\handlers\exception.py", line 47, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\core\handlers\base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python312\Lib\contextlib.py", line 81, in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\views\generic\base.py", line 70, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\utils\decorators.py", line 43, in _wrapper
+    return bound_method(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\utils\decorators.py", line 130, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\contrib\auth\views.py", line 222, in dispatch
+    return super().dispatch(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\views\generic\base.py", line 98, in dispatch
+    return handler(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\views\generic\edit.py", line 142, in post
+    return self.form_valid(form)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\KAP\Kislev\accounts\views.py", line 288, in form_valid
+    response = super().form_valid(form)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\contrib\auth\views.py", line 235, in form_valid
+    form.save(**opts)
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\contrib\auth\forms.py", line 318, in save
+    self.send_mail(
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\contrib\auth\forms.py", line 268, in send_mail
+    email_message.send()
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\core\mail\message.py", line 284, in send
+    return self.get_connection(fail_silently).send_messages([self])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\sendgrid_backend\mail.py", line 167, in send_messages
+    resp = self.sg.client.mail.send.post(request_body=data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\python_http_client\client.py", line 277, in http_request
+    self._make_request(opener, request, timeout=timeout)
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\python_http_client\client.py", line 184, in _make_request
+    raise exc
+python_http_client.exceptions.UnauthorizedError: HTTP Error 401: Unauthorized
+"POST /accounts/password_reset/ HTTP/1.1" 500 148346
+"GET /accounts/password_reset/ HTTP/1.1" 200 955
+Internal Server Error: /accounts/password_reset/
+Traceback (most recent call last):
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\core\handlers\exception.py", line 47, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\core\handlers\base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python312\Lib\contextlib.py", line 81, in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\views\generic\base.py", line 70, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\utils\decorators.py", line 43, in _wrapper
+    return bound_method(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\utils\decorators.py", line 130, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\contrib\auth\views.py", line 222, in dispatch
+    return super().dispatch(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\views\generic\base.py", line 98, in dispatch
+    return handler(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\views\generic\edit.py", line 142, in post
+    return self.form_valid(form)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\KAP\Kislev\accounts\views.py", line 288, in form_valid
+    response = super().form_valid(form)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\contrib\auth\views.py", line 235, in form_valid
+    form.save(**opts)
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\contrib\auth\forms.py", line 318, in save
+    self.send_mail(
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\contrib\auth\forms.py", line 268, in send_mail
+    email_message.send()
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\core\mail\message.py", line 284, in send
+    return self.get_connection(fail_silently).send_messages([self])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\sendgrid_backend\mail.py", line 167, in send_messages
+    resp = self.sg.client.mail.send.post(request_body=data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\python_http_client\client.py", line 277, in http_request
+    self._make_request(opener, request, timeout=timeout)
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\python_http_client\client.py", line 184, in _make_request
+    raise exc
+python_http_client.exceptions.UnauthorizedError: HTTP Error 401: Unauthorized
+"POST /accounts/password_reset/ HTTP/1.1" 500 148346
+Internal Server Error: /accounts/password_reset/
+Traceback (most recent call last):
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\core\handlers\exception.py", line 47, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\core\handlers\base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python312\Lib\contextlib.py", line 81, in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\views\generic\base.py", line 70, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\utils\decorators.py", line 43, in _wrapper
+    return bound_method(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\utils\decorators.py", line 130, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\contrib\auth\views.py", line 222, in dispatch
+    return super().dispatch(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\views\generic\base.py", line 98, in dispatch
+    return handler(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\views\generic\edit.py", line 142, in post
+    return self.form_valid(form)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\KAP\Kislev\accounts\views.py", line 288, in form_valid
+    response = super().form_valid(form)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\contrib\auth\views.py", line 235, in form_valid
+    form.save(**opts)
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\contrib\auth\forms.py", line 318, in save
+    self.send_mail(
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\contrib\auth\forms.py", line 268, in send_mail
+    email_message.send()
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\core\mail\message.py", line 284, in send
+    return self.get_connection(fail_silently).send_messages([self])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\sendgrid_backend\mail.py", line 167, in send_messages
+    resp = self.sg.client.mail.send.post(request_body=data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\python_http_client\client.py", line 277, in http_request
+    self._make_request(opener, request, timeout=timeout)
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\python_http_client\client.py", line 184, in _make_request
+    raise exc
+python_http_client.exceptions.UnauthorizedError: HTTP Error 401: Unauthorized
+"POST /accounts/password_reset/ HTTP/1.1" 500 148346
+"GET /accounts/password_reset/ HTTP/1.1" 200 955
+Internal Server Error: /accounts/password_reset/
+Traceback (most recent call last):
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\core\handlers\exception.py", line 47, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\core\handlers\base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python312\Lib\contextlib.py", line 81, in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\views\generic\base.py", line 70, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\utils\decorators.py", line 43, in _wrapper
+    return bound_method(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\utils\decorators.py", line 130, in _wrapped_view
+    response = view_func(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\contrib\auth\views.py", line 222, in dispatch
+    return super().dispatch(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\views\generic\base.py", line 98, in dispatch
+    return handler(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\views\generic\edit.py", line 142, in post
+    return self.form_valid(form)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\KAP\Kislev\accounts\views.py", line 288, in form_valid
+    response = super().form_valid(form)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\contrib\auth\views.py", line 235, in form_valid
+    form.save(**opts)
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\contrib\auth\forms.py", line 318, in save
+    self.send_mail(
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\contrib\auth\forms.py", line 268, in send_mail
+    email_message.send()
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\django\core\mail\message.py", line 284, in send
+    return self.get_connection(fail_silently).send_messages([self])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\sendgrid_backend\mail.py", line 167, in send_messages
+    resp = self.sg.client.mail.send.post(request_body=data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\python_http_client\client.py", line 277, in http_request
+    self._make_request(opener, request, timeout=timeout)
+  File "C:\Users\AlipioD\AppData\Roaming\Python\Python312\site-packages\python_http_client\client.py", line 184, in _make_request
+    raise exc
+python_http_client.exceptions.UnauthorizedError: HTTP Error 401: Unauthorized
+"POST /accounts/password_reset/ HTTP/1.1" 500 148346
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 200 5141
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/select-conjunto/ HTTP/1.1" 200 2551
+"POST /accounts/select-conjunto/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /static/css/visor_admin.css HTTP/1.1" 200 7233
+"GET /static/js/visor_admin.js HTTP/1.1" 200 347
+"GET /dashboard/ HTTP/1.1" 200 43403
+"GET /static/css/dashboard.css HTTP/1.1" 200 12252
+"GET /visitor-stats/?filter_type=week&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 128
+"GET /visitor-stats/?filter_type=hour&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 310
+"GET /visitor-stats/?filter_type=hour&month=11&year=2025&conjunto_id=1 HTTP/1.1" 200 310
+"GET /visitor-stats/?filter_type=hour&month=1&year=2025&conjunto_id=1 HTTP/1.1" 200 310
+"GET /visitor-stats/?filter_type=hour&month=2&year=2025&conjunto_id=1 HTTP/1.1" 200 310
+"GET /visitor-stats/?filter_type=hour&month=3&year=2025&conjunto_id=1 HTTP/1.1" 200 310
+"GET /visitor-stats/?filter_type=hour&month=4&year=2025&conjunto_id=1 HTTP/1.1" 200 310
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /static/css/notificaciones.css HTTP/1.1" 200 8376
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"GET /static/css/noti_generales.css HTTP/1.1" 200 13609
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /static/css/leerscaner.css HTTP/1.1" 200 4800
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"GET /static/css/formQR.css HTTP/1.1" 200 15488
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /zonas_comunes/ HTTP/1.1" 200 9022
+"GET /static/css/zonas_comunes.css HTTP/1.1" 200 7844
+"GET /static/js/zonas_comunes.js HTTP/1.1" 200 4843
+- Broken pipe from ('127.0.0.1', 55288)
+
+"GET /salas/ HTTP/1.1" 200 8073
+"GET /static/css/lista_salas.css HTTP/1.1" 200 10244
+"GET /sala/1/calendario/ HTTP/1.1" 200 14976
+"GET /static/css/calendario.css HTTP/1.1" 200 14956
+"GET /api/sala/1/reservas/?start=2025-09-29&end=2025-11-10&_=1760583232210 HTTP/1.1" 200 3999
+"GET /sala/3/calendario/ HTTP/1.1" 200 14990
+"GET /api/sala/3/reservas/?start=2025-09-29&end=2025-11-10&_=1760583239591 HTTP/1.1" 200 3999
+"GET /sala/3/calendario/ HTTP/1.1" 200 14990
+"GET /api/sala/3/reservas/?start=2025-09-29&end=2025-11-10&_=1760583245963 HTTP/1.1" 200 3999
+"GET /sala/2/calendario/ HTTP/1.1" 200 14978
+"GET /api/sala/2/reservas/?start=2025-09-29&end=2025-11-10&_=1760583256212 HTTP/1.1" 200 3999
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /leerscaner/ HTTP/1.1" 200 4693
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_generales/ HTTP/1.1" 200 22583
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /noti_publicos/ HTTP/1.1" 200 26689
+"GET /static/css/noti_publicos.css HTTP/1.1" 200 14885
+"GET /notificaciones/ HTTP/1.1" 200 8172
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705

@@ -21,7 +21,7 @@
             padding: 8px;
             margin-bottom: 15px;
         }
-        
+
         .file-item {
             display: flex;
             justify-content: space-between;
@@ -33,11 +33,11 @@
             font-size: 0.9rem;
             color: white;
         }
-        
+
         .file-item:last-child {
             margin-bottom: 0;
         }
-        
+
         .remove-file {
             cursor: pointer;
             color: #ff4d4d;
@@ -48,29 +48,29 @@
             opacity: 0.7;
             transition: opacity 0.2s;
         }
-        
+
         .remove-file:hover {
             opacity: 1;
         }
-        
+
         .file-preview {
             display: flex;
             align-items: center;
             flex-grow: 1;
         }
-        
+
         .file-icon {
             margin-right: 8px;
             opacity: 0.7;
         }
-        
+
         .file-name {
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             max-width: 200px;
         }
-        
+
         .file-size {
             font-size: 0.75rem;
             opacity: 0.7;
@@ -87,18 +87,25 @@
 
         /* Animación para añadir archivos */
         @keyframes fileAddedAnimation {
-            0% { transform: translateY(10px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
+            0% {
+                transform: translateY(10px);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
-        
+
         .file-item {
             animation: fileAddedAnimation 0.3s ease-out forwards;
         }
-        
+
         .files-section {
             margin-top: 20px;
         }
-        
+
         .files-section-title {
             display: flex;
             align-items: center;
@@ -107,11 +114,68 @@
             margin-bottom: 10px;
             color: white;
         }
-        
+
         .files-section-title svg {
             width: 20px;
             height: 20px;
             margin-right: 8px;
+        }
+    </style>
+    <!-- Botón de regreso al panel de notificaciones -->
+    <a href="{% url 'notificaciones' %}" class="back-button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 18l-6-6 6-6" />
+        </svg>
+        Volver a Notificaciones
+    </a>
+
+    <style>
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(126, 0, 255, 0.1);
+            color: #7f00ff;
+            padding: 10px 15px;
+            border-radius: 10px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(126, 0, 255, 0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            font-size: 14px;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .back-button:hover {
+            background: rgba(126, 0, 255, 0.2);
+            color: #e100ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(126, 0, 255, 0.1);
+        }
+
+        .back-button svg {
+            margin-right: 8px;
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+        }
+
+        /* Responsive */
+        @media screen and (max-width: 768px) {
+            .back-button {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+
+            .back-button svg {
+                width: 16px;
+                height: 16px;
+            }
         }
     </style>
 </head>
@@ -172,16 +236,17 @@
                 <textarea id="message" name="message" placeholder="Escribe tu mensaje aquí..." data-gramm="false"
                     data-gramm_editor="false" data-enable-grammarly="false" spellcheck="false"></textarea>
             </div>
-            
+
             <!-- Nueva sección para archivos adjuntos -->
             <div class="files-section">
                 <div class="files-section-title">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l8.57-8.57A4 4 0 1118 8.84l-8.59 8.57a2 2 0 01-2.83-2.83l8.49-8.48" />
+                        <path
+                            d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l8.57-8.57A4 4 0 1118 8.84l-8.59 8.57a2 2 0 01-2.83-2.83l8.49-8.48" />
                     </svg>
                     Documentos Adjuntos
                 </div>
-                
+
                 <div id="fileList" class="file-list">
                     <div class="no-files">No hay documentos adjuntos</div>
                 </div>
@@ -225,14 +290,14 @@
         let selectedFiles = [];
         const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
         const MAX_FILES = 5; // Máximo 5 archivos
-        
+
         // Elementos del DOM
         const fileInput = document.getElementById('fileInput');
         const fileList = document.getElementById('fileList');
         const messageInput = document.getElementById('message');
         const loadingScreen = document.getElementById('loadingScreen');
         const loadingStatus = document.getElementById('loadingStatus');
-        
+
         // Función para formatear el tamaño del archivo
         function formatFileSize(bytes) {
             if (bytes === 0) return '0 Bytes';
@@ -241,7 +306,7 @@
             const i = Math.floor(Math.log(bytes) / Math.log(k));
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
-        
+
         // Función para obtener el ícono según el tipo de archivo
         function getFileIcon(fileType) {
             if (!fileType) {
@@ -266,16 +331,16 @@
                 return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>';
             }
         }
-        
+
         // Manejador del input de archivo
-        fileInput.addEventListener('change', function(e) {
+        fileInput.addEventListener('change', function (e) {
             const files = Array.from(e.target.files);
-            
+
             if (selectedFiles.length + files.length > MAX_FILES) {
                 alert(`Solo puede adjuntar un máximo de ${MAX_FILES} archivos.`);
                 return;
             }
-            
+
             // Validar cada archivo
             const validFiles = files.filter(file => {
                 // Validar solo el tamaño
@@ -283,10 +348,10 @@
                     alert(`El archivo "${file.name}" supera el límite de 10MB.`);
                     return false;
                 }
-                
+
                 return true;
             });
-            
+
             // Agregar los archivos válidos a la lista
             validFiles.forEach(file => {
                 // Crear un objeto con ID único para cada archivo
@@ -294,27 +359,27 @@
                     id: 'file_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9),
                     file: file
                 };
-                
+
                 selectedFiles.push(fileObj);
             });
-            
+
             // Actualizar la UI
             updateFileList();
-            
+
             // Limpiar el input para permitir seleccionar el mismo archivo
             fileInput.value = '';
         });
-        
+
         // Función para actualizar la lista de archivos en la UI
         function updateFileList() {
             // Limpiar la lista
             fileList.innerHTML = '';
-            
+
             if (selectedFiles.length === 0) {
                 fileList.innerHTML = '<div class="no-files">No hay documentos adjuntos</div>';
                 return;
             }
-            
+
             // Agregar cada archivo a la lista
             selectedFiles.forEach(fileObj => {
                 const file = fileObj.file;
@@ -332,23 +397,23 @@
                 fileList.appendChild(fileItem);
             });
         }
-        
+
         // Función para eliminar un archivo
-        window.removeFile = function(fileId) {
+        window.removeFile = function (fileId) {
             selectedFiles = selectedFiles.filter(fileObj => fileObj.id !== fileId);
             updateFileList();
         };
-        
+
         // Función principal de envío
         async function sendMessage() {
             if (!messageInput.value.trim()) {
                 alert("Por favor, escribe un mensaje");
                 return;
             }
-            
+
             if (loadingScreen) loadingScreen.style.display = 'flex';
             hideConfirmation();
-            
+
             // Actualizar todo el contenedor de loading
             const loadingContainer = loadingScreen.querySelector('.loading-container');
             if (loadingContainer) {
@@ -358,23 +423,23 @@
                     <p class="loading-subtext">Preparando envío</p>
                 `;
             }
-            
+
             const formData = new FormData();
             formData.append('message', messageInput.value);
-            
+
             // Agregar todos los archivos seleccionados
             // Usamos el mismo nombre de campo para todos los archivos
             // El backend debe usar request.FILES.getlist('fileInput')
             selectedFiles.forEach((fileObj) => {
                 formData.append('fileInput', fileObj.file);
             });
-            
+
             const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
             if (!csrfToken) {
                 alert("Error: No se encontró el token CSRF");
                 return;
             }
-            
+
             try {
                 const response = await fetch('/notifications/send/', {
                     method: 'POST',
@@ -383,13 +448,13 @@
                     },
                     body: formData
                 });
-                
+
                 if (!response.ok) {
                     throw new Error('Error en la respuesta del servidor');
                 }
-                
+
                 const data = await response.json();
-                
+
                 if (data.status === 'success' && loadingContainer) {
                     loadingContainer.innerHTML = `
                         <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
@@ -404,7 +469,7 @@
                             Cerrar
                         </button>
                     `;
-                    
+
                     // Limpiar el formulario
                     messageInput.value = '';
                     selectedFiles = [];
@@ -430,34 +495,34 @@
                 }
             }
         }
-        
+
         // Función para cerrar el mensaje
         function closeSuccessMessage() {
             if (loadingScreen) {
                 loadingScreen.style.display = 'none';
             }
         }
-        
+
         // Funciones de modal
         function showConfirmation() {
             if (!messageInput.value.trim()) {
                 alert("Por favor, escribe un mensaje");
                 return;
             }
-            
+
             const confirmModal = document.getElementById('confirmModal');
             if (confirmModal) {
                 confirmModal.style.display = 'flex';
             }
         }
-        
+
         function hideConfirmation() {
             const confirmModal = document.getElementById('confirmModal');
             if (confirmModal) {
                 confirmModal.style.display = 'none';
             }
         }
-        
+
         // Inicialización
         document.addEventListener('DOMContentLoaded', () => {
             if (loadingScreen) {

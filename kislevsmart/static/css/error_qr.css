@@ -1,0 +1,274 @@
+/* Reset y variables */
+:root {
+    --primary-color: #7f00ff;
+    --secondary-color: #e100ff;
+    --error-color: #ff4646;
+    --text-color: #333;
+    --text-light: #666;
+    --bg-color: #f8f9fa;
+    --white: #ffffff;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s ease;
+  }
+  
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  
+  body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, var(--bg-color), #fff);
+    padding: 20px;
+  }
+  
+  /* Contenedor principal */
+  .error-container {
+    background: var(--white);
+    border-radius: 24px;
+    padding: 40px;
+    max-width: 600px;
+    width: 90%;
+    text-align: center;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+    animation: slideIn 0.5s ease-out;
+  }
+  
+  /* Ícono de error */
+  .error-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 24px;
+    position: relative;
+    animation: pulseError 2s infinite;
+  }
+  
+  .error-icon svg {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: var(--error-color);
+    stroke-width: 2;
+  }
+  
+  /* Títulos y texto */
+  h1 {
+    color: var(--text-color);
+    font-size: 28px;
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+  
+  .error-message {
+    color: var(--text-light);
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 24px;
+    padding: 0 20px;
+  }
+  
+  .error-details {
+    background: rgba(255, 70, 70, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+    border: 1px solid rgba(255, 70, 70, 0.2);
+  }
+  
+  .error-details h2 {
+    color: var(--error-color);
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+  
+  .error-details p {
+    color: var(--text-light);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  /* Botón de regreso */
+  .back-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    color: var(--white);
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 500;
+    transition: var(--transition);
+    box-shadow: 0 4px 15px rgba(126, 0, 255, 0.3);
+  }
+  
+  .back-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(126, 0, 255, 0.4);
+  }
+  
+  .back-button svg {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    stroke: currentColor;
+  }
+  
+  /* Animaciones */
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes pulseError {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  
+  /* Efecto de fondo */
+  .background-effect {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    background: 
+      radial-gradient(circle at 10% 20%, rgba(126, 0, 255, 0.1) 0%, transparent 20%),
+      radial-gradient(circle at 90% 80%, rgba(225, 0, 255, 0.1) 0%, transparent 20%);
+    animation: backgroundAnimation 15s ease infinite alternate;
+  }
+  
+  @keyframes backgroundAnimation {
+    0% {
+      background-position: 0% 0%;
+    }
+    100% {
+      background-position: 100% 100%;
+    }
+  }
+  
+  /* Media Queries */
+  @media (max-width: 768px) {
+    .error-container {
+      padding: 30px;
+      width: 95%;
+    }
+  
+    h1 {
+      font-size: 24px;
+    }
+  
+    .error-icon {
+      width: 60px;
+      height: 60px;
+    }
+  
+    .error-message {
+      font-size: 15px;
+      padding: 0 10px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .error-container {
+      padding: 25px;
+    }
+  
+    h1 {
+      font-size: 20px;
+    }
+  
+    .error-icon {
+      width: 50px;
+      height: 50px;
+      margin-bottom: 20px;
+    }
+  
+    .error-message {
+      font-size: 14px;
+    }
+  
+    .back-button {
+      padding: 10px 20px;
+      font-size: 14px;
+    }
+  }
+  
+  /* Soporte para modo oscuro */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg-color: #1a1a1a;
+      --text-color: #ffffff;
+      --text-light: #cccccc;
+      --white: #2a2a2a;
+    }
+  
+    .error-container {
+      background: rgba(42, 42, 42, 0.95);
+      backdrop-filter: blur(10px);
+    }
+  
+    .error-details {
+      background: rgba(255, 70, 70, 0.15);
+    }
+  }
+  
+  /* Animaciones adicionales para elementos interactivos */
+  .error-container:hover .error-icon {
+    animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+  }
+  
+  @keyframes shake {
+    10%, 90% {
+      transform: translate3d(-1px, 0, 0);
+    }
+    20%, 80% {
+      transform: translate3d(2px, 0, 0);
+    }
+    30%, 50%, 70% {
+      transform: translate3d(-4px, 0, 0);
+    }
+    40%, 60% {
+      transform: translate3d(4px, 0, 0);
+    }
+  }
+  
+  /* Estilos para accesibilidad */
+  .back-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(126, 0, 255, 0.5);
+  }
+  
+  /* Clases de utilidad */
+  .text-error {
+    color: var(--error-color);
+  }
+  
+  .font-bold {
+    font-weight: 600;
+  }
+  
+  .text-center {
+    text-align: center;
+  }

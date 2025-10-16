@@ -335,17 +335,25 @@ def procesar_envio(request):
         # 2. Preparar mensaje (conservar formato HTML)
         mensaje_usuario = mensaje_usuario.replace('\n', '<br>')
 
-        # 3. Obtener propietarios
+        # 3. Obtener propietarios DEL CONJUNTO ACTUAL
+        conjunto_actual = request.user.conjunto  # Asumiendo que el usuario tiene un atributo conjunto
+        
+        # Filtrar propietarios solo del conjunto actual
         propietarios = Usuario.objects.filter(
             user_type='propietario',
-            is_active=True
+            is_active=True,
+            conjunto=conjunto_actual  # Esta es la línea clave que faltaba
         ).values('email', 'nombre')
 
         total_propietarios = propietarios.count()
+
+        logger.info(f"Seleccionando propietarios del conjunto: {conjunto_actual.nombre} (ID: {conjunto_actual.id})")
+        logger.info(f"Total de propietarios encontrados en este conjunto: {total_propietarios}")
+
         if not total_propietarios:
             return JsonResponse({
                 'status': 'error',
-                'message': 'No hay propietarios activos'
+                'message': 'No hay propietarios activos en este conjunto'
             })
 
         # 4. Inicializar SendGrid
@@ -556,9 +564,14 @@ Recibió este email porque está registrado como propietario.
                     total_enviados += len(batch)
                     logger.info(f"Lote {batch_num}/{total_lotes} enviado: {len(batch)} destinatarios. Total: {total_enviados}/{total_propietarios}")
                 else:
+                    # Registrar el cuerpo de la respuesta para ver el mensaje de error
                     logger.warning(f"Respuesta inesperada en lote {batch_num}: {response.status_code}")
+                    logger.warning(f"Detalles: {response.body}")
             except Exception as e:
                 logger.error(f"Error enviando lote {batch_num}: {str(e)}")
+                # Registrar más detalles sobre la excepción si es posible
+                import traceback
+                logger.error(traceback.format_exc())
                 continue
 
         # 9. Retornar resultado
@@ -823,19 +836,24 @@ def send_service_notification(request):
                 'message': 'Tipo de servicio no especificado'
             }, status=400)
 
-        # Obtener todos los propietarios
-        propietarios = list(Usuario.objects.filter(
-            user_type='propietario',
-            is_active=True
-        ))
+        # Obtener el conjunto actual del usuario logueado
+        conjunto_actual = request.user.conjunto
 
-        if not propietarios:
+        # Filtrar propietarios solo del conjunto actual
+        propietarios = Usuario.objects.filter(
+            user_type='propietario',
+            is_active=True,
+            conjunto=conjunto_actual
+        ).values('email', 'nombre')
+
+        total_users = propietarios.count()
+
+        if total_users == 0:
             return JsonResponse({
                 'status': 'error',
-                'message': 'No hay propietarios activos para enviar notificaciones'
+                'message': f'No hay propietarios activos para enviar notificaciones en el conjunto {conjunto_actual.nombre}'
             }, status=404)
 
-        total_users = len(propietarios)
         sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
         successful_sends = 0
         failed_sends = 0
@@ -844,7 +862,8 @@ def send_service_notification(request):
         # Dividir en lotes
         BATCH_SIZE = 500
         DELAY_BETWEEN_BATCHES = 2  # Segundos entre lotes
-        batches = [propietarios[i:i + BATCH_SIZE] for i in range(0, total_users, BATCH_SIZE)]
+        propietarios_list = list(propietarios)
+        batches = [propietarios_list[i:i + BATCH_SIZE] for i in range(0, total_users, BATCH_SIZE)]
         total_batches = len(batches)
         
         # Registrar inicio del proceso
@@ -856,18 +875,22 @@ def send_service_notification(request):
 
             for propietario in batch:
                 try:
+                    # Acceder usando la notación de diccionario
+                    email = propietario['email']
+                    nombre = propietario['nombre']
+                    
                     # Preparar contexto para la plantilla
                     context = {
-                        'nombre': propietario.nombre,
+                        'nombre': nombre,
                         'service_type': service_type,
                         'fecha': datetime.now().strftime('%d/%m/%Y'),
-                        'conjunto': getattr(propietario, 'conjunto', None)
+                        'conjunto': conjunto_actual  # Usar el conjunto del usuario actual
                     }
                     
                     # Crear contenido HTML utilizando la plantilla
                     try:
                         html_content = render_to_string('emails/service_notification.html', context)
-                        logger.debug(f"Plantilla HTML renderizada correctamente para {propietario.email}")
+                        logger.debug(f"Plantilla HTML renderizada correctamente para {email}")
                     except Exception as e:
                         logger.warning(f"Error al renderizar plantilla: {str(e)}. Usando plantilla alternativa.")
                         # Plantilla alternativa simple en caso de error
@@ -881,7 +904,7 @@ def send_service_notification(request):
                         <body style="margin:0;padding:0;font-family:Arial,sans-serif;background:#f5f7fa;">
                             <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:8px;padding:20px;">
                                 <h2 style="color:#6015ab;">Notificación de {service_type}</h2>
-                                <p>Estimado(a) {propietario.nombre},</p>
+                                <p>Estimado(a) {nombre},</p>
                                 <p>Su factura de {service_type} está disponible para retiro en portería.</p>
                                 <p>Por favor, pase a retirarla en horario de atención.</p>
                                 <p>Atentamente,<br>Administración Conjunto Residencial</p>
@@ -892,7 +915,7 @@ def send_service_notification(request):
                     
                     # Crear versión texto plano
                     plain_content = f"""
-Estimado/a {propietario.nombre},
+Estimado/a {nombre},
 
 Su factura de {service_type} está disponible para retiro en portería.
 Por favor, pase a retirarla en horario de atención.
@@ -916,8 +939,8 @@ Horario: Lunes a Viernes de 8:00 AM a 6:00 PM
                             name="Administración Conjunto Residencial"
                         ),
                         to_emails=To(
-                            email=propietario.email,
-                            name=propietario.nombre
+                            email=email,
+                            name=nombre
                         ),
                         subject=Subject(f'Notificación: Su factura de {service_type} está disponible'),
                         plain_text_content=PlainTextContent(plain_content),
@@ -941,26 +964,28 @@ Horario: Lunes a Viernes de 8:00 AM a 6:00 PM
                     if response.status_code in [200, 201, 202]:
                         batch_successful += 1
                         successful_sends += 1
-                        logger.debug(f"Email enviado exitosamente a {propietario.email}")
+                        logger.debug(f"Email enviado exitosamente a {email}")
                     else:
                         batch_failed += 1
                         failed_sends += 1
                         errors.append({
-                            'email': propietario.email,
+                            'email': email,
                             'error': f"Status code {response.status_code}",
                             'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                         })
-                        logger.warning(f"Error al enviar email a {propietario.email}: Status code {response.status_code}")
+                        logger.warning(f"Error al enviar email a {email}: Status code {response.status_code}")
 
                 except Exception as e:
+                    # Intentar obtener el email para el log de error
+                    email_for_log = propietario.get('email', 'unknown_email')
                     batch_failed += 1
                     failed_sends += 1
                     errors.append({
-                        'email': propietario.email,
+                        'email': email_for_log,
                         'error': str(e),
                         'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     })
-                    logger.error(f"Excepción al enviar email a {propietario.email}: {str(e)}")
+                    logger.error(f"Excepción al enviar email a {email_for_log}: {str(e)}")
 
             # Calcular y registrar progreso del lote
             progress = (batch_index / total_batches) * 100
@@ -1002,7 +1027,7 @@ Horario: Lunes a Viernes de 8:00 AM a 6:00 PM
             'message': f'Error en el servidor: {str(e)}',
             'successful_sends': successful_sends if 'successful_sends' in locals() else 0,
             'failed_sends': failed_sends if 'failed_sends' in locals() else 0,
-            'total_users': total_users if 'total_users' in locals() else 0
+            'total_processed': total_users if 'total_users' in locals() else 0
         }, status=500)
 
 @login_required

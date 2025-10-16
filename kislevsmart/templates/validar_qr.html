@@ -2,52 +2,139 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Validar QR</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Validación QR</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/restricciones.css' %}">
     <link rel="stylesheet" href="{% static 'css/validar_qr.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
-    <canvas id="backgroundCanvas"></canvas>
-    <div class="ticket">
-        <div class="header-info">
-            <div class="user-count">
-                <i class="fa fa-users" aria-hidden="true"></i>
-                <span class="info">{{ visitante.numper }}</span>
-            </div>
-        </div>
-        <div class="ticket-header">
-            <div class="success-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                    <circle cx="12" cy="12" r="10" stroke="#00ff88" stroke-width="2" />
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4" stroke="#00ff88" />
-                </svg>
-            </div>
-            <h1>Validación QR</h1>
-        </div>
-        <div class="ticket-info">
-            <p><strong>Nombre:</strong> <span class="info">{{ visitante.nombre }}</span></p>
-            <p><strong>Email:</strong> <span class="info">{{ visitante.email }}</span></p>
-            <p><strong>Celular:</strong> <span class="info">{{ visitante.celular }}</span></p>
-            <p><strong>Motivo:</strong> <span class="info">{{ visitante.motivo }}</span></p>
-            {% if visitante.tipo_vehiculo %}
-                <p><strong>Tipo de Vehículo:</strong> <span class="info">{{ visitante.get_tipo_vehiculo_display }}</span></p>
-                <p><strong>Placa:</strong> <span class="info">{{ visitante.placa }}</span></p>
-                {% if visitante.segunda_lectura %}
-                    <p><strong>Entrada:</strong> <span class="info">{{ visitante.ultima_lectura }}</span></p>
-                    <p><strong>Salida:</strong> <span class="info">{{ visitante.segunda_lectura }}</span></p>
-                {% else %}
-                    <p><strong>Última lectura:</strong> <span class="info">{{ visitante.ultima_lectura }}</span></p>
-                {% endif %}
-            {% else %}
-                <p><strong>Última lectura:</strong> <span class="info">{{ visitante.ultima_lectura }}</span></p>
-            {% endif %}
-        </div>
-        <p class="success-message">¡Acceso permitido!</p>
-        <a href="{% url 'accounts:control_porteria' %}" class="btn">Volver</a>
+    <div class="background-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
     </div>
-    <script src="{% static 'js/canvas.js' %}"></script>
+
+    <div class="validation-card">
+        <div class="card-header">
+            <div class="success-badge">
+                <svg viewBox="0 0 24 24" width="24" height="24">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" fill="none" stroke="currentColor" stroke-width="2"/>
+                    <polyline points="22 4 12 14.01 9 11.01" fill="none" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                <span>Validado</span>
+            </div>
+            <h1>Acceso Permitido</h1>
+            <div class="visitors-count">
+                <span class="visitor-icon">
+                    <i class="fas fa-users"></i>
+                </span>
+                <span class="count">{{ visitante.numper }}</span>
+            </div>
+        </div>
+        
+        <div class="card-content">
+            <div class="visitor-info">
+                <div class="info-group">
+                    <div class="info-row">
+                        <div class="info-label">
+                            <i class="fas fa-user"></i>
+                            <span>Nombre</span>
+                        </div>
+                        <div class="info-value">{{ visitante.nombre }}</div>
+                    </div>
+                    
+                    <div class="info-row">
+                        <div class="info-label">
+                            <i class="fas fa-envelope"></i>
+                            <span>Email</span>
+                        </div>
+                        <div class="info-value">{{ visitante.email }}</div>
+                    </div>
+                    
+                    <div class="info-row">
+                        <div class="info-label">
+                            <i class="fas fa-mobile-alt"></i>
+                            <span>Celular</span>
+                        </div>
+                        <div class="info-value">{{ visitante.celular }}</div>
+                    </div>
+                    
+                    <div class="info-row">
+                        <div class="info-label">
+                            <i class="fas fa-comment"></i>
+                            <span>Motivo</span>
+                        </div>
+                        <div class="info-value">{{ visitante.motivo }}</div>
+                    </div>
+                </div>
+                
+                {% if visitante.tipo_vehiculo %}
+                <div class="info-group vehicle-info">
+                    <div class="group-title">
+                        <i class="fas fa-car"></i>
+                        <span>Información del Vehículo</span>
+                    </div>
+                    
+                    <div class="info-row">
+                        <div class="info-label">
+                            <span>Tipo</span>
+                        </div>
+                        <div class="info-value">{{ visitante.get_tipo_vehiculo_display }}</div>
+                    </div>
+                    
+                    <div class="info-row">
+                        <div class="info-label">
+                            <span>Placa</span>
+                        </div>
+                        <div class="info-value">{{ visitante.placa }}</div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="info-group timestamp-info">
+                    <div class="group-title">
+                        <i class="fas fa-clock"></i>
+                        <span>Registros de Tiempo</span>
+                    </div>
+                    
+                    {% if visitante.segunda_lectura %}
+                    <div class="info-row">
+                        <div class="info-label">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Entrada</span>
+                        </div>
+                        <div class="info-value">{{ visitante.ultima_lectura }}</div>
+                    </div>
+                    
+                    <div class="info-row">
+                        <div class="info-label">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Salida</span>
+                        </div>
+                        <div class="info-value">{{ visitante.segunda_lectura }}</div>
+                    </div>
+                    {% else %}
+                    <div class="info-row">
+                        <div class="info-label">
+                            <i class="fas fa-history"></i>
+                            <span>Última Lectura</span>
+                        </div>
+                        <div class="info-value">{{ visitante.ultima_lectura }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="card-footer">
+            <a href="{% url 'accounts:control_porteria' %}" class="btn">
+                <i class="fas fa-arrow-left"></i>
+                Volver al Panel
+            </a>
+        </div>
+    </div>
 </body>
 </html>

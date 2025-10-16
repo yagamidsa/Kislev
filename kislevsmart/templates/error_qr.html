@@ -3,13 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Error en la validación</title>
+    <title>Error en la validación QR</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/restricciones.css' %}">
+    <link rel="stylesheet" href="{% static 'css/error_qr.css' %}">
 </head>
 <body>
-    <h1>Error en la validación del QR</h1>
-    <p>El código QR que intentaste escanear no es válido. Por favor, intenta nuevamente.</p>
-    <a href="{% url 'accounts:control_porteria' %}">Volver</a>
+    <div class="background-effect"></div>
+    
+    <div class="error-container">
+        <div class="error-icon">
+            <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12" y2="16"/>
+            </svg>
+        </div>
+
+        <h1>Error en la validación del QR</h1>
+        
+        <div class="error-details">
+            <h2>¡QR no válido o ya utilizado!</h2>
+            <p>El código QR que intentaste escanear ha expirado o ya fue utilizado previamente. 
+               Para acceder, el propietario deberá generar un nuevo código QR desde su panel de control.</p>
+        </div>
+
+        <p class="error-message">
+            Por favor, contacta al propietario para que genere un nuevo código QR. 
+            Cada código es de un solo uso por razones de seguridad.
+        </p>
+
+        <a href="{% url 'accounts:control_porteria' %}" class="back-button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Volver al Panel de Control
+        </a>
+    </div>
 </body>
 </html>
