@@ -44,29 +44,21 @@ from .models import ParqueaderoCarro, ParqueaderoMoto
 
 def sanitize_text(text):
     """
-    Limpia el texto de caracteres inválidos para UTF-8 de forma más agresiva
+    Limpia el texto de caracteres inválidos para UTF-8 de forma agresiva
     """
     if not text:
         return ""
     
     try:
         text = str(text)
-        # Método 1: Codificar y decodificar ignorando errores
-        text = text.encode('utf-8', errors='ignore').decode('utf-8', errors='ignore')
-        
-        # Método 2: Remover explícitamente surrogates
-        text = text.encode('utf-16', 'surrogatepass').decode('utf-16')
-        text = text.encode('utf-8', errors='ignore').decode('utf-8')
-        
-        # Remover caracteres de control excepto saltos de línea
-        text = ''.join(char for char in text if char == '\n' or char == '\r' or char == '\t' or not (0 <= ord(char) < 32))
-        
-        return text.strip()
+        # Remover surrogates de forma agresiva
+        # Codificar a UTF-8 ignorando errores, luego decodificar
+        clean_text = text.encode('utf-8', errors='surrogateescape').decode('utf-8', errors='ignore')
+        return clean_text
     except Exception as e:
         logger.error(f"Error en sanitize_text: {e}")
-        # Fallback: remover todo lo que no sea ASCII básico extendido
-        return ''.join(char for char in str(text) if ord(char) < 128 or 128 <= ord(char) < 256)
-
+        # Fallback: solo dejar caracteres ASCII seguros
+        return ''.join(c for c in str(text) if ord(c) < 128)
 
 # Configurar logger
 logger = logging.getLogger(__name__)
@@ -1094,16 +1086,16 @@ def bienvenida(request):
                 
                 # Datos comunes para ambos tipos de visitantes
                 datos_visitante = {
-                    'email': request.POST['email'],
-                    'nombre': request.POST['nombre'],
-                    'celular': request.POST['celular'],
-                    'cedula': request.POST['cedula'],
-                    'motivo': request.POST['motivo'],
-                    'email_creador': request.POST['email_creador'],
-                    'nombre_log': request.POST['nombre_log'],
+                    'email': sanitize_text(request.POST.get('email', '')),
+                    'nombre': sanitize_text(request.POST.get('nombre', '')),
+                    'celular': sanitize_text(request.POST.get('celular', '')),
+                    'cedula': sanitize_text(request.POST.get('cedula', '')),
+                    'motivo': sanitize_text(request.POST.get('motivo', '')),
+                    'email_creador': sanitize_text(request.POST.get('email_creador', '')),
+                    'nombre_log': sanitize_text(request.POST.get('nombre_log', '')),
                     'token': uuid_token,
                     'fecha_generacion': timezone.now(),
-                    'numper': request.POST['numper'],
+                    'numper': sanitize_text(request.POST.get('numper', '')),
                     'usuario_id': request.user.conjunto_id,
                     'ultima_lectura': None
                 }
@@ -1112,8 +1104,8 @@ def bienvenida(request):
                 if tipo_visitante == 'vehicular':
                     visitante = VisitanteVehicular.objects.create(
                         **datos_visitante,
-                        tipo_vehiculo=request.POST['tipo_vehiculo'],
-                        placa=request.POST['placa'].upper(),
+                        tipo_vehiculo=sanitize_text(request.POST.get('tipo_vehiculo', '')),
+                        placa=sanitize_text(request.POST.get('placa', '')).upper(),
                         segunda_lectura=None
                     )
                 else:
@@ -1152,7 +1144,7 @@ def bienvenida(request):
                     nombre_limpio = sanitize_text(visitante.nombre)
                     email_limpio = sanitize_text(visitante.email)
                     mensaje_limpio = sanitize_text(mensaje_adicional) if mensaje_adicional else ""
-                    
+
                     email_message = EmailMessage(
                         sanitize_text("Tu Codigo QR de Visitante"),
                         sanitize_text(f"Hola {nombre_limpio},\n\nAdjunto encontraras tu codigo QR para la visita.{mensaje_limpio}"),
