@@ -215,13 +215,36 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # ============================================
 # CONFIGURACIÓN DE EMAIL CON AMAZON SES
 # ============================================
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'email-smtp.us-east-1.amazonaws.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
-EMAIL_HOST_USER = os.environ.get('AWS_SES_SMTP_USER', '')
-EMAIL_HOST_PASSWORD = os.environ.get('AWS_SES_SMTP_PASSWORD', '')
+
+# AWS SES Configuration - Usando API (recomendado para mejor rendimiento)
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', '')
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', '')
+AWS_SES_REGION_NAME = os.environ.get('AWS_SES_REGION', 'us-east-1')
+AWS_SES_REGION_ENDPOINT = f'email.{AWS_SES_REGION_NAME}.amazonaws.com'
+
+# Configuración del backend de email
+# Si hay credenciales de AWS configuradas, usar SES con API
+# Si no, usar SMTP como fallback o console en desarrollo
+if AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY:
+    EMAIL_BACKEND = 'django_ses.SESBackend'
+    # Configuración adicional de SES
+    AWS_SES_CONFIGURATION_SET = os.environ.get('AWS_SES_CONFIGURATION_SET', None)
+elif os.environ.get('AWS_SES_SMTP_USER') and os.environ.get('AWS_SES_SMTP_PASSWORD'):
+    # Fallback a SMTP si hay credenciales SMTP configuradas
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'email-smtp.us-east-1.amazonaws.com'
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_USE_SSL = False
+    EMAIL_HOST_USER = os.environ.get('AWS_SES_SMTP_USER', '')
+    EMAIL_HOST_PASSWORD = os.environ.get('AWS_SES_SMTP_PASSWORD', '')
+else:
+    # En desarrollo sin credenciales, mostrar en consola
+    if DEBUG:
+        EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    else:
+        # En producción sin credenciales, usar dummy backend
+        EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
 
 # Email por defecto para envíos
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'yagamidsa@hotmail.com')
@@ -230,12 +253,6 @@ SERVER_EMAIL = DEFAULT_FROM_EMAIL
 # Configuración adicional de email
 EMAIL_TIMEOUT = 30
 EMAIL_USE_LOCALTIME = False
-
-# Para debugging en desarrollo
-if DEBUG:
-    # Descomentar la siguiente línea para ver emails en consola en desarrollo
-    # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-    pass
 
 # URL de login
 LOGIN_URL = '/accounts/login/'
@@ -275,6 +292,10 @@ LOGGING = {
         'django.db.backends': {
             'handlers': ['console'],
             'level': 'WARNING',
+        },
+        'django_ses': {
+            'handlers': ['console'],
+            'level': 'DEBUG' if DEBUG else 'INFO',
         },
     },
 }
