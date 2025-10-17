@@ -1148,14 +1148,20 @@ def bienvenida(request):
 
                 # Enviar email
                 try:
+                    # Sanitizar todos los datos antes de enviar
+                    nombre_limpio = sanitize_text(visitante.nombre)
+                    email_limpio = sanitize_text(visitante.email)
+                    mensaje_limpio = sanitize_text(mensaje_adicional) if mensaje_adicional else ""
+                    
                     email_message = EmailMessage(
-                        "Tu Código QR de Visitante",
-                        f"Hola {visitante.nombre},\n\nAdjunto encontrarás tu código QR para la visita.{mensaje_adicional}",
-                        settings.DEFAULT_FROM_EMAIL,
-                        [visitante.email]
+                        sanitize_text("Tu Codigo QR de Visitante"),
+                        sanitize_text(f"Hola {nombre_limpio},\n\nAdjunto encontraras tu codigo QR para la visita.{mensaje_limpio}"),
+                        sanitize_text(settings.DEFAULT_FROM_EMAIL),
+                        [email_limpio]
                     )
                     email_message.attach_file(qr_file_path)
                     email_message.send()
+                    logger.info(f"QR enviado exitosamente a {email_limpio}")
                 except Exception as e:
                     logger.error(f"Error enviando email: {str(e)}")
 
