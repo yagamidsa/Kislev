@@ -44,15 +44,28 @@ from .models import ParqueaderoCarro, ParqueaderoMoto
 
 def sanitize_text(text):
     """
-    Limpia el texto de caracteres inválidos para UTF-8 sin modificar el contenido visible
+    Limpia el texto de caracteres inválidos para UTF-8 de forma más agresiva
     """
     if not text:
         return ""
     
-    text = str(text)
-    # Remover surrogates y caracteres inválidos manteniendo todo el contenido normal
-    text = text.encode('utf-8', errors='ignore').decode('utf-8', errors='ignore')
-    return text.strip()
+    try:
+        text = str(text)
+        # Método 1: Codificar y decodificar ignorando errores
+        text = text.encode('utf-8', errors='ignore').decode('utf-8', errors='ignore')
+        
+        # Método 2: Remover explícitamente surrogates
+        text = text.encode('utf-16', 'surrogatepass').decode('utf-16')
+        text = text.encode('utf-8', errors='ignore').decode('utf-8')
+        
+        # Remover caracteres de control excepto saltos de línea
+        text = ''.join(char for char in text if char == '\n' or char == '\r' or char == '\t' or not (0 <= ord(char) < 32))
+        
+        return text.strip()
+    except Exception as e:
+        logger.error(f"Error en sanitize_text: {e}")
+        # Fallback: remover todo lo que no sea ASCII básico extendido
+        return ''.join(char for char in str(text) if ord(char) < 128 or 128 <= ord(char) < 256)
 
 
 # Configurar logger
@@ -345,19 +358,18 @@ def procesar_envio(request):
                 'message': 'El mensaje es requerido'
             })
 
-        # 2. Preparar mensaje (conservar formato HTML)
+        # 2. Sanitizar y preparar mensaje (conservar formato HTML)
         mensaje_usuario = sanitize_text(mensaje_usuario)
         mensaje_usuario = mensaje_usuario.replace('\n', '<br>')
 
-
         # 3. Obtener propietarios DEL CONJUNTO ACTUAL
-        conjunto_actual = request.user.conjunto  # Asumiendo que el usuario tiene un atributo conjunto
+        conjunto_actual = request.user.conjunto
         
         # Filtrar propietarios solo del conjunto actual
         propietarios = Usuario.objects.filter(
             user_type='propietario',
             is_active=True,
-            conjunto=conjunto_actual  # Esta es la línea clave que faltaba
+            conjunto=conjunto_actual
         ).values('email', 'nombre')
 
         total_propietarios = propietarios.count()
@@ -378,11 +390,10 @@ def procesar_envio(request):
         attachments = []
         files = request.FILES.getlist('fileInput')
         total_size = 0
-        MAX_ATTACHMENT_SIZE = 25 * 1024 * 1024  # 25MB máximo total
-        MAX_SINGLE_FILE_SIZE = 10 * 1024 * 1024  # 10MB máximo por archivo
-        MAX_FILES = 10  # Máximo número de archivos
+        MAX_ATTACHMENT_SIZE = 25 * 1024 * 1024
+        MAX_SINGLE_FILE_SIZE = 10 * 1024 * 1024
+        MAX_FILES = 10
         
-        # Verificar número de archivos
         if len(files) > MAX_FILES:
             logger.warning(f"Intento de enviar demasiados archivos: {len(files)}")
             return JsonResponse({
@@ -390,10 +401,8 @@ def procesar_envio(request):
                 'message': f'No se pueden adjuntar más de {MAX_FILES} archivos'
             })
         
-        # Procesar archivos adjuntos
         for archivo in files:
             try:
-                # Verificar tamaño individual
                 if archivo.size > MAX_SINGLE_FILE_SIZE:
                     logger.warning(f"Archivo demasiado grande: {archivo.name} ({archivo.size/(1024*1024):.2f}MB)")
                     return JsonResponse({
@@ -401,7 +410,6 @@ def procesar_envio(request):
                         'message': f'El archivo {archivo.name} supera el límite de 10MB'
                     })
                 
-                # Verificar tamaño total acumulado
                 total_size += archivo.size
                 if total_size > MAX_ATTACHMENT_SIZE:
                     logger.warning(f"Tamaño total de archivos excedido: {total_size/(1024*1024):.2f}MB")
@@ -410,18 +418,20 @@ def procesar_envio(request):
                         'message': f'El tamaño total de los archivos supera el límite de 25MB'
                     })
                 
-                # Procesar archivo y crear adjunto
                 archivo_contenido = archivo.read()
                 encoded_file = base64.b64encode(archivo_contenido).decode()
                 
+                # Sanitizar nombre del archivo
+                archivo_nombre_limpio = sanitize_text(archivo.name)
+                
                 attachment = Attachment()
                 attachment.file_content = FileContent(encoded_file)
-                attachment.file_name = FileName(archivo.name)
+                attachment.file_name = FileName(archivo_nombre_limpio)
                 attachment.file_type = FileType(archivo.content_type)
                 attachment.disposition = Disposition('attachment')
                 attachments.append(attachment)
                 
-                logger.info(f"Archivo adjunto procesado: {archivo.name} ({archivo.size/(1024*1024):.2f}MB)")
+                logger.info(f"Archivo adjunto procesado: {archivo_nombre_limpio} ({archivo.size/(1024*1024):.2f}MB)")
             except Exception as e:
                 logger.error(f"Error procesando archivo {archivo.name}: {str(e)}")
                 return JsonResponse({
@@ -434,29 +444,32 @@ def procesar_envio(request):
         total_enviados = 0
         propietarios_list = list(propietarios)
         
-        # Registrar inicio del proceso
         total_lotes = (len(propietarios_list) + BATCH_SIZE - 1) // BATCH_SIZE
         logger.info(f"Iniciando envío a {total_propietarios} propietarios en {total_lotes} lotes con {len(attachments)} archivos adjuntos")
         
         # 7. Procesar cada lote
         for i in range(0, len(propietarios_list), BATCH_SIZE):
-            # Obtener el lote actual
             batch = propietarios_list[i:i + BATCH_SIZE]
             batch_num = i // BATCH_SIZE + 1
             first_prop = batch[0]
             other_props = batch[1:]
             
+            # SANITIZAR TODOS LOS DATOS DEL PROPIETARIO
+            nombre_limpio = sanitize_text(first_prop['nombre'])
+            email_limpio = sanitize_text(first_prop['email'])
+            conjunto_nombre_limpio = sanitize_text(getattr(request.user.conjunto, 'nombre', 'Conjunto Residencial'))
+            
             # Preparar el contexto para el template
             context = {
-                'nombre': first_prop['nombre'],
+                'nombre': nombre_limpio,
                 'mensaje': mensaje_usuario,
                 'fecha': datetime.now().strftime('%d/%m/%Y'),
-                'conjunto': getattr(request.user, 'conjunto', None)
+                'conjunto': request.user.conjunto
             }
             
-            # Versión en texto plano del mensaje
-            plain_content = f"""
-Estimado/a {first_prop['nombre']},
+            # Versión en texto plano del mensaje - SANITIZADA
+            plain_content = sanitize_text(f"""
+Estimado/a {nombre_limpio},
 
 {mensaje_usuario.replace('<br>', '\n')}
 
@@ -471,17 +484,18 @@ Horario: Lunes a Viernes de 8:00 AM a 6:00 PM
 
 © 2024 Administración Conjunto Residencial
 Recibió este email porque está registrado como propietario.
-"""
+""")
             
             # Renderizar plantilla HTML
             try:
                 html_content = render_to_string('emails/general_notification.html', context)
+                # Sanitizar el HTML renderizado también
+                html_content = sanitize_text(html_content)
                 logger.debug("Plantilla HTML renderizada correctamente")
             except Exception as e:
                 logger.warning(f"Error al renderizar plantilla: {str(e)}. Usando plantilla alternativa.")
                 
-                # Plantilla alternativa en caso de error
-                html_content = f"""
+                html_content = sanitize_text(f"""
 <!DOCTYPE html>
 <html>
 <head>
@@ -491,84 +505,58 @@ Recibió este email porque está registrado como propietario.
 </head>
 <body style="margin:0;padding:0;font-family:Arial,sans-serif;background-color:#f7f9fc;color:#333;">
     <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.1);">
-        <!-- Encabezado -->
         <div style="background:linear-gradient(45deg,#6015ab,#ffaf19);padding:25px;text-align:center;">
             <h1 style="color:white;margin:0;font-size:24px;font-weight:600;">Notificación General</h1>
         </div>
-        
-        <!-- Contenido -->
         <div style="padding:30px;">
-            <p style="font-size:16px;margin-bottom:25px;">Estimado(a) <strong>{first_prop['nombre']}</strong>,</p>
-            
+            <p style="font-size:16px;margin-bottom:25px;">Estimado(a) <strong>{nombre_limpio}</strong>,</p>
             <div style="background:#f8f9fd;border-left:4px solid #6015ab;padding:20px;margin:25px 0;border-radius:4px;">
                 {mensaje_usuario}
             </div>
-            
             <div style="margin-top:30px;padding-top:20px;border-top:1px solid #eee;">
                 <p style="margin:5px 0;">Atentamente,</p>
-                <p style="font-weight:bold;font-size:16px;color:#333;">Administración Conjunto Residencial</p>
+                <p style="font-weight:bold;font-size:16px;color:#333;">Administración {conjunto_nombre_limpio}</p>
             </div>
         </div>
-        
-        <!-- Información de contacto -->
-        <div style="background:#f8f9fd;padding:20px;border-top:1px solid #eee;">
-            <div style="margin-bottom:15px;">
-                <h3 style="font-size:15px;color:#555;margin:0 0 10px 0;">Contacto</h3>
-                <p style="font-size:14px;color:#666;margin:5px 0;">📞 (601) XXX-XXXX</p>
-                <p style="font-size:14px;color:#666;margin:5px 0;">📧 admin@conjunto.com</p>
-            </div>
-            
-            <div>
-                <h3 style="font-size:15px;color:#555;margin:0 0 10px 0;">Horario de Atención</h3>
-                <p style="font-size:14px;color:#666;margin:5px 0;">Lunes a Viernes: 8:00 AM - 6:00 PM</p>
-                <p style="font-size:14px;color:#666;margin:5px 0;">Sábados: 9:00 AM - 1:00 PM</p>
-            </div>
-        </div>
-        
-        <!-- Pie de página -->
         <div style="background:#333;color:#fff;padding:20px;text-align:center;">
-            <p style="margin:5px 0;font-size:13px;">© 2024 Administración Conjunto Residencial</p>
-            <p style="margin:5px 0;font-size:12px;opacity:0.7;">
-                Recibió este email porque está registrado como propietario en nuestro sistema.
-                Para dejar de recibir estos mensajes, por favor contacte a la administración.
-            </p>
+            <p style="margin:5px 0;font-size:13px;">© 2024 Administración {conjunto_nombre_limpio}</p>
         </div>
     </div>
 </body>
 </html>
-"""
+""")
 
             # Crear mensaje de correo con configuraciones avanzadas
             message = Mail(
                 from_email=From(
-                    email=settings.DEFAULT_FROM_EMAIL,
-                    name="Administración Conjunto Residencial"
+                    email=sanitize_text(settings.DEFAULT_FROM_EMAIL),
+                    name=sanitize_text("Administración Conjunto Residencial")
                 ),
                 to_emails=To(
-                    email=first_prop['email'],
-                    name=first_prop['nombre']
+                    email=email_limpio,
+                    name=nombre_limpio
                 ),
-                subject=Subject('Notificación General'),
+                subject=Subject(sanitize_text('Notificación General')),
                 plain_text_content=PlainTextContent(plain_content),
                 html_content=HtmlContent(html_content)
             )
 
-            # Añadir headers anti-spam y metadatos para mejorar la entrega
+            # Añadir headers
             message.header = Header("List-Unsubscribe", f"<mailto:{settings.DEFAULT_FROM_EMAIL}?subject=unsubscribe>")
             message.header = Header("Precedence", "bulk")
-            message.header = Header("X-Auto-Response-Suppress", "OOF, AutoReply")
-            message.header = Header("X-Priority", "1")
-            message.header = Header("Importance", "High")
             message.category = Category("notificaciones_generales")
-            message.custom_arg = CustomArg("type", "general_notification")
-            message.custom_arg = CustomArg("batch", str(batch_num))
-            message.reply_to = settings.DEFAULT_FROM_EMAIL
+            message.reply_to = sanitize_text(settings.DEFAULT_FROM_EMAIL)
 
-            # Agregar destinatarios BCC
+            # Agregar destinatarios BCC - SANITIZADOS
             for prop in other_props:
-                message.add_bcc(prop['email'])
+                try:
+                    email_bcc_limpio = sanitize_text(prop['email'])
+                    message.add_bcc(email_bcc_limpio)
+                except Exception as e:
+                    logger.warning(f"Error agregando BCC {prop.get('email', 'unknown')}: {e}")
+                    continue
 
-            # Agregar todos los archivos adjuntos
+            # Agregar archivos adjuntos
             for attachment in attachments:
                 message.add_attachment(attachment)
 
@@ -579,12 +567,10 @@ Recibió este email porque está registrado como propietario.
                     total_enviados += len(batch)
                     logger.info(f"Lote {batch_num}/{total_lotes} enviado: {len(batch)} destinatarios. Total: {total_enviados}/{total_propietarios}")
                 else:
-                    # Registrar el cuerpo de la respuesta para ver el mensaje de error
                     logger.warning(f"Respuesta inesperada en lote {batch_num}: {response.status_code}")
                     logger.warning(f"Detalles: {response.body}")
             except Exception as e:
                 logger.error(f"Error enviando lote {batch_num}: {str(e)}")
-                # Registrar más detalles sobre la excepción si es posible
                 import traceback
                 logger.error(traceback.format_exc())
                 continue
@@ -615,6 +601,8 @@ Recibió este email porque está registrado como propietario.
 
     except Exception as e:
         logger.error(f"Error general en procesar_envio: {str(e)}")
+        import traceback
+        logger.error(traceback.format_exc())
         return JsonResponse({
             'status': 'error',
             'message': f'Error en el sistema: {str(e)}'
