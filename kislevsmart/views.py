@@ -42,6 +42,19 @@ from .models import ParqueaderoCarro, ParqueaderoMoto
 
 
 
+def sanitize_text(text):
+    """
+    Limpia el texto de caracteres inválidos para UTF-8 sin modificar el contenido visible
+    """
+    if not text:
+        return ""
+    
+    text = str(text)
+    # Remover surrogates y caracteres inválidos manteniendo todo el contenido normal
+    text = text.encode('utf-8', errors='ignore').decode('utf-8', errors='ignore')
+    return text.strip()
+
+
 # Configurar logger
 logger = logging.getLogger(__name__)
 
@@ -333,7 +346,9 @@ def procesar_envio(request):
             })
 
         # 2. Preparar mensaje (conservar formato HTML)
+        mensaje_usuario = sanitize_text(mensaje_usuario)
         mensaje_usuario = mensaje_usuario.replace('\n', '<br>')
+
 
         # 3. Obtener propietarios DEL CONJUNTO ACTUAL
         conjunto_actual = request.user.conjunto  # Asumiendo que el usuario tiene un atributo conjunto
@@ -622,6 +637,10 @@ def enviar_notificacion_individual(request):
         apartamento = request.POST.get('apartamento')
         mensaje = request.POST.get('message')
         
+
+        mensaje = sanitize_text(mensaje) if mensaje else ''
+
+
         # Validar datos
         if not torre_id or not apartamento or not mensaje:
             logger.warning("Datos de notificación individual incompletos")
@@ -829,6 +848,8 @@ def send_service_notification(request):
 
         data = json.loads(request.body)
         service_type = data.get('service_type')
+
+        service_type = sanitize_text(service_type) if service_type else ''
         
         if not service_type:
             return JsonResponse({
