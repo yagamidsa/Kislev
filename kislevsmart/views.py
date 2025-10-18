@@ -1133,6 +1133,9 @@ def bienvenida(request):
                 qr_img = qr.make_image(fill_color="black", back_color="white")
                 qr_img.save(qr_file_path)
 
+                logger.info("🔥🔥🔥 QR GENERADO - INICIANDO EMAIL 🔥🔥🔥")
+                logger.info(f"Archivo QR guardado en: {qr_file_path}")
+
                 # Preparar mensaje de email según tipo de visitante
                 mensaje_adicional = ""
                 if tipo_visitante == 'vehicular':

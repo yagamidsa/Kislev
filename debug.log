@@ -6969,3 +6969,12 @@ Watching for file changes with StatReloader
 "GET /valqr/eWFnYW1pZHNhQGhvdG1haWwuY29t/ HTTP/1.1" 200 1884
 "GET /static/images/QR.png HTTP/1.1" 200 151426
 "GET /static/css/formenvioQR.css HTTP/1.1" 200 6180
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"POST /bienvenida/ HTTP/1.1" 200 116
+"GET /valqr/eWFnYW1pZHNhQGhvdG1haWwuY29t/ HTTP/1.1" 200 1884
+C:\Users\AlipioD\KAP\Kislev\kislevsmart\views.py changed, reloading.
+Watching for file changes with StatReloader
