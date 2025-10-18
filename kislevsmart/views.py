@@ -21,17 +21,10 @@ from accounts.models import Usuario, ConjuntoResidencial, Torre
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.template.loader import render_to_string
-from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import (
-    Mail, From, To, Subject, PlainTextContent, 
-    HtmlContent, Header, Category, CustomArg
-)
 from django.views.decorators.http import require_http_methods
-from sendgrid.helpers.mail import Mail, Attachment, FileContent, FileName, FileType, Disposition
 from django.conf import settings
 from django.views.generic import ListView
 from .models import Sala, Reserva
-from sendgrid.helpers.mail import Mail, To, Email, Content, Attachment, FileContent, FileName, FileType, Disposition
 import logging
 from django.contrib import messages
 from django.db import DatabaseError, transaction
@@ -374,12 +367,9 @@ def procesar_envio(request):
                 'status': 'error',
                 'message': 'No hay propietarios activos en este conjunto'
             })
-
-        # 4. Inicializar SendGrid
-        sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
         
-        # 5. Procesar archivos adjuntos si existen
-        attachments = []
+        # 4. Procesar archivos adjuntos si existen
+        attachments_data = []
         files = request.FILES.getlist('fileInput')
         total_size = 0
         MAX_ATTACHMENT_SIZE = 25 * 1024 * 1024
@@ -411,17 +401,14 @@ def procesar_envio(request):
                     })
                 
                 archivo_contenido = archivo.read()
-                encoded_file = base64.b64encode(archivo_contenido).decode()
-                
-                # Sanitizar nombre del archivo
                 archivo_nombre_limpio = sanitize_text(archivo.name)
                 
-                attachment = Attachment()
-                attachment.file_content = FileContent(encoded_file)
-                attachment.file_name = FileName(archivo_nombre_limpio)
-                attachment.file_type = FileType(archivo.content_type)
-                attachment.disposition = Disposition('attachment')
-                attachments.append(attachment)
+                # Guardar info del archivo para adjuntar después
+                attachments_data.append({
+                    'filename': archivo_nombre_limpio,
+                    'content': archivo_contenido,
+                    'content_type': archivo.content_type
+                })
                 
                 logger.info(f"Archivo adjunto procesado: {archivo_nombre_limpio} ({archivo.size/(1024*1024):.2f}MB)")
             except Exception as e:
@@ -431,15 +418,17 @@ def procesar_envio(request):
                     'message': f'Error procesando el archivo {archivo.name}: {str(e)}'
                 })
 
-        # 6. Preparar envío por lotes
+        # 5. Preparar envío por lotes
+        from django.core.mail import EmailMultiAlternatives
+        
         BATCH_SIZE = 500
         total_enviados = 0
         propietarios_list = list(propietarios)
         
         total_lotes = (len(propietarios_list) + BATCH_SIZE - 1) // BATCH_SIZE
-        logger.info(f"Iniciando envío a {total_propietarios} propietarios en {total_lotes} lotes con {len(attachments)} archivos adjuntos")
+        logger.info(f"Iniciando envío a {total_propietarios} propietarios en {total_lotes} lotes con {len(attachments_data)} archivos adjuntos")
         
-        # 7. Procesar cada lote
+        # 6. Procesar cada lote
         for i in range(0, len(propietarios_list), BATCH_SIZE):
             batch = propietarios_list[i:i + BATCH_SIZE]
             batch_num = i // BATCH_SIZE + 1
@@ -481,7 +470,6 @@ Recibió este email porque está registrado como propietario.
             # Renderizar plantilla HTML
             try:
                 html_content = render_to_string('emails/general_notification.html', context)
-                # Sanitizar el HTML renderizado también
                 html_content = sanitize_text(html_content)
                 logger.debug("Plantilla HTML renderizada correctamente")
             except Exception as e:
@@ -518,62 +506,44 @@ Recibió este email porque está registrado como propietario.
 </html>
 """)
 
-            # Crear mensaje de correo con configuraciones avanzadas
-            message = Mail(
-                from_email=From(
-                    email=sanitize_text(settings.DEFAULT_FROM_EMAIL),
-                    name=sanitize_text("Administración Conjunto Residencial")
-                ),
-                to_emails=To(
-                    email=email_limpio,
-                    name=nombre_limpio
-                ),
-                subject=Subject(sanitize_text('Notificación General')),
-                plain_text_content=PlainTextContent(plain_content),
-                html_content=HtmlContent(html_content)
+            # Crear mensaje de correo con AWS SES
+            email = EmailMultiAlternatives(
+                subject='Notificación General',
+                body=plain_content,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                to=[email_limpio],
+                bcc=[sanitize_text(prop['email']) for prop in other_props]
             )
-
-            # Añadir headers
-            message.header = Header("List-Unsubscribe", f"<mailto:{settings.DEFAULT_FROM_EMAIL}?subject=unsubscribe>")
-            message.header = Header("Precedence", "bulk")
-            message.category = Category("notificaciones_generales")
-            message.reply_to = sanitize_text(settings.DEFAULT_FROM_EMAIL)
-
-            # Agregar destinatarios BCC - SANITIZADOS
-            for prop in other_props:
-                try:
-                    email_bcc_limpio = sanitize_text(prop['email'])
-                    message.add_bcc(email_bcc_limpio)
-                except Exception as e:
-                    logger.warning(f"Error agregando BCC {prop.get('email', 'unknown')}: {e}")
-                    continue
-
+            
+            # Adjuntar versión HTML
+            email.attach_alternative(html_content, "text/html")
+            
             # Agregar archivos adjuntos
-            for attachment in attachments:
-                message.add_attachment(attachment)
+            for attachment in attachments_data:
+                email.attach(
+                    attachment['filename'],
+                    attachment['content'],
+                    attachment['content_type']
+                )
 
-            # 8. Enviar lote
+            # 7. Enviar lote
             try:
-                response = sg.send(message)
-                if response.status_code in [200, 201, 202]:
-                    total_enviados += len(batch)
-                    logger.info(f"Lote {batch_num}/{total_lotes} enviado: {len(batch)} destinatarios. Total: {total_enviados}/{total_propietarios}")
-                else:
-                    logger.warning(f"Respuesta inesperada en lote {batch_num}: {response.status_code}")
-                    logger.warning(f"Detalles: {response.body}")
+                email.send(fail_silently=False)
+                total_enviados += len(batch)
+                logger.info(f"Lote {batch_num}/{total_lotes} enviado: {len(batch)} destinatarios. Total: {total_enviados}/{total_propietarios}")
             except Exception as e:
                 logger.error(f"Error enviando lote {batch_num}: {str(e)}")
                 import traceback
                 logger.error(traceback.format_exc())
                 continue
 
-        # 9. Retornar resultado
+        # 8. Retornar resultado
         if total_enviados > 0:
             success_message = f"Se enviaron {total_enviados} de {total_propietarios} notificaciones"
             
-            if attachments:
-                archivo_texto = "archivo" if len(attachments) == 1 else "archivos"
-                success_message += f" con {len(attachments)} {archivo_texto} adjuntos ({round(total_size/(1024*1024), 2)}MB)"
+            if attachments_data:
+                archivo_texto = "archivo" if len(attachments_data) == 1 else "archivos"
+                success_message += f" con {len(attachments_data)} {archivo_texto} adjuntos ({round(total_size/(1024*1024), 2)}MB)"
             
             logger.info(success_message)
             
@@ -581,7 +551,7 @@ Recibió este email porque está registrado como propietario.
                 'status': 'success',
                 'enviados': total_enviados,
                 'total': total_propietarios,
-                'files_attached': len(attachments),
+                'files_attached': len(attachments_data),
                 'total_size_mb': round(total_size/(1024*1024), 2)
             })
         else:
@@ -617,9 +587,7 @@ def enviar_notificacion_individual(request):
         apartamento = request.POST.get('apartamento')
         mensaje = request.POST.get('message')
         
-
         mensaje = sanitize_text(mensaje) if mensaje else ''
-
 
         # Validar datos
         if not torre_id or not apartamento or not mensaje:
@@ -659,7 +627,9 @@ def enviar_notificacion_individual(request):
             }, status=404)
         
         # Procesar archivos adjuntos
-        archivos = []
+        from django.core.mail import EmailMultiAlternatives
+        
+        archivos_data = []
         for file in request.FILES.getlist('files[]'):
             # Verificar tamaño
             if file.size > 10 * 1024 * 1024:  # 10MB
@@ -668,21 +638,14 @@ def enviar_notificacion_individual(request):
                     'message': f'El archivo {file.name} supera el límite de 10MB'
                 }, status=400)
             
-            # Guardar temporalmente para procesar
             archivo_contenido = file.read()
-            encoded_file = base64.b64encode(archivo_contenido).decode()
-            
-            attachment = Attachment()
-            attachment.file_content = FileContent(encoded_file)
-            attachment.file_name = FileName(file.name)
-            attachment.file_type = FileType(file.content_type)
-            attachment.disposition = Disposition('attachment')
-            archivos.append(attachment)
+            archivos_data.append({
+                'filename': file.name,
+                'content': archivo_contenido,
+                'content_type': file.content_type
+            })
             
             logger.info(f"Archivo adjunto procesado: {file.name} ({file.size/(1024*1024):.2f}MB)")
-        
-        # Inicializar Sendgrid
-        sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
         
         # Enviar notificación a cada propietario
         enviados = 0
@@ -740,41 +703,27 @@ def enviar_notificacion_individual(request):
                 Email: {request.user.conjunto.email_contacto or "(No disponible)"}
                 """
                 
-                # Crear mensaje de correo
-                message = Mail(
-                    from_email=From(
-                        email=settings.DEFAULT_FROM_EMAIL,
-                        name=f"Administración {request.user.conjunto.nombre}"
-                    ),
-                    to_emails=To(
-                        email=propietario.email,
-                        name=propietario.nombre
-                    ),
-                    subject=Subject('Notificación Individual para su Apartamento'),
-                    plain_text_content=PlainTextContent(plain_content),
-                    html_content=HtmlContent(html_content)
+                # Crear y enviar email
+                msg = EmailMultiAlternatives(
+                    subject='Notificación Individual para su Apartamento',
+                    body=plain_content,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    to=[propietario.email]
                 )
-                
-                # Añadir metadatos
-                message.header = Header("List-Unsubscribe", f"<mailto:{settings.DEFAULT_FROM_EMAIL}?subject=unsubscribe>")
-                message.header = Header("Precedence", "bulk")
-                message.header = Header("X-Priority", "1")
-                message.header = Header("Importance", "High")
-                message.category = Category("notificaciones_individuales")
-                message.custom_arg = CustomArg("type", "individual_notification")
-                message.reply_to = settings.DEFAULT_FROM_EMAIL
+                msg.attach_alternative(html_content, "text/html")
                 
                 # Agregar archivos adjuntos
-                for attachment in archivos:
-                    message.add_attachment(attachment)
+                for archivo in archivos_data:
+                    msg.attach(
+                        archivo['filename'],
+                        archivo['content'],
+                        archivo['content_type']
+                    )
                 
                 # Enviar correo
-                response = sg.send(message)
-                if response.status_code in [200, 201, 202]:
-                    enviados += 1
-                    logger.info(f"Notificación individual enviada a {propietario.email}")
-                else:
-                    logger.warning(f"Error al enviar notificación a {propietario.email}: Status {response.status_code}")
+                msg.send(fail_silently=False)
+                enviados += 1
+                logger.info(f"Notificación individual enviada a {propietario.email}")
                 
             except Exception as e:
                 logger.error(f"Error procesando notificación para {propietario.email}: {str(e)}")
@@ -816,7 +765,6 @@ DELAY_BETWEEN_BATCHES = 2  # Segundos entre lotes
 def send_service_notification(request):
     """
     Envía notificaciones sobre disponibilidad de servicios públicos a los propietarios.
-    Versión mejorada que utiliza la nueva plantilla HTML unificada.
     """
     try:
         # Validar que la petición sea JSON
@@ -855,14 +803,15 @@ def send_service_notification(request):
                 'message': f'No hay propietarios activos para enviar notificaciones en el conjunto {conjunto_actual.nombre}'
             }, status=404)
 
-        sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
+        from django.core.mail import EmailMultiAlternatives
+        
         successful_sends = 0
         failed_sends = 0
         errors = []
 
         # Dividir en lotes
         BATCH_SIZE = 500
-        DELAY_BETWEEN_BATCHES = 2  # Segundos entre lotes
+        DELAY_BETWEEN_BATCHES = 2
         propietarios_list = list(propietarios)
         batches = [propietarios_list[i:i + BATCH_SIZE] for i in range(0, total_users, BATCH_SIZE)]
         total_batches = len(batches)
@@ -876,7 +825,6 @@ def send_service_notification(request):
 
             for propietario in batch:
                 try:
-                    # Acceder usando la notación de diccionario
                     email = propietario['email']
                     nombre = propietario['nombre']
                     
@@ -885,7 +833,7 @@ def send_service_notification(request):
                         'nombre': nombre,
                         'service_type': service_type,
                         'fecha': datetime.now().strftime('%d/%m/%Y'),
-                        'conjunto': conjunto_actual  # Usar el conjunto del usuario actual
+                        'conjunto': conjunto_actual
                     }
                     
                     # Crear contenido HTML utilizando la plantilla
@@ -894,7 +842,6 @@ def send_service_notification(request):
                         logger.debug(f"Plantilla HTML renderizada correctamente para {email}")
                     except Exception as e:
                         logger.warning(f"Error al renderizar plantilla: {str(e)}. Usando plantilla alternativa.")
-                        # Plantilla alternativa simple en caso de error
                         html_content = f"""
                         <!DOCTYPE html>
                         <html>
@@ -933,51 +880,21 @@ Horario: Lunes a Viernes de 8:00 AM a 6:00 PM
 © 2024 Administración Conjunto Residencial
 """
 
-                    # Crear mensaje con configuraciones anti-spam
-                    message = Mail(
-                        from_email=From(
-                            email=settings.DEFAULT_FROM_EMAIL,
-                            name="Administración Conjunto Residencial"
-                        ),
-                        to_emails=To(
-                            email=email,
-                            name=nombre
-                        ),
-                        subject=Subject(f'Notificación: Su factura de {service_type} está disponible'),
-                        plain_text_content=PlainTextContent(plain_content),
-                        html_content=HtmlContent(html_content)
+                    # Crear y enviar email con AWS SES
+                    msg = EmailMultiAlternatives(
+                        subject=f'Notificación: Su factura de {service_type} está disponible',
+                        body=plain_content,
+                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        to=[email]
                     )
-
-                    # Añadir headers anti-spam y metadatos
-                    message.header = Header("List-Unsubscribe", f"<mailto:{settings.DEFAULT_FROM_EMAIL}?subject=unsubscribe>")
-                    message.header = Header("Precedence", "bulk")
-                    message.header = Header("X-Auto-Response-Suppress", "OOF, AutoReply")
-                    message.header = Header("X-Priority", "1")
-                    message.header = Header("Importance", "High")
-                    message.category = Category("notificaciones_servicios")
-                    message.custom_arg = CustomArg("type", "service_notification")
-                    message.custom_arg = CustomArg("service", service_type)
-                    message.reply_to = settings.DEFAULT_FROM_EMAIL
-
-                    # Enviar email y verificar respuesta
-                    response = sg.send(message)
+                    msg.attach_alternative(html_content, "text/html")
                     
-                    if response.status_code in [200, 201, 202]:
-                        batch_successful += 1
-                        successful_sends += 1
-                        logger.debug(f"Email enviado exitosamente a {email}")
-                    else:
-                        batch_failed += 1
-                        failed_sends += 1
-                        errors.append({
-                            'email': email,
-                            'error': f"Status code {response.status_code}",
-                            'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                        })
-                        logger.warning(f"Error al enviar email a {email}: Status code {response.status_code}")
+                    msg.send(fail_silently=False)
+                    batch_successful += 1
+                    successful_sends += 1
+                    logger.debug(f"Email enviado exitosamente a {email}")
 
                 except Exception as e:
-                    # Intentar obtener el email para el log de error
                     email_for_log = propietario.get('email', 'unknown_email')
                     batch_failed += 1
                     failed_sends += 1
@@ -993,7 +910,7 @@ Horario: Lunes a Viernes de 8:00 AM a 6:00 PM
             logger.info(f"Lote {batch_index}/{total_batches}: {progress:.1f}% completado. "
                       f"Exitosos: {batch_successful}, Fallidos: {batch_failed}")
 
-            # Esperar entre lotes para no sobrecargar la API
+            # Esperar entre lotes
             if batch_index < total_batches:
                 time.sleep(DELAY_BETWEEN_BATCHES)
 
@@ -1008,7 +925,6 @@ Horario: Lunes a Viernes de 8:00 AM a 6:00 PM
             'service_type': service_type
         }
         
-        # Incluir algunos errores si los hay, pero limitar el número para no hacer la respuesta demasiado grande
         if errors:
             final_response['errors_sample'] = errors[:5] if len(errors) > 5 else errors
             
