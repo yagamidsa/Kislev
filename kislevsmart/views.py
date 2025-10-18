@@ -1138,24 +1138,60 @@ def bienvenida(request):
                 if tipo_visitante == 'vehicular':
                     mensaje_adicional = f"\n\nNota: Este código QR es válido para registrar tanto la entrada como la salida del vehículo."
 
+                # INICIO DE LOGS
+                logger.info("=" * 50)
+                logger.info("INICIANDO ENVÍO DE EMAIL CON QR")
+                logger.info(f"Visitante ID: {visitante.id}")
+                logger.info(f"Visitante nombre: {visitante.nombre}")
+                logger.info(f"Visitante email: {visitante.email}")
+                logger.info(f"QR file path: {qr_file_path}")
+                logger.info(f"DEFAULT_FROM_EMAIL: {settings.DEFAULT_FROM_EMAIL}")
+                logger.info(f"EMAIL_BACKEND: {settings.EMAIL_BACKEND}")
+                logger.info("=" * 50)
+                # FIN DE LOGS
+
                 # Enviar email
                 try:
                     # Sanitizar todos los datos antes de enviar
                     nombre_limpio = sanitize_text(visitante.nombre)
                     email_limpio = sanitize_text(visitante.email)
                     mensaje_limpio = sanitize_text(mensaje_adicional) if mensaje_adicional else ""
-
+                    
+                    # LOGS ADICIONALES
+                    logger.info(f"Datos sanitizados:")
+                    logger.info(f"  - nombre_limpio: {nombre_limpio}")
+                    logger.info(f"  - email_limpio: {email_limpio}")
+                    logger.info(f"  - mensaje_limpio: {mensaje_limpio}")
+                    
+                    logger.info("Creando EmailMessage...")
+                    # FIN LOGS ADICIONALES
+                    
                     email_message = EmailMessage(
                         sanitize_text("Tu Codigo QR de Visitante"),
                         sanitize_text(f"Hola {nombre_limpio},\n\nAdjunto encontraras tu codigo QR para la visita.{mensaje_limpio}"),
                         sanitize_text(settings.DEFAULT_FROM_EMAIL),
                         [email_limpio]
                     )
+                    
+                    logger.info("Adjuntando archivo QR...")
                     email_message.attach_file(qr_file_path)
-                    email_message.send()
-                    logger.info(f"QR enviado exitosamente a {email_limpio}")
+                    
+                    logger.info("Enviando email...")
+                    result = email_message.send()
+                    logger.info(f"Email enviado. Resultado: {result}")
+                    logger.info(f"✓ QR enviado exitosamente a {email_limpio}")
+                    
                 except Exception as e:
-                    logger.error(f"Error enviando email: {str(e)}")
+                    logger.error("!" * 50)
+                    logger.error(f"ERROR ENVIANDO EMAIL: {str(e)}")
+                    logger.error(f"Tipo de error: {type(e).__name__}")
+                    import traceback
+                    logger.error(f"Traceback completo:")
+                    logger.error(traceback.format_exc())
+                    logger.error("!" * 50)
+
+                logger.info("Proceso de envío de email completado")
+                logger.info("=" * 50)
 
                 # Limpiar archivo temporal
                 try:
