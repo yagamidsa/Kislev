@@ -1075,8 +1075,12 @@ cipher = Fernet(SECRET_KEY)
 
 @login_required
 def bienvenida(request):
+    print("🔥🔥🔥 BIENVENIDA FUNCTION CALLED 🔥🔥🔥")
+    print(f"REQUEST METHOD: {request.method}")
     if request.method == 'POST':
+        print("🔥🔥🔥 INSIDE POST 🔥🔥🔥")
         try:
+            print("🔥🔥🔥 INSIDE TRY 🔥🔥🔥")
             with transaction.atomic():
                 # Generar token único
                 uuid_token = str(uuid.uuid4())
