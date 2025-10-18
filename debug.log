@@ -6953,3 +6953,19 @@ Watching for file changes with StatReloader
 "GET /static/css/noti_publicos.css HTTP/1.1" 200 14885
 "GET /notificaciones/ HTTP/1.1" 200 8172
 "GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+"GET / HTTP/1.1" 200 3647
+"GET /accounts/login/ HTTP/1.1" 200 5141
+"POST /accounts/login/ HTTP/1.1" 302 0
+"GET /accounts/select-conjunto/ HTTP/1.1" 200 2551
+"POST /accounts/select-conjunto/ HTTP/1.1" 302 0
+"GET /accounts/visor_admin/ HTTP/1.1" 200 2705
+"GET /static/css/visor_admin.css HTTP/1.1" 200 7233
+"GET /static/js/visor_admin.js HTTP/1.1" 200 347
+"GET /bienvenida/ HTTP/1.1" 200 26736
+"GET /static/css/formQR.css HTTP/1.1" 200 15488
+"POST /bienvenida/ HTTP/1.1" 200 116
+"GET /valqr/eWFnYW1pZHNhQGhvdG1haWwuY29t/ HTTP/1.1" 200 1884
+"GET /static/images/QR.png HTTP/1.1" 200 151426
+"GET /static/css/formenvioQR.css HTTP/1.1" 200 6180
