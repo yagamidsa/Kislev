@@ -17,10 +17,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('DJANGO_SECRET_KEY', default='django-insecure-@@i8x+#kv7)iilb$kc3^zpgf+m^%)&_a!x!8bb+b2!m0f_*61k')
+SECRET_KEY = env('DJANGO_SECRET_KEY')
+FERNET_KEY = os.environ.get('FERNET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG', default=True)
+DEBUG = env('DEBUG')
 
 # Configuración de hosts
 if DEBUG:
@@ -28,9 +29,10 @@ if DEBUG:
 else:
     ALLOWED_HOSTS = [
         '.railway.app',
+        'kislev.net.co',
+        'www.kislev.net.co',
         'localhost',
         '127.0.0.1',
-        '[::1]',
     ]
 
 # Configuraciones de Seguridad según el entorno
@@ -79,6 +81,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'accounts',
     'kislevsmart',
+    'django_ratelimit',
     'whitenoise.runserver_nostatic',
 ]
 
@@ -123,7 +126,8 @@ if os.getenv('DATABASE_URL', None):
     DATABASES = {
         'default': dj_database_url.config(
             default=os.getenv('DATABASE_URL'),
-            conn_max_age=600,
+            conn_max_age=60,
+            conn_health_checks=True,
         )
     }
 else:
@@ -259,16 +263,23 @@ LOGIN_URL = '/accounts/login/'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
 
 # Configuración de caché
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'unique-snowflake',
-        'TIMEOUT': 300,
-        'OPTIONS': {
-            'MAX_ENTRIES': 1000
+if os.environ.get('REDIS_URL'):
+    CACHES = {
+        'default': {
+            'BACKEND': 'django_redis.cache.RedisCache',
+            'LOCATION': os.environ.get('REDIS_URL'),
+            'OPTIONS': {'CLIENT_CLASS': 'django_redis.client.DefaultClient'},
+            'TIMEOUT': 300,
         }
     }
-}
+else:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+            'LOCATION': 'unique-snowflake',
+            'TIMEOUT': 300,
+        }
+    }
 
 # Configuración de logging
 LOGGING = {
@@ -278,16 +289,11 @@ LOGGING = {
         'console': {
             'class': 'logging.StreamHandler',
         },
-        'file': {
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'debug.log'),
-        },
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'file'],
-            'level': 'INFO',
-            'propagate': True,
+            'handlers': ['console'],
+            'level': 'WARNING' if not DEBUG else 'INFO',
         },
         'django.db.backends': {
             'handlers': ['console'],
@@ -300,9 +306,16 @@ LOGGING = {
     },
 }
 
+# Rate limiting: desactivado en desarrollo local (requiere Redis compartido)
+RATELIMIT_ENABLED = not DEBUG
+if DEBUG:
+    SILENCED_SYSTEM_CHECKS = ['django_ratelimit.E003', 'django_ratelimit.W001']
+
 # Configuración de CSRF
 CSRF_TRUSTED_ORIGINS = []
 if not DEBUG:
     CSRF_TRUSTED_ORIGINS += [
         'https://*.railway.app',
+        'https://kislev.net.co',
+        'https://www.kislev.net.co',
     ]

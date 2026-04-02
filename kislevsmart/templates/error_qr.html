@@ -23,13 +23,17 @@
         <h1>Error en la validación del QR</h1>
         
         <div class="error-details">
+            {% if mensaje %}
+            <h2>{{ mensaje }}</h2>
+            {% else %}
             <h2>¡QR no válido o ya utilizado!</h2>
-            <p>El código QR que intentaste escanear ha expirado o ya fue utilizado previamente. 
+            <p>El código QR que intentaste escanear ha expirado o ya fue utilizado previamente.
                Para acceder, el propietario deberá generar un nuevo código QR desde su panel de control.</p>
+            {% endif %}
         </div>
 
         <p class="error-message">
-            Por favor, contacta al propietario para que genere un nuevo código QR. 
+            Por favor, contacta al propietario para que genere un nuevo código QR.
             Cada código es de un solo uso por razones de seguridad.
         </p>
 

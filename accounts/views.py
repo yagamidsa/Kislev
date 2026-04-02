@@ -16,6 +16,9 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
 from django.utils.translation import gettext as _
+from django.core import signing
+import time
+from django_ratelimit.decorators import ratelimit
 from .utils import role_required
 from .forms import LoginForm, SelectConjuntoForm
 from .models import Usuario, ConjuntoResidencial
@@ -53,6 +56,7 @@ class ControlpropietarioView(TemplateView):
 
 
 @method_decorator(csrf_protect, name='dispatch')
+@method_decorator(ratelimit(key='ip', rate='5/m', method='POST', block=True), name='post')
 class LoginView(View):
     template_name = 'accounts/login.html'
 
@@ -68,6 +72,11 @@ class LoginView(View):
         if form.is_valid():
             cedula = form.cleaned_data.get('cedula')
             password = form.cleaned_data.get('password')
+            remember_me = form.cleaned_data.get('remember_me')
+            if remember_me:
+                request.session.set_expiry(30 * 24 * 60 * 60)  # 30 días
+            else:
+                request.session.set_expiry(0)  # expira al cerrar el navegador
 
             # Verificar si la cédula existe en algún conjunto
             conjuntos_usuario = ConjuntoResidencial.objects.filter(
@@ -124,11 +133,12 @@ class LoginView(View):
                     messages.error(request, 'Error al autenticar. Por favor, verifique sus credenciales.')
                     return render(request, self.template_name, {'form': form})
             else:
-                # Si hay múltiples conjuntos, guardamos los datos en la sesión
-                # y redirigimos a la vista de selección de conjunto
+                # Si hay múltiples conjuntos, guardamos la cédula y un token firmado
+                # (el token prueba que el usuario ya se autenticó correctamente)
                 request.session['login_cedula'] = cedula
-                request.session['login_password'] = password  # No es seguro, pero es temporal
-                
+                request.session['login_token'] = signing.dumps(
+                    {'cedula': cedula, 'ts': time.time()}, salt='kislev-login'
+                )
                 return redirect('accounts:select_conjunto')
         
         return render(request, self.template_name, {'form': form})
@@ -147,103 +157,78 @@ class LoginView(View):
 class SelectConjuntoView(View):
     template_name = 'accounts/select_conjunto.html'
 
-    def get(self, request):
-        # Verificar si tenemos los datos en la sesión
+    def _verify_login_token(self, request):
+        """Verifica el token de sesión firmado. Retorna cedula o None si inválido."""
         cedula = request.session.get('login_cedula')
-        password = request.session.get('login_password')
-        
-        if not cedula or not password:
+        token = request.session.get('login_token')
+        if not cedula or not token:
+            return None
+        try:
+            data = signing.loads(token, salt='kislev-login', max_age=300)
+            if data.get('cedula') != cedula:
+                return None
+        except Exception:
+            return None
+        return cedula
+
+    def get(self, request):
+        cedula = self._verify_login_token(request)
+        if not cedula:
             messages.error(request, 'Sesión expirada. Por favor, inicie sesión nuevamente.')
             return redirect('accounts:login')
-        
-        # Obtener los conjuntos asociados a la cédula
+
         conjuntos_usuario = ConjuntoResidencial.objects.filter(
             usuario__cedula=cedula,
             usuario__is_active=True,
             estado=True
         ).distinct()
-        
+
         if not conjuntos_usuario.exists():
             messages.error(request, 'No hay conjuntos disponibles para esta cédula.')
             return redirect('accounts:login')
-        
-        # Si solo hay un conjunto, redirigir directamente
+
         if conjuntos_usuario.count() == 1:
             conjunto = conjuntos_usuario.first()
-            
-            # Usar authenticate en lugar de get
-            user = authenticate(
-                request,
-                cedula=cedula,
-                conjunto=conjunto,
-                password=password
-            )
-            
+            user = Usuario.objects.filter(cedula=cedula, conjunto=conjunto, is_active=True).first()
             if user:
-                # Especificar el backend
                 user.backend = 'accounts.backends.CedulaConjuntoBackend'
                 login(request, user)
-                
-                # Limpiar datos de sesión temporal
-                if 'login_cedula' in request.session:
-                    del request.session['login_cedula']
-                if 'login_password' in request.session:
-                    del request.session['login_password']
-                    
+                request.session.pop('login_cedula', None)
+                request.session.pop('login_token', None)
                 return self._redirect_by_user_type(user)
             else:
                 messages.error(request, 'Error al autenticar. Credenciales inválidas.')
                 return redirect('accounts:login')
-        
-        # Preparar el formulario con los conjuntos disponibles
+
         form = SelectConjuntoForm(conjuntos=conjuntos_usuario)
         return render(request, self.template_name, {'form': form})
     
     def post(self, request):
-        # Verificar si tenemos los datos en la sesión
-        cedula = request.session.get('login_cedula')
-        password = request.session.get('login_password')
-        
-        if not cedula or not password:
+        cedula = self._verify_login_token(request)
+        if not cedula:
             messages.error(request, 'Sesión expirada. Por favor, inicie sesión nuevamente.')
             return redirect('accounts:login')
-        
-        # Obtener los conjuntos asociados a la cédula
+
         conjuntos_usuario = ConjuntoResidencial.objects.filter(
             usuario__cedula=cedula,
             usuario__is_active=True,
             estado=True
         ).distinct()
-        
-        # Procesar el formulario
+
         form = SelectConjuntoForm(conjuntos=conjuntos_usuario, data=request.POST)
         if form.is_valid():
             conjunto = form.cleaned_data['conjunto']
-            
-            # Autenticar al usuario directamente
-            user = authenticate(
-                request, 
-                cedula=cedula, 
-                conjunto=conjunto, 
-                password=password
-            )
-            
+            user = Usuario.objects.filter(cedula=cedula, conjunto=conjunto, is_active=True).first()
             if user:
-                # Especificar el backend
                 user.backend = 'accounts.backends.CedulaConjuntoBackend'
                 login(request, user)
-                
-                # Limpiar datos de sesión temporal
-                if 'login_cedula' in request.session:
-                    del request.session['login_cedula']
-                if 'login_password' in request.session:
-                    del request.session['login_password']
-                
+                request.session.pop('login_cedula', None)
+                request.session.pop('login_token', None)
                 return self._redirect_by_user_type(user)
             else:
                 messages.error(request, 'Error al autenticar. Credenciales inválidas.')
                 return redirect('accounts:login')
-        
+
         return render(request, self.template_name, {'form': form})
 
     def _redirect_by_user_type(self, user):

@@ -1,0 +1,95 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Estado de Cuenta</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/restricciones.css' %}">
+    <link rel="stylesheet" href="{% static 'css/visor_admin.css' %}">
+    <style>
+        .ec-wrap { max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
+        .back-link { display:inline-flex; align-items:center; gap:6px; color:#7f00ff; font-weight:600; font-size:0.85rem; text-decoration:none; margin-bottom:1.5rem; }
+
+        .resumen-card {
+            background: linear-gradient(135deg, #e100ff, #7f00ff);
+            border-radius: 16px; padding: 1.5rem 2rem; color: #fff; margin-bottom: 2rem;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
+        }
+        .resumen-card h2 { font-size: 1rem; opacity: .85; margin-bottom: .25rem; }
+        .resumen-card .monto { font-size: 2rem; font-weight: 800; }
+        .resumen-card .sub { font-size: 0.8rem; opacity: .75; }
+
+        .cuota-row {
+            background: #fff; border-radius: 12px; padding: 1.25rem 1.5rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin-bottom: 1rem;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .75rem;
+        }
+        .cuota-info h3 { font-size: .95rem; font-weight: 700; margin-bottom: 2px; }
+        .cuota-info p { font-size: .8rem; color: #888; }
+
+        .estado-pagado { color: #2e7d32; font-weight: 700; font-size: .9rem; }
+        .estado-pendiente { color: #c62828; font-weight: 700; font-size: .9rem; }
+        .estado-vencida { color: #e65100; font-weight: 700; font-size: .9rem; }
+
+        .monto-pendiente { font-size: 1.1rem; font-weight: 800; color: #c62828; }
+        .monto-pagado-val { font-size: 1.1rem; font-weight: 800; color: #2e7d32; }
+
+        .detalle-pago { font-size: .78rem; color: #888; margin-top: 2px; }
+
+        .empty-state { text-align:center; padding:4rem 1rem; color:#999; }
+    </style>
+</head>
+<body>
+<div class="ec-wrap">
+
+    <a href="{% url 'accounts:visor_propietario' %}" class="back-link">
+        <i class="fas fa-arrow-left"></i> Volver al panel
+    </a>
+
+    <div class="resumen-card">
+        <div>
+            <h2>Total pendiente de pago</h2>
+            <div class="monto">${{ total_deuda|floatformat:"0" }}</div>
+            <div class="sub">{{ user.get_ubicacion_completa }}</div>
+        </div>
+        <i class="fas fa-wallet" style="font-size:3rem; opacity:.3;"></i>
+    </div>
+
+    {% for item in resumen %}
+    <div class="cuota-row">
+        <div class="cuota-info">
+            <h3>{{ item.cuota.nombre }}</h3>
+            <p>Vence: {{ item.cuota.fecha_vencimiento|date:"d/m/Y" }} &middot; {{ item.cuota.get_periodicidad_display }}</p>
+            {% if item.pago %}
+            <p class="detalle-pago">
+                Pagado el {{ item.pago.fecha_pago|date:"d/m/Y" }}
+                via {{ item.pago.get_metodo_display }}
+                {% if item.pago.comprobante %}&middot; Ref: {{ item.pago.comprobante }}{% endif %}
+            </p>
+            {% endif %}
+        </div>
+        <div style="text-align:right;">
+            {% if item.pago and item.pendiente == 0 %}
+                <div class="estado-pagado"><i class="fas fa-check-circle"></i> Pagado</div>
+                <div class="monto-pagado-val">${{ item.pago.monto_pagado|floatformat:"0" }}</div>
+            {% elif item.cuota.vencida %}
+                <div class="estado-vencida"><i class="fas fa-exclamation-triangle"></i> Vencida</div>
+                <div class="monto-pendiente">${{ item.pendiente|floatformat:"0" }}</div>
+            {% else %}
+                <div class="estado-pendiente"><i class="fas fa-clock"></i> Pendiente</div>
+                <div class="monto-pendiente">${{ item.pendiente|floatformat:"0" }}</div>
+            {% endif %}
+        </div>
+    </div>
+    {% empty %}
+    <div class="empty-state">
+        <i class="fas fa-check-circle" style="font-size:3rem; color:#ddd;"></i>
+        <p>No hay cuotas registradas para tu conjunto.</p>
+    </div>
+    {% endfor %}
+
+</div>
+</body>
+</html>

@@ -59,10 +59,9 @@ class UsuarioManager(BaseUserManager):
         # Asegurar que existe el conjunto por defecto
         conjunto = extra_fields.get('conjunto')
         if not conjunto:
-            try:
-                conjunto = ConjuntoResidencial.objects.get(nombre="Oliva-Amarilo")
-            except ConjuntoResidencial.DoesNotExist:
-                raise ValueError("No existe el Conjunto Principal")
+            conjunto = ConjuntoResidencial.objects.first()
+            if not conjunto:
+                raise ValueError("Crea al menos un ConjuntoResidencial antes de crear usuarios.")
             extra_fields['conjunto'] = conjunto
 
         # Generar unique_cedula
@@ -80,10 +79,9 @@ class UsuarioManager(BaseUserManager):
         return usuario
 
     def create_superuser(self, cedula, nombre, email, password=None):
-        try:
-            conjunto = ConjuntoResidencial.objects.get(nombre="Oliva-Amarilo")
-        except ConjuntoResidencial.DoesNotExist:
-            raise ValueError("El Conjunto Principal debe existir antes de crear un superusuario")
+        conjunto = ConjuntoResidencial.objects.first()
+        if not conjunto:
+            raise ValueError("Crea al menos un ConjuntoResidencial antes de crear un superusuario.")
         
         return self.create_user(
             cedula=cedula,

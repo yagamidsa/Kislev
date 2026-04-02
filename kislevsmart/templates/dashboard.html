@@ -76,6 +76,15 @@
                     </svg>
                     Zonas Comunes
                 </a>
+                <a href="#"
+                    class="flex items-center px-6 py-4 text-white hover:bg-white/10 transition-all duration-300 menu-item"
+                    data-slide="finanzas">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+                    </svg>
+                    Finanzas
+                </a>
                 <a href="{% url 'accounts:visor_admin' %}"
                     class="flex items-center px-6 py-4 text-white hover:bg-white/10 transition-all duration-300">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 24 24" fill="none"
@@ -508,6 +517,72 @@
             </div>
         </div>
     </div>
+    <!-- Slide Finanzas -->
+    {{ recaudo_por_mes|json_script:"recaudo-data" }}
+    <div id="slide-finanzas" class="slide-content hidden">
+        <div class="p-6">
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-bold text-white mb-2">Finanzas</h1>
+                <p class="subtle-text text-lg">Resumen financiero — {{ conjunto.nombre }}</p>
+            </div>
+
+            <!-- KPIs -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div class="glass-effect rounded-xl p-4 text-center">
+                    <p class="text-white/60 text-xs mb-1">Recaudo este mes</p>
+                    <p class="text-2xl font-bold text-white">${{ recaudo_mes|floatformat:"0" }}</p>
+                </div>
+                <div class="glass-effect rounded-xl p-4 text-center">
+                    <p class="text-white/60 text-xs mb-1">Propietarios al día</p>
+                    <p class="text-2xl font-bold text-white">{{ pct_al_dia }}%</p>
+                    <p class="text-white/50 text-xs">{{ propietarios_al_dia }} / {{ total_propietarios_fin }}</p>
+                </div>
+                <div class="glass-effect rounded-xl p-4 text-center">
+                    <p class="text-white/60 text-xs mb-1">Cuotas vigentes</p>
+                    <p class="text-2xl font-bold text-green-400">{{ cuotas_vigentes }}</p>
+                </div>
+                <div class="glass-effect rounded-xl p-4 text-center">
+                    <p class="text-white/60 text-xs mb-1">Cuotas vencidas</p>
+                    <p class="text-2xl font-bold text-red-400">{{ cuotas_vencidas }}</p>
+                </div>
+            </div>
+
+            <!-- Gráfico recaudo por mes -->
+            <div class="glass-effect rounded-xl p-6 mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-white font-semibold">Recaudo mensual {{ año_seleccionado }}</h3>
+                    <a href="{% url 'finanzas_admin' %}" class="text-xs text-white/70 hover:text-white underline">
+                        Gestionar cuotas →
+                    </a>
+                </div>
+                <canvas id="recaudoChart" height="100"></canvas>
+            </div>
+
+            <!-- Botón descargar PDF -->
+            <div class="flex justify-end mb-4">
+                <a href="{% url 'reporte_pdf_mensual' %}"
+                   class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white"
+                   style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2);">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Descargar PDF mensual
+                </a>
+            </div>
+
+            <!-- Barra progreso propietarios al día -->
+            <div class="glass-effect rounded-xl p-6">
+                <h3 class="text-white font-semibold mb-3">Cumplimiento de pago</h3>
+                <div class="flex items-center gap-4">
+                    <div class="flex-1 bg-white/10 rounded-full h-4 overflow-hidden">
+                        <div class="h-4 rounded-full" style="width:{{ pct_al_dia }}%; background: linear-gradient(to right,#e100ff,#7f00ff);"></div>
+                    </div>
+                    <span class="text-white font-bold text-sm">{{ pct_al_dia }}%</span>
+                </div>
+                <p class="text-white/50 text-xs mt-2">{{ propietarios_al_dia }} de {{ total_propietarios_fin }} propietarios tienen cuotas vigentes al día</p>
+            </div>
+        </div>
+    </div>
     </main>
     </div>
     </div>
@@ -926,6 +1001,35 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Cargar datos iniciales
     updateChart('week');
+
+    // Gráfico de recaudo financiero
+    const recaudoData = JSON.parse(document.getElementById('recaudo-data').textContent);
+    const mesesLabels = JSON.parse(document.getElementById('meses-data').textContent);
+    const recaudoCtx = document.getElementById('recaudoChart');
+    if (recaudoCtx) {
+        new Chart(recaudoCtx, {
+            type: 'bar',
+            data: {
+                labels: mesesLabels,
+                datasets: [{
+                    label: 'Recaudo COP',
+                    data: recaudoData,
+                    backgroundColor: 'rgba(225,0,255,0.5)',
+                    borderColor: '#7f00ff',
+                    borderWidth: 2,
+                    borderRadius: 6,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { ticks: { color: 'rgba(255,255,255,0.7)' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                    y: { ticks: { color: 'rgba(255,255,255,0.7)', callback: v => '$' + v.toLocaleString('es-CO') }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                }
+            }
+        });
+    }
 });
 
     </script>

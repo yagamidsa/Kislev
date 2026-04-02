@@ -25,7 +25,13 @@ class Visitante(models.Model):
     token = models.CharField(max_length=100, unique=True)
     fecha_generacion = models.DateTimeField(default=timezone.now)
     ultima_lectura = models.DateTimeField(null=True, blank=True)
-    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
+    conjunto = models.ForeignKey(
+        'accounts.ConjuntoResidencial',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        db_column='usuario_id'
+    )
     nombre_log = models.CharField(max_length=100)
     numper = models.CharField(max_length=20)
 
@@ -72,10 +78,16 @@ class VisitanteVehicular(models.Model):
     token = models.CharField(max_length=100, unique=True)
     fecha_generacion = models.DateTimeField(default=timezone.now)
     ultima_lectura = models.DateTimeField(null=True, blank=True)
-    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
+    conjunto = models.ForeignKey(
+        'accounts.ConjuntoResidencial',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        db_column='usuario_id'
+    )
     nombre_log = models.CharField(max_length=100)
     numper = models.CharField(max_length=20)
-    
+
     # Campos adicionales para vehículos
     tipo_vehiculo = models.CharField(max_length=20, choices=[
         ('carro', 'Carro'),
@@ -246,14 +258,12 @@ class ParqueaderoCarro(models.Model):
             parqueadero = cls.objects.get(conjunto_id=conjunto_id)
             # Contar vehículos actualmente en el parqueadero
             ocupados = VisitanteVehicular.objects.filter(
-                usuario_id=conjunto_id,  # Cambiado para usar usuario_id directamente
+                conjunto_id=conjunto_id,
                 tipo_vehiculo='carro',
                 ultima_lectura__isnull=False,
                 segunda_lectura__isnull=True
             ).count()
-            
-            # Registrar actividad para debugging
-            print(f"Conjunto {conjunto_id}: Total={parqueadero.total_espacios}, Ocupados={ocupados}")
+            logger.debug(f"Disponibilidad carros conjunto {conjunto_id}: Total={parqueadero.total_espacios}, Ocupados={ocupados}")
             
             return {
                 'total': parqueadero.total_espacios,
@@ -283,22 +293,129 @@ class ParqueaderoMoto(models.Model):
             parqueadero = cls.objects.get(conjunto_id=conjunto_id)
             # Contar motos actualmente en el parqueadero
             ocupados = VisitanteVehicular.objects.filter(
-                usuario_id=conjunto_id,  # Cambiado para usar usuario_id directamente
+                conjunto_id=conjunto_id,
                 tipo_vehiculo='moto',
                 ultima_lectura__isnull=False,
                 segunda_lectura__isnull=True
             ).count()
-            
-            # Registrar actividad para debugging
-            print(f"Conjunto {conjunto_id}: Total={parqueadero.total_espacios}, Ocupados={ocupados}")
-            
+            logger.debug(f"Disponibilidad motos conjunto {conjunto_id}: Total={parqueadero.total_espacios}, Ocupados={ocupados}")
+
             return {
                 'total': parqueadero.total_espacios,
                 'ocupados': ocupados,
                 'disponibles': parqueadero.total_espacios - ocupados
             }
         except cls.DoesNotExist:
-            return {'total': 0, 'ocupados': 0, 'disponibles': 0}        
+            return {'total': 0, 'ocupados': 0, 'disponibles': 0}
+
+
+class Cuota(models.Model):
+    PERIODICIDAD = [
+        ('mensual', 'Mensual'),
+        ('trimestral', 'Trimestral'),
+        ('anual', 'Anual'),
+        ('extraordinaria', 'Extraordinaria'),
+    ]
+
+    conjunto = models.ForeignKey(
+        'accounts.ConjuntoResidencial',
+        on_delete=models.CASCADE,
+        related_name='cuotas'
+    )
+    nombre = models.CharField(max_length=100, help_text="Ej: Administración mayo 2026")
+    descripcion = models.TextField(blank=True)
+    monto = models.PositiveIntegerField(help_text="Valor en COP")
+    periodicidad = models.CharField(max_length=20, choices=PERIODICIDAD, default='mensual')
+    fecha_vencimiento = models.DateField()
+    creado_en = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'cuotas'
+        ordering = ['-fecha_vencimiento']
+        verbose_name = 'Cuota'
+        verbose_name_plural = 'Cuotas'
+
+    def __str__(self):
+        return f"{self.nombre} — ${self.monto:,.0f}"
+
+    @property
+    def vencida(self):
+        return timezone.now().date() > self.fecha_vencimiento
+
+
+class Pago(models.Model):
+    METODOS = [
+        ('efectivo', 'Efectivo'),
+        ('transferencia', 'Transferencia'),
+        ('tarjeta', 'Tarjeta'),
+        ('otro', 'Otro'),
+    ]
+
+    cuota = models.ForeignKey(Cuota, on_delete=models.CASCADE, related_name='pagos')
+    propietario = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='pagos'
+    )
+    monto_pagado = models.PositiveIntegerField(help_text="Valor en COP")
+    metodo = models.CharField(max_length=20, choices=METODOS, default='transferencia')
+    comprobante = models.CharField(max_length=100, blank=True,
+                                   help_text="Número de comprobante o referencia")
+    fecha_pago = models.DateField()
+    registrado_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name='pagos_registrados'
+    )
+    creado_en = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'pagos'
+        ordering = ['-fecha_pago']
+        verbose_name = 'Pago'
+        verbose_name_plural = 'Pagos'
+        unique_together = [['cuota', 'propietario']]
+
+    def __str__(self):
+        return f"{self.propietario.nombre} — {self.cuota.nombre}"
+
+
+class AuditLog(models.Model):
+    ACCIONES = [
+        ('visitante_creado', 'Visitante creado'),
+        ('qr_validado', 'QR validado'),
+        ('qr_invalido', 'QR inválido'),
+        ('reserva_creada', 'Reserva creada'),
+        ('reserva_fallida', 'Reserva fallida'),
+        ('login', 'Inicio de sesión'),
+        ('logout', 'Cierre de sesión'),
+    ]
+
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name='audit_logs'
+    )
+    conjunto = models.ForeignKey(
+        'accounts.ConjuntoResidencial',
+        on_delete=models.SET_NULL,
+        null=True, blank=True
+    )
+    accion = models.CharField(max_length=50, choices=ACCIONES)
+    detalle = models.TextField(blank=True)
+    ip = models.GenericIPAddressField(null=True, blank=True)
+    fecha = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'audit_log'
+        ordering = ['-fecha']
+        verbose_name = 'Registro de auditoría'
+        verbose_name_plural = 'Registros de auditoría'
+
+    def __str__(self):
+        return f"{self.fecha:%d/%m/%Y %H:%M} — {self.get_accion_display()}"
 
 
 

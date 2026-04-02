@@ -63,6 +63,16 @@ urlpatterns = [
     path('sala/<int:sala_id>/reservar/', views.reservar_sala, name='reservar_sala'),
     path('api/sala/<int:sala_id>/horarios/<str:fecha>/', views.get_horarios_disponibles, name='api_horarios_disponibles'),
     path('visitor-stats/', views.get_visitor_stats, name='visitor-stats'),
+    path('mis-visitantes/', views.historial_visitantes, name='historial_visitantes'),
+
+    # Reporte PDF
+    path('reporte-mensual/', views.reporte_pdf_mensual, name='reporte_pdf_mensual'),
+
+    # Módulo financiero
+    path('finanzas/', views.finanzas_admin, name='finanzas_admin'),
+    path('finanzas/cuota/crear/', views.crear_cuota, name='crear_cuota'),
+    path('finanzas/cuota/<int:cuota_id>/pago/', views.registrar_pago, name='registrar_pago'),
+    path('mi-estado-cuenta/', views.estado_cuenta, name='estado_cuenta'),
 ]
 
 # Configuración de archivos estáticos y media para desarrollo

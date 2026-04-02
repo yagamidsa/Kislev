@@ -1,7 +1,13 @@
-echo "# Python bytecode
+# Python bytecode
 __pycache__/
 *.py[cod]
 *$py.class
+
+# Entorno virtual
+entornoV/
+env/
+venv/
+ENV/
 
 # Django
 *.log
@@ -15,9 +21,6 @@ staticfiles/
 # Configuraciones locales y secretos
 .env
 .env.*
-env/
-venv/
-ENV/
 
 # Archivos generados
 .coverage
@@ -38,4 +41,4 @@ coverage.xml
 Thumbs.db
 
 # Frontend
-node_modules/" > .gitignore
+node_modules/

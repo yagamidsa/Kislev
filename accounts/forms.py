@@ -21,9 +21,15 @@ class LoginForm(forms.Form):
         widget=forms.PasswordInput(attrs={
             'class': 'form-control',
             'placeholder': 'Ingrese su contraseña',
-            'autocomplete': 'current-password',  # Mejor manejo de autocompletado de contraseñas
-            'aria-label': 'Contraseña'  # Mejora accesibilidad
+            'autocomplete': 'current-password',
+            'aria-label': 'Contraseña'
         })
+    )
+
+    remember_me = forms.BooleanField(
+        label='Recuérdame',
+        required=False,
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
     )
 
     def clean_cedula(self):

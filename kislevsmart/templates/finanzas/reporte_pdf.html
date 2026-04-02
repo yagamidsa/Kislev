@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte {{ mes_nombre }} {{ año }}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; font-size: 12px; color: #222; }
+
+        .header { background: linear-gradient(135deg, #7f00ff, #e100ff); color: #fff; padding: 24px 32px; margin-bottom: 24px; }
+        .header h1 { font-size: 22px; font-weight: 700; }
+        .header p { font-size: 12px; opacity: .8; margin-top: 4px; }
+
+        .seccion { margin: 0 32px 24px; }
+        .seccion h2 { font-size: 14px; font-weight: 700; color: #7f00ff; border-bottom: 2px solid #e100ff; padding-bottom: 4px; margin-bottom: 12px; }
+
+        .kpis { display: flex; gap: 16px; margin: 0 32px 24px; }
+        .kpi { flex: 1; border: 1px solid #e8e8e8; border-radius: 8px; padding: 14px; text-align: center; }
+        .kpi .valor { font-size: 22px; font-weight: 700; color: #7f00ff; }
+        .kpi .etiqueta { font-size: 10px; color: #888; margin-top: 4px; }
+
+        table { width: 100%; border-collapse: collapse; font-size: 11px; }
+        thead th { background: #f5f0ff; color: #7f00ff; padding: 8px 10px; text-align: left; font-weight: 700; }
+        tbody td { padding: 7px 10px; border-bottom: 1px solid #f0f0f0; }
+        tbody tr:nth-child(even) { background: #fafafa; }
+
+        .badge-si { color: #2e7d32; font-weight: 600; }
+        .badge-no { color: #c62828; font-weight: 600; }
+
+        .footer { margin: 32px; padding-top: 12px; border-top: 1px solid #e0e0e0; font-size: 10px; color: #aaa; display: flex; justify-content: space-between; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>{{ conjunto.nombre }}</h1>
+    <p>Reporte mensual — {{ mes_nombre }} {{ año }}</p>
+    <p>Generado: {{ fecha_generacion|date:"d/m/Y H:i" }}</p>
+</div>
+
+<!-- KPIs -->
+<div class="kpis">
+    <div class="kpi">
+        <div class="valor">{{ total_visitantes }}</div>
+        <div class="etiqueta">Visitantes generados</div>
+    </div>
+    <div class="kpi">
+        <div class="valor">{{ ingresos_qr }}</div>
+        <div class="etiqueta">Ingresos registrados</div>
+    </div>
+    <div class="kpi">
+        <div class="valor">{{ total_reservas }}</div>
+        <div class="etiqueta">Reservas de salas</div>
+    </div>
+    <div class="kpi">
+        <div class="valor">${{ recaudo|floatformat:"0" }}</div>
+        <div class="etiqueta">Recaudo COP</div>
+    </div>
+</div>
+
+<!-- Visitantes -->
+<div class="seccion">
+    <h2>Visitantes del mes</h2>
+    {% if visitantes_mes %}
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Cédula</th>
+                <th>Motivo</th>
+                <th>Apartamento</th>
+                <th>Fecha</th>
+                <th>Ingresó</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for v in visitantes_mes %}
+            <tr>
+                <td>{{ v.nombre }}</td>
+                <td>{{ v.cedula }}</td>
+                <td>{{ v.motivo }}</td>
+                <td>{{ v.numper }}</td>
+                <td>{{ v.fecha_generacion|date:"d/m/Y" }}</td>
+                <td>{% if v.ultima_lectura %}<span class="badge-si">Sí</span>{% else %}<span class="badge-no">No</span>{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color:#999;">Sin visitantes este mes.</p>
+    {% endif %}
+</div>
+
+<!-- Reservas -->
+<div class="seccion">
+    <h2>Reservas de salas</h2>
+    {% if reservas_mes %}
+    <table>
+        <thead>
+            <tr><th>Sala</th><th>Fecha</th><th>Hora inicio</th><th>Hora fin</th></tr>
+        </thead>
+        <tbody>
+            {% for r in reservas_mes %}
+            <tr>
+                <td>{{ r.sala.nombre }}</td>
+                <td>{{ r.fecha|date:"d/m/Y" }}</td>
+                <td>{{ r.hora_inicio|time:"H:i" }}</td>
+                <td>{{ r.hora_fin|time:"H:i" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color:#999;">Sin reservas este mes.</p>
+    {% endif %}
+</div>
+
+<!-- Pagos -->
+<div class="seccion">
+    <h2>Pagos registrados</h2>
+    {% if pagos_mes %}
+    <table>
+        <thead>
+            <tr><th>Propietario</th><th>Cuota</th><th>Monto</th><th>Método</th><th>Fecha</th><th>Comprobante</th></tr>
+        </thead>
+        <tbody>
+            {% for p in pagos_mes %}
+            <tr>
+                <td>{{ p.propietario.nombre }}</td>
+                <td>{{ p.cuota.nombre }}</td>
+                <td>${{ p.monto_pagado|floatformat:"0" }}</td>
+                <td>{{ p.get_metodo_display }}</td>
+                <td>{{ p.fecha_pago|date:"d/m/Y" }}</td>
+                <td>{{ p.comprobante|default:"—" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color:#999;">Sin pagos registrados este mes.</p>
+    {% endif %}
+</div>
+
+<div class="footer">
+    <span>{{ conjunto.nombre }} — Kislev</span>
+    <span>Reporte {{ mes_nombre }} {{ año }}</span>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,229 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finanzas — Administrador</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/restricciones.css' %}">
+    <link rel="stylesheet" href="{% static 'css/visor_admin.css' %}">
+    <style>
+        .fin-wrap { max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+        .top-bar h1 { font-size: 1.5rem; font-weight: 700; }
+
+        .btn-primary {
+            padding: 10px 20px; background: linear-gradient(to right,#e100ff,#7f00ff);
+            color:#fff; border:none; border-radius:10px; cursor:pointer; font-weight:600; font-size:0.9rem;
+        }
+        .btn-sm {
+            padding: 6px 14px; border-radius: 8px; border: none; cursor: pointer;
+            font-size: 0.8rem; font-weight: 600;
+        }
+        .btn-success { background:#e8f5e9; color:#2e7d32; }
+        .btn-warning { background:#fff8e1; color:#f57f17; }
+
+        /* Modal */
+        .modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:1000; align-items:center; justify-content:center; }
+        .modal-bg.active { display:flex; }
+        .modal { background:#fff; border-radius:16px; padding:2rem; width:100%; max-width:480px; box-shadow:0 20px 60px rgba(0,0,0,0.15); }
+        .modal h2 { font-size:1.1rem; font-weight:700; margin-bottom:1.5rem; }
+        .modal label { display:block; font-size:0.82rem; font-weight:600; margin-bottom:4px; color:#555; }
+        .modal input, .modal select, .modal textarea {
+            width:100%; padding:10px 12px; border:1px solid #e8e8e8; border-radius:8px;
+            font-size:0.9rem; margin-bottom:1rem; box-sizing:border-box;
+        }
+        .modal input:focus, .modal select:focus { outline:none; border-color:#ae00ff; }
+        .modal-actions { display:flex; gap:.75rem; justify-content:flex-end; margin-top:.5rem; }
+        .btn-cancel { padding:10px 18px; background:#f0f0f0; color:#555; border:none; border-radius:8px; cursor:pointer; }
+
+        /* Cuotas */
+        .cuota-card { background:#fff; border-radius:14px; box-shadow:0 4px 16px rgba(0,0,0,0.06); margin-bottom:1.5rem; overflow:hidden; }
+        .cuota-header { padding:1rem 1.25rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.5rem; }
+        .cuota-title { font-weight:700; font-size:1rem; }
+        .cuota-meta { font-size:0.8rem; color:#888; }
+        .cuota-monto { font-size:1.1rem; font-weight:700; color:#7f00ff; }
+        .badge-vencida { background:#fdecea; color:#c62828; padding:3px 10px; border-radius:20px; font-size:0.75rem; font-weight:600; }
+        .badge-vigente { background:#e8f5e9; color:#2e7d32; padding:3px 10px; border-radius:20px; font-size:0.75rem; font-weight:600; }
+
+        .pagos-table { width:100%; border-collapse:collapse; }
+        .pagos-table th { background:#faf5ff; padding:10px 14px; font-size:0.78rem; font-weight:600; color:#7f00ff; text-align:left; }
+        .pagos-table td { padding:10px 14px; font-size:0.85rem; border-top:1px solid #f0f0f0; }
+        .pagado { color:#2e7d32; font-weight:600; }
+        .pendiente { color:#c62828; font-weight:600; }
+
+        .back-link { display:inline-flex; align-items:center; gap:6px; color:#7f00ff; font-weight:600; font-size:0.85rem; text-decoration:none; margin-bottom:1.5rem; }
+    </style>
+</head>
+<body>
+<div class="fin-wrap">
+
+    <a href="{% url 'accounts:visor_admin' %}" class="back-link"><i class="fas fa-arrow-left"></i> Volver al panel</a>
+
+    <div class="top-bar">
+        <h1><i class="fas fa-file-invoice-dollar"></i> Gestión Financiera</h1>
+        <button class="btn-primary" onclick="document.getElementById('modal-cuota').classList.add('active')">
+            <i class="fas fa-plus"></i> Nueva cuota
+        </button>
+    </div>
+
+    {% if messages %}
+    {% for m in messages %}
+    <div style="padding:12px 16px;border-radius:10px;margin-bottom:1rem;background:{% if 'error' in m.tags %}#fdecea{% else %}#e8f5e9{% endif %};">
+        {{ m }}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    {% for cuota in cuotas %}
+    <div class="cuota-card">
+        <div class="cuota-header">
+            <div>
+                <div class="cuota-title">{{ cuota.nombre }}</div>
+                <div class="cuota-meta">Vence: {{ cuota.fecha_vencimiento|date:"d/m/Y" }} &middot; {{ cuota.get_periodicidad_display }}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:.75rem;">
+                <span class="cuota-monto">${{ cuota.monto|floatformat:"0" }}</span>
+                {% if cuota.vencida %}<span class="badge-vencida">Vencida</span>{% else %}<span class="badge-vigente">Vigente</span>{% endif %}
+            </div>
+        </div>
+
+        <table class="pagos-table">
+            <thead>
+                <tr>
+                    <th>Propietario</th>
+                    <th>Apto</th>
+                    <th>Estado</th>
+                    <th>Monto pagado</th>
+                    <th>Fecha pago</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for prop in propietarios %}
+                {% with pago=cuota.pagos.all %}
+                {% for p in pago %}{% if p.propietario_id == prop.id %}
+                <tr>
+                    <td>{{ prop.nombre }}</td>
+                    <td>{{ prop.get_ubicacion_completa }}</td>
+                    <td class="pagado"><i class="fas fa-check-circle"></i> Pagado</td>
+                    <td>${{ p.monto_pagado|floatformat:"0" }}</td>
+                    <td>{{ p.fecha_pago|date:"d/m/Y" }}</td>
+                    <td><button class="btn-sm btn-warning" onclick="abrirPago({{ cuota.id }}, {{ prop.id }}, '{{ prop.nombre|escapejs }}')">Editar</button></td>
+                </tr>
+                {% endif %}{% endfor %}
+                {% endwith %}
+                {% endfor %}
+                {% for prop in propietarios %}
+                {% with tiene_pago=False %}
+                {% for p in cuota.pagos.all %}{% if p.propietario_id == prop.id %}{% with tiene_pago=True %}{% endwith %}{% endif %}{% endfor %}
+                {% endwith %}
+                {% endfor %}
+            </tbody>
+        </table>
+        <div style="padding:.75rem 1.25rem; background:#fafafa; font-size:0.8rem; color:#888;">
+            {{ cuota.pagos.count }} / {{ total_propietarios }} propietarios han pagado
+        </div>
+    </div>
+    {% empty %}
+    <div style="text-align:center;padding:4rem;color:#999;">
+        <i class="fas fa-file-invoice" style="font-size:3rem;color:#ddd;"></i>
+        <p style="margin-top:1rem;">No hay cuotas creadas aún.</p>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Modal nueva cuota -->
+<div class="modal-bg" id="modal-cuota">
+    <div class="modal">
+        <h2><i class="fas fa-plus-circle"></i> Nueva Cuota</h2>
+        <form id="form-cuota">
+            {% csrf_token %}
+            <label>Nombre</label>
+            <input type="text" name="nombre" placeholder="Ej: Administración junio 2026" required>
+            <label>Monto (COP)</label>
+            <input type="number" name="monto" placeholder="Ej: 250000" min="1000" required>
+            <label>Periodicidad</label>
+            <select name="periodicidad">
+                <option value="mensual">Mensual</option>
+                <option value="trimestral">Trimestral</option>
+                <option value="anual">Anual</option>
+                <option value="extraordinaria">Extraordinaria</option>
+            </select>
+            <label>Fecha de vencimiento</label>
+            <input type="date" name="fecha_vencimiento" required>
+            <label>Descripción (opcional)</label>
+            <textarea name="descripcion" rows="2"></textarea>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="document.getElementById('modal-cuota').classList.remove('active')">Cancelar</button>
+                <button type="submit" class="btn-primary">Crear cuota</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal registrar pago -->
+<div class="modal-bg" id="modal-pago">
+    <div class="modal">
+        <h2 id="modal-pago-titulo"><i class="fas fa-money-bill-wave"></i> Registrar Pago</h2>
+        <form id="form-pago">
+            {% csrf_token %}
+            <input type="hidden" id="pago-cuota-id" name="cuota_id">
+            <input type="hidden" id="pago-prop-id" name="propietario_id">
+            <label>Monto pagado (COP)</label>
+            <input type="number" name="monto_pagado" id="pago-monto" min="0" required>
+            <label>Método de pago</label>
+            <select name="metodo">
+                <option value="transferencia">Transferencia</option>
+                <option value="efectivo">Efectivo</option>
+                <option value="tarjeta">Tarjeta</option>
+                <option value="otro">Otro</option>
+            </select>
+            <label>Comprobante / Referencia</label>
+            <input type="text" name="comprobante" placeholder="Número de comprobante">
+            <label>Fecha de pago</label>
+            <input type="date" name="fecha_pago" required>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="document.getElementById('modal-pago').classList.remove('active')">Cancelar</button>
+                <button type="submit" class="btn-primary">Guardar pago</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function abrirPago(cuotaId, propId, propNombre) {
+    document.getElementById('pago-cuota-id').value = cuotaId;
+    document.getElementById('pago-prop-id').value = propId;
+    document.getElementById('modal-pago-titulo').innerHTML = '<i class="fas fa-money-bill-wave"></i> Pago — ' + propNombre;
+    document.getElementById('modal-pago').classList.add('active');
+}
+
+document.getElementById('form-cuota').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const data = new FormData(this);
+    fetch("{% url 'crear_cuota' %}", { method: 'POST', body: data })
+        .then(r => r.json()).then(d => {
+            if (d.status === 'ok') location.reload();
+            else alert(d.message);
+        });
+});
+
+document.getElementById('form-pago').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const cuotaId = document.getElementById('pago-cuota-id').value;
+    const data = new FormData(this);
+    fetch(`/finanzas/cuota/${cuotaId}/pago/`, { method: 'POST', body: data })
+        .then(r => r.json()).then(d => {
+            if (d.status === 'ok') location.reload();
+            else alert(d.message);
+        });
+});
+
+document.querySelectorAll('.modal-bg').forEach(m => {
+    m.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('active'); });
+});
+</script>
+</body>
+</html>

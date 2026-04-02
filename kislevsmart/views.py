@@ -13,7 +13,7 @@ from django.utils import timezone
 from cryptography.fernet import InvalidToken
 from django.core.mail import EmailMessage
 from .models import Visitante
-from .utils import role_required
+from .utils import role_required, log_audit
 from django.db.models import Count, F
 from django.db.models.functions import ExtractMonth, ExtractWeekDay, ExtractHour
 import json
@@ -27,11 +27,11 @@ from django.views.generic import ListView
 from .models import Sala, Reserva
 import logging
 from django.contrib import messages
-from django.db import DatabaseError, transaction
+from django.db import DatabaseError, transaction, models
 from django.http import HttpResponse
 from django.views.decorators.vary import vary_on_headers
 from .models import VisitanteVehicular
-from .models import ParqueaderoCarro, ParqueaderoMoto
+from .models import ParqueaderoCarro, ParqueaderoMoto, Cuota, Pago
 
 
 
@@ -258,25 +258,28 @@ def reservar_sala(request, sala_id):
             if hora_fin_obj <= hora_inicio_obj:
                 raise ValueError('La hora de finalización debe ser posterior a la hora de inicio')
 
-            # Verificar disponibilidad
-            reservas_existentes = Reserva.objects.filter(
-                sala=sala,
-                fecha=fecha_obj,
-                hora_inicio__lt=hora_fin_obj,
-                hora_fin__gt=hora_inicio_obj
-            )
+            # Verificar disponibilidad y crear con bloqueo para evitar race conditions
+            with transaction.atomic():
+                existe = Reserva.objects.select_for_update().filter(
+                    sala=sala,
+                    fecha=fecha_obj,
+                    hora_inicio__lt=hora_fin_obj,
+                    hora_fin__gt=hora_inicio_obj,
+                    estado=True,
+                ).exists()
 
-            if reservas_existentes.exists():
-                raise ValueError('Ya existe una reserva para este horario')
+                if existe:
+                    raise ValueError('Ya existe una reserva para este horario')
 
-            # Crear la reserva
-            Reserva.objects.create(
-                sala=sala,
-                fecha=fecha_obj,
-                hora_inicio=hora_inicio_obj,
-                hora_fin=hora_fin_obj,
-                notas=notas
-            )
+                Reserva.objects.create(
+                    sala=sala,
+                    fecha=fecha_obj,
+                    hora_inicio=hora_inicio_obj,
+                    hora_fin=hora_fin_obj,
+                    notas=notas
+                )
+                log_audit(request, 'reserva_creada',
+                          f"Sala: {sala.nombre} | Fecha: {fecha_obj} | {hora_inicio_obj}-{hora_fin_obj}")
 
             messages.success(request, 'Reserva creada exitosamente')
             
@@ -449,10 +452,11 @@ def procesar_envio(request):
             }
             
             # Versión en texto plano del mensaje - SANITIZADA
+            mensaje_plain = mensaje_usuario.replace('<br>', '\n')
             plain_content = sanitize_text(f"""
 Estimado/a {nombre_limpio},
 
-{mensaje_usuario.replace('<br>', '\n')}
+{mensaje_plain}
 
 Atentamente,
 Administración Conjunto Residencial
@@ -687,10 +691,11 @@ def enviar_notificacion_individual(request):
                     """
                 
                 # Versión texto plano
+                mensaje_plain_ind = mensaje.replace('<br>', '\n')
                 plain_content = f"""
                 Estimado/a {propietario.nombre},
-                
-                {mensaje.replace('<br>', '\n')}
+
+                {mensaje_plain_ind}
                 
                 Esta notificación es exclusiva para su apartamento: {propietario.get_ubicacion_completa()}
                 
@@ -974,6 +979,46 @@ def notificaciones(request):
 
 
 @login_required
+@role_required(['propietario'])
+def historial_visitantes(request):
+    """Vista para que el propietario vea los visitantes de su apartamento."""
+    apartamento = request.user.apartamento
+    conjunto_id = request.user.conjunto_id
+
+    # Filtros opcionales
+    fecha_desde = request.GET.get('desde')
+    fecha_hasta = request.GET.get('hasta')
+
+    visitantes = Visitante.objects.filter(
+        conjunto_id=conjunto_id,
+        numper=apartamento,
+    ).order_by('-fecha_generacion')
+
+    if fecha_desde:
+        try:
+            visitantes = visitantes.filter(
+                fecha_generacion__date__gte=datetime.strptime(fecha_desde, '%Y-%m-%d').date()
+            )
+        except ValueError:
+            pass
+
+    if fecha_hasta:
+        try:
+            visitantes = visitantes.filter(
+                fecha_generacion__date__lte=datetime.strptime(fecha_hasta, '%Y-%m-%d').date()
+            )
+        except ValueError:
+            pass
+
+    return render(request, 'historial_visitantes.html', {
+        'visitantes': visitantes,
+        'apartamento': apartamento,
+        'fecha_desde': fecha_desde or '',
+        'fecha_hasta': fecha_hasta or '',
+    })
+
+
+@login_required
 @role_required(['porteria', 'administrador'])
 def parking(request):
     return render(request, 'parking/inicio_parqueo.html')
@@ -984,9 +1029,7 @@ def zonas_comunes(request):
     return render(request, 'zonas_comunes.html')
 
 
-# Clave secreta para encriptar/desencriptar
-SECRET_KEY = b'Gm1U9cXOTymMtcdHpD8eFwXVVHF7o4F6AoIVJGAJ5K4='
-cipher = Fernet(SECRET_KEY)
+cipher = Fernet(settings.FERNET_KEY.encode())
 
 
 @login_required
@@ -1011,12 +1054,12 @@ def bienvenida(request):
                     'celular': sanitize_text(request.POST.get('celular', '')),
                     'cedula': sanitize_text(request.POST.get('cedula', '')),
                     'motivo': sanitize_text(request.POST.get('motivo', '')),
-                    'email_creador': sanitize_text(request.POST.get('email_creador', '')),
+                    'email_creador': request.user.email,
                     'nombre_log': sanitize_text(request.POST.get('nombre_log', '')),
                     'token': uuid_token,
                     'fecha_generacion': timezone.now(),
                     'numper': sanitize_text(request.POST.get('numper', '')),
-                    'usuario_id': request.user.conjunto_id,
+                    'conjunto_id': request.user.conjunto_id,
                     'ultima_lectura': None
                 }
                 
@@ -1032,6 +1075,8 @@ def bienvenida(request):
                     visitante = Visitante.objects.create(**datos_visitante)
                 
                 logger.info(f"Visitante {tipo_visitante} creado - ID: {visitante.id}")
+                log_audit(request, 'visitante_creado',
+                          f"Tipo: {tipo_visitante} | Nombre: {visitante.nombre} | ID: {visitante.id}")
 
                 # Generar y enviar QR
                 raw_token = f"Kislev_{tipo_visitante}_{uuid_token}"  # Incluimos el tipo en el token
@@ -1041,20 +1086,16 @@ def bienvenida(request):
                 base_url = f"https://{request.get_host()}" if 'railway.app' in request.get_host() else request.build_absolute_uri('/').rstrip('/')
                 enlace_qr = f"{base_url}{reverse('validar_qr', args=[encrypted_token])}"
 
-                # Generar QR y enviarlo por email
-                qr_dir = os.path.join(settings.MEDIA_ROOT, 'qrs')
-                os.makedirs(qr_dir, exist_ok=True)
-                qr_file_path = os.path.join(qr_dir, f'qr_{visitante.id}.png')
-                
-                # Generar QR
+                # Generar QR en memoria (sin tocar disco)
                 qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_L)
                 qr.add_data(enlace_qr)
                 qr.make(fit=True)
                 qr_img = qr.make_image(fill_color="black", back_color="white")
-                qr_img.save(qr_file_path)
+                qr_buffer = BytesIO()
+                qr_img.save(qr_buffer, format='PNG')
+                qr_buffer.seek(0)
 
-                logger.info("🔥🔥🔥 QR GENERADO - INICIANDO EMAIL 🔥🔥🔥")
-                logger.info(f"Archivo QR guardado en: {qr_file_path}")
+                logger.info(f"QR generado en memoria para visitante {visitante.id}")
 
                 # Preparar mensaje de email según tipo de visitante
                 mensaje_adicional = ""
@@ -1067,7 +1108,7 @@ def bienvenida(request):
                 logger.info(f"Visitante ID: {visitante.id}")
                 logger.info(f"Visitante nombre: {visitante.nombre}")
                 logger.info(f"Visitante email: {visitante.email}")
-                logger.info(f"QR file path: {qr_file_path}")
+                logger.info("QR generado en memoria (BytesIO)")
                 logger.info(f"DEFAULT_FROM_EMAIL: {settings.DEFAULT_FROM_EMAIL}")
                 logger.info(f"EMAIL_BACKEND: {settings.EMAIL_BACKEND}")
                 logger.info("=" * 50)
@@ -1096,9 +1137,8 @@ def bienvenida(request):
                         [email_limpio]
                     )
                     
-                    logger.info("Adjuntando archivo QR...")
-                    email_message.attach_file(qr_file_path)
-                    
+                    email_message.attach(f'qr_{visitante.id}.png', qr_buffer.getvalue(), 'image/png')
+
                     logger.info("Enviando email...")
                     result = email_message.send()
                     logger.info(f"Email enviado. Resultado: {result}")
@@ -1114,13 +1154,6 @@ def bienvenida(request):
                     logger.error("!" * 50)
 
                 logger.info("Proceso de envío de email completado")
-                logger.info("=" * 50)
-
-                # Limpiar archivo temporal
-                try:
-                    os.remove(qr_file_path)
-                except:
-                    pass
 
                 email_b64 = base64.urlsafe_b64encode(visitante.email.encode()).decode()
                 redirect_url = reverse('valqr', kwargs={'email_b64': email_b64})
@@ -1226,7 +1259,9 @@ def validar_qr(request, encrypted_token):
                 
                 visitante.nombre_log = request.user.email
                 visitante.save()
-                
+                log_audit(request, 'qr_validado',
+                          f"Vehicular | {mensaje} | Visitante: {visitante.nombre} | Placa: {visitante.placa}")
+
             # Lógica para visitantes peatonales
             else:
                 # Verificación especial para Safari/iOS
@@ -1248,6 +1283,8 @@ def validar_qr(request, encrypted_token):
                 visitante.nombre_log = request.user.email
                 visitante.save()
                 mensaje = "Visita registrada"
+                log_audit(request, 'qr_validado',
+                          f"Peatonal | Visitante: {visitante.nombre} | Cédula: {visitante.cedula}")
 
             # Enviar notificación por email
             try:
@@ -1386,12 +1423,12 @@ def dashboard(request):
         # Consultas base - Filtradas por conjunto_id
         visitantes_dia = Visitante.objects.filter(
             fecha_generacion__range=(fecha_inicio, fecha_fin),
-            usuario_id=conjunto_id
+            conjunto_id=conjunto_id
         )
 
         # Análisis de visitantes recurrentes - Filtrado por conjunto
         correos_recurrentes = Visitante.objects.filter(
-            usuario_id=conjunto_id
+            conjunto_id=conjunto_id
         ).values('email').annotate(
             total=Count('email')
         ).filter(total__gt=1).values_list('email', flat=True)
@@ -1412,7 +1449,7 @@ def dashboard(request):
             ultima_lectura=None,
             fecha_generacion__lt=fecha_inicio,
             fecha_generacion__gte=tiempo_limite,
-            usuario_id=conjunto_id
+            conjunto_id=conjunto_id
         ).count()
 
         # Total de pendientes
@@ -1425,7 +1462,7 @@ def dashboard(request):
         visitantes_por_mes = Visitante.objects.filter(
             ultima_lectura__isnull=False,
             ultima_lectura__range=(año_inicio, año_fin),
-            usuario_id=conjunto_id
+            conjunto_id=conjunto_id
         ).annotate(
             mes=ExtractMonth('ultima_lectura')
         ).values('mes').annotate(
@@ -1446,6 +1483,38 @@ def dashboard(request):
         # Total de visitantes por día
         total_visitantes_dia = visitantes_dia.count()
         
+        # ── Datos financieros ──────────────────────────────────────────
+        mes_actual = fecha_actual.month
+        cuotas_qs = Cuota.objects.filter(conjunto_id=conjunto_id)
+        pagos_mes = Pago.objects.filter(
+            cuota__conjunto_id=conjunto_id,
+            fecha_pago__year=año_seleccionado,
+            fecha_pago__month=mes_actual,
+        )
+        total_propietarios_fin = Usuario.objects.filter(
+            conjunto_id=conjunto_id, user_type='propietario', is_active=True
+        ).count()
+        cuotas_vigentes = cuotas_qs.filter(fecha_vencimiento__gte=fecha_actual)
+        cuotas_vencidas = cuotas_qs.filter(fecha_vencimiento__lt=fecha_actual)
+        recaudo_mes = pagos_mes.aggregate(
+            total=models.Sum('monto_pagado')
+        )['total'] or 0
+        propietarios_al_dia = Pago.objects.filter(
+            cuota__conjunto_id=conjunto_id,
+            cuota__fecha_vencimiento__gte=fecha_actual,
+        ).values('propietario_id').distinct().count()
+        pct_al_dia = round(
+            (propietarios_al_dia / total_propietarios_fin * 100)
+            if total_propietarios_fin else 0
+        )
+        # Recaudo por mes del año seleccionado
+        recaudo_por_mes = [0] * 12
+        for p in Pago.objects.filter(
+            cuota__conjunto_id=conjunto_id,
+            fecha_pago__year=año_seleccionado,
+        ).values('fecha_pago__month').annotate(total=models.Sum('monto_pagado')):
+            recaudo_por_mes[p['fecha_pago__month'] - 1] = p['total'] or 0
+
         # Contexto para el template
         context = {
             'fecha_seleccionada': fecha_inicio.date(),
@@ -1463,7 +1532,15 @@ def dashboard(request):
             'visitantes_por_motivo': visitantes_por_motivo,
             'total_visitantes_dia': total_visitantes_dia,
             'conjunto': request.user.conjunto,
-            'conjunto_id': conjunto_id
+            'conjunto_id': conjunto_id,
+            # Financiero
+            'recaudo_mes': recaudo_mes,
+            'cuotas_vigentes': cuotas_vigentes.count(),
+            'cuotas_vencidas': cuotas_vencidas.count(),
+            'propietarios_al_dia': propietarios_al_dia,
+            'total_propietarios_fin': total_propietarios_fin,
+            'pct_al_dia': pct_al_dia,
+            'recaudo_por_mes': recaudo_por_mes,
         }
         
         return render(request, 'dashboard.html', context)
@@ -1490,7 +1567,7 @@ def get_visitor_stats(request):
     
     # Consulta base filtrada por conjunto
     base_query = Visitante.objects.filter(
-        usuario_id=conjunto_id
+        conjunto_id=conjunto_id
     ).exclude(ultima_lectura__isnull=True)
     
     if filter_type == 'week':
@@ -1706,11 +1783,11 @@ def disponibilidad_carros(request):
     
     # Obtener vehículos activos
     vehiculos_activos = VisitanteVehicular.objects.filter(
-        usuario_id=conjunto_id,  # Cambiado para usar usuario_id directamente
+        conjunto_id=conjunto_id,
         tipo_vehiculo='carro',
         ultima_lectura__isnull=False,
         segunda_lectura__isnull=True
-    ).order_by('-ultima_lectura')
+    ).select_related('conjunto').order_by('-ultima_lectura')
     
     context = {
         'disponibilidad': disponibilidad,
@@ -1736,11 +1813,11 @@ def disponibilidad_motos(request):
     
     # Obtener vehículos activos
     vehiculos_activos = VisitanteVehicular.objects.filter(
-        usuario_id=conjunto_id,  # Cambiado para usar usuario_id directamente
+        conjunto_id=conjunto_id,
         tipo_vehiculo='moto',
         ultima_lectura__isnull=False,
         segunda_lectura__isnull=True
-    ).order_by('-ultima_lectura')
+    ).select_related('conjunto').order_by('-ultima_lectura')
     
     context = {
         'disponibilidad': disponibilidad,
@@ -1757,10 +1834,10 @@ def historial_vehiculos(request, tipo_vehiculo):
     
     # Obtener todos los movimientos del tipo de vehículo especificado
     movimientos = VisitanteVehicular.objects.filter(
-        usuario__conjunto_id=conjunto_id,
+        conjunto_id=conjunto_id,
         tipo_vehiculo=tipo_vehiculo,
         ultima_lectura__isnull=False
-    ).select_related('usuario').order_by('-ultima_lectura')
+    ).select_related('conjunto').order_by('-ultima_lectura')
     
     context = {
         'movimientos': movimientos,
@@ -1827,3 +1904,173 @@ def get_apartamentos(request, torre_id):
             'status': 'error',
             'message': 'Error al cargar los apartamentos'
         }, status=500)
+
+
+# ─── REPORTE PDF ──────────────────────────────────────────────────────────────
+
+@login_required
+@role_required(['administrador'])
+def reporte_pdf_mensual(request):
+    """Genera un PDF con el resumen mensual del conjunto."""
+    from weasyprint import HTML as WeasyHTML
+    import calendar
+
+    conjunto_id = request.user.conjunto_id
+    mes = int(request.GET.get('mes', timezone.now().month))
+    año = int(request.GET.get('año', timezone.now().year))
+    mes_nombre = calendar.month_name[mes].capitalize()
+
+    fecha_actual = timezone.now().date()
+    primer_dia = fecha_actual.replace(day=1, month=mes, year=año)
+    ultimo_dia = fecha_actual.replace(
+        day=calendar.monthrange(año, mes)[1], month=mes, year=año
+    )
+
+    visitantes_mes = Visitante.objects.filter(
+        conjunto_id=conjunto_id,
+        fecha_generacion__date__gte=primer_dia,
+        fecha_generacion__date__lte=ultimo_dia,
+    )
+    reservas_mes = Reserva.objects.filter(
+        fecha__gte=primer_dia, fecha__lte=ultimo_dia
+    ).select_related('sala')
+    pagos_mes = Pago.objects.filter(
+        cuota__conjunto_id=conjunto_id,
+        fecha_pago__gte=primer_dia,
+        fecha_pago__lte=ultimo_dia,
+    ).select_related('propietario', 'cuota')
+    recaudo = pagos_mes.aggregate(total=models.Sum('monto_pagado'))['total'] or 0
+
+    html_str = render_to_string('finanzas/reporte_pdf.html', {
+        'conjunto': request.user.conjunto,
+        'mes_nombre': mes_nombre,
+        'año': año,
+        'fecha_generacion': timezone.now(),
+        'visitantes_mes': visitantes_mes,
+        'total_visitantes': visitantes_mes.count(),
+        'ingresos_qr': visitantes_mes.exclude(ultima_lectura=None).count(),
+        'reservas_mes': reservas_mes,
+        'total_reservas': reservas_mes.count(),
+        'pagos_mes': pagos_mes,
+        'recaudo': recaudo,
+    })
+
+    pdf_file = WeasyHTML(string=html_str, base_url=request.build_absolute_uri('/')).write_pdf()
+    response = HttpResponse(pdf_file, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="reporte_{mes_nombre}_{año}.pdf"'
+    return response
+
+
+# ─── MÓDULO FINANCIERO ────────────────────────────────────────────────────────
+
+@login_required
+@role_required(['administrador'])
+def finanzas_admin(request):
+    """Panel financiero del administrador: listado de cuotas y estado de pagos."""
+    conjunto_id = request.user.conjunto_id
+    cuotas = Cuota.objects.filter(conjunto_id=conjunto_id).prefetch_related('pagos__propietario')
+    propietarios = Usuario.objects.filter(
+        conjunto_id=conjunto_id, user_type='propietario', is_active=True
+    ).select_related('torre')
+
+    return render(request, 'finanzas/admin_cuotas.html', {
+        'cuotas': cuotas,
+        'propietarios': propietarios,
+        'total_propietarios': propietarios.count(),
+    })
+
+
+@login_required
+@role_required(['administrador'])
+@require_POST
+def crear_cuota(request):
+    """Crea una nueva cuota para el conjunto."""
+    try:
+        nombre = sanitize_text(request.POST.get('nombre', ''))
+        descripcion = sanitize_text(request.POST.get('descripcion', ''))
+        monto = int(request.POST.get('monto', 0))
+        periodicidad = request.POST.get('periodicidad', 'mensual')
+        fecha_vencimiento = request.POST.get('fecha_vencimiento')
+
+        if not nombre or monto <= 0 or not fecha_vencimiento:
+            return JsonResponse({'status': 'error', 'message': 'Datos incompletos.'}, status=400)
+
+        from datetime import date as date_type
+        fecha = datetime.strptime(fecha_vencimiento, '%Y-%m-%d').date()
+
+        cuota = Cuota.objects.create(
+            conjunto_id=request.user.conjunto_id,
+            nombre=nombre,
+            descripcion=descripcion,
+            monto=monto,
+            periodicidad=periodicidad,
+            fecha_vencimiento=fecha,
+        )
+        log_audit(request, 'reserva_creada', f"Cuota creada: {cuota.nombre} ${cuota.monto:,.0f}")
+        return JsonResponse({'status': 'ok', 'message': 'Cuota creada exitosamente.', 'id': cuota.id})
+    except (ValueError, TypeError) as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+
+@login_required
+@role_required(['administrador'])
+@require_POST
+def registrar_pago(request, cuota_id):
+    """Registra el pago de un propietario para una cuota."""
+    cuota = get_object_or_404(Cuota, id=cuota_id, conjunto_id=request.user.conjunto_id)
+    try:
+        propietario_id = int(request.POST.get('propietario_id'))
+        monto_pagado = int(request.POST.get('monto_pagado', cuota.monto))
+        metodo = request.POST.get('metodo', 'transferencia')
+        comprobante = sanitize_text(request.POST.get('comprobante', ''))
+        fecha_pago = datetime.strptime(request.POST.get('fecha_pago'), '%Y-%m-%d').date()
+
+        propietario = get_object_or_404(
+            Usuario, id=propietario_id, conjunto_id=request.user.conjunto_id, user_type='propietario'
+        )
+
+        pago, created = Pago.objects.update_or_create(
+            cuota=cuota,
+            propietario=propietario,
+            defaults={
+                'monto_pagado': monto_pagado,
+                'metodo': metodo,
+                'comprobante': comprobante,
+                'fecha_pago': fecha_pago,
+                'registrado_por': request.user,
+            }
+        )
+        accion = 'Pago registrado' if created else 'Pago actualizado'
+        log_audit(request, 'reserva_creada',
+                  f"{accion}: {propietario.nombre} — {cuota.nombre} ${monto_pagado:,.0f}")
+        return JsonResponse({'status': 'ok', 'message': f'{accion} exitosamente.'})
+    except (ValueError, TypeError) as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+
+@login_required
+@role_required(['propietario'])
+def estado_cuenta(request):
+    """Vista del propietario: su estado de cuenta por cuota."""
+    conjunto_id = request.user.conjunto_id
+    cuotas = Cuota.objects.filter(conjunto_id=conjunto_id).prefetch_related(
+        models.Prefetch('pagos', queryset=Pago.objects.filter(propietario=request.user))
+    )
+
+    resumen = []
+    total_deuda = 0
+    for cuota in cuotas:
+        pago = cuota.pagos.first()
+        pendiente = cuota.monto - (pago.monto_pagado if pago else 0)
+        if pendiente > 0:
+            total_deuda += pendiente
+        resumen.append({
+            'cuota': cuota,
+            'pago': pago,
+            'pendiente': max(pendiente, 0),
+        })
+
+    return render(request, 'finanzas/estado_cuenta.html', {
+        'resumen': resumen,
+        'total_deuda': total_deuda,
+    })
