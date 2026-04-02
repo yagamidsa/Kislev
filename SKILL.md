@@ -228,6 +228,145 @@ Unificar en un solo modelo con campo `tipo` ('peatonal', 'vehicular') y campos v
 
 ---
 
+## Guía de migración a nuevo PC
+
+> Código en GitHub: https://github.com/yagamidsa/Kislev.git  
+> Ya tienes: PostgreSQL instalado, VS Code instalado.
+
+### Paso 1 — Instalar Python 3.7.9
+
+**IMPORTANTE:** El proyecto requiere exactamente Python 3.7 por ahora (T2 pendiente).
+
+1. Descargar desde: https://www.python.org/downloads/release/python-379/
+   - Windows 64-bit: `python-3.7.9-amd64.exe`
+   - Marcar **"Add Python to PATH"** durante la instalación
+
+2. Verificar en terminal:
+   ```
+   python --version   → Python 3.7.9
+   ```
+
+### Paso 2 — Instalar WeasyPrint (requiere GTK)
+
+WeasyPrint necesita librerías GTK que no vienen con pip. En Windows:
+
+1. Descargar e instalar GTK3 runtime desde:
+   https://github.com/tschoonj/GTK-for-Windows-Runtime-Environment-Installer/releases
+   - Buscar el archivo `gtk3-runtime-*.exe` más reciente
+   - Instalar con todas las opciones por defecto
+
+2. Reiniciar el PC después de instalar GTK.
+
+### Paso 3 — Clonar el proyecto
+
+```bash
+git clone https://github.com/yagamidsa/Kislev.git
+cd Kislev
+```
+
+### Paso 4 — Crear entorno virtual e instalar dependencias
+
+```bash
+python -m venv entornoV
+entornoV\Scripts\activate
+
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+> Si hay errores de SSL con pip (VPN, certificados):
+> ```
+> pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org -r requirements.txt
+> ```
+
+### Paso 5 — Configurar base de datos PostgreSQL local
+
+1. Abrir pgAdmin o psql y crear la base de datos:
+   ```sql
+   CREATE DATABASE kislev;
+   CREATE USER kislev_user WITH PASSWORD 'tu_password';
+   GRANT ALL PRIVILEGES ON DATABASE kislev TO kislev_user;
+   ```
+
+2. Anotar la cadena de conexión:
+   ```
+   postgres://kislev_user:tu_password@localhost:5432/kislev
+   ```
+
+### Paso 6 — Crear archivo .env
+
+Crear el archivo `.env` en la raíz del proyecto (ver `.env.example`):
+
+```env
+DJANGO_SECRET_KEY=genera-uno-con-el-comando-de-abajo
+DEBUG=True
+FERNET_KEY=genera-uno-con-el-comando-de-abajo
+DATABASE_URL=postgres://kislev_user:tu_password@localhost:5432/kislev
+
+# AWS SES — puedes dejarlo vacío en local si no envías emails reales
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_SES_REGION=us-east-1
+DEFAULT_FROM_EMAIL=noreply@kislev.net.co
+```
+
+**Generar SECRET_KEY:**
+```bash
+python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+```
+
+**Generar FERNET_KEY:**
+```bash
+python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+```
+
+### Paso 7 — Aplicar migraciones y verificar
+
+```bash
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py runserver
+```
+
+Abrir http://127.0.0.1:8000 — debería cargar el login.
+
+### Paso 8 — Verificar tests
+
+```bash
+python -m pytest tests/ -v
+```
+
+Debe dar **20/20 pasando**.
+
+### Paso 9 — Instalar Claude Code
+
+```bash
+npm install -g @anthropic/claude-code
+```
+
+Si no tienes Node.js: https://nodejs.org (versión LTS)
+
+Luego en la carpeta del proyecto:
+```bash
+claude
+```
+
+---
+
+### Checklist rápido
+
+- [ ] Python 3.7.9 instalado y en PATH
+- [ ] GTK3 runtime instalado (para WeasyPrint)
+- [ ] PostgreSQL corriendo con base de datos `kislev` creada
+- [ ] Repositorio clonado
+- [ ] `entornoV` creado y `requirements.txt` instalado
+- [ ] `.env` creado con SECRET_KEY, FERNET_KEY y DATABASE_URL
+- [ ] `python manage.py migrate` sin errores
+- [ ] `python -m pytest tests/` → 20/20
+- [ ] `python manage.py runserver` → abre en el browser
+
+---
+
 ## Orden de ejecución recomendado — próximas sesiones
 
 ```
