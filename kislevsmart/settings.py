@@ -312,7 +312,8 @@ LOGGING = {
 
 # Rate limiting: desactivado en desarrollo local (requiere Redis compartido)
 RATELIMIT_ENABLED = not DEBUG
-if DEBUG:
+# Silenciar checks de ratelimit cuando no hay Redis (LocMemCache no es shared cache)
+if DEBUG or not os.environ.get('REDIS_URL'):
     SILENCED_SYSTEM_CHECKS = ['django_ratelimit.E003', 'django_ratelimit.W001']
 
 # Configuración de CSRF
