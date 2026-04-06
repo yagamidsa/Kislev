@@ -1098,7 +1098,10 @@ def zonas_comunes(request):
     return render(request, 'zonas_comunes.html')
 
 
-cipher = Fernet(settings.FERNET_KEY.encode())
+_fernet_key = os.environ.get('FERNET_KEY') or getattr(settings, 'FERNET_KEY', None)
+if not _fernet_key:
+    raise RuntimeError("FERNET_KEY no está configurado en las variables de entorno")
+cipher = Fernet(_fernet_key.encode())
 
 
 @login_required
