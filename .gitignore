@@ -21,6 +21,7 @@ staticfiles/
 # Configuraciones locales y secretos
 .env
 .env.*
+credenciales.txt
 
 # Archivos generados
 .coverage

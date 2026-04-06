@@ -1,5 +1,5 @@
 body {
-  background-image: linear-gradient(45deg, #6015ab, #ffaf19);
+  background: linear-gradient(135deg, #09000f 0%, #140020 45%, #07080f 100%); background-attachment: fixed;
   background-size: cover;
   background-repeat: no-repeat;
   min-height: 120vh;
@@ -102,10 +102,10 @@ body {
     position: relative;
     box-sizing: border-box;
     cursor: pointer;
-    background: #7f00ff;
-    background: -webkit-linear-gradient(to right, #e100ff, #7f00ff);
-    background: linear-gradient(to right, #e100ff, #7f00ff);
-    box-shadow: 0px 5px 15px 5px #840fe440;
+    background: #7c3aed;
+    background: -webkit-linear-gradient(to right, #db2777, #7c3aed);
+    background: linear-gradient(to right, #db2777, #7c3aed);
+    box-shadow: 0px 5px 15px 5px #7c3aed40;
     color: #fff;
     animation: move 3s ease-in-out infinite;
     position: relative;
@@ -145,7 +145,7 @@ body {
   }
   .dropdown,
   .dropholder {
-    background: linear-gradient(#da4df8, #9b0db9);
+    background: linear-gradient(#a78bfa, #7c3aed);
   }
   .dropdown {
     margin-left: 20px;
@@ -155,11 +155,11 @@ body {
     border-radius: 0 10px 10px 0;
     cursor: pointer;
     height: 58px;
-    border-left: 1px solid #da4df8;
+    border-left: 1px solid #a78bfa;
     position: relative;
   }
   .dropdown:hover {
-    background: linear-gradient(#da4df8, #b11cd0);
+    background: linear-gradient(#a78bfa, #6d28d9);
   }
   .dropdown:after {
     font-size: 18px;
@@ -176,14 +176,15 @@ body {
     width: 228px;
     cursor: pointer;
     opacity: 0;
+    pointer-events: none;
     transform-style: preserve-3d;
     transform: rotatey(180deg) rotateX(5deg) translatey(100px);
     backface-visibility: hidden;
     cursor: pointer;
-    background: #8000ff57;
-    background: -webkit-linear-gradient(to right, #e100ff4f, #8000ff44);
-    background: linear-gradient(to right, #e100ff36, #8000ff49);
-    box-shadow: 0px 5px 15px 5px #840fe440;
+    background: #7c3aed57;
+    background: -webkit-linear-gradient(to right, #db27774f, #7c3aed44);
+    background: linear-gradient(to right, #db277736, #7c3aed49);
+    box-shadow: 0px 5px 15px 5px #7c3aed40;
     color: #fff;
     border: 2px solid #5c055750;
     backdrop-filter: blur(0.4em);
@@ -195,18 +196,23 @@ body {
 
   .menu a {
     display: block;
+    padding: 15px 10px;
+    color: #e8f8ff;
+    text-decoration: none;
+    transition: all 0.3s;
+  }
+  .menu a:hover {
+    background: #381c3875;
+    padding-left: 20px;
   }
 
   .menu li {
     display: block;
-    padding: 15px 10px;
+    padding: 0;
     border-bottom: 1px dotted #fff;
-    color: #e8f8ff;
-    transition: all 0.3s;
   }
   .menu li:hover {
-    background: #381c3875;
-    padding-left: 20px;
+    background: none;
   }
   .menu li:last-child {
     border: none;
@@ -214,6 +220,7 @@ body {
   
   .showMenu {
     opacity: 1;
+    pointer-events: auto;
     transform: rotateX(0deg) translatey(0px);
   }
   li > i {

@@ -34,7 +34,7 @@ a {
 }
 
 a:hover {
-  color: #7f00ff;
+  color: #7c3aed;
 }
 
 label {
@@ -92,7 +92,7 @@ label {
   left: 0;
   right: 0;
   width: 40px;
-  background: linear-gradient(to right, #e100ff, #7f00ff);
+  background: linear-gradient(to right, #db2777, #7c3aed);
   transition: width 0.25s ease;
 }
 
@@ -163,7 +163,7 @@ label {
 }
 
 .remember-me-label input[type="checkbox"]:checked {
-  background: linear-gradient(135deg, #e100ff, #7f00ff);
+  background: linear-gradient(135deg, #db2777, #7c3aed);
   border-color: transparent;
 }
 
@@ -198,7 +198,7 @@ label {
 
 .btn-signin {
   cursor: pointer;
-  background: linear-gradient(to right, #e100ff, #7f00ff);
+  background: linear-gradient(to right, #db2777, #7c3aed);
   color: #fff;
   box-shadow: 0px 5px 15px 5px rgba(132, 15, 228, 0.25);
 }

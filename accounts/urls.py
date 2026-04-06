@@ -2,12 +2,14 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from .views import (
-    LoginView, 
-    LogoutView, 
+    LoginView,
+    LogoutView,
     CustomPasswordResetView,
-    PasswordResetDoneView, 
-    VisorAdminView, 
-    ControlPorteriaView, 
+    CustomPasswordChangeView,
+    RecuperarPasswordView,
+    PasswordResetDoneView,
+    VisorAdminView,
+    ControlPorteriaView,
     ControlpropietarioView,
     SelectConjuntoView
 )
@@ -20,7 +22,13 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout'),
     path('select-conjunto/', SelectConjuntoView.as_view(), name='select_conjunto'),
     
-    # Rutas de recuperación de contraseña
+    # Cambiar contraseña (usuario logueado)
+    path('cambiar-password/', CustomPasswordChangeView.as_view(), name='cambiar_password'),
+
+    # Olvidé mi contraseña (por cédula, sin email)
+    path('recuperar-password/', RecuperarPasswordView.as_view(), name='recuperar_password'),
+
+    # Rutas de recuperación de contraseña por email (legacy)
     path('password_reset/', CustomPasswordResetView.as_view(
         template_name='accounts/reset_password.html',
         email_template_name='accounts/password_reset_email.html',

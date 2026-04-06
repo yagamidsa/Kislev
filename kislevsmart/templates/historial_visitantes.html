@@ -4,112 +4,401 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Visitantes</title>
+    <title>Mis Visitantes — Kislev</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="{% static 'css/restricciones.css' %}">
-    <link rel="stylesheet" href="{% static 'css/visor_admin.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        .historial-container { max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
-        .page-header { margin-bottom: 2rem; }
-        .page-header h1 { font-size: 1.6rem; font-weight: 700; color: #151515; }
-        .page-header p { color: #666; font-size: 0.9rem; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        .filtros { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
-        .filtros input[type="date"] {
-            padding: 10px 14px; border: 1px solid #e8e8e8; border-radius: 10px;
-            font-size: 0.9rem; outline: none; transition: border-color 0.2s;
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #09000f 0%, #140020 50%, #07080f 100%);
+            min-height: 100vh;
+            color: #e2e8f0;
         }
-        .filtros input[type="date"]:focus { border-color: #ae00ff; }
+
+        /* ── TOP BAR ── */
+        .topbar {
+            background: rgba(255,255,255,0.04);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #a78bfa;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 8px 16px;
+            border-radius: 10px;
+            border: 1px solid rgba(167,139,250,0.3);
+            transition: all 0.2s;
+        }
+        .back-btn:hover { background: rgba(167,139,250,0.1); color: #c4b5fd; }
+        .topbar-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #db2777, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* ── CONTAINER ── */
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 32px 20px;
+        }
+
+        /* ── HEADER ── */
+        .page-header {
+            margin-bottom: 28px;
+        }
+        .page-header h1 {
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin-bottom: 4px;
+        }
+        .page-header h1 i { color: #a78bfa; margin-right: 10px; }
+        .page-header p { color: #94a3b8; font-size: 0.9rem; }
+
+        /* ── FILTROS ── */
+        .filtros-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        .filtros-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+        .filtros-row label { font-size: 0.78rem; color: #94a3b8; font-weight: 500; margin-bottom: 4px; display: block; }
+        .filtros-row input[type="date"] {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 10px;
+            padding: 10px 14px;
+            color: #e2e8f0;
+            font-size: 0.88rem;
+            font-family: 'Poppins', sans-serif;
+            outline: none;
+            transition: border-color 0.2s;
+            color-scheme: dark;
+        }
+        .filtros-row input[type="date"]:focus { border-color: #7c3aed; }
         .btn-filtrar {
-            padding: 10px 20px; background: linear-gradient(to right, #e100ff, #7f00ff);
-            color: #fff; border: none; border-radius: 10px; cursor: pointer;
-            font-size: 0.9rem; font-weight: 600;
+            padding: 10px 22px;
+            background: linear-gradient(135deg, #db2777, #7c3aed);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.88rem;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            transition: opacity 0.2s;
         }
+        .btn-filtrar:hover { opacity: 0.85; }
         .btn-limpiar {
-            padding: 10px 20px; background: #f0f0f0; color: #555;
-            border: none; border-radius: 10px; cursor: pointer; font-size: 0.9rem;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.06);
+            color: #94a3b8;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.88rem;
+            font-family: 'Poppins', sans-serif;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            transition: background 0.2s;
+        }
+        .btn-limpiar:hover { background: rgba(255,255,255,0.1); color: #e2e8f0; }
+
+        /* ── GRID CARDS ── */
+        .visitantes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 18px;
         }
 
-        .tabla-wrapper { overflow-x: auto; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
-        table { width: 100%; border-collapse: collapse; background: #fff; }
-        thead { background: linear-gradient(to right, #e100ff, #7f00ff); color: #fff; }
-        thead th { padding: 14px 16px; font-size: 0.82rem; font-weight: 600; text-align: left; }
-        tbody tr { border-bottom: 1px solid #f0f0f0; transition: background 0.15s; }
-        tbody tr:hover { background: #faf5ff; }
-        tbody td { padding: 12px 16px; font-size: 0.88rem; color: #333; vertical-align: middle; }
+        .visitor-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 18px;
+            padding: 22px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .visitor-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #db2777, #7c3aed);
+        }
+        .visitor-card.ingreso::before { background: linear-gradient(90deg, #10b981, #059669); }
+        .visitor-card:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(127,0,255,0.2); }
 
+        .card-avatar {
+            width: 48px; height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #db2777, #7c3aed);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 14px;
+            flex-shrink: 0;
+        }
+        .card-avatar.ingreso { background: linear-gradient(135deg, #10b981, #059669); }
+
+        .card-header-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+        .card-info { flex: 1; min-width: 0; }
+        .card-nombre {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .card-cedula { font-size: 0.78rem; color: #94a3b8; margin-top: 2px; }
+
+        .card-details {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+        .detail-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.82rem;
+            color: #94a3b8;
+        }
+        .detail-row i { color: #7c3aed; width: 14px; flex-shrink: 0; }
+        .detail-value { color: #cbd5e1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* ── BADGES ── */
         .badge {
-            display: inline-block; padding: 3px 10px; border-radius: 20px;
-            font-size: 0.75rem; font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
         }
-        .badge-ingreso { background: #e8f5e9; color: #2e7d32; }
-        .badge-pendiente { background: #fff8e1; color: #f57f17; }
+        .badge-ingreso { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+        .badge-pendiente { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
 
-        .empty-state { text-align: center; padding: 4rem 1rem; color: #999; }
-        .empty-state i { font-size: 3rem; margin-bottom: 1rem; color: #ddd; }
+        .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255,255,255,0.07);
+        }
 
-        .back-link { display: inline-flex; align-items: center; gap: 6px; color: #7f00ff;
-            font-weight: 600; font-size: 0.85rem; text-decoration: none; margin-bottom: 1.5rem; }
-        .back-link:hover { color: #e100ff; }
+        /* ── BOTÓN REGENERAR QR ── */
+        .btn-qr {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #7c3aed, #db2777);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            text-decoration: none;
+            transition: opacity 0.2s, transform 0.15s;
+        }
+        .btn-qr:hover { opacity: 0.85; transform: scale(1.03); }
+        .btn-qr i { font-size: 0.8rem; }
+
+        /* ── EMPTY STATE ── */
+        .empty-state {
+            text-align: center;
+            padding: 5rem 2rem;
+            color: #475569;
+        }
+        .empty-state i { font-size: 3.5rem; margin-bottom: 1.2rem; display: block; }
+        .empty-state p { font-size: 1rem; }
+
+        /* ── CONFIRM MODAL ── */
+        .modal-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: #1a0a28;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 420px;
+            width: 90%;
+            text-align: center;
+        }
+        .modal-box .modal-icon {
+            width: 64px; height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #7c3aed, #db2777);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.6rem; color: #fff;
+            margin: 0 auto 20px;
+        }
+        .modal-box h3 { font-size: 1.1rem; font-weight: 700; color: #f1f5f9; margin-bottom: 8px; }
+        .modal-box p { font-size: 0.88rem; color: #94a3b8; margin-bottom: 24px; }
+        .modal-box .visitor-preview {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 24px;
+            text-align: left;
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            line-height: 1.7;
+        }
+        .modal-box .visitor-preview strong { color: #e2e8f0; }
+        .modal-actions { display: flex; gap: 12px; justify-content: center; }
+        .btn-cancel-modal {
+            padding: 10px 22px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: #94a3b8;
+            font-size: 0.88rem;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+        }
+        .btn-confirm-modal {
+            padding: 10px 22px;
+            background: linear-gradient(135deg, #7c3aed, #db2777);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 0.88rem;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
-<div class="historial-container">
 
-    <a href="{% url 'accounts:visor_propietario' %}" class="back-link">
-        <i class="fas fa-arrow-left"></i> Volver al panel
+<div class="topbar">
+    <a href="{% url 'accounts:visor_propietario' %}" class="back-btn">
+        <i class="fas fa-arrow-left"></i> Volver
     </a>
+    <span class="topbar-title">Mis Visitantes</span>
+</div>
+
+<div class="container">
 
     <div class="page-header">
-        <h1><i class="fas fa-history"></i> Mis Visitantes</h1>
+        <h1><i class="fas fa-users"></i> Mis Visitantes</h1>
         <p>Apartamento {{ apartamento }} &mdash; {{ visitantes.count }} registro{% if visitantes.count != 1 %}s{% endif %}</p>
     </div>
 
-    <form method="GET" class="filtros">
-        <input type="date" name="desde" value="{{ fecha_desde }}" placeholder="Desde">
-        <input type="date" name="hasta" value="{{ fecha_hasta }}" placeholder="Hasta">
-        <button type="submit" class="btn-filtrar"><i class="fas fa-filter"></i> Filtrar</button>
-        {% if fecha_desde or fecha_hasta %}
-        <a href="{% url 'historial_visitantes' %}" class="btn-limpiar">Limpiar</a>
-        {% endif %}
-    </form>
+    <div class="filtros-card">
+        <form method="GET" class="filtros-row">
+            <div>
+                <label>Desde</label>
+                <input type="date" name="desde" value="{{ fecha_desde }}">
+            </div>
+            <div>
+                <label>Hasta</label>
+                <input type="date" name="hasta" value="{{ fecha_hasta }}">
+            </div>
+            <button type="submit" class="btn-filtrar"><i class="fas fa-filter"></i> Filtrar</button>
+            {% if fecha_desde or fecha_hasta %}
+            <a href="{% url 'historial_visitantes' %}" class="btn-limpiar"><i class="fas fa-times"></i> Limpiar</a>
+            {% endif %}
+        </form>
+    </div>
 
     {% if visitantes %}
-    <div class="tabla-wrapper">
-        <table>
-            <thead>
-                <tr>
-                    <th>Visitante</th>
-                    <th>Cédula</th>
-                    <th>Motivo</th>
-                    <th>Fecha generación</th>
-                    <th>Estado</th>
-                    <th>Registrado por</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for v in visitantes %}
-                <tr>
-                    <td>
-                        <strong>{{ v.nombre }}</strong><br>
-                        <small style="color:#999;">{{ v.email }}</small>
-                    </td>
-                    <td>{{ v.cedula }}</td>
-                    <td>{{ v.motivo }}</td>
-                    <td>{{ v.fecha_generacion|date:"d/m/Y H:i" }}</td>
-                    <td>
-                        {% if v.ultima_lectura %}
-                            <span class="badge badge-ingreso"><i class="fas fa-check"></i> Ingresó</span>
-                        {% else %}
-                            <span class="badge badge-pendiente"><i class="fas fa-clock"></i> Pendiente</span>
-                        {% endif %}
-                    </td>
-                    <td style="color:#666; font-size:0.82rem;">{{ v.nombre_log|default:"—" }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="visitantes-grid">
+        {% for v in visitantes %}
+        <div class="visitor-card {% if v.ultima_lectura %}ingreso{% endif %}">
+            <div class="card-header-row">
+                <div class="card-avatar {% if v.ultima_lectura %}ingreso{% endif %}">
+                    {{ v.nombre|first|upper }}
+                </div>
+                <div class="card-info">
+                    <div class="card-nombre">{{ v.nombre }}</div>
+                    <div class="card-cedula">CC {{ v.cedula }}</div>
+                </div>
+            </div>
+
+            <div class="card-details">
+                <div class="detail-row">
+                    <i class="fas fa-tag"></i>
+                    <span class="detail-value">{{ v.motivo }}</span>
+                </div>
+                <div class="detail-row">
+                    <i class="fas fa-envelope"></i>
+                    <span class="detail-value">{{ v.email }}</span>
+                </div>
+                <div class="detail-row">
+                    <i class="fas fa-phone"></i>
+                    <span class="detail-value">{{ v.celular }}</span>
+                </div>
+                <div class="detail-row">
+                    <i class="fas fa-calendar"></i>
+                    <span class="detail-value">{{ v.fecha_generacion|date:"d/m/Y H:i" }}</span>
+                </div>
+            </div>
+
+            <div class="card-footer">
+                {% if v.ultima_lectura %}
+                    <span class="badge badge-ingreso"><i class="fas fa-check-circle"></i> Ingresó</span>
+                {% else %}
+                    <span class="badge badge-pendiente"><i class="fas fa-clock"></i> Pendiente</span>
+                {% endif %}
+
+                <button class="btn-qr"
+                    onclick="abrirModal({{ v.id }}, '{{ v.nombre|escapejs }}', '{{ v.email|escapejs }}', '{{ v.motivo|escapejs }}')">
+                    <i class="fas fa-qrcode"></i> Generar QR
+                </button>
+            </div>
+        </div>
+        {% endfor %}
     </div>
+
     {% else %}
     <div class="empty-state">
         <i class="fas fa-user-slash"></i>
@@ -118,5 +407,42 @@
     {% endif %}
 
 </div>
+
+<!-- Modal confirmación -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal-box">
+        <div class="modal-icon"><i class="fas fa-qrcode"></i></div>
+        <h3>Generar nuevo QR</h3>
+        <p>Se creará un QR nuevo y se enviará al correo del visitante.</p>
+        <div class="visitor-preview" id="modalPreview"></div>
+        <div class="modal-actions">
+            <button class="btn-cancel-modal" onclick="cerrarModal()">Cancelar</button>
+            <form id="qrForm" method="POST" action="">
+                {% csrf_token %}
+                <button type="submit" class="btn-confirm-modal">
+                    <i class="fas fa-paper-plane"></i> Enviar QR
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function abrirModal(id, nombre, email, motivo) {
+    document.getElementById('qrForm').action = '/mis-visitantes/' + id + '/regenerar-qr/';
+    document.getElementById('modalPreview').innerHTML =
+        '<strong>Visitante:</strong> ' + nombre + '<br>' +
+        '<strong>Correo:</strong> ' + email + '<br>' +
+        '<strong>Motivo:</strong> ' + motivo;
+    document.getElementById('modalOverlay').classList.add('active');
+}
+function cerrarModal() {
+    document.getElementById('modalOverlay').classList.remove('active');
+}
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+    if (e.target === this) cerrarModal();
+});
+</script>
+
 </body>
 </html>

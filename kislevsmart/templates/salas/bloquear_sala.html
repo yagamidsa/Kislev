@@ -1,0 +1,137 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bloquear Sala — Mantenimiento</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',Arial,sans-serif;min-height:100vh;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%)}
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:rgba(255,255,255,0.05);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,0.1)}
+    .topbar h1{color:#fff;font-size:1.1rem;font-weight:700}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:10px;font-size:0.88rem;font-weight:600;text-decoration:none;border:none;cursor:pointer;transition:all .2s}
+    .btn-back{background:rgba(255,255,255,0.1);color:#fff}
+    .btn-back:hover{background:rgba(255,255,255,0.2)}
+    .container{max-width:700px;margin:0 auto;padding:28px 20px}
+    .card{background:rgba(255,255,255,0.07);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:26px;margin-bottom:22px}
+    .card h2{color:#fff;font-size:1rem;font-weight:700;margin-bottom:20px}
+    .card h2 i{color:#fbbf24;margin-right:8px}
+    .form-group{margin-bottom:18px}
+    label{display:block;color:rgba(255,255,255,0.75);font-size:0.85rem;font-weight:600;margin-bottom:7px}
+    label i{color:#db2777;margin-right:5px;font-size:0.8rem}
+    select,input[type=date],input[type=text]{width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:11px 14px;color:#fff;font-size:0.9rem;font-family:inherit}
+    select option{background:#1a1a2e;color:#fff}
+    select:focus,input:focus{outline:none;border-color:#fbbf24}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .btn-block{width:100%;padding:13px;background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;border:none;border-radius:12px;font-size:0.95rem;font-weight:700;cursor:pointer;transition:opacity .2s}
+    .btn-block:hover{opacity:.9}
+    .msg{border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:0.9rem}
+    .msg-success{background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);color:#4ade80}
+    .msg-error{background:rgba(255,68,68,0.15);border:1px solid rgba(255,68,68,0.3);color:#ff6b6b}
+    /* Bloqueos list */
+    .bloqueo-item{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px 18px;display:flex;align-items:center;gap:14px;margin-bottom:10px}
+    .bloqueo-icon{width:42px;height:42px;border-radius:10px;background:rgba(255,160,0,0.15);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;color:#fbbf24}
+    .bloqueo-info{flex:1;min-width:0}
+    .bloqueo-sala{color:#fff;font-weight:700;font-size:0.95rem}
+    .bloqueo-dates{color:rgba(255,255,255,0.55);font-size:0.82rem;margin-top:3px}
+    .bloqueo-motivo{color:rgba(255,255,255,0.4);font-size:0.78rem;margin-top:2px;font-style:italic}
+    .bloqueo-badge{padding:3px 10px;border-radius:20px;font-size:0.72rem;font-weight:700;flex-shrink:0}
+    .badge-activo{background:rgba(255,160,0,0.2);color:#fbbf24;border:1px solid rgba(255,160,0,0.3)}
+    .badge-futuro{background:rgba(99,102,241,0.2);color:#a5b4fc;border:1px solid rgba(99,102,241,0.3)}
+    .btn-del{background:rgba(255,50,50,0.15);border:1px solid rgba(255,50,50,0.25);color:#ff6b6b;border-radius:8px;padding:6px 12px;font-size:0.8rem;font-weight:600;cursor:pointer;transition:background .2s;flex-shrink:0}
+    .btn-del:hover{background:rgba(255,50,50,0.3)}
+    .empty{color:rgba(255,255,255,0.4);font-size:0.88rem;padding:16px 0;text-align:center}
+    .hint{color:rgba(255,255,255,0.35);font-size:0.78rem;margin-top:5px}
+    @media(max-width:600px){
+      .topbar{padding:12px 14px}
+      .topbar h1{font-size:1rem}
+      .btn{padding:8px 12px;font-size:0.8rem}
+      .container{padding:14px 10px}
+      .form-row{grid-template-columns:1fr}
+      .bloqueo-item{flex-wrap:wrap}
+    }
+  </style>
+</head>
+<body>
+<div class="topbar">
+  <h1><i class="fa fa-lock" style="color:#fbbf24"></i> Bloquear sala por mantenimiento</h1>
+  <a href="{% url 'lista_salas' %}" class="btn btn-back"><i class="fa fa-arrow-left"></i> Zonas</a>
+</div>
+
+<div class="container">
+  {% if messages %}
+    {% for m in messages %}
+    <div class="msg {% if m.tags == 'success' %}msg-success{% else %}msg-error{% endif %}">
+      <i class="fa {% if m.tags == 'success' %}fa-circle-check{% else %}fa-circle-xmark{% endif %}"></i> {{ m }}
+    </div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- FORMULARIO -->
+  <div class="card">
+    <h2><i class="fa fa-wrench"></i> Nuevo bloqueo</h2>
+    <form method="POST">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="create">
+      <div class="form-group">
+        <label><i class="fa fa-building"></i> Sala</label>
+        <select name="sala" required>
+          <option value="">— Selecciona una sala —</option>
+          {% for s in salas %}
+          <option value="{{ s.id }}">{{ s.nombre }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label><i class="fa fa-calendar-day"></i> Desde</label>
+          <input type="date" name="fecha_inicio" min="{{ hoy }}" required>
+        </div>
+        <div class="form-group">
+          <label><i class="fa fa-calendar-check"></i> Hasta</label>
+          <input type="date" name="fecha_fin" min="{{ hoy }}" required>
+          <div class="hint">Al pasar esta fecha la sala se habilita automáticamente.</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label><i class="fa fa-pen"></i> Motivo</label>
+        <input type="text" name="motivo" placeholder="Ej: Reparación de piscina, pintura, fumigación..." maxlength="255">
+      </div>
+      <button type="submit" class="btn-block"><i class="fa fa-lock"></i> Bloquear sala</button>
+    </form>
+  </div>
+
+  <!-- BLOQUEOS ACTUALES -->
+  <div class="card">
+    <h2><i class="fa fa-list"></i> Bloqueos activos y próximos</h2>
+    {% if bloqueos %}
+      {% for b in bloqueos %}
+      <div class="bloqueo-item">
+        <div class="bloqueo-icon"><i class="fa fa-wrench"></i></div>
+        <div class="bloqueo-info">
+          <div class="bloqueo-sala">{{ b.sala.nombre }}</div>
+          <div class="bloqueo-dates"><i class="fa fa-calendar"></i> {{ b.fecha_inicio|date:"d/m/Y" }} → {{ b.fecha_fin|date:"d/m/Y" }}</div>
+          {% if b.motivo %}<div class="bloqueo-motivo">{{ b.motivo }}</div>{% endif %}
+        </div>
+        {% if b.fecha_inicio <= hoy|date:"Y-m-d"|slice:":10" %}
+          <span class="bloqueo-badge badge-activo">Activo</span>
+        {% else %}
+          <span class="bloqueo-badge badge-futuro">Próximo</span>
+        {% endif %}
+        <form method="POST" onsubmit="return confirm('Eliminar este bloqueo?')">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="delete">
+          <input type="hidden" name="bloqueo_id" value="{{ b.id }}">
+          <button type="submit" class="btn-del"><i class="fa fa-trash"></i> Quitar</button>
+        </form>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty"><i class="fa fa-circle-check" style="color:#4ade80"></i> No hay bloqueos activos ni próximos.</div>
+    {% endif %}
+  </div>
+</div>
+</body>
+</html>

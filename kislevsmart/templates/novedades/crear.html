@@ -1,0 +1,122 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Publicar Novedad</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',Arial,sans-serif;min-height:100vh;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%)}
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:rgba(255,255,255,0.05);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,0.1)}
+    .topbar h1{color:#fff;font-size:1.2rem;font-weight:700}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;font-size:0.9rem;font-weight:600;text-decoration:none;border:none;cursor:pointer;transition:all .2s}
+    .btn-back{background:rgba(255,255,255,0.1);color:#fff}
+    .btn-back:hover{background:rgba(255,255,255,0.2)}
+    .container{max-width:700px;margin:0 auto;padding:32px 20px}
+    .card{background:rgba(255,255,255,0.07);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:32px}
+    .form-group{margin-bottom:22px}
+    label{display:block;color:rgba(255,255,255,0.8);font-size:0.9rem;font-weight:600;margin-bottom:8px}
+    label i{margin-right:6px;color:#db2777}
+    input[type=text], textarea{width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:12px 16px;color:#fff;font-size:0.95rem;font-family:inherit}
+    input[type=text]::placeholder, textarea::placeholder{color:rgba(255,255,255,0.35)}
+    input[type=text]:focus, textarea:focus{outline:none;border-color:#db2777;background:rgba(255,255,255,0.1)}
+    textarea{resize:vertical;min-height:160px}
+    .file-zone{border:2px dashed rgba(255,255,255,0.2);border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:border-color .2s}
+    .file-zone:hover{border-color:#db2777}
+    .file-zone p{color:rgba(255,255,255,0.5);font-size:0.88rem;margin-top:8px}
+    .file-zone i{font-size:2rem;color:#db2777;opacity:.7}
+    input[type=file]{display:none}
+    .file-list{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+    .file-tag{background:rgba(255,255,255,0.08);border-radius:8px;padding:8px 12px;color:rgba(255,255,255,0.8);font-size:0.85rem;display:flex;align-items:center;gap:8px}
+    .submit-btn{width:100%;padding:14px;background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;letter-spacing:.5px;transition:opacity .2s}
+    .submit-btn:hover{opacity:.9}
+    .msg-error{background:rgba(255,68,68,0.15);border:1px solid rgba(255,68,68,0.3);color:#ff6b6b;padding:12px 16px;border-radius:10px;margin-bottom:16px}
+    .img-preview{max-width:100%;border-radius:10px;margin-top:10px;display:none}
+    .hint{color:rgba(255,255,255,0.4);font-size:0.8rem;margin-top:5px}
+    @media(max-width:600px){
+      .topbar{padding:10px 14px;gap:8px}
+      .topbar h1{font-size:1rem}
+      .btn{padding:8px 12px;font-size:0.8rem}
+      .container{padding:14px 10px}
+      .card{padding:20px 16px}
+      .file-zone{padding:16px}
+    }
+  </style>
+</head>
+<body>
+<div class="topbar">
+  <h1><i class="fa fa-newspaper" style="color:#db2777"></i> Publicar Novedad</h1>
+  <a href="{% url 'lista_novedades' %}" class="btn btn-back"><i class="fa fa-arrow-left"></i> Cancelar</a>
+</div>
+
+<div class="container">
+  {% if messages %}
+    {% for m in messages %}
+    <div class="msg-error">{{ m }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="card">
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label><i class="fa fa-heading"></i> Titulo</label>
+        <input type="text" name="titulo" placeholder="Ej: Reunion de propietarios - Sabado 10am" required>
+      </div>
+
+      <div class="form-group">
+        <label><i class="fa fa-align-left"></i> Contenido</label>
+        <textarea name="contenido" placeholder="Escribe el contenido de la novedad... puedes incluir links y seran clickeables." required></textarea>
+        <p class="hint">Los links (https://...) seran reconocidos automaticamente.</p>
+      </div>
+
+      <div class="form-group">
+        <label><i class="fa fa-image"></i> Imagen destacada (opcional)</label>
+        <div class="file-zone" onclick="document.getElementById('img-input').click()">
+          <i class="fa fa-cloud-upload-alt"></i>
+          <p>Click para subir imagen (JPG, PNG, WEBP)</p>
+        </div>
+        <input type="file" id="img-input" name="imagen" accept="image/*" onchange="previewImg(this)">
+        <img id="img-preview" class="img-preview" alt="Preview">
+      </div>
+
+      <div class="form-group">
+        <label><i class="fa fa-paperclip"></i> Archivos adjuntos (opcional)</label>
+        <div class="file-zone" onclick="document.getElementById('files-input').click()">
+          <i class="fa fa-folder-open"></i>
+          <p>Click para adjuntar archivos (PDF, Excel, TXT, etc.) — puedes seleccionar varios</p>
+        </div>
+        <input type="file" id="files-input" name="archivos" multiple onchange="showFiles(this)">
+        <div class="file-list" id="file-list"></div>
+      </div>
+
+      <button type="submit" class="submit-btn"><i class="fa fa-paper-plane"></i> Publicar y notificar usuarios</button>
+    </form>
+  </div>
+</div>
+
+<script>
+function previewImg(input) {
+  var preview = document.getElementById('img-preview');
+  if (input.files && input.files[0]) {
+    var reader = new FileReader();
+    reader.onload = function(e) { preview.src = e.target.result; preview.style.display = 'block'; };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+function showFiles(input) {
+  var list = document.getElementById('file-list');
+  list.innerHTML = '';
+  Array.from(input.files).forEach(function(f) {
+    var tag = document.createElement('div');
+    tag.className = 'file-tag';
+    tag.innerHTML = '<i class="fa fa-file"></i> ' + f.name + ' <span style="margin-left:auto;color:rgba(255,255,255,0.4)">' + (f.size/1024).toFixed(1) + ' KB</span>';
+    list.appendChild(tag);
+  });
+}
+</script>
+</body>
+</html>

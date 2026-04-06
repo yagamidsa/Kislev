@@ -2,152 +2,117 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zonas Disponibles</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="{% static 'css/lista_salas.css' %}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zonas Comunes — {{ request.user.conjunto.nombre }}</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',Arial,sans-serif;min-height:100vh;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%)}
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:rgba(255,255,255,0.05);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,0.1)}
+    .topbar-left h1{color:#fff;font-size:1.2rem;font-weight:700}
+    .topbar-left .sub{color:rgba(255,255,255,0.5);font-size:0.8rem;margin-top:2px}
+    .topbar-right{display:flex;gap:10px;align-items:center}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:10px;font-size:0.88rem;font-weight:600;text-decoration:none;border:none;cursor:pointer;transition:all .2s}
+    .btn-back{background:rgba(255,255,255,0.1);color:#fff}
+    .btn-back:hover{background:rgba(255,255,255,0.2)}
+    .btn-danger{background:rgba(255,50,50,0.2);color:#ff6b6b;border:1px solid rgba(255,50,50,0.3)}
+    .btn-danger:hover{background:rgba(255,50,50,0.35)}
+    .container{max-width:960px;margin:0 auto;padding:28px 20px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
+    .card{background:rgba(255,255,255,0.07);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.12);border-radius:20px;overflow:hidden;transition:transform .2s,box-shadow .2s;position:relative}
+    .card:not(.bloqueada):hover{transform:translateY(-4px);box-shadow:0 20px 40px rgba(127,0,255,.25)}
+    .card.bloqueada{opacity:.75}
+    .card-img{width:100%;height:170px;object-fit:cover}
+    .card-img-placeholder{width:100%;height:170px;display:flex;align-items:center;justify-content:center;font-size:3rem;background:linear-gradient(135deg,#7c3aed33,#db277733)}
+    .card-body{padding:18px}
+    .card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px}
+    .card-title{color:#fff;font-size:1.05rem;font-weight:700}
+    .badge{padding:4px 10px;border-radius:20px;font-size:0.72rem;font-weight:700;white-space:nowrap;flex-shrink:0}
+    .badge-ok{background:rgba(34,197,94,0.2);color:#4ade80;border:1px solid rgba(34,197,94,0.3)}
+    .badge-bloqueo{background:rgba(255,160,0,0.2);color:#fbbf24;border:1px solid rgba(255,160,0,0.3)}
+    .card-desc{color:rgba(255,255,255,0.6);font-size:0.85rem;line-height:1.5;margin-bottom:12px}
+    .card-meta{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:16px}
+    .meta-item{display:flex;align-items:center;gap:5px;color:rgba(255,255,255,0.5);font-size:0.82rem}
+    .meta-item i{color:#db2777;font-size:0.8rem}
+    .bloqueo-info{background:rgba(255,160,0,0.1);border:1px solid rgba(255,160,0,0.25);border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:0.82rem;color:#fbbf24}
+    .bloqueo-info i{margin-right:6px}
+    .btn-reservar{width:100%;padding:12px;background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;border:none;border-radius:12px;font-size:0.95rem;font-weight:700;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .2s}
+    .btn-reservar:hover{opacity:.9}
+    .btn-bloqueada{width:100%;padding:12px;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.35);border:1px solid rgba(255,255,255,0.1);border-radius:12px;font-size:0.95rem;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;cursor:not-allowed}
+    .empty{text-align:center;padding:80px 20px;color:rgba(255,255,255,0.5)}
+    .empty i{font-size:4rem;display:block;margin-bottom:16px;opacity:.4}
+    @media(max-width:600px){
+      .topbar{flex-wrap:wrap;gap:8px;padding:12px 14px}
+      .topbar-left h1{font-size:1rem}
+      .btn{padding:8px 12px;font-size:0.8rem}
+      .container{padding:14px 10px}
+      .grid{grid-template-columns:1fr}
+      .card-img,.card-img-placeholder{height:140px}
+    }
+  </style>
 </head>
 <body>
+<div class="topbar">
+  <div class="topbar-left">
+    <h1><i class="fa fa-building" style="color:#db2777"></i> Zonas Comunes</h1>
+    <div class="sub">{{ request.user.conjunto.nombre }}</div>
+  </div>
+  <div class="topbar-right">
+    {% if request.user.user_type == 'administrador' %}
+    <a href="{% url 'bloquear_sala' %}" class="btn btn-danger"><i class="fa fa-lock"></i> Bloquear sala</a>
+    {% endif %}
+    <a href="{% url 'mis_reservas' %}" class="btn btn-back"><i class="fa fa-calendar-check"></i> Mis reservas</a>
+    <a href="javascript:history.back()" class="btn btn-back"><i class="fa fa-arrow-left"></i> Volver</a>
+  </div>
+</div>
 
-    <!-- Efecto de luz ambiental -->
-    <div class="light-effect"></div>
-
-
-    <div class="floating-symbols">
-        <!-- Calendario 1 -->
-        <div class="symbol">
-            <svg viewBox="0 0 24 24">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                <line x1="16" y1="2" x2="16" y2="6"/>
-                <line x1="8" y1="2" x2="8" y2="6"/>
-                <line x1="3" y1="10" x2="21" y2="10"/>
-            </svg>
+<div class="container">
+  {% if salas %}
+  <div class="grid">
+    {% for sala in salas %}
+    <div class="card {% if sala.bloqueo_activo %}bloqueada{% endif %}">
+      {% if sala.imagen %}
+        <img src="{{ sala.imagen.url }}" class="card-img" alt="{{ sala.nombre }}">
+      {% else %}
+        <div class="card-img-placeholder">
+          {% if 'gym' in sala.nombre|lower %}🏋️{% elif 'piscina' in sala.nombre|lower %}🏊{% elif 'bbq' in sala.nombre|lower or 'grill' in sala.nombre|lower %}🔥{% elif 'salon' in sala.nombre|lower or 'salón' in sala.nombre|lower %}🎉{% elif 'juego' in sala.nombre|lower %}🎮{% else %}🏢{% endif %}
         </div>
-        <!-- Reloj 1 -->
-        <div class="symbol">
-            <svg viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10"/>
-                <polyline points="12 6 12 12 16 14"/>
-            </svg>
+      {% endif %}
+      <div class="card-body">
+        <div class="card-header">
+          <div class="card-title">{{ sala.nombre }}</div>
+          {% if sala.bloqueo_activo %}
+            <span class="badge badge-bloqueo"><i class="fa fa-wrench"></i> Mantenimiento</span>
+          {% else %}
+            <span class="badge badge-ok"><i class="fa fa-circle-check"></i> Disponible</span>
+          {% endif %}
         </div>
-        <!-- Calendario 2 -->
-        <div class="symbol">
-            <svg viewBox="0 0 24 24">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                <line x1="16" y1="2" x2="16" y2="6"/>
-                <line x1="8" y1="2" x2="8" y2="6"/>
-                <line x1="3" y1="10" x2="21" y2="10"/>
-                <line x1="8" y1="14" x2="16" y2="14"/>
-                <line x1="8" y1="18" x2="16" y2="18"/>
-            </svg>
+        {% if sala.descripcion %}
+        <div class="card-desc">{{ sala.descripcion }}</div>
+        {% endif %}
+        <div class="card-meta">
+          <span class="meta-item"><i class="fa fa-users"></i> {{ sala.capacidad }} personas</span>
+          {% if sala.bloqueo_activo %}
+            <span class="meta-item"><i class="fa fa-calendar-xmark"></i> Hasta {{ sala.bloqueo_activo.fecha_fin|date:"d/m/Y" }}</span>
+          {% endif %}
         </div>
-        <!-- Reloj 2 -->
-        <div class="symbol">
-            <svg viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10"/>
-                <polyline points="12 6 12 12 8 14"/>
-            </svg>
-        </div>
-        <!-- Calendario 3 -->
-        <div class="symbol">
-            <svg viewBox="0 0 24 24">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                <line x1="16" y1="2" x2="16" y2="6"/>
-                <line x1="8" y1="2" x2="8" y2="6"/>
-                <line x1="3" y1="10" x2="21" y2="10"/>
-                <circle cx="12" cy="15" r="2"/>
-            </svg>
-        </div>
-        <!-- Reloj 3 -->
-        <div class="symbol">
-            <svg viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10"/>
-                <polyline points="12 12 16 16"/>
-                <line x1="12" y1="12" x2="12" y2="6"/>
-            </svg>
-        </div>
-        <!-- Calendario 4 -->
-        <div class="symbol">
-            <svg viewBox="0 0 24 24">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                <line x1="16" y1="2" x2="16" y2="6"/>
-                <line x1="8" y1="2" x2="8" y2="6"/>
-                <line x1="3" y1="10" x2="21" y2="10"/>
-                <path d="M8 14h3m2 0h3M8 18h3m2 0h3"/>
-            </svg>
-        </div>
-        <!-- Reloj 4 -->
-        <div class="symbol">
-            <svg viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10"/>
-                <polyline points="12 12 7 12"/>
-                <line x1="12" y1="12" x2="12" y2="7"/>
-            </svg>
-        </div>
-        <!-- Calendario 5 -->
-        <div class="symbol">
-            <svg viewBox="0 0 24 24">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                <line x1="16" y1="2" x2="16" y2="6"/>
-                <line x1="8" y1="2" x2="8" y2="6"/>
-                <line x1="3" y1="10" x2="21" y2="10"/>
-                <rect x="8" y="14" width="8" height="4" rx="1"/>
-            </svg>
-        </div>
-        <!-- Reloj 5 -->
-        <div class="symbol">
-            <svg viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10"/>
-                <polyline points="12 12 16 10"/>
-                <line x1="12" y1="12" x2="12" y2="16"/>
-            </svg>
-        </div>
+        {% if sala.bloqueo_activo %}
+          <div class="bloqueo-info"><i class="fa fa-triangle-exclamation"></i> {{ sala.bloqueo_activo.motivo }}</div>
+          <div class="btn-bloqueada"><i class="fa fa-lock"></i> No disponible por mantenimiento</div>
+        {% else %}
+          <a href="{% url 'reservar_sala' sala.id %}" class="btn-reservar"><i class="fa fa-calendar-plus"></i> Reservar ahora</a>
+        {% endif %}
+      </div>
     </div>
-
-
-    <div class="container">
-        <header class="header">
-            <h1>Zonas Disponibles</h1>
-            <p>Explora nuestras Zonas y encuentra el espacio perfecto para tu evento</p>
-        </header>
-
-        <div class="salas-grid">
-            {% for sala in salas %}
-            <div class="sala-card">
-                {% if sala.imagen %}
-                <div class="sala-image" style="background-image: url('{{ sala.imagen.url }}')"></div>
-                {% endif %}
-                <div class="sala-content">
-                    <h2 class="sala-title">{{ sala.nombre }}</h2>
-                    <p>{{ sala.descripcion }}</p>
-                    <div class="sala-info">
-                        <i class="fas fa-users"></i>
-                        <span>Capacidad: {{ sala.capacidad }} personas</span>
-                    </div>
-                    <a href="{% url 'calendario_sala' sala.id %}" class="sala-button">
-                        Ver Disponibilidad
-                        <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
-                    </a>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <script>
-    // Efecto de seguimiento del cursor para el brillo
-    document.addEventListener('mousemove', (e) => {
-        const lightEffect = document.querySelector('.light-effect');
-        const x = e.clientX / window.innerWidth * 100;
-        const y = e.clientY / window.innerHeight * 100;
-        
-        lightEffect.style.background = `
-            radial-gradient(circle at ${x}% ${y}%, rgba(190, 24, 93, 0.15) 0%, transparent 50%),
-            radial-gradient(circle at ${100-x}% ${100-y}%, rgba(190, 24, 93, 0.15) 0%, transparent 50%)
-        `;
-    });
-    </script>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty">
+    <i class="fa fa-building"></i>
+    <p>No hay zonas comunes configuradas.</p>
+  </div>
+  {% endif %}
+</div>
 </body>
 </html>

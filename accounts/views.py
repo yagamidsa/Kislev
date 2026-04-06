@@ -13,6 +13,8 @@ from django.contrib.auth.views import (
 from django.urls import reverse_lazy
 from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
 from django.utils.translation import gettext as _
@@ -22,6 +24,8 @@ from django_ratelimit.decorators import ratelimit
 from .utils import role_required
 from .forms import LoginForm, SelectConjuntoForm
 from .models import Usuario, ConjuntoResidencial
+from kislevsmart.models import Novedad, NovedadVista, Visitante, VisitanteVehicular
+from django.utils import timezone as tz
 
 
 # Mantenemos las vistas existentes
@@ -31,7 +35,24 @@ class VisorAdminView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         user = request.user
-        context = {'user': user}
+        conjunto = user.conjunto
+        hoy = tz.localdate()
+        visitantes_hoy = Visitante.objects.filter(conjunto=conjunto, fecha_generacion__date=hoy).count()
+        residentes = Usuario.objects.filter(conjunto=conjunto, user_type='propietario', is_active=True).count()
+        from kislevsmart.models import Reserva
+        reservas_pendientes = Reserva.objects.filter(sala__conjunto=conjunto, estado='pendiente').count()
+        vehiculos_dentro = VisitanteVehicular.objects.filter(
+            conjunto=conjunto,
+            ultima_lectura__isnull=False,
+            segunda_lectura__isnull=True,
+        ).count()
+        context = {
+            'user': user,
+            'visitantes_hoy': visitantes_hoy,
+            'residentes': residentes,
+            'reservas_pendientes': reservas_pendientes,
+            'vehiculos_dentro': vehiculos_dentro,
+        }
         return self.render_to_response(context)
 
 
@@ -51,7 +72,18 @@ class ControlpropietarioView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         user = request.user
-        context = {'user': user}
+        vistas_ids = NovedadVista.objects.filter(
+            usuario=user
+        ).values_list('novedad_id', flat=True)
+        novedades_no_vistas = Novedad.objects.filter(
+            conjunto=user.conjunto,
+            activa=True,
+        ).exclude(id__in=vistas_ids).order_by('-created_at')
+        context = {
+            'user': user,
+            'novedades_no_vistas': novedades_no_vistas,
+            'novedades_count': novedades_no_vistas.count(),
+        }
         return self.render_to_response(context)
 
 
@@ -295,21 +327,71 @@ class CustomSetPasswordForm(SetPasswordForm):
         return cleaned_data
 
 
-class CustomPasswordChangeView(View):
+class CustomPasswordChangeView(LoginRequiredMixin, View):
+    login_url = '/accounts/login/'
+
     def get(self, request, *args, **kwargs):
         form = CustomSetPasswordForm(user=request.user)
-        return render(request, 'accounts/reset_password.html', {'form': form})
+        return render(request, 'accounts/cambiar_password.html', {'form': form})
 
     def post(self, request, *args, **kwargs):
         form = CustomSetPasswordForm(user=request.user, data=request.POST)
         if form.is_valid():
             form.save()
+            update_session_auth_hash(request, request.user)
             messages.success(request, 'Tu contraseña ha sido cambiada con éxito.')
+            return redirect('kislevsmart:dashboard')
+        messages.error(request, 'Por favor, corrige los errores.')
+        return render(request, 'accounts/cambiar_password.html', {'form': form})
+
+
+class RecuperarPasswordView(View):
+    """Recuperar contraseña por cédula, sin necesidad de email."""
+
+    def get(self, request):
+        paso = request.session.get('recuperar_paso', 1)
+        return render(request, 'accounts/recuperar_password.html', {'paso': paso})
+
+    def post(self, request):
+        paso = request.session.get('recuperar_paso', 1)
+
+        if paso == 1:
+            cedula = request.POST.get('cedula', '').strip()
+            usuario = Usuario.objects.filter(cedula=cedula, is_active=True).first()
+            if not usuario:
+                messages.error(request, 'No existe un usuario con esa cédula.')
+                return render(request, 'accounts/recuperar_password.html', {'paso': 1})
+            request.session['recuperar_user_id'] = usuario.pk
+            request.session['recuperar_paso'] = 2
+            return render(request, 'accounts/recuperar_password.html', {'paso': 2, 'nombre': usuario.nombre})
+
+        if paso == 2:
+            user_id = request.session.get('recuperar_user_id')
+            try:
+                usuario = Usuario.objects.get(pk=user_id)
+            except Usuario.DoesNotExist:
+                request.session.pop('recuperar_paso', None)
+                request.session.pop('recuperar_user_id', None)
+                messages.error(request, 'Sesión expirada. Intenta de nuevo.')
+                return redirect('accounts:recuperar_password')
+
+            p1 = request.POST.get('password1', '')
+            p2 = request.POST.get('password2', '')
+            if len(p1) < 8:
+                messages.error(request, 'La contraseña debe tener al menos 8 caracteres.')
+                return render(request, 'accounts/recuperar_password.html', {'paso': 2, 'nombre': usuario.nombre})
+            if p1 != p2:
+                messages.error(request, 'Las contraseñas no coinciden.')
+                return render(request, 'accounts/recuperar_password.html', {'paso': 2, 'nombre': usuario.nombre})
+
+            usuario.set_password(p1)
+            usuario.save()
+            request.session.pop('recuperar_paso', None)
+            request.session.pop('recuperar_user_id', None)
+            messages.success(request, 'Contraseña actualizada. Ya puedes iniciar sesión.')
             return redirect('accounts:login')
-        else:
-            messages.error(request, 'Por favor, corrige los errores a continuación.')
-        
-        return render(request, 'accounts/reset_password.html', {'form': form})
+
+        return redirect('accounts:recuperar_password')
 
 
 class PasswordResetDoneView(TemplateView):

@@ -1,136 +1,102 @@
-<!-- templates/salas/confirmar_cancelacion.html -->
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Confirmar Cancelación</title>
+    <title>Cancelar Reserva</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary-color: #007AFF;
-            --background-color: #F5F5F7;
-            --card-background: #FFFFFF;
-            --text-color: #1D1D1F;
-            --danger-color: #FF3B30;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
-
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            background-color: var(--background-color);
-            color: var(--text-color);
-            line-height: 1.5;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #09000f 0%, #1a0a2e 50%, #0a1a2e 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
-
-        .container {
-            max-width: 600px;
-            margin: 4rem auto;
-            padding: 0 1rem;
-        }
-
         .card {
-            background: var(--card-background);
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(239,68,68,0.3);
             border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 40px 32px;
+            max-width: 440px;
+            width: 100%;
             text-align: center;
         }
-
-        .warning-icon {
-            font-size: 3rem;
-            color: var(--danger-color);
-            margin-bottom: 1rem;
+        .icon { font-size: 52px; margin-bottom: 16px; }
+        h1 { color: #fca5a5; font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+        .subtitle { color: rgba(255,255,255,0.5); font-size: 13px; margin-bottom: 24px; }
+        .details {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 28px;
+            text-align: left;
         }
-
-        h1 {
-            color: var(--danger-color);
-            margin-bottom: 1rem;
-        }
-
-        .reserva-details {
-            margin: 2rem 0;
-            padding: 1rem;
-            background: #f8f9fa;
-            border-radius: 10px;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            margin-top: 2rem;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 0.75rem 1.5rem;
-            border-radius: 10px;
+        .details .sala { color: #a5b4fc; font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+        .details .info { color: rgba(255,255,255,0.6); font-size: 13px; line-height: 1.8; }
+        .btn-group { display: flex; gap: 12px; }
+        .btn-volver {
+            flex: 1;
+            padding: 12px;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 12px;
+            color: rgba(255,255,255,0.7);
+            font-size: 14px;
+            font-weight: 600;
             text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background .2s;
+        }
+        .btn-volver:hover { background: rgba(255,255,255,0.12); }
+        .btn-cancelar {
+            flex: 1;
+            padding: 12px;
+            background: rgba(239,68,68,0.2);
+            border: 1px solid rgba(239,68,68,0.4);
+            border-radius: 12px;
+            color: #fca5a5;
+            font-size: 14px;
+            font-weight: 700;
             cursor: pointer;
-            font-size: 1rem;
+            transition: background .2s;
         }
-
-        .btn-danger {
-            background: var(--danger-color);
-            color: white;
-        }
-
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-        }
-
-        .btn:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                margin: 2rem auto;
-            }
-
-            .btn-group {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-            }
+        .btn-cancelar:hover { background: rgba(239,68,68,0.35); }
+        @media(max-width:480px) {
+            .btn-group { flex-direction: column; }
+            .card { padding: 28px 20px; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="card">
-            <div class="warning-icon">⚠️</div>
-            <h1>Confirmar Cancelación</h1>
-            <p>¿Estás seguro que deseas cancelar esta reserva?</p>
+<div class="card">
+    <div class="icon">🚫</div>
+    <h1>Cancelar reserva</h1>
+    <p class="subtitle">Esta acción no se puede deshacer</p>
 
-            <div class="reserva-details">
-                <h3>{{ reserva.sala.nombre }}</h3>
-                <p>Fecha: {{ reserva.fecha|date:"l, j \d\e F \d\e Y" }}</p>
-                <p>Horario: {{ reserva.hora_inicio }} - {{ reserva.hora_fin }}</p>
-            </div>
-
-            <form method="post" class="btn-group">
-                {% csrf_token %}
-                <a href="{% url 'mis_reservas' %}" class="btn btn-secondary">
-                    Volver
-                </a>
-                <button type="submit" class="btn btn-danger">
-                    Confirmar Cancelación
-                </button>
-            </form>
+    <div class="details">
+        <div class="sala">{{ reserva.sala.nombre }}</div>
+        <div class="info">
+            📅 {{ reserva.fecha|date:"d/m/Y" }}<br>
+            ⏰ {{ reserva.hora_inicio|time:"H:i" }} – {{ reserva.hora_fin|time:"H:i" }}<br>
+            {% if reserva.usuario %}👤 {{ reserva.usuario.nombre }}{% endif %}
         </div>
     </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="btn-group">
+            <a href="{% url 'mis_reservas' %}" class="btn-volver">← Volver</a>
+            <button type="submit" class="btn-cancelar">Confirmar cancelación</button>
+        </div>
+    </form>
+</div>
 </body>
 </html>

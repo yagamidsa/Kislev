@@ -174,6 +174,7 @@ class VisitanteVehicular(models.Model):
 
 
 class Sala(models.Model):
+    conjunto = models.ForeignKey('accounts.ConjuntoResidencial', on_delete=models.CASCADE, null=True, blank=True)
     nombre = models.CharField(max_length=100)
     descripcion = models.TextField(blank=True)
     capacidad = models.IntegerField()
@@ -198,12 +199,28 @@ class Sala(models.Model):
         return reverse('calendario_sala', args=[str(self.id)])
 
 class Reserva(models.Model):
+    ESTADOS = [
+        ('pendiente', 'Pendiente'),
+        ('aprobada', 'Aprobada'),
+        ('rechazada', 'Rechazada'),
+        ('cancelada', 'Cancelada'),
+    ]
     sala = models.ForeignKey(Sala, on_delete=models.CASCADE, related_name='reservas')
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='reservas'
+    )
     fecha = models.DateField()
     hora_inicio = models.TimeField()
     hora_fin = models.TimeField()
-    estado = models.BooleanField(default=True)
+    estado = models.CharField(max_length=15, choices=ESTADOS, default='pendiente')
     notas = models.TextField(blank=True)
+    aprobada_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='reservas_aprobadas'
+    )
+    fecha_aprobacion = models.DateTimeField(null=True, blank=True)
+    motivo_rechazo = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -218,24 +235,38 @@ class Reserva(models.Model):
 
     def clean(self):
         from django.core.exceptions import ValidationError
-        # Validar que hora_fin sea posterior a hora_inicio
         if self.hora_fin <= self.hora_inicio:
             raise ValidationError('La hora de finalización debe ser posterior a la hora de inicio')
-        
-        # Validar que no haya solapamiento con otras reservas
         solapadas = Reserva.objects.filter(
-            sala=self.sala,
-            fecha=self.fecha,
-            hora_inicio__lt=self.hora_fin,
-            hora_fin__gt=self.hora_inicio
-        ).exclude(id=self.id)
-        
+            sala=self.sala, fecha=self.fecha,
+            hora_inicio__lt=self.hora_fin, hora_fin__gt=self.hora_inicio,
+            estado__in=['pendiente', 'aprobada']
+        ).exclude(id=self.id if self.id else 0)
         if solapadas.exists():
-            raise ValidationError('Ya existe una reserva para este horario')
-        
-        
-        
-        
+            raise ValidationError('Ya existe una reserva para ese horario')
+
+
+class BloqueoSala(models.Model):
+    sala = models.ForeignKey(Sala, on_delete=models.CASCADE, related_name='bloqueos')
+    fecha_inicio = models.DateField()
+    fecha_fin = models.DateField()
+    motivo = models.CharField(max_length=255, default='Mantenimiento')
+    creado_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='bloqueos_sala'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-fecha_inicio']
+        verbose_name = 'Bloqueo de Sala'
+        verbose_name_plural = 'Bloqueos de Salas'
+
+    def __str__(self):
+        return f"{self.sala.nombre} — {self.fecha_inicio} a {self.fecha_fin}"
+
+    def activo_en(self, fecha):
+        return self.fecha_inicio <= fecha <= self.fecha_fin
+
 
 # models.py
 class ParqueaderoCarro(models.Model):
@@ -416,6 +447,144 @@ class AuditLog(models.Model):
 
     def __str__(self):
         return f"{self.fecha:%d/%m/%Y %H:%M} — {self.get_accion_display()}"
+
+
+class Novedad(models.Model):
+    conjunto = models.ForeignKey('accounts.ConjuntoResidencial', on_delete=models.CASCADE, related_name='novedades')
+    autor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='novedades')
+    titulo = models.CharField(max_length=200)
+    imagen = models.ImageField(upload_to='novedades/imagenes/', null=True, blank=True)
+    contenido = models.TextField()
+    activa = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'novedades'
+        ordering = ['-created_at']
+        verbose_name = 'Novedad'
+        verbose_name_plural = 'Novedades'
+
+    def __str__(self):
+        return self.titulo
+
+
+class ArchivoNovedad(models.Model):
+    novedad = models.ForeignKey(Novedad, on_delete=models.CASCADE, related_name='archivos')
+    archivo = models.FileField(upload_to='novedades/archivos/')
+    nombre_original = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'archivos_novedad'
+
+    def __str__(self):
+        return self.nombre_original
+
+    def extension(self):
+        name = self.nombre_original.lower()
+        if name.endswith('.pdf'):   return 'pdf'
+        if name.endswith(('.xls', '.xlsx')): return 'excel'
+        if name.endswith('.txt'):   return 'txt'
+        return 'archivo'
+
+
+class ComentarioNovedad(models.Model):
+    novedad = models.ForeignKey(Novedad, on_delete=models.CASCADE, related_name='comentarios')
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    texto = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'comentarios_novedad'
+        ordering = ['created_at']
+
+    def __str__(self):
+        return f"{self.usuario.nombre} — {self.novedad.titulo}"
+
+
+class LikeNovedad(models.Model):
+    novedad = models.ForeignKey(Novedad, on_delete=models.CASCADE, related_name='likes')
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='likes_novedad')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'likes_novedad'
+        unique_together = [['novedad', 'usuario']]
+
+    def __str__(self):
+        return f"{self.usuario.nombre} ♥ {self.novedad.titulo}"
+
+
+class NovedadVista(models.Model):
+    novedad = models.ForeignKey(Novedad, on_delete=models.CASCADE, related_name='vistas')
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='novedades_vistas')
+    visto_en = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'novedades_vistas'
+        unique_together = [['novedad', 'usuario']]
+
+    def __str__(self):
+        return f"{self.usuario.nombre} vio {self.novedad.titulo}"
+
+
+class Paquete(models.Model):
+    EMPRESAS = [
+        ('envia', 'Envia'),
+        ('coordinadora', 'Coordinadora'),
+        ('servientrega', 'Servientrega'),
+        ('interrapidisimo', 'Interrapidísimo'),
+        ('deprisa', 'Deprisa'),
+        ('fedex', 'FedEx'),
+        ('dhl', 'DHL'),
+        ('amazon', 'Amazon Logistics'),
+        ('mercadolibre', 'Mercado Libre'),
+        ('tcc', 'TCC'),
+        ('rappi', 'Rappi'),
+        ('otro', 'Otro'),
+    ]
+    ESTADOS = [
+        ('pendiente', 'Pendiente'),
+        ('entregado', 'Entregado'),
+    ]
+
+    conjunto = models.ForeignKey(
+        'accounts.ConjuntoResidencial', on_delete=models.CASCADE, related_name='paquetes'
+    )
+    torre = models.ForeignKey(
+        'accounts.Torre', on_delete=models.SET_NULL, null=True, related_name='paquetes'
+    )
+    apartamento = models.CharField(max_length=10)
+    empresa = models.CharField(max_length=30, choices=EMPRESAS)
+    descripcion = models.CharField(max_length=200, blank=True, help_text='Ej: caja grande, sobre, etc.')
+    codigo = models.CharField(max_length=6)
+    estado = models.CharField(max_length=15, choices=ESTADOS, default='pendiente')
+    destinatario_nombre = models.CharField(max_length=100, blank=True)
+    destinatario_telefono = models.CharField(max_length=20, blank=True)
+    whatsapp_enviado = models.BooleanField(default=False)
+    registrado_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True,
+        related_name='paquetes_registrados'
+    )
+    fecha_registro = models.DateTimeField(auto_now_add=True)
+    fecha_entrega = models.DateTimeField(null=True, blank=True)
+    entregado_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='paquetes_entregados'
+    )
+
+    class Meta:
+        ordering = ['-fecha_registro']
+        verbose_name = 'Paquete'
+        verbose_name_plural = 'Paquetes'
+
+    def __str__(self):
+        return f"Paquete {self.codigo} — Torre {self.torre} Apto {self.apartamento}"
+
+    @property
+    def empresa_display(self):
+        return dict(self.EMPRESAS).get(self.empresa, self.empresa)
 
 
 

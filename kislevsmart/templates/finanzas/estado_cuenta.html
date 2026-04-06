@@ -6,86 +6,166 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Estado de Cuenta</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="{% static 'css/restricciones.css' %}">
-    <link rel="stylesheet" href="{% static 'css/visor_admin.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        .ec-wrap { max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
-        .back-link { display:inline-flex; align-items:center; gap:6px; color:#7f00ff; font-weight:600; font-size:0.85rem; text-decoration:none; margin-bottom:1.5rem; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #09000f 0%, #1a0a2e 50%, #0a1a2e 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 24px 16px;
+        }
 
+        .wrap { max-width: 780px; margin: 0 auto; }
+
+        .back-link {
+            display: inline-flex; align-items: center; gap: 8px;
+            color: rgba(255,255,255,0.6); font-size: 13px; font-weight: 600;
+            text-decoration: none; margin-bottom: 24px;
+            background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+            padding: 8px 16px; border-radius: 10px; transition: background .2s;
+        }
+        .back-link:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+        /* Resumen */
         .resumen-card {
-            background: linear-gradient(135deg, #e100ff, #7f00ff);
-            border-radius: 16px; padding: 1.5rem 2rem; color: #fff; margin-bottom: 2rem;
-            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
+            background: linear-gradient(135deg, #7c3aed, #db2777);
+            border-radius: 18px; padding: 24px 28px; margin-bottom: 24px;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
         }
-        .resumen-card h2 { font-size: 1rem; opacity: .85; margin-bottom: .25rem; }
-        .resumen-card .monto { font-size: 2rem; font-weight: 800; }
-        .resumen-card .sub { font-size: 0.8rem; opacity: .75; }
+        .resumen-card h2 { font-size: 13px; opacity: .85; margin-bottom: 4px; font-weight: 500; }
+        .resumen-card .monto { font-size: 36px; font-weight: 800; letter-spacing: -1px; }
+        .resumen-card .sub { font-size: 12px; opacity: .7; margin-top: 4px; }
+        .resumen-icon { font-size: 48px; opacity: .25; }
 
+        /* Cuotas */
         .cuota-row {
-            background: #fff; border-radius: 12px; padding: 1.25rem 1.5rem;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin-bottom: 1rem;
-            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .75rem;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px; padding: 18px 20px;
+            margin-bottom: 12px;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+            transition: transform .2s;
         }
-        .cuota-info h3 { font-size: .95rem; font-weight: 700; margin-bottom: 2px; }
-        .cuota-info p { font-size: .8rem; color: #888; }
+        .cuota-row:hover { transform: translateY(-2px); }
+        .cuota-row.pendiente { border-color: rgba(239,68,68,0.3); }
+        .cuota-row.vencida   { border-color: rgba(245,158,11,0.3); }
+        .cuota-row.pagada    { border-color: rgba(34,197,94,0.2); }
 
-        .estado-pagado { color: #2e7d32; font-weight: 700; font-size: .9rem; }
-        .estado-pendiente { color: #c62828; font-weight: 700; font-size: .9rem; }
-        .estado-vencida { color: #e65100; font-weight: 700; font-size: .9rem; }
+        .cuota-info h3 { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+        .cuota-info p  { font-size: 12px; color: rgba(255,255,255,0.45); }
+        .detalle-pago  { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 4px; }
 
-        .monto-pendiente { font-size: 1.1rem; font-weight: 800; color: #c62828; }
-        .monto-pagado-val { font-size: 1.1rem; font-weight: 800; color: #2e7d32; }
+        .cuota-right { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; text-align: right; }
 
-        .detalle-pago { font-size: .78rem; color: #888; margin-top: 2px; }
+        .estado-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 700;
+        }
+        .badge-pagado   { background: rgba(34,197,94,0.15);  color: #86efac; border: 1px solid rgba(34,197,94,0.3); }
+        .badge-pendiente{ background: rgba(239,68,68,0.15);  color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
+        .badge-vencida  { background: rgba(245,158,11,0.15); color: #fcd34d; border: 1px solid rgba(245,158,11,0.3); }
 
-        .empty-state { text-align:center; padding:4rem 1rem; color:#999; }
+        .monto-val {
+            font-size: 18px; font-weight: 800;
+        }
+        .monto-pendiente { color: #fca5a5; }
+        .monto-vencida   { color: #fcd34d; }
+        .monto-pagado    { color: #86efac; }
+
+        .btn-pagar {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: linear-gradient(135deg, #7c3aed, #db2777);
+            color: #fff; padding: 10px 18px; border-radius: 10px;
+            font-size: 13px; font-weight: 700; text-decoration: none;
+            transition: opacity .2s; white-space: nowrap;
+        }
+        .btn-pagar:hover { opacity: .85; }
+
+        .empty-state {
+            text-align: center; padding: 60px 20px;
+            color: rgba(255,255,255,0.35);
+        }
+        .empty-state i { font-size: 48px; margin-bottom: 12px; display: block; }
+
+        @media(max-width:600px) {
+            .resumen-card .monto { font-size: 28px; }
+            .cuota-right { justify-content: flex-start; }
+            .wrap { padding: 0; }
+        }
     </style>
 </head>
 <body>
-<div class="ec-wrap">
+<div class="wrap">
 
     <a href="{% url 'accounts:visor_propietario' %}" class="back-link">
         <i class="fas fa-arrow-left"></i> Volver al panel
     </a>
 
+    <!-- Resumen deuda -->
     <div class="resumen-card">
         <div>
             <h2>Total pendiente de pago</h2>
             <div class="monto">${{ total_deuda|floatformat:"0" }}</div>
             <div class="sub">{{ user.get_ubicacion_completa }}</div>
         </div>
-        <i class="fas fa-wallet" style="font-size:3rem; opacity:.3;"></i>
+        <div class="resumen-icon"><i class="fas fa-wallet"></i></div>
     </div>
 
+    <!-- Lista cuotas -->
     {% for item in resumen %}
-    <div class="cuota-row">
+    {% if item.pago and item.pendiente == 0 %}
+    <div class="cuota-row pagada">
+    {% elif item.cuota.vencida %}
+    <div class="cuota-row vencida">
+    {% else %}
+    <div class="cuota-row pendiente">
+    {% endif %}
         <div class="cuota-info">
             <h3>{{ item.cuota.nombre }}</h3>
-            <p>Vence: {{ item.cuota.fecha_vencimiento|date:"d/m/Y" }} &middot; {{ item.cuota.get_periodicidad_display }}</p>
+            <p>Vence: {{ item.cuota.fecha_vencimiento|date:"d/m/Y" }} · {{ item.cuota.get_periodicidad_display }}</p>
             {% if item.pago %}
             <p class="detalle-pago">
                 Pagado el {{ item.pago.fecha_pago|date:"d/m/Y" }}
-                via {{ item.pago.get_metodo_display }}
-                {% if item.pago.comprobante %}&middot; Ref: {{ item.pago.comprobante }}{% endif %}
+                vía {{ item.pago.get_metodo_display }}
+                {% if item.pago.comprobante %} · Ref: {{ item.pago.comprobante }}{% endif %}
             </p>
             {% endif %}
         </div>
-        <div style="text-align:right;">
+
+        <div class="cuota-right">
             {% if item.pago and item.pendiente == 0 %}
-                <div class="estado-pagado"><i class="fas fa-check-circle"></i> Pagado</div>
-                <div class="monto-pagado-val">${{ item.pago.monto_pagado|floatformat:"0" }}</div>
+                <div>
+                    <span class="estado-badge badge-pagado"><i class="fas fa-check-circle"></i> Pagado</span>
+                    <div class="monto-val monto-pagado" style="margin-top:6px">${{ item.pago.monto_pagado|floatformat:"0" }}</div>
+                </div>
             {% elif item.cuota.vencida %}
-                <div class="estado-vencida"><i class="fas fa-exclamation-triangle"></i> Vencida</div>
-                <div class="monto-pendiente">${{ item.pendiente|floatformat:"0" }}</div>
+                <div>
+                    <span class="estado-badge badge-vencida"><i class="fas fa-exclamation-triangle"></i> Vencida</span>
+                    <div class="monto-val monto-vencida" style="margin-top:6px">${{ item.pendiente|floatformat:"0" }}</div>
+                </div>
+                {% if user.conjunto.link_pago %}
+                <a href="{{ user.conjunto.link_pago }}" target="_blank" class="btn-pagar">
+                    <i class="fas fa-credit-card"></i> Pagar ahora
+                </a>
+                {% endif %}
             {% else %}
-                <div class="estado-pendiente"><i class="fas fa-clock"></i> Pendiente</div>
-                <div class="monto-pendiente">${{ item.pendiente|floatformat:"0" }}</div>
+                <div>
+                    <span class="estado-badge badge-pendiente"><i class="fas fa-clock"></i> Pendiente</span>
+                    <div class="monto-val monto-pendiente" style="margin-top:6px">${{ item.pendiente|floatformat:"0" }}</div>
+                </div>
+                {% if user.conjunto.link_pago %}
+                <a href="{{ user.conjunto.link_pago }}" target="_blank" class="btn-pagar">
+                    <i class="fas fa-credit-card"></i> Pagar ahora
+                </a>
+                {% endif %}
             {% endif %}
         </div>
     </div>
     {% empty %}
     <div class="empty-state">
-        <i class="fas fa-check-circle" style="font-size:3rem; color:#ddd;"></i>
+        <i class="fas fa-check-circle" style="color:rgba(34,197,94,0.4)"></i>
         <p>No hay cuotas registradas para tu conjunto.</p>
     </div>
     {% endfor %}

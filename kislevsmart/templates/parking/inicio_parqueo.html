@@ -44,6 +44,28 @@
                     <h2>Motos</h2>
                 </div>
             </div>
+
+            {% if request.user.user_type == 'administrador' %}
+            <div class="parking-card" data-url="{% url 'metricas_parqueadero' 'carro' %}" style="border-color:rgba(255,20,147,0.4)">
+                <div class="card-content">
+                    <div class="icon-container">
+                        <div class="glow-effect"></div>
+                        <span style="font-size:48px;line-height:1">📊</span>
+                    </div>
+                    <h2>Métricas Carros</h2>
+                </div>
+            </div>
+
+            <div class="parking-card" data-url="{% url 'metricas_parqueadero' 'moto' %}" style="border-color:rgba(167,139,250,0.4)">
+                <div class="card-content">
+                    <div class="icon-container">
+                        <div class="glow-effect"></div>
+                        <span style="font-size:48px;line-height:1">📈</span>
+                    </div>
+                    <h2>Métricas Motos</h2>
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
 

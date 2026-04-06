@@ -1,177 +1,192 @@
-<!-- templates/salas/mis_reservas.html -->
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Reservas</title>
+    <title>Reservas — Zonas Comunes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary-color: #007AFF;
-            --background-color: #F5F5F7;
-            --card-background: #FFFFFF;
-            --text-color: #1D1D1F;
-            --danger-color: #FF3B30;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
-
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            background-color: var(--background-color);
-            color: var(--text-color);
-            line-height: 1.5;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #09000f 0%, #1a0a2e 50%, #0a1a2e 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 20px;
         }
-
-        .container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
-
         .header {
-            text-align: center;
-            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
         }
-
-        .reservas-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-            padding: 1rem;
-        }
-
-        .reserva-card {
-            background: var(--card-background);
-            border-radius: 15px;
-            padding: 1.5rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .reserva-header {
-            border-bottom: 1px solid #eee;
-            padding-bottom: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .sala-nombre {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--primary-color);
-        }
-
-        .fecha {
-            font-size: 1.1rem;
-            margin: 0.5rem 0;
-        }
-
-        .horario {
-            color: #666;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 0.75rem 1.5rem;
+        .back-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            padding: 8px 18px;
             border-radius: 10px;
             text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            text-align: center;
-            margin-top: 1rem;
+            font-size: 14px;
+        }
+        h1 { font-size: 22px; font-weight: 700; }
+        .subtitle { font-size: 12px; color: rgba(255,255,255,0.45); margin-top: 2px; }
+        .messages { margin-bottom: 16px; }
+        .messages div {
+            padding: 12px 16px; border-radius: 10px; font-size: 13px; margin-bottom: 8px;
+            background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.3); color: #86efac;
+        }
+        .messages div.error {
+            background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.3); color: #fca5a5;
         }
 
-        .btn-danger {
-            background: var(--danger-color);
-            color: white;
+        /* Filtros de estado */
+        .filtros { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+        .filtro-btn {
+            padding: 6px 16px; border-radius: 999px; font-size: 12px; font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.07);
+            color: rgba(255,255,255,0.6); cursor: pointer; text-decoration: none;
         }
+        .filtro-btn.active { background: rgba(99,102,241,0.25); border-color: rgba(99,102,241,0.5); color: #a5b4fc; }
 
-        .btn-danger:hover {
-            background: #ff1a1a;
+        /* Cards */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+        .card {
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 18px;
+            transition: transform .2s;
         }
+        .card:hover { transform: translateY(-2px); }
+        .card-sala { font-size: 16px; font-weight: 700; color: #a5b4fc; margin-bottom: 6px; }
+        .card-fecha { font-size: 14px; color: rgba(255,255,255,0.8); }
+        .card-hora { font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+        .card-usuario { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 4px; }
+        .card-notas { font-size: 12px; color: rgba(255,255,255,0.45); margin-top: 8px; font-style: italic; }
 
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
-            background: var(--card-background);
-            border-radius: 15px;
-            margin: 2rem auto;
-            max-width: 600px;
+        /* Estado badges */
+        .estado-badge {
+            display: inline-block; padding: 3px 12px; border-radius: 999px;
+            font-size: 11px; font-weight: 700; margin-top: 10px;
         }
+        .estado-pendiente { background: rgba(245,158,11,0.2); color: #fcd34d; border: 1px solid rgba(245,158,11,0.3); }
+        .estado-aprobada  { background: rgba(34,197,94,0.2);  color: #86efac; border: 1px solid rgba(34,197,94,0.3); }
+        .estado-rechazada { background: rgba(239,68,68,0.2);  color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
+        .estado-cancelada { background: rgba(100,100,100,0.2); color: #9ca3af; border: 1px solid rgba(100,100,100,0.3); }
 
-        .empty-state h2 {
-            color: #666;
-            margin-bottom: 1rem;
+        .motivo-rechazo { font-size: 11px; color: #fca5a5; margin-top: 4px; }
+
+        /* Acciones */
+        .card-actions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+        .btn-aprobar {
+            background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.4);
+            color: #86efac; padding: 6px 14px; border-radius: 8px; font-size: 12px;
+            font-weight: 600; cursor: pointer;
         }
-
-        .btn-primary {
-            background: var(--primary-color);
-            color: white;
+        .btn-rechazar {
+            background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3);
+            color: #fca5a5; padding: 6px 14px; border-radius: 8px; font-size: 12px;
+            font-weight: 600; cursor: pointer;
         }
-
-        .btn-primary:hover {
-            background: #0056b3;
+        .btn-cancelar {
+            background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25);
+            color: #fca5a5; padding: 6px 14px; border-radius: 8px; font-size: 12px;
+            font-weight: 600; cursor: pointer; text-decoration: none;
         }
+        .btn-cancelar:hover { background: rgba(239,68,68,0.2); }
 
-        @media (max-width: 768px) {
-            .container {
-                margin: 1rem auto;
-            }
+        .empty { text-align: center; padding: 48px 20px; color: rgba(255,255,255,0.35); }
+        .empty .icon { font-size: 48px; margin-bottom: 12px; }
 
-            .reservas-grid {
-                grid-template-columns: 1fr;
-            }
+        @media(max-width:600px) {
+            body { padding: 14px; }
+            h1 { font-size: 18px; }
+            .grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Mis Reservas</h1>
-            <p>Gestiona tus reservas de salas</p>
-        </div>
+<div class="header">
+    <a href="{% url 'lista_salas' %}" class="back-btn">← Volver</a>
+    <div>
+        <h1>{% if request.user.user_type == 'administrador' %}Todas las Reservas{% else %}Mis Reservas{% endif %}</h1>
+        <div class="subtitle">{{ request.user.conjunto.nombre }}</div>
+    </div>
+</div>
 
-        {% if messages %}
-        <div class="messages">
-            {% for message in messages %}
-            <div class="message {{ message.tags }}">
-                {{ message }}
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
+{% if messages %}<div class="messages">{% for message in messages %}{% if 'error' in message.tags %}<div class="error">{{ message }}</div>{% endif %}{% endfor %}</div>{% endif %}
 
-        {% if reservas %}
-        <div class="reservas-grid">
-            {% for reserva in reservas %}
-            <div class="reserva-card">
-                <div class="reserva-header">
-                    <div class="sala-nombre">{{ reserva.sala.nombre }}</div>
-                    <div class="fecha">{{ reserva.fecha|date:"l, j \d\e F \d\e Y" }}</div>
-                    <div class="horario">{{ reserva.hora_inicio }} - {{ reserva.hora_fin }}</div>
-                </div>
-                {% if reserva.notas %}
-                <div class="notas">
-                    <strong>Notas:</strong>
-                    <p>{{ reserva.notas }}</p>
-                </div>
-                {% endif %}
-                <a href="{% url 'cancelar_reserva' reserva.id %}" class="btn btn-danger">
-                    Cancelar Reserva
-                </a>
-            </div>
-            {% endfor %}
-        </div>
-        {% else %}
-        <div class="empty-state">
-            <h2>No tienes reservas activas</h2>
-            <p>Realiza una reserva en alguna de nuestras salas disponibles</p>
-            <a href="{% url 'lista_salas' %}" class="btn btn-primary">Ver Salas Disponibles</a>
-        </div>
+<!-- Filtros -->
+<div class="filtros">
+    <a href="?estado=" class="filtro-btn {% if not request.GET.estado %}active{% endif %}">Todas</a>
+    <a href="?estado=pendiente" class="filtro-btn {% if request.GET.estado == 'pendiente' %}active{% endif %}">⏳ Pendientes</a>
+    <a href="?estado=aprobada" class="filtro-btn {% if request.GET.estado == 'aprobada' %}active{% endif %}">✅ Aprobadas</a>
+    <a href="?estado=rechazada" class="filtro-btn {% if request.GET.estado == 'rechazada' %}active{% endif %}">❌ Rechazadas</a>
+    <a href="?estado=cancelada" class="filtro-btn {% if request.GET.estado == 'cancelada' %}active{% endif %}">🚫 Canceladas</a>
+</div>
+
+{% if reservas %}
+<div class="grid">
+{% for r in reservas %}
+{% if not request.GET.estado or r.estado == request.GET.estado %}
+<div class="card" style="{% if r.estado == 'pendiente' %}border-color:rgba(245,158,11,0.25){% elif r.estado == 'aprobada' %}border-color:rgba(34,197,94,0.25){% elif r.estado == 'rechazada' %}border-color:rgba(239,68,68,0.2){% endif %}">
+    <div class="card-sala">{{ r.sala.nombre }}</div>
+    <div class="card-fecha">{{ r.fecha|date:"d/m/Y" }}</div>
+    <div class="card-hora">{{ r.hora_inicio|time:"H:i" }} – {{ r.hora_fin|time:"H:i" }}</div>
+    {% if request.user.user_type == 'administrador' and r.usuario %}
+    <div class="card-usuario">{{ r.usuario.nombre }} · {{ r.usuario.torre }} · Apto {{ r.usuario.apartamento }}</div>
+    {% endif %}
+    {% if r.notas %}<div class="card-notas">"{{ r.notas }}"</div>{% endif %}
+
+    <div>
+        <span class="estado-badge estado-{{ r.estado }}">
+            {% if r.estado == 'pendiente' %}⏳ Pendiente{% elif r.estado == 'aprobada' %}✅ Aprobada{% elif r.estado == 'rechazada' %}❌ Rechazada{% else %}🚫 Cancelada{% endif %}
+        </span>
+    </div>
+    {% if r.estado == 'rechazada' and r.motivo_rechazo %}
+    <div class="motivo-rechazo">Motivo: {{ r.motivo_rechazo }}</div>
+    {% endif %}
+
+    <div class="card-actions">
+        {% if request.user.user_type == 'administrador' and r.estado == 'pendiente' %}
+        <form method="post" action="{% url 'aprobar_reserva' r.id %}" style="display:inline">
+            {% csrf_token %}
+            <input type="hidden" name="accion" value="aprobar">
+            <input type="hidden" name="next" value="mis_reservas">
+            <button type="submit" class="btn-aprobar">✓ Aprobar</button>
+        </form>
+        <form method="post" action="{% url 'aprobar_reserva' r.id %}" style="display:inline" onsubmit="return pedirMotivo(this)">
+            {% csrf_token %}
+            <input type="hidden" name="accion" value="rechazar">
+            <input type="hidden" name="next" value="mis_reservas">
+            <input type="hidden" name="motivo" class="motivo-inp" value="">
+            <button type="submit" class="btn-rechazar">✗ Rechazar</button>
+        </form>
+        {% elif r.estado == 'pendiente' %}
+        <a href="{% url 'cancelar_reserva' r.id %}" class="btn-cancelar">Cancelar</a>
         {% endif %}
     </div>
+</div>
+{% endif %}
+{% endfor %}
+</div>
+{% else %}
+<div class="empty">
+    <div class="icon">📅</div>
+    <p>No hay reservas registradas</p>
+    <a href="{% url 'lista_salas' %}" style="color:#a5b4fc;font-size:13px;margin-top:12px;display:inline-block">Ver salas disponibles →</a>
+</div>
+{% endif %}
+
+<script>
+function pedirMotivo(form) {
+    const motivo = prompt('Motivo del rechazo (opcional):') || '';
+    form.querySelector('.motivo-inp').value = motivo;
+    return true;
+}
+</script>
 </body>
 </html>

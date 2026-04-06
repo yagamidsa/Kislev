@@ -1,0 +1,203 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ novedad.titulo }}</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',Arial,sans-serif;min-height:100vh;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%)}
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:rgba(255,255,255,0.05);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,0.1)}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;font-size:0.9rem;font-weight:600;text-decoration:none;border:none;cursor:pointer;transition:all .2s}
+    .btn-back{background:rgba(255,255,255,0.1);color:#fff}
+    .btn-back:hover{background:rgba(255,255,255,0.2)}
+    .btn-danger{background:rgba(255,50,50,0.2);color:#ff6b6b;border:1px solid rgba(255,50,50,0.3)}
+    .btn-danger:hover{background:rgba(255,50,50,0.35)}
+    .container{max-width:800px;margin:0 auto;padding:32px 20px}
+    .card{background:rgba(255,255,255,0.07);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.12);border-radius:20px;overflow:hidden;margin-bottom:24px}
+    .hero-img{width:100%;max-height:350px;object-fit:cover}
+    .card-body{padding:28px}
+    .badge{background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;padding:4px 12px;border-radius:20px;font-size:0.78rem;font-weight:600;display:inline-block;margin-bottom:12px}
+    h1{color:#fff;font-size:1.6rem;font-weight:800;margin-bottom:10px;line-height:1.3}
+    .meta{color:rgba(255,255,255,0.5);font-size:0.85rem;margin-bottom:20px;display:flex;gap:16px;flex-wrap:wrap}
+    .meta span{display:flex;align-items:center;gap:6px}
+    .content{color:rgba(255,255,255,0.85);font-size:1rem;line-height:1.75;white-space:pre-wrap;word-break:break-word}
+    .content a{color:#db2777}
+    .attachments{margin-top:24px}
+    .attachments h3{color:#fff;font-size:1rem;margin-bottom:12px;font-weight:600}
+    .attach-list{display:flex;flex-direction:column;gap:10px}
+    .attach-item{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:12px 16px;text-decoration:none;color:#fff;transition:background .2s}
+    .attach-item:hover{background:rgba(255,255,255,0.12)}
+    .attach-icon{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+    .pdf-ic{background:rgba(255,68,68,0.2)}
+    .excel-ic{background:rgba(34,197,94,0.2)}
+    .txt-ic{background:rgba(251,191,36,0.2)}
+    .file-ic{background:rgba(99,102,241,0.2)}
+    .comments{margin-top:8px}
+    .comments h2{color:#fff;font-size:1.1rem;font-weight:700;margin-bottom:16px}
+    .comment{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:14px 18px;margin-bottom:12px}
+    .comment-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+    .comment-author{color:#db2777;font-weight:700;font-size:0.9rem}
+    .comment-date{color:rgba(255,255,255,0.4);font-size:0.78rem}
+    .comment-text{color:rgba(255,255,255,0.8);font-size:0.9rem;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+    .comment-text a{color:#db2777}
+    .comment-form{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px}
+    .comment-form h3{color:#fff;margin-bottom:12px;font-size:1rem}
+    textarea{width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:12px;color:#fff;font-size:0.95rem;resize:vertical;min-height:90px;font-family:inherit}
+    textarea::placeholder{color:rgba(255,255,255,0.35)}
+    textarea:focus{outline:none;border-color:#db2777}
+    .submit-btn{margin-top:12px;background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;border:none;padding:10px 24px;border-radius:10px;font-size:0.95rem;font-weight:600;cursor:pointer}
+    .submit-btn:hover{opacity:.9}
+    /* Like button */
+    .like-section{display:flex;align-items:center;gap:14px;margin:24px 0 8px}
+    .like-btn{background:rgba(255,255,255,0.07);border:2px solid rgba(255,255,255,0.15);border-radius:50px;padding:10px 22px;color:#fff;font-size:1rem;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .2s;position:relative;overflow:hidden}
+    .like-btn.liked{background:rgba(255,50,100,0.2);border-color:#ff3264;color:#ff3264}
+    .like-btn .heart{font-size:1.2rem;transition:transform .3s cubic-bezier(.175,.885,.32,1.275)}
+    .like-btn.liked .heart{color:#ff3264}
+    .like-btn:active .heart{transform:scale(1.6)}
+    @keyframes heartPop{0%{transform:scale(1)}40%{transform:scale(1.5)}70%{transform:scale(.9)}100%{transform:scale(1)}}
+    .like-btn.pop .heart{animation:heartPop .4s ease forwards}
+    @keyframes burst{0%{opacity:1;transform:scale(0)}50%{opacity:.8;transform:scale(1.5)}100%{opacity:0;transform:scale(2)}}
+    .burst{position:absolute;width:100%;height:100%;top:0;left:0;pointer-events:none;border-radius:50px}
+    .burst.active{background:radial-gradient(circle,rgba(255,50,100,0.3) 0%,transparent 70%);animation:burst .4s ease forwards}
+    .like-count{color:rgba(255,255,255,0.7);font-size:1rem;font-weight:600}
+    @media(max-width:600px){
+      .topbar{padding:10px 14px;gap:8px}
+      .btn{padding:8px 12px;font-size:0.8rem}
+      .container{padding:14px 12px}
+      h1{font-size:1.2rem}
+      .card-body{padding:18px}
+      .meta{gap:10px;font-size:0.8rem}
+      .attach-item{padding:10px 12px}
+      .comment-header{flex-direction:column;align-items:flex-start;gap:4px}
+      .hero-img{max-height:220px}
+    }
+  </style>
+</head>
+<body>
+<div class="topbar">
+  <a href="{% url 'lista_novedades' %}" class="btn btn-back"><i class="fa fa-arrow-left"></i> Novedades</a>
+  {% if request.user.user_type == 'administrador' %}
+  <form method="POST" action="{% url 'eliminar_novedad' novedad.pk %}" onsubmit="return confirm('Eliminar esta novedad?')">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> Eliminar</button>
+  </form>
+  {% endif %}
+</div>
+
+<div class="container">
+  <div class="card">
+    {% if novedad.imagen %}
+    <img src="{{ novedad.imagen.url }}" class="hero-img" alt="{{ novedad.titulo }}">
+    {% endif %}
+    <div class="card-body">
+      <span class="badge">Novedad</span>
+      <h1>{{ novedad.titulo }}</h1>
+      <div class="meta">
+        <span><i class="fa fa-user"></i> {{ novedad.autor.nombre }}</span>
+        <span><i class="fa fa-calendar"></i> {{ novedad.created_at|date:"d/m/Y" }}</span>
+        <span><i class="fa fa-clock"></i> {{ novedad.created_at|date:"H:i" }}</span>
+      </div>
+      <div class="content" id="content-body">{{ novedad.contenido }}</div>
+
+      <div class="like-section">
+        <button class="like-btn {% if user_liked %}liked{% endif %}" id="like-btn" data-url="{% url 'toggle_like' novedad.pk %}">
+          <div class="burst" id="burst"></div>
+          <span class="heart">{% if user_liked %}❤️{% else %}🤍{% endif %}</span>
+          <span>Me gusta</span>
+        </button>
+        <span class="like-count" id="like-count">{{ like_count }} {% if like_count == 1 %}like{% else %}likes{% endif %}</span>
+      </div>
+
+      {% if novedad.archivos.all %}
+      <div class="attachments">
+        <h3><i class="fa fa-paperclip"></i> Archivos adjuntos</h3>
+        <div class="attach-list">
+          {% for a in novedad.archivos.all %}
+          <a href="{{ a.archivo.url }}" target="_blank" class="attach-item">
+            <div class="attach-icon {% if a.extension == 'pdf' %}pdf-ic{% elif a.extension == 'excel' %}excel-ic{% elif a.extension == 'txt' %}txt-ic{% else %}file-ic{% endif %}">
+              {% if a.extension == 'pdf' %}<i class="fa fa-file-pdf" style="color:#ff6b6b"></i>
+              {% elif a.extension == 'excel' %}<i class="fa fa-file-excel" style="color:#22c55e"></i>
+              {% elif a.extension == 'txt' %}<i class="fa fa-file-lines" style="color:#fbbf24"></i>
+              {% else %}<i class="fa fa-file" style="color:#818cf8"></i>{% endif %}
+            </div>
+            <span>{{ a.nombre_original }}</span>
+            <i class="fa fa-download" style="margin-left:auto;color:rgba(255,255,255,0.4)"></i>
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="comments">
+    <h2><i class="fa fa-comments" style="color:#db2777"></i> Comentarios ({{ comentarios.count }})</h2>
+    {% for c in comentarios %}
+    <div class="comment">
+      <div class="comment-header">
+        <span class="comment-author"><i class="fa fa-user-circle"></i> {{ c.usuario.nombre }}</span>
+        <span class="comment-date">{{ c.created_at|date:"d/m/Y H:i" }}</span>
+      </div>
+      <div class="comment-text" data-raw="{{ c.texto|escapejs }}"></div>
+    </div>
+    {% empty %}
+    <p style="color:rgba(255,255,255,0.4);margin-bottom:20px">Se el primero en comentar.</p>
+    {% endfor %}
+
+    <div class="comment-form">
+      <h3><i class="fa fa-pen"></i> Agregar comentario</h3>
+      <form method="POST" action="{% url 'agregar_comentario' novedad.pk %}">
+        {% csrf_token %}
+        <textarea name="texto" placeholder="Escribe tu comentario... (los links se detectan automaticamente)" required></textarea>
+        <button type="submit" class="submit-btn">Comentar</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+function linkify(text) {
+  return text.replace(/(https?:\/\/[^\s]+)/g, function(url) {
+    return '<a href="' + url + '" target="_blank" rel="noopener">' + url + '</a>';
+  });
+}
+document.querySelectorAll('.comment-text').forEach(function(el) {
+  el.innerHTML = linkify(el.dataset.raw);
+});
+var body = document.getElementById('content-body');
+if (body) body.innerHTML = linkify(body.innerText);
+
+// Like button
+var likeBtn = document.getElementById('like-btn');
+var likeCount = document.getElementById('like-count');
+var burst = document.getElementById('burst');
+var csrfToken = '{{ csrf_token }}';
+
+likeBtn.addEventListener('click', function() {
+  likeBtn.classList.add('pop');
+  burst.classList.add('active');
+  setTimeout(function(){ likeBtn.classList.remove('pop'); burst.classList.remove('active'); }, 400);
+
+  fetch(likeBtn.dataset.url, {
+    method: 'POST',
+    headers: {'X-CSRFToken': csrfToken, 'Content-Type': 'application/json'}
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(data) {
+    var heart = likeBtn.querySelector('.heart');
+    if (data.liked) {
+      likeBtn.classList.add('liked');
+      heart.textContent = '\u2764\uFE0F';
+    } else {
+      likeBtn.classList.remove('liked');
+      heart.textContent = '\uD83E\uDD0D';
+    }
+    likeCount.textContent = data.total + (data.total === 1 ? ' like' : ' likes');
+  });
+});
+</script>
+</body>
+</html>

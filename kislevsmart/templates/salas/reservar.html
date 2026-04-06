@@ -1,198 +1,376 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reservar {{ sala.nombre }}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/reservar.css' %}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reservar — {{ sala.nombre }}</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',Arial,sans-serif;min-height:100vh;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%)}
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:rgba(255,255,255,0.05);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,0.1)}
+    .topbar h1{color:#fff;font-size:1.1rem;font-weight:700}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:10px;font-size:0.88rem;font-weight:600;text-decoration:none;border:none;cursor:pointer;transition:all .2s}
+    .btn-back{background:rgba(255,255,255,0.1);color:#fff}
+    .btn-back:hover{background:rgba(255,255,255,0.2)}
+    .container{max-width:680px;margin:0 auto;padding:24px 20px}
+    /* Sala header */
+    .sala-header{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:16px;padding:18px 20px;margin-bottom:20px;display:flex;align-items:center;gap:14px}
+    .sala-icon{width:48px;height:48px;background:linear-gradient(135deg,#7c3aed33,#db277733);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0}
+    .sala-info h2{color:#fff;font-size:1.1rem;font-weight:700}
+    .sala-info p{color:rgba(255,255,255,0.5);font-size:0.85rem;margin-top:3px}
+    /* Steps */
+    .steps{display:flex;gap:0;margin-bottom:22px}
+    .step{flex:1;text-align:center;padding:10px 8px;font-size:0.8rem;font-weight:600;color:rgba(255,255,255,0.35);border-bottom:2px solid rgba(255,255,255,0.1);position:relative;transition:all .2s}
+    .step.active{color:#db2777;border-bottom-color:#db2777}
+    .step.done{color:#4ade80;border-bottom-color:#4ade80}
+    .step-num{display:inline-block;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,0.1);line-height:22px;margin-right:6px;font-size:0.75rem}
+    .step.active .step-num{background:#db2777;color:#fff}
+    .step.done .step-num{background:#4ade80;color:#fff}
+    /* Calendar */
+    .card-section{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:16px;padding:20px;margin-bottom:18px}
+    .card-section h3{color:#fff;font-size:0.95rem;font-weight:700;margin-bottom:16px}
+    .cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+    .cal-title{color:#fff;font-size:1rem;font-weight:700}
+    .cal-nav{background:rgba(255,255,255,0.08);border:none;color:#fff;width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:background .2s}
+    .cal-nav:hover{background:rgba(255,255,255,0.15)}
+    .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+    .cal-day-name{text-align:center;color:rgba(255,255,255,0.4);font-size:0.72rem;font-weight:600;padding:4px 0;text-transform:uppercase}
+    .cal-day{aspect-ratio:1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.9rem;font-weight:600;cursor:pointer;border:2px solid transparent;transition:all .15s;color:rgba(255,255,255,0.8);background:rgba(255,255,255,0.05)}
+    .cal-day:hover:not(.cal-empty):not(.cal-past):not(.cal-blocked){background:rgba(255,255,255,0.12);border-color:rgba(255,255,255,0.2)}
+    .cal-day.cal-empty{background:transparent;cursor:default;pointer-events:none}
+    .cal-day.cal-past{color:rgba(255,255,255,0.2);background:transparent;cursor:default}
+    .cal-day.cal-today{border-color:rgba(255,255,255,0.4);color:#fff}
+    .cal-day.cal-blocked{background:rgba(255,160,0,0.1);color:#fbbf24;cursor:not-allowed;position:relative}
+    .cal-day.cal-blocked::after{content:'🔒';position:absolute;font-size:0.55rem;top:2px;right:2px}
+    .cal-day.cal-selected{background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;border-color:transparent;transform:scale(1.08)}
+    /* Slots */
+    .slots-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:10px}
+    .slot{padding:10px 8px;border-radius:10px;border:2px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.8);font-size:0.85rem;font-weight:600;text-align:center;cursor:pointer;transition:all .2s}
+    .slot:hover{border-color:#db2777;background:rgba(225,0,255,0.1);color:#db2777}
+    .slot.selected{background:linear-gradient(135deg,#7c3aed,#db2777);border-color:transparent;color:#fff}
+    .slot.occupied{background:rgba(255,68,68,0.1);border-color:rgba(255,68,68,0.2);color:rgba(255,100,100,0.5);cursor:not-allowed}
+    .no-slots{color:rgba(255,255,255,0.4);font-size:0.88rem;padding:20px 0;text-align:center}
+    .spinner{text-align:center;padding:20px;color:rgba(255,255,255,0.4)}
+    /* Confirm form */
+    .confirm-form{display:none}
+    .confirm-form.visible{display:block}
+    .form-group{margin-bottom:16px}
+    label{display:block;color:rgba(255,255,255,0.7);font-size:0.85rem;font-weight:600;margin-bottom:6px}
+    .selected-summary{background:rgba(127,0,255,0.15);border:1px solid rgba(127,0,255,0.3);border-radius:10px;padding:14px 16px;margin-bottom:16px}
+    .selected-summary .row{display:flex;justify-content:space-between;padding:4px 0;font-size:0.9rem}
+    .selected-summary .row .key{color:rgba(255,255,255,0.6)}
+    .selected-summary .row .val{color:#fff;font-weight:600}
+    textarea{width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:12px;color:#fff;font-size:0.9rem;resize:vertical;min-height:80px;font-family:inherit}
+    textarea::placeholder{color:rgba(255,255,255,0.3)}
+    textarea:focus{outline:none;border-color:#db2777}
+    .btn-submit{width:100%;padding:14px;background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;letter-spacing:.4px;transition:opacity .2s}
+    .btn-submit:hover{opacity:.9}
+    .btn-change{width:100%;padding:11px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.12);border-radius:12px;font-size:0.9rem;font-weight:600;cursor:pointer;margin-bottom:10px;transition:background .2s}
+    .btn-change:hover{background:rgba(255,255,255,0.12)}
+    /* Messages */
+    .msg{border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:0.9rem}
+    .msg-success{background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);color:#4ade80}
+    .msg-error{background:rgba(255,68,68,0.15);border:1px solid rgba(255,68,68,0.3);color:#ff6b6b}
+    /* Hint */
+    .legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px}
+    .legend-item{display:flex;align-items:center;gap:6px;font-size:0.78rem;color:rgba(255,255,255,0.5)}
+    .dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+    @media(max-width:600px){
+      .topbar{padding:12px 14px}
+      .topbar h1{font-size:1rem}
+      .btn{padding:8px 12px;font-size:0.8rem}
+      .container{padding:14px 10px}
+      .step span:not(.step-num){display:none}
+      .slots-grid{grid-template-columns:repeat(3,1fr)}
+    }
+  </style>
 </head>
-
 <body>
-    <!-- Efecto de luz ambiental -->
-    <div class="light-effect"></div>
+<div class="topbar">
+  <h1><i class="fa fa-calendar-plus" style="color:#db2777"></i> Reservar {{ sala.nombre }}</h1>
+  <a href="{% url 'lista_salas' %}" class="btn btn-back"><i class="fa fa-arrow-left"></i> Zonas</a>
+</div>
 
-    <div class="container">
-        <div class="card">
-            <div class="header">
-                <h1>Reservar {{ sala.nombre }}</h1>
-                <p>Complete los detalles de su reserva</p>
-            </div>
-
-            {% if messages %}
-            <div class="message-container">
-                {% for message in messages %}
-                {% if message.tags == 'success' %}
-                <div class="message success">
-                    <div class="message-icon success-icon">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M20 6L9 17l-5-5"/>
-                        </svg>
-                    </div>
-                    <div class="message-content">
-                        {{ message }}
-                    </div>
-                    <div class="reserva-info">
-                        <h3>Detalles de la Reserva</h3>
-                        <div class="info-item">
-                            <span>Sala</span>
-                            <span>{{ sala.nombre }}</span>
-                        </div>
-                        <div class="info-item">
-                            <span>Fecha</span>
-                            <span>{{ fecha_seleccionada }}</span>
-                        </div>
-                        <div class="info-item">
-                            <span>Horario</span>
-                            <span>{{ hora_inicio }} - {{ hora_fin }}</span>
-                        </div>
-                        {% if notas %}
-                        <div class="info-item">
-                            <span>Notas</span>
-                            <span>{{ notas }}</span>
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-                {% else %}
-                <div class="message error">
-                    <div class="message-icon error-icon">
-                        <svg viewBox="0 0 24 24">
-                            <circle cx="12" cy="12" r="10"/>
-                            <line x1="15" y1="9" x2="9" y2="15"/>
-                            <line x1="9" y1="9" x2="15" y2="15"/>
-                        </svg>
-                    </div>
-                    <div class="message-content">
-                        {{ message }}
-                    </div>
-                </div>
-                {% endif %}
-                {% endfor %}
-            </div>
-            {% endif %}
-
-            <form method="post" id="reservaForm">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="fecha">Fecha</label>
-                    <input type="date" id="fecha" name="fecha" required value="{{ fecha_seleccionada }}" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="hora_inicio">Hora de inicio</label>
-                    <input type="time" id="hora_inicio" name="hora_inicio" required value="{{ hora_inicio }}"
-                        min="08:00" max="21:00">
-                    <div class="time-warning">Horario disponible: 8:00 AM - 10:00 PM</div>
-                    <div id="error-inicio" class="error-message">El horario debe estar entre las 8:00 AM y 9:00 PM</div>
-                </div>
-                <div class="form-group">
-                    <label for="hora_fin">Hora de finalización</label>
-                    <input type="time" id="hora_fin" name="hora_fin" required min="09:00" max="22:00">
-                    <div class="time-warning">La hora de finalización debe ser posterior a la hora de inicio</div>
-                    <div id="error-fin" class="error-message">La hora de fin debe ser posterior a la hora de inicio y antes de las 10:00 PM</div>
-                </div>
-                <div class="form-group">
-                    <label for="notas">Notas adicionales (opcional)</label>
-                    <textarea id="notas" name="notas" rows="3"></textarea>
-                </div>
-                <div class="button-group">
-                    <a href="{% url 'calendario_sala' sala.id %}" class="btn btn-secondary">Cancelar</a>
-                    <button type="submit" class="btn btn-primary">Confirmar Reserva</button>
-                </div>
-            </form>
-        </div>
+<div class="container">
+  {% if messages %}
+    {% for m in messages %}
+    <div class="msg {% if m.tags == 'success' %}msg-success{% else %}msg-error{% endif %}">
+      <i class="fa {% if m.tags == 'success' %}fa-circle-check{% else %}fa-circle-xmark{% endif %}"></i> {{ m }}
     </div>
+    {% endfor %}
+  {% endif %}
 
-    <script>
-        // Función para validar hora de inicio
-        function validarHorarioInicio(hora) {
-            const horaInicio = new Date(`2000-01-01T${hora}`);
-            const minHora = new Date(`2000-01-01T08:00`);
-            const maxHora = new Date(`2000-01-01T21:00`);
-            const inputHoraInicio = document.getElementById('hora_inicio');
-            const errorInicio = document.getElementById('error-inicio');
+  <div class="sala-header">
+    <div class="sala-icon">
+      {% if 'gym' in sala.nombre|lower %}🏋️{% elif 'piscina' in sala.nombre|lower %}🏊{% elif 'bbq' in sala.nombre|lower %}🔥{% elif 'salon' in sala.nombre|lower or 'salón' in sala.nombre|lower %}🎉{% elif 'juego' in sala.nombre|lower %}🎮{% else %}🏢{% endif %}
+    </div>
+    <div class="sala-info">
+      <h2>{{ sala.nombre }}</h2>
+      <p><i class="fa fa-users" style="color:#db2777;font-size:0.75rem"></i> {{ sala.capacidad }} personas · Horario 8:00 – 22:00</p>
+    </div>
+  </div>
 
-            if (horaInicio < minHora || horaInicio > maxHora) {
-                inputHoraInicio.classList.add('invalid-time');
-                errorInicio.classList.add('visible');
-                return false;
-            } else {
-                inputHoraInicio.classList.remove('invalid-time');
-                errorInicio.classList.remove('visible');
-                return true;
-            }
-        }
+  <div class="steps">
+    <div class="step active" id="step-1"><span class="step-num">1</span><span>Elige fecha</span></div>
+    <div class="step" id="step-2"><span class="step-num">2</span><span>Elige horario</span></div>
+    <div class="step" id="step-3"><span class="step-num">3</span><span>Confirmar</span></div>
+  </div>
 
-        // Función para validar hora de fin
-        function validarHorarioFin(hora) {
-            const horaFin = new Date(`2000-01-01T${hora}`);
-            const horaInicio = new Date(`2000-01-01T${document.getElementById('hora_inicio').value}`);
-            const maxHora = new Date(`2000-01-01T22:00`);
-            const inputHoraFin = document.getElementById('hora_fin');
-            const errorFin = document.getElementById('error-fin');
+  <!-- PASO 1: CALENDARIO -->
+  <div id="section-calendar" class="card-section">
+    <h3><i class="fa fa-calendar" style="color:#db2777"></i> Selecciona un día</h3>
+    <div class="cal-header">
+      <button class="cal-nav" id="prev-month"><i class="fa fa-chevron-left"></i></button>
+      <div class="cal-title" id="cal-title"></div>
+      <button class="cal-nav" id="next-month"><i class="fa fa-chevron-right"></i></button>
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+    <div class="legend">
+      <div class="legend-item"><div class="dot" style="background:rgba(225,0,255,0.7)"></div> Seleccionado</div>
+      <div class="legend-item"><div class="dot" style="background:rgba(255,160,0,0.4)"></div> Bloqueado</div>
+      <div class="legend-item"><div class="dot" style="background:rgba(255,255,255,0.05)"></div> Disponible</div>
+    </div>
+  </div>
 
-            if (horaFin <= horaInicio || horaFin > maxHora) {
-                inputHoraFin.classList.add('invalid-time');
-                errorFin.classList.add('visible');
-                return false;
-            } else {
-                inputHoraFin.classList.remove('invalid-time');
-                errorFin.classList.remove('visible');
-                return true;
-            }
-        }
+  <!-- PASO 2: SLOTS -->
+  <div id="section-slots" class="card-section" style="display:none">
+    <h3><i class="fa fa-clock" style="color:#db2777"></i> Horarios disponibles — <span id="slots-date-label"></span></h3>
+    <div id="slots-container"><div class="spinner"><i class="fa fa-spinner fa-spin"></i> Cargando...</div></div>
+  </div>
 
-        // Función para validar ambos horarios
-        function validarHorarios() {
-            const horaInicio = document.getElementById('hora_inicio').value;
-            const horaFin = document.getElementById('hora_fin').value;
+  <!-- PASO 3: CONFIRMAR -->
+  <div id="section-confirm" class="card-section confirm-form">
+    <h3><i class="fa fa-check-circle" style="color:#4ade80"></i> Confirmar reserva</h3>
+    <form method="POST" action="{% url 'reservar_sala' sala.id %}">
+      {% csrf_token %}
+      <input type="hidden" name="fecha" id="input-fecha">
+      <input type="hidden" name="hora_inicio" id="input-hora-inicio">
+      <input type="hidden" name="hora_fin" id="input-hora-fin">
+      <div class="selected-summary" id="confirm-summary"></div>
 
-            return validarHorarioInicio(horaInicio) && validarHorarioFin(horaFin);
-        }
+      {% if request.user.user_type == 'administrador' %}
+      <div class="form-group" style="margin-bottom:14px">
+        <label><i class="fa fa-building" style="color:#db2777;font-size:0.75rem"></i> Torre del residente</label>
+        <select name="torre_id" id="sel-torre" style="width:100%;background:#1a0a28;border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:12px;color:#fff;font-size:0.9rem" onchange="cargarAptos(this.value)">
+          <option value="" style="background:#1a0a28;color:#fff">— Selecciona torre —</option>
+          {% for torre in torres %}
+          <option value="{{ torre.id }}" style="background:#1a0a28;color:#fff">{{ torre.nombre }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group" style="margin-bottom:14px">
+        <label><i class="fa fa-door-open" style="color:#db2777;font-size:0.75rem"></i> Apartamento</label>
+        <select name="apartamento" id="sel-apto" style="width:100%;background:#1a0a28;border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:12px;color:#fff;font-size:0.9rem" disabled>
+          <option value="" style="background:#1a0a28;color:#fff">— Primero selecciona torre —</option>
+        </select>
+      </div>
+      <div id="residente-info" style="background:rgba(127,0,255,0.12);border:1px solid rgba(127,0,255,0.25);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:0.85rem;color:rgba(255,255,255,0.7);display:none"></div>
+      {% endif %}
 
-        // Event Listeners para los campos de hora
-        document.getElementById('hora_inicio').addEventListener('change', function () {
-            validarHorarioInicio(this.value);
-            document.getElementById('hora_fin').min = this.value;
+      <div class="form-group">
+        <label><i class="fa fa-pen" style="color:#db2777;font-size:0.75rem"></i> Notas adicionales (opcional)</label>
+        <textarea name="notas" placeholder="Ej: cumpleaños, reunión de copropietarios..."></textarea>
+      </div>
+      <button type="button" class="btn-change" onclick="backToSlots()"><i class="fa fa-arrow-left"></i> Cambiar horario</button>
+      <button type="submit" class="btn-submit"><i class="fa fa-paper-plane"></i> Confirmar reserva</button>
+    </form>
+  </div>
+</div>
 
-            // Si hay hora fin, validarla también
-            const horaFin = document.getElementById('hora_fin').value;
-            if (horaFin) {
-                validarHorarioFin(horaFin);
-            }
-        });
+<script>
+var SALA_ID = {{ sala.id }};
+var BLOQUEOS = {{ bloqueos_json|safe }};
 
-        document.getElementById('hora_fin').addEventListener('change', function () {
-            validarHorarioFin(this.value);
-        });
+function cargarAptos(torreId) {
+  var sel = document.getElementById('sel-apto');
+  var info = document.getElementById('residente-info');
+  if (!torreId) { sel.disabled = true; sel.innerHTML = '<option value="">— Primero selecciona torre —</option>'; info.style.display='none'; return; }
+  sel.disabled = true;
+  sel.innerHTML = '<option>Cargando...</option>';
+  fetch('/api/torres/' + torreId + '/apartamentos/')
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      sel.innerHTML = '<option value="" style="background:#1a0a28;color:#fff">— Selecciona apartamento —</option>';
+      (data.apartamentos || []).forEach(function(a){
+        var opt = document.createElement('option');
+        opt.value = a;
+        opt.textContent = 'Apto ' + a;
+        opt.style.background = '#1a0a28';
+        opt.style.color = '#fff';
+        sel.appendChild(opt);
+      });
+      sel.disabled = false;
+      info.style.display = 'none';
+      sel.onchange = function() { buscarResidente(torreId, this.value); };
+    });
+}
 
-        // Validación del formulario antes de enviar
-        document.getElementById('reservaForm').addEventListener('submit', function (e) {
-            if (!validarHorarios()) {
-                e.preventDefault();
-                alert('Por favor, corrija los horarios antes de continuar.');
-            }
-        });
+function buscarResidente(torreId, apto) {
+  var info = document.getElementById('residente-info');
+  if (!apto) { info.style.display='none'; return; }
+  fetch('/api/torres/' + torreId + '/apartamentos/?apto=' + apto)
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if (data.residente) {
+        info.style.display = 'block';
+        info.innerHTML = '<i class="fa fa-user" style="color:#db2777"></i> <strong>' + data.residente + '</strong>' + (data.telefono ? ' · ' + data.telefono : '');
+      } else {
+        info.style.display = 'block';
+        info.innerHTML = '<i class="fa fa-circle-info"></i> Sin residente registrado en este apartamento';
+      }
+    });
+}
+var MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+var DIAS = ['Do','Lu','Ma','Mi','Ju','Vi','Sa'];
 
-        // Auto-ocultar mensajes después de 5 segundos
-        setTimeout(function () {
-            const messages = document.querySelectorAll('.message');
-            messages.forEach(function (message) {
-                message.style.animation = 'slideOut 0.3s ease forwards';
-                setTimeout(() => message.remove(), 300);
-            });
-        }, 5000);
+var hoy = new Date();
+hoy.setHours(0,0,0,0);
+var viewYear = hoy.getFullYear();
+var viewMonth = hoy.getMonth();
+var selectedDate = null;
+var selectedSlot = null;
 
-        // Inicializar con la hora de inicio preseleccionada si existe
-        window.onload = function () {
-            const horaInicio = document.getElementById('hora_inicio').value;
-            if (horaInicio) {
-                validarHorarioInicio(horaInicio);
-            }
-        };
-    </script>
+function pad(n){ return n < 10 ? '0'+n : n; }
+function dateStr(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function fmtDate(s){
+  var p = s.split('-');
+  return p[2]+'/'+p[1]+'/'+p[0];
+}
+
+function isBloqueado(dStr){
+  return BLOQUEOS.some(function(b){ return b.inicio <= dStr && dStr <= b.fin; });
+}
+
+function renderCal(){
+  document.getElementById('cal-title').textContent = MESES[viewMonth] + ' ' + viewYear;
+  var grid = document.getElementById('cal-grid');
+  grid.innerHTML = '';
+  DIAS.forEach(function(d){
+    var el = document.createElement('div');
+    el.className = 'cal-day-name';
+    el.textContent = d;
+    grid.appendChild(el);
+  });
+  var first = new Date(viewYear, viewMonth, 1);
+  var startDay = first.getDay();
+  for(var i=0;i<startDay;i++){
+    var em = document.createElement('div');
+    em.className = 'cal-day cal-empty';
+    grid.appendChild(em);
+  }
+  var daysInMonth = new Date(viewYear, viewMonth+1, 0).getDate();
+  for(var d=1;d<=daysInMonth;d++){
+    var dt = new Date(viewYear, viewMonth, d);
+    dt.setHours(0,0,0,0);
+    var dStr = dateStr(dt);
+    var el = document.createElement('div');
+    el.className = 'cal-day';
+    el.textContent = d;
+    if(dt.getTime() === hoy.getTime()) el.classList.add('cal-today');
+    if(dt < hoy){ el.classList.add('cal-past'); }
+    else if(isBloqueado(dStr)){ el.classList.add('cal-blocked'); el.title='Mantenimiento programado'; }
+    else {
+      el.addEventListener('click', function(dS){ return function(){ selectDate(dS); }; }(dStr));
+    }
+    if(selectedDate === dStr) el.classList.add('cal-selected');
+    grid.appendChild(el);
+  }
+}
+
+function selectDate(dStr){
+  selectedDate = dStr;
+  selectedSlot = null;
+  renderCal();
+  setStep(2);
+  document.getElementById('section-slots').style.display = 'block';
+  var label = fmtDate(dStr);
+  document.getElementById('slots-date-label').textContent = label;
+  loadSlots(dStr);
+  document.getElementById('section-confirm').classList.remove('visible');
+}
+
+function loadSlots(dStr){
+  var container = document.getElementById('slots-container');
+  container.innerHTML = '<div class="spinner"><i class="fa fa-spinner fa-spin"></i> Cargando...</div>';
+  fetch('/api/sala/'+SALA_ID+'/horarios/'+dStr+'/')
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      renderSlots(data.slots_disponibles || []);
+    })
+    .catch(function(){ container.innerHTML = '<div class="no-slots"><i class="fa fa-exclamation-circle"></i> Error al cargar horarios.</div>'; });
+}
+
+function renderSlots(slots){
+  var container = document.getElementById('slots-container');
+  if(!slots.length){
+    container.innerHTML = '<div class="no-slots"><i class="fa fa-moon"></i> No hay horarios disponibles para este día.</div>';
+    return;
+  }
+  var grid = document.createElement('div');
+  grid.className = 'slots-grid';
+  slots.forEach(function(s){
+    var btn = document.createElement('div');
+    btn.className = 'slot';
+    btn.textContent = s.inicio + ' – ' + s.fin;
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.slot').forEach(function(x){ x.classList.remove('selected'); });
+      btn.classList.add('selected');
+      selectSlot(s);
+    });
+    grid.appendChild(btn);
+  });
+  container.innerHTML = '';
+  container.appendChild(grid);
+}
+
+function selectSlot(s){
+  selectedSlot = s;
+  setStep(3);
+  document.getElementById('input-fecha').value = selectedDate;
+  document.getElementById('input-hora-inicio').value = s.inicio;
+  document.getElementById('input-hora-fin').value = s.fin;
+  var summary = document.getElementById('confirm-summary');
+  summary.innerHTML =
+    '<div class="row"><span class="key"><i class="fa fa-building"></i> Sala</span><span class="val">{{ sala.nombre }}</span></div>'+
+    '<div class="row"><span class="key"><i class="fa fa-calendar"></i> Fecha</span><span class="val">'+fmtDate(selectedDate)+'</span></div>'+
+    '<div class="row"><span class="key"><i class="fa fa-clock"></i> Horario</span><span class="val">'+s.inicio+' – '+s.fin+'</span></div>';
+  document.getElementById('section-confirm').classList.add('visible');
+  document.getElementById('section-confirm').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function backToSlots(){
+  selectedSlot = null;
+  setStep(2);
+  document.getElementById('section-confirm').classList.remove('visible');
+  document.querySelectorAll('.slot').forEach(function(x){ x.classList.remove('selected'); });
+}
+
+function setStep(n){
+  for(var i=1;i<=3;i++){
+    var s = document.getElementById('step-'+i);
+    s.classList.remove('active','done');
+    if(i < n) s.classList.add('done');
+    else if(i === n) s.classList.add('active');
+  }
+}
+
+document.getElementById('prev-month').addEventListener('click', function(){
+  viewMonth--;
+  if(viewMonth < 0){ viewMonth = 11; viewYear--; }
+  renderCal();
+});
+document.getElementById('next-month').addEventListener('click', function(){
+  viewMonth++;
+  if(viewMonth > 11){ viewMonth = 0; viewYear++; }
+  renderCal();
+});
+
+renderCal();
+
+// Si viene de un success redirect, scroll arriba
+{% if messages %}window.scrollTo(0,0);{% endif %}
+</script>
 </body>
-
 </html>

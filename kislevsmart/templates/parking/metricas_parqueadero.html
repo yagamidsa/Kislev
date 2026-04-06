@@ -1,0 +1,314 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Métricas {{ tipo_label }} — Parqueadero</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #09000f 0%, #1a0a2e 50%, #0a1a2e 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .back-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            padding: 8px 18px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background .2s;
+        }
+        .back-btn:hover { background: rgba(255,255,255,0.2); }
+        h1 { font-size: 22px; font-weight: 700; }
+        h1 span { color: {% if tipo == 'carro' %}#FF1493{% else %}#a78bfa{% endif %}; }
+        .subtitle { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+
+        /* KPIs */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+        .kpi-card {
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+            padding: 18px 14px;
+            text-align: center;
+        }
+        .kpi-icon { font-size: 26px; margin-bottom: 6px; }
+        .kpi-value { font-size: 28px; font-weight: 700; color: {% if tipo == 'carro' %}#FF1493{% else %}#a78bfa{% endif %}; }
+        .kpi-label { font-size: 11px; color: rgba(255,255,255,0.55); margin-top: 4px; }
+
+        /* Ocupación gauge */
+        .ocupacion-bar {
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 28px;
+        }
+        .ocupacion-bar h3 { font-size: 14px; margin-bottom: 12px; color: rgba(255,255,255,0.7); }
+        .bar-track {
+            background: rgba(255,255,255,0.1);
+            border-radius: 999px;
+            height: 18px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+        .bar-fill {
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, {% if tipo == 'carro' %}#FF1493, #C71585{% else %}#7c3aed, #a78bfa{% endif %});
+            transition: width .6s ease;
+        }
+        .bar-labels { display: flex; justify-content: space-between; font-size: 12px; color: rgba(255,255,255,0.5); }
+
+        /* Charts */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+        @media(max-width: 680px) { .charts-grid { grid-template-columns: 1fr; } }
+        .chart-card {
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+            padding: 18px;
+        }
+        .chart-card h3 { font-size: 13px; color: rgba(255,255,255,0.7); margin-bottom: 14px; }
+
+        /* Tabla vehículos dentro */
+        .section-card {
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 18px;
+        }
+        .section-card h3 { font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom: 14px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { color: rgba(255,255,255,0.4); font-weight: 500; padding: 6px 10px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        td { padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        tr:last-child td { border-bottom: none; }
+        .placa-badge {
+            background: {% if tipo == 'carro' %}rgba(255,20,147,0.2){% else %}rgba(167,139,250,0.2){% endif %};
+            color: {% if tipo == 'carro' %}#FF1493{% else %}#a78bfa{% endif %};
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        .empty-msg { color: rgba(255,255,255,0.35); font-size: 13px; text-align: center; padding: 20px 0; }
+        @media(max-width: 600px) {
+            body { padding: 14px; }
+            h1 { font-size: 18px; }
+            .kpi-value { font-size: 22px; }
+            table { font-size: 11px; }
+            th, td { padding: 6px 6px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <a href="{% url 'parking' %}" class="back-btn">← Volver</a>
+    <div>
+        <h1>Métricas <span>{{ tipo_label }}</span></h1>
+        <div class="subtitle">{{ now|date:"d/m/Y H:i" }} — {{ request.user.conjunto.nombre }}</div>
+    </div>
+</div>
+
+<!-- KPIs -->
+<div class="kpi-grid">
+    <div class="kpi-card">
+        <div class="kpi-icon">🅿️</div>
+        <div class="kpi-value">{{ disp.total }}</div>
+        <div class="kpi-label">Espacios totales</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-icon">🚗</div>
+        <div class="kpi-value">{{ disp.ocupados }}</div>
+        <div class="kpi-label">Ocupados ahora</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-icon">✅</div>
+        <div class="kpi-value">{{ disp.disponibles }}</div>
+        <div class="kpi-label">Disponibles</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-icon">📅</div>
+        <div class="kpi-value">{{ ingresos_hoy }}</div>
+        <div class="kpi-label">Ingresos hoy</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-icon">📆</div>
+        <div class="kpi-value">{{ ingresos_mes }}</div>
+        <div class="kpi-label">Ingresos este mes</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-icon">⏱️</div>
+        <div class="kpi-value">{% if tiempo_promedio_min %}{{ tiempo_promedio_min }}m{% else %}—{% endif %}</div>
+        <div class="kpi-label">Tiempo prom. estadía</div>
+    </div>
+</div>
+
+<!-- Barra de ocupación -->
+{% if disp.total > 0 %}
+{% with pct=disp.ocupados|floatformat:0 %}
+<div class="ocupacion-bar">
+    <h3>Ocupación actual</h3>
+    <div class="bar-track">
+        <div class="bar-fill" style="width: {% widthratio disp.ocupados disp.total 100 %}%"></div>
+    </div>
+    <div class="bar-labels">
+        <span>{{ disp.ocupados }} ocupados</span>
+        <span>{% widthratio disp.ocupados disp.total 100 %}% ocupación</span>
+        <span>{{ disp.disponibles }} libres</span>
+    </div>
+</div>
+{% endwith %}
+{% endif %}
+
+<!-- Gráficas -->
+<div class="charts-grid">
+    <div class="chart-card">
+        <h3>Horas pico — ingresos por hora (mes actual)</h3>
+        <canvas id="chartHoras" height="180"></canvas>
+    </div>
+    <div class="chart-card">
+        <h3>Ingresos por día (mes actual)</h3>
+        <canvas id="chartDias" height="180"></canvas>
+    </div>
+</div>
+
+<!-- Vehículos actualmente dentro -->
+<div class="section-card">
+    <h3>{{ tipo_label }} actualmente en el parqueadero ({{ dentro_list|length }})</h3>
+    {% if dentro_list %}
+    <div style="overflow-x:auto">
+    <table>
+        <thead>
+            <tr>
+                <th>Placa</th>
+                <th>Nombre</th>
+                <th>Entrada</th>
+                <th>Tiempo dentro</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for v in dentro_list %}
+            <tr>
+                <td><span class="placa-badge">{{ v.placa }}</span></td>
+                <td>{{ v.nombre }}</td>
+                <td>{{ v.entrada }}</td>
+                <td>{{ v.tiempo }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    {% else %}
+    <div class="empty-msg">No hay {{ tipo_label|lower }} dentro en este momento</div>
+    {% endif %}
+</div>
+
+<!-- Top placas -->
+{% if top_placas %}
+<div class="section-card">
+    <h3>Top placas este mes</h3>
+    <div style="overflow-x:auto">
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Placa</th>
+                <th>Nombre</th>
+                <th>Ingresos</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in top_placas %}
+            <tr>
+                <td style="color:rgba(255,255,255,0.4)">{{ forloop.counter }}</td>
+                <td><span class="placa-badge">{{ p.placa }}</span></td>
+                <td>{{ p.nombre }}</td>
+                <td style="font-weight:600">{{ p.total }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+{% endif %}
+
+<script>
+const accent = '{% if tipo == "carro" %}#FF1493{% else %}#a78bfa{% endif %}';
+const accentBg = '{% if tipo == "carro" %}rgba(255,20,147,0.15){% else %}rgba(167,139,250,0.15){% endif %}';
+const gridColor = 'rgba(255,255,255,0.08)';
+const labelColor = 'rgba(255,255,255,0.5)';
+
+const baseOpts = {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: {
+        x: { ticks: { color: labelColor, font: { size: 10 } }, grid: { color: gridColor } },
+        y: { ticks: { color: labelColor, font: { size: 10 } }, grid: { color: gridColor }, beginAtZero: true }
+    }
+};
+
+// Horas pico
+const horasData = {{ horas_pico_json }};
+new Chart(document.getElementById('chartHoras'), {
+    type: 'bar',
+    data: {
+        labels: Array.from({length:24}, (_,i) => i+'h'),
+        datasets: [{
+            data: horasData,
+            backgroundColor: accentBg,
+            borderColor: accent,
+            borderWidth: 1,
+            borderRadius: 4,
+        }]
+    },
+    options: baseOpts
+});
+
+// Días del mes
+const diasLabels = {{ dias_labels_json }};
+const diasData = {{ dias_data_json }};
+new Chart(document.getElementById('chartDias'), {
+    type: 'line',
+    data: {
+        labels: diasLabels,
+        datasets: [{
+            data: diasData,
+            borderColor: accent,
+            backgroundColor: accentBg,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 3,
+        }]
+    },
+    options: baseOpts
+});
+</script>
+</body>
+</html>

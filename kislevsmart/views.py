@@ -24,14 +24,15 @@ from django.template.loader import render_to_string
 from django.views.decorators.http import require_http_methods
 from django.conf import settings
 from django.views.generic import ListView
-from .models import Sala, Reserva
+from .models import Sala, Reserva, BloqueoSala, Paquete
 import logging
 from django.contrib import messages
 from django.db import DatabaseError, transaction, models
 from django.http import HttpResponse
 from django.views.decorators.vary import vary_on_headers
 from .models import VisitanteVehicular
-from .models import ParqueaderoCarro, ParqueaderoMoto, Cuota, Pago
+from .models import ParqueaderoCarro, ParqueaderoMoto, Cuota, Pago, Novedad, ArchivoNovedad, ComentarioNovedad, LikeNovedad, NovedadVista
+from django.core.mail import EmailMultiAlternatives
 
 
 
@@ -64,7 +65,14 @@ class SalaListView(ListView):
     context_object_name = 'salas'
 
     def get_queryset(self):
-        return Sala.objects.filter(estado=True)
+        hoy = timezone.now().date()
+        salas = Sala.objects.filter(estado=True, conjunto=self.request.user.conjunto)
+        # Annotate each sala with its active BloqueoSala (if any)
+        for sala in salas:
+            sala.bloqueo_activo = BloqueoSala.objects.filter(
+                sala=sala, fecha_inicio__lte=hoy, fecha_fin__gte=hoy
+            ).first()
+        return salas
 
 def get_reservas_sala(request, sala_id):
     """
@@ -156,173 +164,234 @@ def calendario_sala(request, sala_id):
     return render(request, 'salas/calendario.html', context)
 
 def get_horarios_disponibles(request, sala_id, fecha):
-    """
-    API endpoint para obtener los horarios disponibles de un día específico
-    """
     sala = get_object_or_404(Sala, id=sala_id)
     try:
         fecha_consulta = datetime.strptime(fecha, '%Y-%m-%d').date()
     except ValueError:
         return JsonResponse({'error': 'Formato de fecha inválido'}, status=400)
-    
-    # Definir horarios de operación
+
+    # Sala bloqueada por mantenimiento ese día → sin slots
+    if BloqueoSala.objects.filter(sala=sala, fecha_inicio__lte=fecha_consulta, fecha_fin__gte=fecha_consulta).exists():
+        return JsonResponse({'fecha': fecha, 'slots_disponibles': [], 'bloqueada': True})
+
     HORARIOS_OPERACION = [
-        ('08:00', '09:00'),
-        ('09:00', '10:00'),
-        ('10:00', '11:00'),
-        ('11:00', '12:00'),
-        ('12:00', '13:00'),
-        ('13:00', '14:00'),
-        ('14:00', '15:00'),
-        ('15:00', '16:00'),
-        ('16:00', '17:00'),
-        ('17:00', '18:00'),
-        ('18:00', '19:00'),
-        ('19:00', '20:00'),
-        ('20:00', '21:00'),
-        ('21:00', '22:00'),
+        ('08:00', '09:00'), ('09:00', '10:00'), ('10:00', '11:00'),
+        ('11:00', '12:00'), ('12:00', '13:00'), ('13:00', '14:00'),
+        ('14:00', '15:00'), ('15:00', '16:00'), ('16:00', '17:00'),
+        ('17:00', '18:00'), ('18:00', '19:00'), ('19:00', '20:00'),
+        ('20:00', '21:00'), ('21:00', '22:00'),
     ]
-    
-    # Obtener todas las reservas del día
-    reservas_dia = Reserva.objects.filter(
-        sala=sala,
-        fecha=fecha_consulta
-    ).order_by('hora_inicio')
 
-    # Convertir las reservas a rangos de hora para fácil comparación
-    slots_ocupados = [(reserva.hora_inicio.strftime('%H:%M'), 
-                       reserva.hora_fin.strftime('%H:%M')) 
-                       for reserva in reservas_dia]
+    reservas_dia = Reserva.objects.filter(sala=sala, fecha=fecha_consulta).order_by('hora_inicio')
+    slots_ocupados = [(r.hora_inicio.strftime('%H:%M'), r.hora_fin.strftime('%H:%M')) for r in reservas_dia]
 
-    # Encontrar slots disponibles
     slots_disponibles = []
     for inicio, fin in HORARIOS_OPERACION:
-        slot_disponible = True
-        for ocupado_inicio, ocupado_fin in slots_ocupados:
-            # Verificar si hay solapamiento
-            if not (fin <= ocupado_inicio or inicio >= ocupado_fin):
-                slot_disponible = False
-                break
-        
-        if slot_disponible:
-            slots_disponibles.append({
-                'inicio': inicio,
-                'fin': fin
-            })
+        libre = all(fin <= oi or inicio >= of for oi, of in slots_ocupados)
+        if libre:
+            slots_disponibles.append({'inicio': inicio, 'fin': fin})
 
-    # Solo validar fechas pasadas, permitir fechas futuras
     if fecha_consulta < datetime.now().date():
         slots_disponibles = []
-    
-    # Si es el día actual, solo mostrar horarios futuros
     elif fecha_consulta == datetime.now().date():
         hora_actual = datetime.now().time()
-        slots_disponibles = [
-            slot for slot in slots_disponibles 
-            if datetime.strptime(slot['inicio'], '%H:%M').time() > hora_actual
-        ]
+        slots_disponibles = [s for s in slots_disponibles if datetime.strptime(s['inicio'], '%H:%M').time() > hora_actual]
 
-    return JsonResponse({
-        'fecha': fecha,
-        'slots_disponibles': slots_disponibles
-    })
+    return JsonResponse({'fecha': fecha, 'slots_disponibles': slots_disponibles})
 
 @login_required
 def reservar_sala(request, sala_id):
     sala = get_object_or_404(Sala, id=sala_id)
-    fecha = request.GET.get('fecha')
-    hora_inicio = request.GET.get('hora_inicio')
-    
+
+    # Build bloqueos JSON for the calendar (next 6 months)
+    hoy = timezone.now().date()
+    from datetime import date as date_type
+    limite = date_type(hoy.year + 1, hoy.month, 1)
+    bloqueos_qs = BloqueoSala.objects.filter(sala=sala, fecha_fin__gte=hoy)
+    bloqueos_json = json.dumps([
+        {'inicio': str(b.fecha_inicio), 'fin': str(b.fecha_fin), 'motivo': b.motivo}
+        for b in bloqueos_qs
+    ])
+
     if request.method == 'POST':
         fecha = request.POST.get('fecha')
         hora_inicio = request.POST.get('hora_inicio')
         hora_fin = request.POST.get('hora_fin')
         notas = request.POST.get('notas', '')
+        torre_id = request.POST.get('torre_id', '')
+        apartamento_post = request.POST.get('apartamento', '')
 
         try:
-            # Validar fecha y horas
             fecha_obj = datetime.strptime(fecha, '%Y-%m-%d').date()
             hora_inicio_obj = datetime.strptime(hora_inicio, '%H:%M').time()
             hora_fin_obj = datetime.strptime(hora_fin, '%H:%M').time()
 
-            # Validar que la fecha no sea en el pasado
             if fecha_obj < datetime.now().date():
                 raise ValueError('No se pueden hacer reservas en fechas pasadas')
-
-            # Validar horario de operación (8:00 AM a 10:00 PM)
             if hora_inicio_obj < datetime.strptime('08:00', '%H:%M').time() or \
                hora_fin_obj > datetime.strptime('22:00', '%H:%M').time():
-                raise ValueError('El horario de reserva debe estar entre 8:00 AM y 10:00 PM')
-
-            # Validar que hora_fin sea después de hora_inicio
+                raise ValueError('El horario debe estar entre 8:00 AM y 10:00 PM')
             if hora_fin_obj <= hora_inicio_obj:
-                raise ValueError('La hora de finalización debe ser posterior a la hora de inicio')
+                raise ValueError('La hora de finalización debe ser posterior a la de inicio')
 
-            # Verificar disponibilidad y crear con bloqueo para evitar race conditions
+            if BloqueoSala.objects.filter(sala=sala, fecha_inicio__lte=fecha_obj, fecha_fin__gte=fecha_obj).exists():
+                raise ValueError('La sala está en mantenimiento en esa fecha')
+
+            # Determinar usuario de la reserva
+            es_admin = request.user.user_type == 'administrador'
+            usuario_reserva = request.user
+            if es_admin and torre_id and apartamento_post:
+                from accounts.models import Torre as TorreModel
+                torre_obj = TorreModel.objects.filter(id=torre_id, conjunto=request.user.conjunto).first()
+                if torre_obj:
+                    residente = Usuario.objects.filter(
+                        conjunto=request.user.conjunto, torre=torre_obj,
+                        apartamento=apartamento_post, user_type='propietario'
+                    ).first()
+                    if residente:
+                        usuario_reserva = residente
+
             with transaction.atomic():
                 existe = Reserva.objects.select_for_update().filter(
-                    sala=sala,
-                    fecha=fecha_obj,
-                    hora_inicio__lt=hora_fin_obj,
-                    hora_fin__gt=hora_inicio_obj,
-                    estado=True,
+                    sala=sala, fecha=fecha_obj,
+                    hora_inicio__lt=hora_fin_obj, hora_fin__gt=hora_inicio_obj,
+                    estado__in=['pendiente', 'aprobada'],
                 ).exists()
-
                 if existe:
-                    raise ValueError('Ya existe una reserva para este horario')
-
+                    raise ValueError('Ya existe una reserva para ese horario')
                 Reserva.objects.create(
-                    sala=sala,
-                    fecha=fecha_obj,
-                    hora_inicio=hora_inicio_obj,
-                    hora_fin=hora_fin_obj,
-                    notas=notas
+                    sala=sala, fecha=fecha_obj,
+                    hora_inicio=hora_inicio_obj, hora_fin=hora_fin_obj,
+                    notas=notas, usuario=usuario_reserva,
+                    estado='aprobada' if es_admin else 'pendiente',
+                    aprobada_por=request.user if es_admin else None,
                 )
                 log_audit(request, 'reserva_creada',
                           f"Sala: {sala.nombre} | Fecha: {fecha_obj} | {hora_inicio_obj}-{hora_fin_obj}")
 
-            messages.success(request, 'Reserva creada exitosamente')
-            
-            # En lugar de redireccionar, renderizamos la misma página
-            return render(request, 'salas/reservar.html', {
-                'sala': sala,
-                'fecha_seleccionada': fecha,
-                'hora_inicio': hora_inicio,
-                'hora_fin': hora_fin,
-                'notas': notas,
-                'reserva_exitosa': True
-            })
+            if es_admin:
+                messages.success(request, f'Reserva confirmada — {sala.nombre} · {fecha_obj.strftime("%d/%m/%Y")} {hora_inicio}-{hora_fin}')
+            else:
+                messages.success(request, f'Reserva enviada — {sala.nombre} · {fecha_obj.strftime("%d/%m/%Y")} {hora_inicio}-{hora_fin} · Pendiente de aprobación del administrador')
+            return redirect('mis_reservas')
 
         except ValueError as e:
             messages.error(request, str(e))
         except Exception as e:
-            messages.error(request, 'Error al crear la reserva')
+            import traceback
+            messages.error(request, f'Error: {e} | {traceback.format_exc()[-300:]}')
 
-    # Para GET request o si hay errores en POST
-    return render(request, 'salas/reservar.html', {
-        'sala': sala,
-        'fecha_seleccionada': fecha,
-        'hora_inicio': hora_inicio
-    })
+    from accounts.models import Torre as TorreModel
+    from django.db.models.functions import Length
+    torres = TorreModel.objects.filter(conjunto=request.user.conjunto, activo=True).order_by(Length('nombre'), 'nombre') if request.user.user_type == 'administrador' else []
+    return render(request, 'salas/reservar.html', {'sala': sala, 'bloqueos_json': bloqueos_json, 'torres': torres})
 
 @login_required
 def mis_reservas(request):
-    reservas = Reserva.objects.filter(
-        fecha__gte=datetime.now().date()
-    ).order_by('fecha', 'hora_inicio')
+    user = request.user
+    if user.user_type == 'administrador':
+        reservas = Reserva.objects.filter(
+            sala__conjunto=user.conjunto
+        ).select_related('sala', 'usuario').order_by('-created_at')
+    else:
+        reservas = Reserva.objects.filter(
+            usuario=user
+        ).select_related('sala').order_by('-created_at')
     return render(request, 'salas/mis_reservas.html', {'reservas': reservas})
+
 
 @login_required
 def cancelar_reserva(request, reserva_id):
     reserva = get_object_or_404(Reserva, id=reserva_id)
-    
-    if request.method == 'POST':
-        sala_id = reserva.sala.id
-        reserva.delete()
-        messages.success(request, 'Reserva cancelada exitosamente')
+    if request.user.user_type != 'administrador' and reserva.usuario != request.user:
+        messages.error(request, 'No tienes permiso para cancelar esta reserva')
         return redirect('mis_reservas')
-        
+    if reserva.estado not in ('pendiente', 'aprobada'):
+        messages.error(request, 'Esta reserva no se puede cancelar')
+        return redirect('mis_reservas')
+    if request.method == 'POST':
+        from django.utils import timezone as _tz
+        reserva.estado = 'cancelada'
+        reserva.aprobada_por = request.user
+        reserva.fecha_aprobacion = _tz.now()
+        reserva.motivo_rechazo = f'Cancelada por {request.user.nombre}'
+        reserva.save(update_fields=['estado', 'aprobada_por', 'fecha_aprobacion', 'motivo_rechazo'])
+        messages.success(request, 'Reserva cancelada')
+        return redirect('mis_reservas')
     return render(request, 'salas/confirmar_cancelacion.html', {'reserva': reserva})
+
+
+@login_required
+@role_required(['administrador'])
+def aprobar_reserva(request, reserva_id):
+    from django.utils import timezone as _tz
+    if request.method != 'POST':
+        return redirect('mis_reservas')
+    reserva = get_object_or_404(Reserva, id=reserva_id, sala__conjunto=request.user.conjunto)
+    accion = request.POST.get('accion')
+    if accion == 'aprobar':
+        reserva.estado = 'aprobada'
+        reserva.aprobada_por = request.user
+        reserva.fecha_aprobacion = _tz.now()
+        reserva.motivo_rechazo = ''
+        reserva.save(update_fields=['estado', 'aprobada_por', 'fecha_aprobacion', 'motivo_rechazo'])
+        messages.success(request, f'Reserva de {reserva.sala.nombre} aprobada')
+    elif accion == 'rechazar':
+        motivo = request.POST.get('motivo', '').strip()
+        reserva.estado = 'rechazada'
+        reserva.aprobada_por = request.user
+        reserva.fecha_aprobacion = _tz.now()
+        reserva.motivo_rechazo = motivo
+        reserva.save(update_fields=['estado', 'aprobada_por', 'fecha_aprobacion', 'motivo_rechazo'])
+        messages.success(request, f'Reserva de {reserva.sala.nombre} rechazada')
+    next_url = request.POST.get('next', 'mis_reservas')
+    return redirect(next_url)
+
+
+@login_required
+def bloquear_sala(request):
+    if request.user.user_type != 'administrador':
+        messages.error(request, 'Acceso restringido')
+        return redirect('lista_salas')
+
+    salas = Sala.objects.filter(estado=True, conjunto=request.user.conjunto)
+    hoy = timezone.now().date()
+    bloqueos = BloqueoSala.objects.filter(
+        sala__conjunto=request.user.conjunto, fecha_fin__gte=hoy
+    ).select_related('sala').order_by('fecha_inicio')
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+
+        if action == 'delete':
+            bloqueo_id = request.POST.get('bloqueo_id')
+            bloqueo = get_object_or_404(BloqueoSala, id=bloqueo_id, sala__conjunto=request.user.conjunto)
+            bloqueo.delete()
+            messages.success(request, 'Bloqueo eliminado correctamente')
+            return redirect('bloquear_sala')
+
+        sala_id = request.POST.get('sala')
+        fecha_inicio = request.POST.get('fecha_inicio')
+        fecha_fin = request.POST.get('fecha_fin')
+        motivo = request.POST.get('motivo', 'Mantenimiento').strip() or 'Mantenimiento'
+
+        try:
+            sala = get_object_or_404(Sala, id=sala_id, conjunto=request.user.conjunto)
+            fi = datetime.strptime(fecha_inicio, '%Y-%m-%d').date()
+            ff = datetime.strptime(fecha_fin, '%Y-%m-%d').date()
+            if ff < fi:
+                raise ValueError('La fecha fin debe ser igual o posterior a la fecha inicio')
+            BloqueoSala.objects.create(sala=sala, fecha_inicio=fi, fecha_fin=ff, motivo=motivo, creado_por=request.user)
+            messages.success(request, f'{sala.nombre} bloqueada del {fi.strftime("%d/%m/%Y")} al {ff.strftime("%d/%m/%Y")}')
+            return redirect('bloquear_sala')
+        except ValueError as e:
+            messages.error(request, str(e))
+
+    return render(request, 'salas/bloquear_sala.html', {
+        'salas': salas,
+        'bloqueos': bloqueos,
+        'hoy': hoy.strftime('%Y-%m-%d'),
+    })
 
 
 
@@ -1019,7 +1088,7 @@ def historial_visitantes(request):
 
 
 @login_required
-@role_required(['porteria', 'administrador'])
+@role_required(['porteria', 'administrador', 'propietario'])
 def parking(request):
     return render(request, 'parking/inicio_parqueo.html')
 
@@ -1515,6 +1584,19 @@ def dashboard(request):
         ).values('fecha_pago__month').annotate(total=models.Sum('monto_pagado')):
             recaudo_por_mes[p['fecha_pago__month'] - 1] = p['total'] or 0
 
+        # ── Datos novedades ────────────────────────────────────────────
+        from django.db.models import Sum as _Sum
+        mes_inicio = fecha_actual.replace(day=1)
+        novedades_mes = Novedad.objects.filter(conjunto_id=conjunto_id, activa=True, created_at__date__gte=mes_inicio)
+        nov_total = Novedad.objects.filter(conjunto_id=conjunto_id, activa=True).count()
+        nov_mes = novedades_mes.count()
+        from .models import LikeNovedad, ComentarioNovedad
+        nov_likes = LikeNovedad.objects.filter(novedad__conjunto_id=conjunto_id).count()
+        nov_comentarios = ComentarioNovedad.objects.filter(novedad__conjunto_id=conjunto_id).count()
+        ultimas_novedades = Novedad.objects.filter(
+            conjunto_id=conjunto_id, activa=True
+        ).order_by('-created_at')[:3]
+
         # Contexto para el template
         context = {
             'fecha_seleccionada': fecha_inicio.date(),
@@ -1541,6 +1623,24 @@ def dashboard(request):
             'total_propietarios_fin': total_propietarios_fin,
             'pct_al_dia': pct_al_dia,
             'recaudo_por_mes': recaudo_por_mes,
+            # Novedades
+            'nov_total': nov_total,
+            'nov_mes': nov_mes,
+            'nov_likes': nov_likes,
+            'nov_comentarios': nov_comentarios,
+            'ultimas_novedades': ultimas_novedades,
+            # Paquetes
+            'paq_pendientes': Paquete.objects.filter(conjunto_id=conjunto_id, estado='pendiente').count(),
+            'paq_hoy_registrados': Paquete.objects.filter(conjunto_id=conjunto_id, fecha_registro__date=fecha_actual).count(),
+            'paq_hoy_entregados': Paquete.objects.filter(conjunto_id=conjunto_id, fecha_entrega__date=fecha_actual).count(),
+            'torres_dashboard': Torre.objects.filter(conjunto_id=conjunto_id, activo=True),
+            # Reservas pendientes de aprobación (solo de propietarios)
+            'reservas_pendientes': Reserva.objects.filter(
+                sala__conjunto_id=conjunto_id, estado='pendiente'
+            ).exclude(usuario__user_type='administrador').select_related('sala', 'usuario').order_by('fecha', 'hora_inicio'),
+            'reservas_pendientes_count': Reserva.objects.filter(
+                sala__conjunto_id=conjunto_id, estado='pendiente'
+            ).exclude(usuario__user_type='administrador').count(),
         }
         
         return render(request, 'dashboard.html', context)
@@ -1801,16 +1901,16 @@ def disponibilidad_carros(request):
 def disponibilidad_motos(request):
     """Vista para mostrar solo la disponibilidad de motos"""
     conjunto_id = request.user.conjunto_id
-    
+
     # Obtener o crear registro de parqueadero para el conjunto
     parqueadero, created = ParqueaderoMoto.objects.get_or_create(
         conjunto_id=conjunto_id,
         defaults={'total_espacios': 0}
     )
-    
+
     # Obtener disponibilidad
     disponibilidad = ParqueaderoMoto.get_disponibilidad(conjunto_id)
-    
+
     # Obtener vehículos activos
     vehiculos_activos = VisitanteVehicular.objects.filter(
         conjunto_id=conjunto_id,
@@ -1818,14 +1918,122 @@ def disponibilidad_motos(request):
         ultima_lectura__isnull=False,
         segunda_lectura__isnull=True
     ).select_related('conjunto').order_by('-ultima_lectura')
-    
+
     context = {
         'disponibilidad': disponibilidad,
         'vehiculos_activos': vehiculos_activos,
         'conjunto': request.user.conjunto,
     }
-    
+
     return render(request, 'parking/disponibilidad_tipo.html', context)
+
+
+@login_required
+@role_required(['administrador'])
+def metricas_parqueadero(request, tipo):
+    from django.db.models import Avg, F, ExpressionWrapper, DurationField
+    from django.db.models.functions import TruncHour, TruncDate
+    from django.utils import timezone as _tz
+    import json
+
+    if tipo not in ('carro', 'moto'):
+        return redirect('parking')
+
+    conjunto_id = request.user.conjunto_id
+    now = _tz.localtime(_tz.now())
+    inicio_mes = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    hoy_inicio = now.replace(hour=0, minute=0, second=0, microsecond=0)
+
+    # Disponibilidad actual
+    if tipo == 'carro':
+        disp = ParqueaderoCarro.get_disponibilidad(conjunto_id)
+    else:
+        disp = ParqueaderoMoto.get_disponibilidad(conjunto_id)
+
+    base_qs = VisitanteVehicular.objects.filter(conjunto_id=conjunto_id, tipo_vehiculo=tipo)
+
+    # KPIs
+    ingresos_hoy = base_qs.filter(ultima_lectura__gte=hoy_inicio).count()
+    ingresos_mes = base_qs.filter(ultima_lectura__gte=inicio_mes).count()
+    salidas_hoy = base_qs.filter(segunda_lectura__gte=hoy_inicio).count()
+
+    # Tiempo promedio de permanencia (solo los que ya salieron)
+    completados = base_qs.filter(ultima_lectura__isnull=False, segunda_lectura__isnull=False)
+    tiempo_promedio_min = None
+    if completados.exists():
+        duraciones = [
+            (v.segunda_lectura - v.ultima_lectura).total_seconds() / 60
+            for v in completados
+            if v.segunda_lectura > v.ultima_lectura
+        ]
+        if duraciones:
+            tiempo_promedio_min = round(sum(duraciones) / len(duraciones))
+
+    # Vehículos actualmente dentro
+    dentro = base_qs.filter(
+        ultima_lectura__isnull=False,
+        segunda_lectura__isnull=True
+    ).order_by('-ultima_lectura')[:20]
+
+    dentro_list = []
+    for v in dentro:
+        mins = int((now - _tz.localtime(v.ultima_lectura)).total_seconds() / 60)
+        dentro_list.append({
+            'placa': v.placa,
+            'nombre': v.nombre,
+            'entrada': _tz.localtime(v.ultima_lectura).strftime('%H:%M'),
+            'tiempo': f'{mins // 60}h {mins % 60}m' if mins >= 60 else f'{mins}m',
+        })
+
+    # Horas pico del mes (ingresos por hora)
+    horas_raw = (
+        base_qs.filter(ultima_lectura__gte=inicio_mes)
+        .annotate(hora=TruncHour('ultima_lectura'))
+        .values('hora')
+        .annotate(total=models.Count('id'))
+        .order_by('hora')
+    )
+    horas_pico = [0] * 24
+    for row in horas_raw:
+        h = _tz.localtime(row['hora']).hour
+        horas_pico[h] += row['total']
+
+    # Top 10 placas del mes
+    top_placas = (
+        base_qs.filter(ultima_lectura__gte=inicio_mes)
+        .values('placa', 'nombre')
+        .annotate(total=models.Count('id'))
+        .order_by('-total')[:10]
+    )
+
+    # Ingresos por día del mes (últimos 30 días)
+    dias_raw = (
+        base_qs.filter(ultima_lectura__gte=inicio_mes)
+        .annotate(dia=TruncDate('ultima_lectura'))
+        .values('dia')
+        .annotate(total=models.Count('id'))
+        .order_by('dia')
+    )
+    dias_labels = [row['dia'].strftime('%d/%m') for row in dias_raw]
+    dias_data = [row['total'] for row in dias_raw]
+
+    context = {
+        'tipo': tipo,
+        'tipo_label': 'Carros' if tipo == 'carro' else 'Motos',
+        'disp': disp,
+        'ingresos_hoy': ingresos_hoy,
+        'ingresos_mes': ingresos_mes,
+        'salidas_hoy': salidas_hoy,
+        'tiempo_promedio_min': tiempo_promedio_min,
+        'dentro_list': dentro_list,
+        'horas_pico_json': json.dumps(horas_pico),
+        'top_placas': list(top_placas),
+        'dias_labels_json': json.dumps(dias_labels),
+        'dias_data_json': json.dumps(dias_data),
+        'now': now,
+    }
+    return render(request, 'parking/metricas_parqueadero.html', context)
+
 
 @login_required
 def historial_vehiculos(request, tipo_vehiculo):
@@ -1893,11 +2101,20 @@ def get_apartamentos(request, torre_id):
             is_active=True
         ).values_list('apartamento', flat=True)
         
-        return JsonResponse({
+        response = {
             'status': 'success',
             'apartamentos': apartamentos,
-            'ocupados': list(ocupados)
-        })
+            'ocupados': list(ocupados),
+        }
+        # Si viene ?apto=XXX, devolver info del residente para el formulario de paquetes
+        apto = request.GET.get('apto', '').strip()
+        if apto:
+            residente = Usuario.objects.filter(
+                torre=torre, apartamento=apto, user_type='propietario', is_active=True
+            ).first()
+            response['residente'] = residente.nombre if residente else None
+            response['telefono'] = residente.phone_number if residente else None
+        return JsonResponse(response)
     except Exception as e:
         logger.error(f"Error al obtener apartamentos: {str(e)}")
         return JsonResponse({
@@ -2074,3 +2291,476 @@ def estado_cuenta(request):
         'resumen': resumen,
         'total_deuda': total_deuda,
     })
+
+# ─────────────────────────────────────────────
+#  NOVEDADES
+# ─────────────────────────────────────────────
+
+@login_required
+def lista_novedades(request):
+    novedades = Novedad.objects.filter(
+        conjunto=request.user.conjunto, activa=True
+    ).prefetch_related('archivos', 'comentarios')
+    return render(request, 'novedades/lista.html', {'novedades': novedades})
+
+
+@login_required
+def detalle_novedad(request, pk):
+    novedad = get_object_or_404(Novedad, pk=pk, conjunto=request.user.conjunto, activa=True)
+    comentarios = novedad.comentarios.select_related('usuario').all()
+    user_liked = novedad.likes.filter(usuario=request.user).exists()
+    like_count = novedad.likes.count()
+    # Marcar como vista
+    NovedadVista.objects.get_or_create(novedad=novedad, usuario=request.user)
+    return render(request, 'novedades/detalle.html', {
+        'novedad': novedad,
+        'comentarios': comentarios,
+        'user_liked': user_liked,
+        'like_count': like_count,
+    })
+
+
+@login_required
+@require_POST
+def agregar_comentario(request, pk):
+    novedad = get_object_or_404(Novedad, pk=pk, conjunto=request.user.conjunto, activa=True)
+    texto = request.POST.get('texto', '').strip()
+    if texto:
+        ComentarioNovedad.objects.create(novedad=novedad, usuario=request.user, texto=texto)
+    return redirect('detalle_novedad', pk=pk)
+
+
+@login_required
+def crear_novedad(request):
+    if request.user.user_type != 'administrador':
+        return redirect('lista_novedades')
+
+    if request.method == 'POST':
+        titulo   = sanitize_text(request.POST.get('titulo', '').strip())
+        contenido = request.POST.get('contenido', '').strip()
+        imagen   = request.FILES.get('imagen')
+        archivos = request.FILES.getlist('archivos')
+
+        if not titulo or not contenido:
+            messages.error(request, 'El título y el contenido son obligatorios.')
+            return render(request, 'novedades/crear.html')
+
+        novedad = Novedad.objects.create(
+            conjunto=request.user.conjunto,
+            autor=request.user,
+            titulo=titulo,
+            contenido=contenido,
+            imagen=imagen,
+        )
+
+        for f in archivos:
+            ArchivoNovedad.objects.create(
+                novedad=novedad,
+                archivo=f,
+                nombre_original=f.name,
+            )
+
+        _enviar_email_novedad(novedad, request)
+        log_audit(request, 'visitante_creado', f'Novedad publicada: {titulo}')
+        messages.success(request, 'Novedad publicada y notificación enviada.')
+        return redirect('detalle_novedad', pk=novedad.pk)
+
+    return render(request, 'novedades/crear.html')
+
+
+@login_required
+def eliminar_novedad(request, pk):
+    if request.user.user_type != 'administrador':
+        return redirect('lista_novedades')
+    novedad = get_object_or_404(Novedad, pk=pk, conjunto=request.user.conjunto)
+    novedad.activa = False
+    novedad.save()
+    messages.success(request, 'Novedad eliminada.')
+    return redirect('lista_novedades')
+
+
+def _enviar_email_novedad(novedad, request):
+    """Envía email a todos los usuarios activos del conjunto al publicar una novedad."""
+    try:
+        usuarios = Usuario.objects.filter(
+            conjunto=novedad.conjunto, is_active=True
+        ).exclude(pk=novedad.autor_id).values_list('email', flat=True)
+        emails = [e for e in usuarios if e]
+        if not emails:
+            return
+
+        url = request.build_absolute_uri(f'/novedades/{novedad.pk}/')
+        subject = f'[{novedad.conjunto.nombre}] Nueva novedad: {novedad.titulo}'
+        plain = f'{novedad.titulo}\n\n{novedad.contenido}\n\nVer novedad: {url}'
+        html = f"""
+        <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;">
+          <div style="background:linear-gradient(135deg,#7f00ff,#e100ff);padding:30px;border-radius:12px 12px 0 0;text-align:center;">
+            <h1 style="color:#fff;margin:0;font-size:22px;">📢 {novedad.titulo}</h1>
+            <p style="color:rgba(255,255,255,0.85);margin:8px 0 0;">{novedad.conjunto.nombre}</p>
+          </div>
+          <div style="background:#fff;padding:30px;border-radius:0 0 12px 12px;border:1px solid #eee;">
+            <p style="color:#333;font-size:15px;line-height:1.6;">{novedad.contenido[:400]}{'...' if len(novedad.contenido)>400 else ''}</p>
+            <div style="text-align:center;margin:24px 0;">
+              <a href="{url}" style="background:linear-gradient(135deg,#7f00ff,#e100ff);color:#fff;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:15px;">Ver novedad completa</a>
+            </div>
+            <p style="color:#999;font-size:12px;text-align:center;">Kislev — Sistema de gestión residencial</p>
+          </div>
+        </div>"""
+
+        for email in emails:
+            msg = EmailMultiAlternatives(subject, plain, settings.DEFAULT_FROM_EMAIL, [email])
+            msg.attach_alternative(html, 'text/html')
+            msg.send(fail_silently=True)
+    except Exception as e:
+        logger.error(f'Error enviando emails novedad: {e}')
+
+
+@login_required
+@require_POST
+def toggle_like(request, pk):
+    novedad = get_object_or_404(Novedad, pk=pk, conjunto=request.user.conjunto, activa=True)
+    like, created = LikeNovedad.objects.get_or_create(novedad=novedad, usuario=request.user)
+    if not created:
+        like.delete()
+        liked = False
+    else:
+        liked = True
+    return JsonResponse({'liked': liked, 'total': novedad.likes.count()})
+
+
+@login_required
+def metricas_novedades(request):
+    if request.user.user_type != 'administrador':
+        return redirect('lista_novedades')
+
+    from django.db.models import Count, Avg
+    from django.utils import timezone
+    import datetime
+
+    conjunto = request.user.conjunto
+
+    # Filtros
+    fecha_desde = request.GET.get('desde')
+    fecha_hasta = request.GET.get('hasta')
+
+    qs = Novedad.objects.filter(conjunto=conjunto, activa=True)
+    if fecha_desde:
+        try:
+            qs = qs.filter(created_at__date__gte=fecha_desde)
+        except Exception:
+            pass
+    if fecha_hasta:
+        try:
+            qs = qs.filter(created_at__date__lte=fecha_hasta)
+        except Exception:
+            pass
+
+    novedades = qs.annotate(
+        n_likes=Count('likes', distinct=True),
+        n_comentarios=Count('comentarios', distinct=True),
+    ).order_by('-created_at')
+
+    total_novedades = novedades.count()
+    total_likes     = sum(n.n_likes for n in novedades)
+    total_comentarios = sum(n.n_comentarios for n in novedades)
+    top_like = max(novedades, key=lambda n: n.n_likes, default=None)
+    top_comment = max(novedades, key=lambda n: n.n_comentarios, default=None)
+    promedio_likes = round(total_likes / total_novedades, 1) if total_novedades else 0
+    promedio_comentarios = round(total_comentarios / total_novedades, 1) if total_novedades else 0
+
+    # Engagement: (likes + comentarios) por novedad en promedio
+    engagement = round((total_likes + total_comentarios) / total_novedades, 1) if total_novedades else 0
+
+    context = {
+        'novedades': novedades,
+        'total_novedades': total_novedades,
+        'total_likes': total_likes,
+        'total_comentarios': total_comentarios,
+        'top_like': top_like,
+        'top_comment': top_comment,
+        'promedio_likes': promedio_likes,
+        'promedio_comentarios': promedio_comentarios,
+        'engagement': engagement,
+        'fecha_desde': fecha_desde or '',
+        'fecha_hasta': fecha_hasta or '',
+    }
+    return render(request, 'novedades/metricas.html', context)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# MÓDULO DE PAQUETES / MENSAJERÍA
+# ─────────────────────────────────────────────────────────────────────────────
+import random as _random
+from .utils import send_whatsapp, mensaje_paquete
+
+
+def _generar_codigo_paquete():
+    """Genera un código numérico de 6 dígitos único entre paquetes pendientes."""
+    for _ in range(20):
+        codigo = str(_random.randint(100000, 999999))
+        if not Paquete.objects.filter(codigo=codigo, estado='pendiente').exists():
+            return codigo
+    return str(_random.randint(100000, 999999))
+
+
+@login_required
+def registrar_paquete(request):
+    if request.user.user_type not in ('administrador', 'porteria'):
+        messages.error(request, 'Acceso restringido')
+        return redirect('lista_salas')
+
+    conjunto = request.user.conjunto
+    torres = Torre.objects.filter(conjunto=conjunto, activo=True)
+
+    if request.method == 'POST':
+        torre_id = request.POST.get('torre')
+        apartamento = request.POST.get('apartamento', '').strip()
+        empresa = request.POST.get('empresa', '')
+        descripcion = request.POST.get('descripcion', '').strip()
+
+        try:
+            torre = get_object_or_404(Torre, id=torre_id, conjunto=conjunto)
+
+            # Buscar propietario del apto para obtener nombre y teléfono
+            residente = Usuario.objects.filter(
+                conjunto=conjunto, torre=torre, apartamento=apartamento, user_type='propietario'
+            ).first()
+            destinatario_nombre = residente.nombre if residente else f'Residente Apto {apartamento}'
+            destinatario_telefono = (residente.phone_number or '') if residente else ''
+
+            codigo = _generar_codigo_paquete()
+            paquete = Paquete.objects.create(
+                conjunto=conjunto,
+                torre=torre,
+                apartamento=apartamento,
+                empresa=empresa,
+                descripcion=descripcion,
+                codigo=codigo,
+                registrado_por=request.user,
+                destinatario_nombre=destinatario_nombre,
+                destinatario_telefono=destinatario_telefono,
+            )
+
+            # Enviar WhatsApp si hay teléfono
+            wa_enviado = False
+            if destinatario_telefono:
+                from django.utils import timezone as _tz
+                now = _tz.localtime(_tz.now())
+                msg = mensaje_paquete(
+                    nombre=destinatario_nombre,
+                    conjunto=conjunto.nombre,
+                    torre=torre.nombre,
+                    apartamento=apartamento,
+                    empresa=dict(Paquete.EMPRESAS).get(empresa, empresa),
+                    fecha=now.strftime('%d/%m/%Y'),
+                    hora=now.strftime('%H:%M'),
+                    codigo=codigo,
+                )
+                wa_enviado = send_whatsapp(destinatario_telefono, msg)
+                paquete.whatsapp_enviado = wa_enviado
+                paquete.save(update_fields=['whatsapp_enviado'])
+
+            log_audit(request, 'paquete_registrado',
+                      f"Torre {torre.nombre} Apto {apartamento} | {empresa} | código {codigo}")
+
+            if wa_enviado:
+                messages.success(request, f'Paquete registrado ✓ · Código: {codigo} · WhatsApp enviado a {destinatario_nombre}')
+            elif destinatario_telefono:
+                messages.success(request, f'Paquete registrado ✓ · Código: {codigo} · (WhatsApp no disponible — teléfono: {destinatario_telefono})')
+            else:
+                messages.success(request, f'Paquete registrado ✓ · Código: {codigo} · El residente no tiene teléfono registrado')
+
+            return redirect('registrar_paquete')
+
+        except Exception as e:
+            messages.error(request, f'Error al registrar: {e}')
+
+    return render(request, 'paquetes/registrar_paquete.html', {
+        'torres': torres,
+        'empresas': Paquete.EMPRESAS,
+    })
+
+
+@login_required
+def entregar_paquete(request):
+    """API: verifica código y entrega paquete. POST JSON → {ok, mensaje, paquete}"""
+    if request.method != 'POST':
+        return JsonResponse({'ok': False, 'mensaje': 'Método no permitido'}, status=405)
+    if request.user.user_type not in ('administrador', 'porteria'):
+        return JsonResponse({'ok': False, 'mensaje': 'Acceso restringido'}, status=403)
+
+    try:
+        data = json.loads(request.body)
+        codigo = data.get('codigo', '').strip()
+    except Exception:
+        codigo = request.POST.get('codigo', '').strip()
+
+    if not codigo:
+        return JsonResponse({'ok': False, 'mensaje': 'Ingresa el código'})
+
+    paquete = Paquete.objects.filter(
+        codigo=codigo, estado='pendiente', conjunto=request.user.conjunto
+    ).select_related('torre').first()
+
+    if not paquete:
+        return JsonResponse({'ok': False, 'mensaje': 'Código incorrecto o paquete ya entregado'})
+
+    paquete.estado = 'entregado'
+    paquete.fecha_entrega = timezone.now()
+    paquete.entregado_por = request.user
+    paquete.save(update_fields=['estado', 'fecha_entrega', 'entregado_por'])
+    log_audit(request, 'paquete_entregado',
+              f"Código {codigo} | Torre {paquete.torre.nombre} Apto {paquete.apartamento}")
+
+    return JsonResponse({
+        'ok': True,
+        'mensaje': f'¡Entregado! · {paquete.destinatario_nombre} · Torre {paquete.torre.nombre} Apto {paquete.apartamento}',
+        'paquete': {
+            'codigo': paquete.codigo,
+            'torre': paquete.torre.nombre,
+            'apartamento': paquete.apartamento,
+            'empresa': paquete.empresa_display,
+            'destinatario': paquete.destinatario_nombre,
+        }
+    })
+
+
+@login_required
+def lista_paquetes(request):
+    conjunto = request.user.conjunto
+    torres = Torre.objects.filter(conjunto=conjunto, activo=True)
+
+    qs = Paquete.objects.filter(conjunto=conjunto).select_related('torre', 'registrado_por', 'entregado_por')
+
+    # Filtros
+    torre_id = request.GET.get('torre', '')
+    apartamento = request.GET.get('apto', '').strip()
+    estado = request.GET.get('estado', '')
+    fecha_desde = request.GET.get('desde', '')
+    fecha_hasta = request.GET.get('hasta', '')
+
+    if torre_id:
+        qs = qs.filter(torre_id=torre_id)
+    if apartamento:
+        qs = qs.filter(apartamento=apartamento)
+    if estado:
+        qs = qs.filter(estado=estado)
+    if fecha_desde:
+        qs = qs.filter(fecha_registro__date__gte=fecha_desde)
+    if fecha_hasta:
+        qs = qs.filter(fecha_registro__date__lte=fecha_hasta)
+
+    qs = qs.order_by('-fecha_registro')[:200]
+
+    return render(request, 'paquetes/lista_paquetes.html', {
+        'paquetes': qs,
+        'torres': torres,
+        'filtros': {
+            'torre_id': torre_id,
+            'apto': apartamento,
+            'estado': estado,
+            'desde': fecha_desde,
+            'hasta': fecha_hasta,
+        },
+    })
+
+
+@login_required
+def metricas_paquetes(request):
+    if request.user.user_type != 'administrador':
+        messages.error(request, 'Acceso restringido')
+        return redirect('lista_paquetes')
+
+    conjunto = request.user.conjunto
+    hoy = timezone.now().date()
+    mes_inicio = hoy.replace(day=1)
+
+    qs = Paquete.objects.filter(conjunto=conjunto)
+    total = qs.count()
+    pendientes = qs.filter(estado='pendiente').count()
+    entregados = qs.filter(estado='entregado').count()
+    hoy_registrados = qs.filter(fecha_registro__date=hoy).count()
+    hoy_entregados = qs.filter(fecha_entrega__date=hoy).count()
+    mes_registrados = qs.filter(fecha_registro__date__gte=mes_inicio).count()
+
+    por_empresa = list(
+        qs.values('empresa').annotate(total=Count('id')).order_by('-total')[:8]
+    )
+    for e in por_empresa:
+        e['empresa_display'] = dict(Paquete.EMPRESAS).get(e['empresa'], e['empresa'])
+
+    por_torre = list(
+        qs.filter(estado='pendiente').values('torre__nombre').annotate(total=Count('id')).order_by('-total')
+    )
+
+    ultimos = qs.select_related('torre').order_by('-fecha_registro')[:20]
+
+    return render(request, 'paquetes/metricas_paquetes.html', {
+        'total': total,
+        'pendientes': pendientes,
+        'entregados': entregados,
+        'hoy_registrados': hoy_registrados,
+        'hoy_entregados': hoy_entregados,
+        'mes_registrados': mes_registrados,
+        'por_empresa': por_empresa,
+        'por_torre': por_torre,
+        'ultimos': ultimos,
+        'conjunto': conjunto,
+    })
+
+
+@login_required
+@role_required(['propietario'])
+def regenerar_qr_visitante(request, visitante_id):
+    """Crea un nuevo QR para un visitante existente sin re-llenar el formulario."""
+    visitante_original = get_object_or_404(
+        Visitante,
+        id=visitante_id,
+        conjunto_id=request.user.conjunto_id,
+        numper=request.user.apartamento,
+    )
+
+    uuid_token = str(uuid.uuid4())
+    nuevo = Visitante.objects.create(
+        email=visitante_original.email,
+        nombre=visitante_original.nombre,
+        celular=visitante_original.celular,
+        cedula=visitante_original.cedula,
+        motivo=visitante_original.motivo,
+        email_creador=request.user.email,
+        nombre_log=visitante_original.nombre_log,
+        token=uuid_token,
+        fecha_generacion=timezone.now(),
+        numper=visitante_original.numper,
+        conjunto_id=visitante_original.conjunto_id,
+        ultima_lectura=None,
+    )
+
+    raw_token = f"Kislev_peatonal_{uuid_token}"
+    encrypted_token = cipher.encrypt(raw_token.encode()).decode()
+    base_url = f"https://{request.get_host()}" if 'railway.app' in request.get_host() else request.build_absolute_uri('/').rstrip('/')
+    enlace_qr = f"{base_url}{reverse('validar_qr', args=[encrypted_token])}"
+
+    qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_L)
+    qr.add_data(enlace_qr)
+    qr.make(fit=True)
+    qr_img = qr.make_image(fill_color="black", back_color="white")
+    qr_buffer = BytesIO()
+    qr_img.save(qr_buffer, format='PNG')
+    qr_buffer.seek(0)
+
+    try:
+        email_message = EmailMessage(
+            "Tu nuevo Código QR de Visitante",
+            f"Hola {nuevo.nombre},\n\nAdjunto encontrarás tu nuevo código QR para la visita.",
+            settings.DEFAULT_FROM_EMAIL,
+            [nuevo.email],
+        )
+        email_message.attach(f'qr_{nuevo.id}.png', qr_buffer.getvalue(), 'image/png')
+        email_message.send()
+    except Exception as e:
+        logger.error(f"Error enviando email QR regenerado: {e}")
+
+    log_audit(request, 'qr_regenerado', f"Visitante original: {visitante_original.id} → nuevo: {nuevo.id}")
+    email_b64 = base64.urlsafe_b64encode(nuevo.email.encode()).decode()
+    return redirect('valqr', email_b64=email_b64)

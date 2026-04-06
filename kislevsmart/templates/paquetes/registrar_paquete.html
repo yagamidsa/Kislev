@@ -1,0 +1,318 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registrar Paquete</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',Arial,sans-serif;min-height:100vh;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%)}
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:rgba(255,255,255,0.05);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,0.1)}
+    .topbar h1{color:#fff;font-size:1.1rem;font-weight:700}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:10px;font-size:0.88rem;font-weight:600;text-decoration:none;border:none;cursor:pointer;transition:all .2s}
+    .btn-back{background:rgba(255,255,255,0.1);color:#fff}
+    .container{max-width:640px;margin:0 auto;padding:24px 20px}
+    /* Steps */
+    .steps{display:flex;gap:0;margin-bottom:24px}
+    .step{flex:1;text-align:center;padding:10px 4px;font-size:0.72rem;font-weight:700;color:rgba(255,255,255,0.3);border-bottom:3px solid rgba(255,255,255,0.08);text-transform:uppercase;letter-spacing:.5px;transition:all .2s}
+    .step.active{color:#db2777;border-bottom-color:#db2777}
+    .step.done{color:#4ade80;border-bottom-color:#4ade80}
+    .step .num{display:inline-block;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.08);line-height:20px;margin-right:5px;font-size:0.7rem}
+    .step.active .num{background:#db2777}
+    .step.done .num{background:#4ade80;color:#1a1a2e}
+    /* Section */
+    .section{display:none}
+    .section.visible{display:block}
+    .section-card{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:22px;margin-bottom:16px}
+    .section-title{color:#fff;font-size:0.95rem;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+    .section-title i{color:#db2777}
+    /* Selection grids */
+    .torre-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px}
+    .apto-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px}
+    .empresa-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+    /* Generic selectable item */
+    .sel-item{border-radius:12px;border:2px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.75);font-weight:600;text-align:center;cursor:pointer;transition:all .18s;user-select:none;-webkit-tap-highlight-color:transparent}
+    .sel-item:active{transform:scale(.95)}
+    .sel-item.selected{border-color:#db2777;background:rgba(225,0,255,0.2);color:#fff}
+    /* Torre items */
+    .torre-item{padding:16px 10px;font-size:0.9rem}
+    .torre-item .t-icon{font-size:1.5rem;display:block;margin-bottom:6px}
+    /* Apto items */
+    .apto-item{padding:12px 4px;font-size:0.88rem}
+    /* Empresa items - brand colors */
+    .empresa-item{padding:14px 8px;font-size:0.78rem;display:flex;flex-direction:column;align-items:center;gap:6px}
+    .empresa-logo{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.75rem;flex-shrink:0;letter-spacing:-.3px}
+    /* Brand colors */
+    .brand-envia{background:#ff6b00;color:#fff}
+    .brand-coordinadora{background:#c0392b;color:#fff}
+    .brand-servientrega{background:#003f8a;color:#fff;font-size:0.6rem}
+    .brand-interrapidisimo{background:#ff8c00;color:#fff;font-size:0.65rem}
+    .brand-deprisa{background:#e31837;color:#fff}
+    .brand-fedex{background:linear-gradient(135deg,#4d148c,#ff6600);color:#fff}
+    .brand-dhl{background:#ffcc00;color:#d40511;font-size:0.8rem}
+    .brand-amazon{background:#ff9900;color:#232f3e}
+    .brand-mercadolibre{background:#ffe600;color:#333;font-size:0.65rem}
+    .brand-tcc{background:#0056a0;color:#fff}
+    .brand-rappi{background:#ff441f;color:#fff}
+    .brand-otro{background:rgba(255,255,255,0.15);color:#fff}
+    /* Residente info */
+    .residente-info{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);border-radius:10px;padding:12px 14px;margin-top:10px;font-size:0.85rem;color:#4ade80;display:none}
+    /* Summary */
+    .summary{background:rgba(127,0,255,0.12);border:1px solid rgba(127,0,255,0.3);border-radius:14px;padding:16px;margin-bottom:16px}
+    .summary-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:0.88rem}
+    .summary-row:last-child{border-bottom:none}
+    .summary-row .key{color:rgba(255,255,255,0.55)}
+    .summary-row .val{color:#fff;font-weight:700}
+    /* Buttons */
+    .btn-next{width:100%;padding:14px;background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;transition:opacity .2s;margin-top:8px}
+    .btn-next:disabled{opacity:.35;cursor:not-allowed}
+    .btn-next:not(:disabled):hover{opacity:.9}
+    .btn-ghost{width:100%;padding:11px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.12);border-radius:12px;font-size:0.9rem;font-weight:600;cursor:pointer;margin-bottom:10px;transition:background .2s}
+    .btn-ghost:hover{background:rgba(255,255,255,0.12)}
+    /* Messages */
+    .msg{border-radius:10px;padding:13px 16px;margin-bottom:16px;font-size:0.9rem;display:flex;align-items:flex-start;gap:10px}
+    .msg-success{background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);color:#4ade80}
+    .msg-error{background:rgba(255,68,68,0.15);border:1px solid rgba(255,68,68,0.3);color:#ff6b6b}
+    .loading{text-align:center;padding:20px;color:rgba(255,255,255,0.4)}
+    .no-aptos{color:rgba(255,255,255,0.4);font-size:0.85rem;padding:12px 0}
+    /* Actions shortcuts */
+    .shortcuts{display:flex;gap:10px;margin-bottom:20px}
+    .shortcut{flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:12px;text-align:center;text-decoration:none;color:#fff;font-size:0.8rem;font-weight:600;transition:background .2s}
+    .shortcut:hover{background:rgba(255,255,255,0.1)}
+    .shortcut i{font-size:1.2rem;display:block;margin-bottom:4px}
+    @media(max-width:600px){
+      .topbar{padding:12px 14px}.topbar h1{font-size:1rem}
+      .btn{padding:8px 12px;font-size:0.8rem}
+      .container{padding:12px 10px}
+      .section-card{padding:16px}
+      .torre-grid{grid-template-columns:repeat(auto-fill,minmax(90px,1fr))}
+      .empresa-grid{grid-template-columns:repeat(3,1fr)}
+      .step span{display:none}
+    }
+  </style>
+</head>
+<body>
+<div class="topbar">
+  <h1><i class="fa fa-box" style="color:#db2777"></i> Registrar Paquete</h1>
+  <a href="javascript:history.back()" class="btn btn-back"><i class="fa fa-arrow-left"></i> Volver</a>
+</div>
+
+<div class="container">
+  {% if messages %}
+    {% for m in messages %}
+    <div class="msg {% if m.tags == 'success' %}msg-success{% else %}msg-error{% endif %}">
+      <i class="fa {% if m.tags == 'success' %}fa-circle-check{% else %}fa-circle-xmark{% endif %}" style="flex-shrink:0;margin-top:2px"></i>
+      <span>{{ m }}</span>
+    </div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="shortcuts">
+    <a href="{% url 'lista_paquetes' %}" class="shortcut"><i class="fa fa-list" style="color:#a5b4fc"></i>Ver todos</a>
+    <a href="{% url 'metricas_paquetes' %}" class="shortcut"><i class="fa fa-chart-bar" style="color:#db2777"></i>Métricas</a>
+  </div>
+
+  <!-- STEPS -->
+  <div class="steps">
+    <div class="step active" id="s1"><span class="num">1</span><span>Torre</span></div>
+    <div class="step" id="s2"><span class="num">2</span><span>Apto</span></div>
+    <div class="step" id="s3"><span class="num">3</span><span>Empresa</span></div>
+    <div class="step" id="s4"><span class="num">4</span><span>Confirmar</span></div>
+  </div>
+
+  <!-- PASO 1: TORRE -->
+  <div class="section visible" id="sec-1">
+    <div class="section-card">
+      <div class="section-title"><i class="fa fa-building"></i> ¿A qué torre llegó el paquete?</div>
+      <div class="torre-grid">
+        {% for t in torres %}
+        <div class="sel-item torre-item" data-id="{{ t.id }}" data-nombre="{{ t.nombre }}" onclick="selectTorre(this)">
+          <span class="t-icon">🏢</span>{{ t.nombre }}
+        </div>
+        {% empty %}
+        <p style="color:rgba(255,255,255,0.4);font-size:0.88rem">No hay torres configuradas.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- PASO 2: APARTAMENTO -->
+  <div class="section" id="sec-2">
+    <div class="section-card">
+      <div class="section-title"><i class="fa fa-door-open"></i> ¿Cuál apartamento?</div>
+      <div style="margin-bottom:10px">
+        <span id="torre-selected-label" style="color:rgba(255,255,255,0.5);font-size:0.82rem"></span>
+      </div>
+      <div class="apto-grid" id="apto-grid">
+        <div class="loading"><i class="fa fa-spinner fa-spin"></i></div>
+      </div>
+      <div class="residente-info" id="residente-info">
+        <i class="fa fa-user-check"></i> <span id="residente-nombre"></span><br>
+        <span id="residente-tel" style="font-size:0.78rem;color:rgba(255,255,255,0.5)"></span>
+      </div>
+    </div>
+    <button class="btn-ghost" onclick="goStep(1)"><i class="fa fa-arrow-left"></i> Cambiar torre</button>
+  </div>
+
+  <!-- PASO 3: EMPRESA -->
+  <div class="section" id="sec-3">
+    <div class="section-card">
+      <div class="section-title"><i class="fa fa-truck"></i> ¿Quién lo trajo?</div>
+      <div class="empresa-grid">
+        {% for value, label in empresas %}
+        <div class="sel-item empresa-item" data-val="{{ value }}" data-label="{{ label }}" onclick="selectEmpresa(this)">
+          <div class="empresa-logo brand-{{ value }}">
+            {% if value == 'envia' %}ENVIA
+            {% elif value == 'coordinadora' %}COOR
+            {% elif value == 'servientrega' %}SERV
+            {% elif value == 'interrapidisimo' %}INTER
+            {% elif value == 'deprisa' %}DEP
+            {% elif value == 'fedex' %}FedEx
+            {% elif value == 'dhl' %}DHL
+            {% elif value == 'amazon' %}amzn
+            {% elif value == 'mercadolibre' %}MeLi
+            {% elif value == 'tcc' %}TCC
+            {% elif value == 'rappi' %}rappi
+            {% else %}?{% endif %}
+          </div>
+          <span>{{ label }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <button class="btn-ghost" onclick="goStep(2)"><i class="fa fa-arrow-left"></i> Cambiar apartamento</button>
+  </div>
+
+  <!-- PASO 4: CONFIRMAR -->
+  <div class="section" id="sec-4">
+    <div class="section-card">
+      <div class="section-title"><i class="fa fa-circle-check" style="color:#4ade80"></i> Confirmar registro</div>
+      <div class="summary" id="summary-box"></div>
+      <form method="POST" action="{% url 'registrar_paquete' %}" id="form-final">
+        {% csrf_token %}
+        <input type="hidden" name="torre" id="f-torre">
+        <input type="hidden" name="apartamento" id="f-apto">
+        <input type="hidden" name="empresa" id="f-empresa">
+        <input type="hidden" name="descripcion" value="">
+        <button type="submit" class="btn-next" id="btn-registrar">
+          <i class="fa fa-paper-plane"></i> Registrar y notificar por WhatsApp
+        </button>
+      </form>
+    </div>
+    <button class="btn-ghost" onclick="goStep(3)"><i class="fa fa-arrow-left"></i> Cambiar empresa</button>
+  </div>
+</div>
+
+<script>
+var state = {torre: null, torreNombre: '', apto: null, empresa: null, empresaLabel: '',
+             resNombre: '', resTel: ''};
+
+function goStep(n) {
+  [1,2,3,4].forEach(function(i){
+    document.getElementById('sec-'+i).classList.toggle('visible', i===n);
+    var s = document.getElementById('s'+i);
+    s.classList.remove('active','done');
+    if (i < n) s.classList.add('done');
+    else if (i === n) s.classList.add('active');
+  });
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function selectTorre(el) {
+  document.querySelectorAll('.torre-item').forEach(function(x){x.classList.remove('selected');});
+  el.classList.add('selected');
+  state.torre = el.dataset.id;
+  state.torreNombre = el.dataset.nombre;
+  setTimeout(function(){ goStep(2); loadAptos(state.torre); }, 200);
+}
+
+function loadAptos(torreId) {
+  document.getElementById('torre-selected-label').textContent = 'Torre: ' + state.torreNombre;
+  document.getElementById('apto-grid').innerHTML = '<div class="loading"><i class="fa fa-spinner fa-spin"></i> Cargando apartamentos...</div>';
+  document.getElementById('residente-info').style.display = 'none';
+
+  fetch('/api/torres/' + torreId + '/apartamentos/')
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      var grid = document.getElementById('apto-grid');
+      if (!data.apartamentos || !data.apartamentos.length) {
+        grid.innerHTML = '<p class="no-aptos">Sin apartamentos configurados para esta torre.</p>';
+        return;
+      }
+      grid.innerHTML = '';
+      data.apartamentos.forEach(function(apto){
+        var div = document.createElement('div');
+        div.className = 'sel-item apto-item';
+        div.textContent = apto;
+        div.dataset.apto = apto;
+        var isOcupado = data.ocupados && data.ocupados.includes(apto);
+        if (isOcupado) div.style.borderColor = 'rgba(34,197,94,0.3)';
+        div.addEventListener('click', function(){ selectApto(div); });
+        grid.appendChild(div);
+      });
+    })
+    .catch(function(){
+      document.getElementById('apto-grid').innerHTML = '<p class="no-aptos">Error al cargar apartamentos.</p>';
+    });
+}
+
+function selectApto(el) {
+  document.querySelectorAll('.apto-item').forEach(function(x){x.classList.remove('selected');});
+  el.classList.add('selected');
+  state.apto = el.dataset.apto;
+  // Buscar residente
+  fetch('/api/torres/' + state.torre + '/apartamentos/?apto=' + encodeURIComponent(state.apto))
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      var info = document.getElementById('residente-info');
+      if (data.residente) {
+        state.resNombre = data.residente;
+        state.resTel = data.telefono || '';
+        document.getElementById('residente-nombre').textContent = data.residente;
+        document.getElementById('residente-tel').textContent = data.telefono ? '📱 ' + data.telefono : 'Sin teléfono registrado';
+        info.style.display = 'block';
+      } else {
+        state.resNombre = '';
+        state.resTel = '';
+        info.style.display = 'none';
+      }
+      setTimeout(function(){ goStep(3); }, 350);
+    })
+    .catch(function(){ setTimeout(function(){ goStep(3); }, 200); });
+}
+
+function selectEmpresa(el) {
+  document.querySelectorAll('.empresa-item').forEach(function(x){x.classList.remove('selected');});
+  el.classList.add('selected');
+  state.empresa = el.dataset.val;
+  state.empresaLabel = el.dataset.label;
+  setTimeout(function(){ buildSummary(); goStep(4); }, 200);
+}
+
+function buildSummary() {
+  document.getElementById('f-torre').value = state.torre;
+  document.getElementById('f-apto').value = state.apto;
+  document.getElementById('f-empresa').value = state.empresa;
+  var rows = [
+    ['🏢 Torre', state.torreNombre],
+    ['🚪 Apartamento', state.apto],
+    ['🚚 Empresa', state.empresaLabel],
+  ];
+  if (state.resNombre) rows.push(['👤 Destinatario', state.resNombre]);
+  if (state.resTel) rows.push(['📱 WhatsApp', state.resTel]);
+  else rows.push(['📱 WhatsApp', 'No disponible — sin teléfono']);
+  var html = rows.map(function(r){
+    return '<div class="summary-row"><span class="key">'+r[0]+'</span><span class="val">'+r[1]+'</span></div>';
+  }).join('');
+  document.getElementById('summary-box').innerHTML = html;
+}
+
+document.getElementById('form-final').addEventListener('submit', function(){
+  document.getElementById('btn-registrar').disabled = true;
+  document.getElementById('btn-registrar').innerHTML = '<i class="fa fa-spinner fa-spin"></i> Registrando...';
+});
+</script>
+</body>
+</html>

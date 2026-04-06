@@ -10,6 +10,7 @@ class ConjuntoResidencial(models.Model):
     email_contacto = models.EmailField(blank=True, null=True)
     estado = models.BooleanField(default=True)
     fecha_registro = models.DateTimeField(auto_now_add=True)
+    link_pago = models.URLField(max_length=500, blank=True, null=True, help_text='Link del portal de pagos para este conjunto')
 
     class Meta:
         verbose_name = 'Conjunto Residencial'
@@ -42,7 +43,7 @@ class Torre(models.Model):
         apartamentos = []
         for piso in range(1, self.numero_pisos + 1):
             for apto in range(1, self.aptos_por_piso + 1):
-                num_apto = f"{piso}{apto:02d}"  # Por ejemplo: 101, 102, 201, 202
+                num_apto = f"{piso:02d}{apto:02d}"  # Por ejemplo: 0101, 0102, 0201, 0202
                 apartamentos.append(num_apto)
         return apartamentos
 

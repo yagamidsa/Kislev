@@ -14,22 +14,25 @@ description: |
 kislevsmart/          ← app principal
   models.py           ← Visitante, VisitanteVehicular, Sala, Reserva,
                          ParqueaderoCarro, ParqueaderoMoto,
-                         Cuota, Pago, AuditLog  ← NUEVOS
-  views.py            ← ~1900 líneas (pendiente dividir en módulos)
+                         Cuota, Pago, AuditLog,
+                         Novedad, ArchivoNovedad, ComentarioNovedad, LikeNovedad ← NUEVOS
+  views.py            ← ~2200 líneas (pendiente dividir en módulos)
   urls.py
   utils.py            ← role_required (reexporta de accounts), log_audit
 accounts/             ← auth, ConjuntoResidencial, Torre, Usuario
   models.py
-  views.py
+  views.py            ← incluye CustomPasswordChangeView + RecuperarPasswordView
   backends.py
   utils.py            ← role_required (fuente canónica)
 ```
 
-**Stack:** Django 3.2 + PostgreSQL · Railway (deploy) · Redis (cache/sesiones) · AWS SES (email boto3) · Whitenoise · django-ratelimit
+**Stack:** Django 5.1 + Python 3.13 · PostgreSQL 18 (puerto 5433) · Railway (deploy) · Redis (cache/sesiones) · AWS SES (email boto3) · Whitenoise · django-ratelimit
 
 **Dominio:** kislev.net.co · **Moneda:** COP (pesos colombianos) · **TZ:** America/Bogota
 
-**⚠️ Python 3.7** — bloqueador para subir a Django 5.1 (requiere Python 3.10+)
+**PC actual:** Lenovo / usuario Windows: Lenovo (antes era AlipioD — rutas antiguas inválidas)
+
+**⚠️ REGLA CRÍTICA — RESPONSIVE SIEMPRE:** Los usuarios (porteros, propietarios) usan principalmente celular. Toda vista nueva o modificada DEBE tener `@media(max-width:600px)` con breakpoints para topbar, container, cards, tablas y formularios.
 
 ---
 
@@ -47,10 +50,11 @@ Cada agente recibe **solo el contexto que necesita** para minimizar tokens.
 Eres un agente Django especializado en modelos y migraciones para Kislev.
 Contexto del proyecto:
 - App: kislevsmart + accounts
-- DB: PostgreSQL en Railway
+- DB: PostgreSQL 18 en Railway (local: puerto 5433)
 - Modelos existentes: ConjuntoResidencial, Torre, Usuario(AbstractBaseUser),
-  Visitante, VisitanteVehicular, Sala, Reserva,
-  ParqueaderoCarro, ParqueaderoMoto, Cuota, Pago, AuditLog
+  Visitante, VisitanteVehicular, Sala(con FK conjunto), Reserva,
+  ParqueaderoCarro, ParqueaderoMoto, Cuota, Pago, AuditLog,
+  Novedad, ArchivoNovedad, ComentarioNovedad, LikeNovedad
 
 TAREA: [DESCRIBE AQUÍ]
 
@@ -68,9 +72,9 @@ Reglas:
 ```
 Eres un agente Django especializado en views/APIs para Kislev.
 Contexto:
-- views.py tiene ~1900 líneas — NO lo reescribas completo, solo añade/edita funciones
+- views.py tiene ~2200 líneas — NO lo reescribas completo, solo añade/edita funciones
 - Auth: login_required + verificación de user_type ('administrador','propietario','porteria')
-- Email: usar send_ses_email(to, subject, body) que ya existe en utils
+- Email: usar EmailMultiAlternatives con fail_silently=True (SES local no configurado)
 - Redis: django.core.cache (default cache)
 - Patrón existente: JsonResponse para APIs, render() para vistas
 - AuditLog: usar log_audit(request, accion, detalle) de kislevsmart.utils
@@ -89,22 +93,26 @@ Reglas:
 
 ### 🟡 AGENTE: Frontend / Templates
 ```
-Eres un agente de frontend para Kislev (Django templates + Tailwind/Bootstrap).
+Eres un agente de frontend para Kislev (Django templates, CSS inline).
 Contexto:
 - Templates en kislevsmart/templates/ y accounts/templates/
-- Estáticos en kislevsmart/static/
+- Estáticos en kislevsmart/static/ y accounts/static/
 - UI en español, mercado colombiano
+- Estilo: fondo dark gradient (135deg, #1a1a2e, #16213e, #0f3460), acento #e100ff/#7f00ff
 - Existen: dashboard, portería QR, salas, notificaciones, parking,
-           historial visitantes (propietario), finanzas (admin + propietario)
+           historial visitantes (propietario), finanzas (admin + propietario),
+           novedades (lista, detalle, crear, metricas)
 
 TAREA: [DESCRIBE AQUÍ]
 
 Reglas:
-- Extiende siempre de base.html o la plantilla padre existente
-- No uses {% load static %} si ya está en el padre
 - Formularios con csrf_token siempre
-- Diseño mobile-first (porteros usan celular)
+- OBLIGATORIO responsive: incluir @media(max-width:600px) en TODA vista nueva
+  → topbar flex-wrap:wrap, container padding reducido, cards sin hover transform,
+    tablas con overflow-x:auto y min-width:500px, formularios full width
+- Porteros y propietarios usan celular → mobile-first es prioridad #1
 - Mensajes de éxito/error con el sistema de messages de Django
+- No usar frameworks externos (Bootstrap, Tailwind) — CSS inline/style block
 ```
 
 ---
@@ -131,9 +139,9 @@ Reglas:
 
 ---
 
-## BACKLOG — Estado actualizado al 2026-04-02
+## BACKLOG — Estado actualizado al 2026-04-03
 
-### ✅ COMPLETADO esta sesión
+### ✅ COMPLETADO sesiones anteriores
 
 | Item | Descripción |
 |------|-------------|
@@ -164,20 +172,32 @@ Reglas:
 | F9 | Tests pytest-django — 20/20 (auth, visitantes, reservas, finanzas) |
 | "Recuérdame" | Checkbox en login con session.set_expiry(30 días) |
 
+### ✅ COMPLETADO sesión 2026-04-03 (migración PC nuevo + features)
+
+| Item | Descripción |
+|------|-------------|
+| T2 | **Django 3.2 → 5.1 + Python 3.7 → 3.13** (completado al migrar al nuevo PC Lenovo) |
+| PC-MIG | Migración completa a PC nuevo: nuevo venv, PostgreSQL 18 (puerto 5433), kislev_user grants |
+| SEED | Base de datos poblada: 2 conjuntos (Oliva Madrid + Puerto Hayuelos 1), 20 users, salas por conjunto, parqueaderos |
+| AUTH-PWD | Módulo cambiar contraseña (logueado): `CustomPasswordChangeView` con `update_session_auth_hash` |
+| AUTH-REC | Módulo recuperar contraseña (por cédula, sin email): flujo 2 pasos en sesión. URL: `accounts:recuperar_password` |
+| SALA-FK | `Sala.conjunto` FK a ConjuntoResidencial — salas son por conjunto (no compartidas) |
+| DROPDOWN | Fix click dropdown en visor_admin/propietario/porteria: `pointer-events:none/auto` + padding en `<a>` en vez de `<li>` |
+| SUBTITLE | Panel muestra nombre del conjunto: `{{ user.conjunto.nombre }} (Rol)` en los 3 paneles |
+| NOV-MOD | Modelos: `Novedad`, `ArchivoNovedad`, `ComentarioNovedad`, `LikeNovedad` (unique_together novedad+usuario) |
+| NOV-VIEWS | Vistas novedades: lista, detalle, crear, eliminar, agregar_comentario, toggle_like (JSON), metricas_novedades |
+| NOV-EMAIL | Email HTML al publicar novedad con `EmailMultiAlternatives` + `fail_silently=True` |
+| NOV-UI | Templates: lista.html (cards grid), detalle.html (hero img + linkify + like animado), crear.html (preview imagen + multi-file), metricas.html (Chart.js bar+doughnut) |
+| NOV-LIKE | Botón ❤️ con animación `heartPop` + `burst` CSS, toggle via fetch POST |
+| NOV-RESP | Todos los templates de novedades responsive con `@media(max-width:600px)` |
+| MENU-NOV | Menú admin/propietario/porteria actualizado con links a Novedades |
+
 ---
 
 ### 🔴 PENDIENTE — Crítico / Alta prioridad
 
-#### [T2] Django 3.2 EOL → Django 5.1
-**Bloqueador:** Python 3.7 en uso. Django 5.1 requiere Python 3.10+.
-**Orden correcto:**
-1. Actualizar Python 3.7 → 3.12
-2. Limpiar requirements.txt (quitar sendgrid, waitress que ya no se usan)
-3. Actualizar Django + dependencias
-4. Resolver breaking changes (USE_L10N, conn_health_checks ya hecho)
-
 #### [T1] Unificar Visitante + VisitanteVehicular
-**Complejidad:** Alta — requiere migración de datos.
+**Complejidad:** Alta — requiere migración de datos.  
 Unificar en un solo modelo con campo `tipo` ('peatonal', 'vehicular') y campos vehiculares opcionales. Dashboard actualmente no incluye visitantes vehiculares en estadísticas.
 
 ---
@@ -186,31 +206,90 @@ Unificar en un solo modelo con campo `tipo` ('peatonal', 'vehicular') y campos v
 
 | # | Feature | Estado | Complejidad |
 |---|---------|--------|-------------|
-| F1 | Módulo financiero: Cuota + Pago + EstadoCuenta | ✅ Hecho | — |
-| F2 | Historial de visitantes por apartamento | ✅ Hecho | — |
 | F3 | Solicitar SES producción AWS | ⏳ Trámite externo | Baja (gestión) |
 | F4 | Notificaciones push PWA | ⏳ Pendiente | Media |
-| F5 | Reporte PDF mensual (WeasyPrint) | ✅ Hecho | — |
 | F6 | API REST con DRF para app móvil | ⏳ Pendiente | Alta |
-| F7 | AuditLog — registro de acciones críticas | ✅ Hecho | — |
-| F8 | Dashboard financiero (conectar a Cuota/Pago) | ✅ Hecho | — |
-| F9 | Tests con pytest-django para flujos críticos | ✅ Hecho — 20/20 | — |
 | F10 | Predicción morosidad con Claude API | ⏳ Pendiente | Alta |
 
 ---
 
 ## Notas técnicas importantes
 
-### Modelos financieros (nuevos)
+### Módulo Novedades
+
+**Modelos** (`kislevsmart/models.py`):
+```python
+class Novedad(models.Model):
+    conjunto = ForeignKey(ConjuntoResidencial, related_name='novedades')
+    autor = ForeignKey(AUTH_USER_MODEL, related_name='novedades')
+    titulo = CharField(max_length=200)
+    imagen = ImageField(upload_to='novedades/imagenes/', null=True, blank=True)
+    contenido = TextField()
+    activa = BooleanField(default=True)  # soft delete
+    created_at = DateTimeField(auto_now_add=True)
+
+class ArchivoNovedad(models.Model):
+    novedad = ForeignKey(Novedad, related_name='archivos')
+    archivo = FileField(upload_to='novedades/archivos/')
+    nombre_original = CharField(max_length=255)
+    extension = CharField(max_length=20)  # 'pdf', 'excel', 'txt', 'otro'
+
+class ComentarioNovedad(models.Model):
+    novedad = ForeignKey(Novedad, related_name='comentarios')
+    usuario = ForeignKey(AUTH_USER_MODEL)
+    texto = TextField()
+    created_at = DateTimeField(auto_now_add=True)
+
+class LikeNovedad(models.Model):
+    novedad = ForeignKey(Novedad, related_name='likes')
+    usuario = ForeignKey(AUTH_USER_MODEL, related_name='likes_novedad')
+    created_at = DateTimeField(auto_now_add=True)
+    class Meta:
+        unique_together = [['novedad', 'usuario']]
+```
+
+**URLs** (`kislevsmart/urls.py`):
+```
+/novedades/                     → lista_novedades
+/novedades/<pk>/                → detalle_novedad
+/novedades/<pk>/comentar/       → agregar_comentario
+/novedades/crear/               → crear_novedad
+/novedades/<pk>/eliminar/       → eliminar_novedad
+/novedades/<pk>/like/           → toggle_like (POST JSON)
+/novedades/metricas/            → metricas_novedades
+```
+
+**toggle_like** retorna `{'liked': bool, 'total': int}`.
+
+**Linkify JS** — función en detalle.html y comentarios convierte `https://...` a `<a>` clickeable.
+
+---
+
+### Módulo Auth — Cambiar/Recuperar Contraseña
+
+**Cambiar contraseña (logueado):**
+- View: `CustomPasswordChangeView` en `accounts/views.py`
+- Usa `LoginRequiredMixin` + `update_session_auth_hash` para no cerrar sesión
+- URL: `accounts:cambiar_password`
+- Link en: `kislevsmart/templates/dashboard.html` sidebar
+
+**Recuperar contraseña (sin email, por cédula):**
+- View: `RecuperarPasswordView` en `accounts/views.py`
+- Flujo 2 pasos: paso 1 verifica cédula (guarda user_id en sesión), paso 2 establece nueva contraseña
+- URL: `accounts:recuperar_password`
+- No requiere email — ideal para porteros que no tienen correo configurado
+
+---
+
+### Modelos financieros
 - `Cuota`: cuotas de administración por conjunto. Campos: nombre, monto (COP), periodicidad, fecha_vencimiento.
-- `Pago`: pago de un propietario a una cuota. unique_together=(cuota, propietario) — un pago por cuota por propietario.
+- `Pago`: pago de un propietario a una cuota. unique_together=(cuota, propietario).
 - Vistas admin: `finanzas_admin`, `crear_cuota`, `registrar_pago`
 - Vista propietario: `estado_cuenta`
 
 ### AuditLog
 - Helper `log_audit(request, accion, detalle)` en `kislevsmart/utils.py`
-- Acciones disponibles: visitante_creado, qr_validado, qr_invalido, reserva_creada, reserva_fallida, login, logout
-- Llamar en todas las acciones críticas nuevas
+- Acciones: visitante_creado, qr_validado, qr_invalido, reserva_creada, reserva_fallida, login, logout
 
 ### Visitante FK a Conjunto
 - `Visitante.conjunto` y `VisitanteVehicular.conjunto` → ForeignKey a ConjuntoResidencial
@@ -222,49 +301,56 @@ Unificar en un solo modelo con campo `tipo` ('peatonal', 'vehicular') y campos v
 - `SILENCED_SYSTEM_CHECKS` activo en DEBUG para suprimir error de LocMemCache
 - En producción funciona con Redis (REDIS_URL)
 
-### .env local
-- Archivo `.env` creado para desarrollo local (no commitear)
-- `.env.example` en el repo documenta todas las variables necesarias
-
 ---
 
 ## Guía de migración a nuevo PC
 
 > Código en GitHub: https://github.com/yagamidsa/Kislev.git  
-> Ya tienes: PostgreSQL instalado, VS Code instalado.
+> Stack actual: Python 3.13 + Django 5.1 + PostgreSQL 18
 
-### Paso 1 — Instalar Python 3.7.9
+### Paso 1 — Instalar Python 3.13
 
-**IMPORTANTE:** El proyecto requiere exactamente Python 3.7 por ahora (T2 pendiente).
-
-1. Descargar desde: https://www.python.org/downloads/release/python-379/
-   - Windows 64-bit: `python-3.7.9-amd64.exe`
-   - Marcar **"Add Python to PATH"** durante la instalación
-
-2. Verificar en terminal:
-   ```
-   python --version   → Python 3.7.9
-   ```
+1. Descargar desde: https://www.python.org/downloads/
+2. Marcar **"Add Python to PATH"** durante la instalación
+3. Verificar: `python --version` → `Python 3.13.x`
 
 ### Paso 2 — Instalar WeasyPrint (requiere GTK)
 
-WeasyPrint necesita librerías GTK que no vienen con pip. En Windows:
-
-1. Descargar e instalar GTK3 runtime desde:
+1. Descargar GTK3 runtime desde:  
    https://github.com/tschoonj/GTK-for-Windows-Runtime-Environment-Installer/releases
-   - Buscar el archivo `gtk3-runtime-*.exe` más reciente
-   - Instalar con todas las opciones por defecto
+2. Instalar el `.exe` más reciente con todas las opciones por defecto
+3. Reiniciar el PC después de instalar GTK
 
-2. Reiniciar el PC después de instalar GTK.
+### Paso 3 — Instalar PostgreSQL
 
-### Paso 3 — Clonar el proyecto
+- Descargar PostgreSQL desde https://www.postgresql.org/download/windows/
+- Durante la instalación anotar la contraseña del superusuario
+- Puerto por defecto: 5432 (si ya hay otra versión puede quedar en 5433)
+
+### Paso 4 — Crear base de datos
+
+En pgAdmin o psql como superusuario:
+```sql
+CREATE DATABASE kislev;
+CREATE USER kislev_user WITH PASSWORD 'kislev123';
+GRANT ALL PRIVILEGES ON DATABASE kislev TO kislev_user;
+
+-- Conectarse a la DB kislev y ejecutar:
+GRANT ALL ON SCHEMA public TO kislev_user;
+ALTER DATABASE kislev OWNER TO kislev_user;
+ALTER USER kislev_user CREATEDB;
+```
+
+> **OJO:** Si hay múltiples versiones de PostgreSQL, verificar el puerto correcto y usar ese en DATABASE_URL.
+
+### Paso 5 — Clonar el proyecto
 
 ```bash
 git clone https://github.com/yagamidsa/Kislev.git
 cd Kislev
 ```
 
-### Paso 4 — Crear entorno virtual e instalar dependencias
+### Paso 6 — Crear entorno virtual e instalar dependencias
 
 ```bash
 python -m venv entornoV
@@ -274,41 +360,24 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-> Si hay errores de SSL con pip (VPN, certificados):
-> ```
-> pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org -r requirements.txt
-> ```
+> Si hay errores de SSL: `pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org -r requirements.txt`
 
-### Paso 5 — Configurar base de datos PostgreSQL local
-
-1. Abrir pgAdmin o psql y crear la base de datos:
-   ```sql
-   CREATE DATABASE kislev;
-   CREATE USER kislev_user WITH PASSWORD 'tu_password';
-   GRANT ALL PRIVILEGES ON DATABASE kislev TO kislev_user;
-   ```
-
-2. Anotar la cadena de conexión:
-   ```
-   postgres://kislev_user:tu_password@localhost:5432/kislev
-   ```
-
-### Paso 6 — Crear archivo .env
-
-Crear el archivo `.env` en la raíz del proyecto (ver `.env.example`):
+### Paso 7 — Crear archivo .env
 
 ```env
 DJANGO_SECRET_KEY=genera-uno-con-el-comando-de-abajo
 DEBUG=True
 FERNET_KEY=genera-uno-con-el-comando-de-abajo
-DATABASE_URL=postgres://kislev_user:tu_password@localhost:5432/kislev
+DATABASE_URL=postgres://kislev_user:kislev123@localhost:5432/kislev
 
-# AWS SES — puedes dejarlo vacío en local si no envías emails reales
+# AWS SES — dejar vacío en local si no se envían emails reales
 AWS_ACCESS_KEY_ID=
 AWS_SECRET_ACCESS_KEY=
 AWS_SES_REGION=us-east-1
 DEFAULT_FROM_EMAIL=noreply@kislev.net.co
 ```
+
+> Ajustar puerto en DATABASE_URL según la instalación (5432 o 5433).
 
 **Generar SECRET_KEY:**
 ```bash
@@ -320,17 +389,26 @@ python -c "from django.core.management.utils import get_random_secret_key; print
 python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
 ```
 
-### Paso 7 — Aplicar migraciones y verificar
+### Paso 8 — Aplicar migraciones
 
 ```bash
 python manage.py migrate
-python manage.py createsuperuser
 python manage.py runserver
 ```
 
-Abrir http://127.0.0.1:8000 — debería cargar el login.
+Abrir http://127.0.0.1:8000 — debe cargar el login.
 
-### Paso 8 — Verificar tests
+### Paso 9 — Poblar datos de prueba
+
+Usar el script seed o el shell de Django para crear:
+- 2 conjuntos: Oliva Madrid, Puerto Hayuelos 1
+- 10 usuarios por conjunto (propietario + portero + admin)
+- 6 salas por conjunto (Gym, Piscina, Sala de Juegos, Salón Eventos 1, Salón Eventos 2, BBQ)
+- Parqueaderos: Oliva Madrid 30 carros + 10 motos / Puerto Hayuelos 50 carros + 10 motos
+
+Las cédulas y contraseñas de usuarios de prueba están en `credenciales.txt` (no commitear — está en .gitignore).
+
+### Paso 10 — Verificar tests
 
 ```bash
 python -m pytest tests/ -v
@@ -338,29 +416,25 @@ python -m pytest tests/ -v
 
 Debe dar **20/20 pasando**.
 
-### Paso 9 — Instalar Claude Code
+### Paso 11 — Instalar Claude Code
 
 ```bash
 npm install -g @anthropic/claude-code
 ```
 
-Si no tienes Node.js: https://nodejs.org (versión LTS)
-
-Luego en la carpeta del proyecto:
-```bash
-claude
-```
+Si no tienes Node.js: https://nodejs.org (versión LTS). Luego en la carpeta del proyecto: `claude`
 
 ---
 
-### Checklist rápido
+### Checklist rápido nuevo PC
 
-- [ ] Python 3.7.9 instalado y en PATH
+- [ ] Python 3.13 instalado y en PATH
 - [ ] GTK3 runtime instalado (para WeasyPrint)
-- [ ] PostgreSQL corriendo con base de datos `kislev` creada
+- [ ] PostgreSQL instalado y corriendo
+- [ ] Base de datos `kislev` + usuario `kislev_user` creados con todos los GRANTs
 - [ ] Repositorio clonado
 - [ ] `entornoV` creado y `requirements.txt` instalado
-- [ ] `.env` creado con SECRET_KEY, FERNET_KEY y DATABASE_URL
+- [ ] `.env` creado con SECRET_KEY, FERNET_KEY y DATABASE_URL correcto
 - [ ] `python manage.py migrate` sin errores
 - [ ] `python -m pytest tests/` → 20/20
 - [ ] `python manage.py runserver` → abre en el browser
@@ -375,14 +449,7 @@ SESIÓN PRÓXIMA — Features restantes
   → F6 : API REST DRF
   → F10: Predicción morosidad Claude API
 
-SESIÓN T2 — Actualización Python + Django (sesión dedicada, alto riesgo)
-  1. pip install python 3.12 (fuera del proyecto)
-  2. Recrear virtualenv con Python 3.12
-  3. Limpiar requirements.txt (quitar sendgrid, waitress)
-  4. pip install "django>=5.1,<5.2"
-  5. Resolver breaking changes
-
-SESIÓN T1 — Unificar modelos Visitante (sesión dedicada)
+SESIÓN T1 — Unificar modelos Visitante (sesión dedicada, alto riesgo)
   1. Nuevo modelo unificado con campo tipo
   2. Migración de datos (RunPython)
   3. Actualizar views y templates
@@ -411,17 +478,6 @@ claude -p "$(cat .claude/prompts/agente-vistas.txt) TAREA: ..."
 claude -p "$(cat .claude/prompts/agente-frontend.txt) TAREA: ..."
 ```
 
-### Guardar prompts de agentes en `.claude/prompts/`
-```
-.claude/
-  prompts/
-    agente-modelos.txt      ← copia el bloque 🔵 aquí
-    agente-vistas.txt       ← copia el bloque 🟢 aquí
-    agente-frontend.txt     ← copia el bloque 🟡 aquí
-    agente-infra.txt        ← copia el bloque 🔴 aquí
-  CLAUDE.md                 ← contexto global (ver abajo)
-```
-
 ---
 
 ## CLAUDE.md — pegar en la raíz del proyecto
@@ -432,17 +488,26 @@ claude -p "$(cat .claude/prompts/agente-frontend.txt) TAREA: ..."
 ## Proyecto
 Sistema de gestión residencial Django para conjuntos en Colombia.
 Deploy en Railway. Email via AWS SES (boto3, NO smtp).
+Stack: Django 5.1 + Python 3.13 + PostgreSQL 18.
 
 ## Comandos útiles
 - `python manage.py runserver`
 - `python manage.py makemigrations && python manage.py migrate`
-- `python manage.py fill_towers` — poblar datos de prueba
+
+## REGLA #1 — RESPONSIVE OBLIGATORIO
+Los usuarios usan principalmente celular (porteros, propietarios).
+TODA vista nueva DEBE tener @media(max-width:600px) con:
+- topbar: flex-wrap:wrap, padding reducido, font-size menor
+- container: padding:14px 10px
+- tablas: overflow-x:auto + min-width:500px
+- formularios: width:100%, columnas apiladas
+- cards: sin hover transform, padding reducido
 
 ## Convenciones
 - Views: siempre @login_required + @role_required([...])
 - APIs JSON: retornar {'status': 'ok'|'error', 'message': str}
 - Inputs: sanitizar con sanitize_text() de kislevsmart/utils.py
-- Email: usar función send_ses_email() centralizada, nunca EmailMessage directo
+- Email: EmailMultiAlternatives con fail_silently=True (SES no activo en dev)
 - Fechas: siempre timezone-aware (America/Bogota)
 - Moneda: COP, formatear con f"${valor:,.0f}"
 - QR: siempre en memoria (BytesIO), nunca guardar en disco
@@ -458,13 +523,8 @@ Deploy en Railway. Email via AWS SES (boto3, NO smtp).
 - No guardar archivos en disco → usar BytesIO en memoria
 - No hardcodear SECRET_KEY, FERNET_KEY ni credenciales
 - No usar LocMemCache en producción → usar Redis
-
-## Modelos financieros
-- Cuota: cuotas por conjunto (monto en COP)
-- Pago: pago de propietario a cuota (unique_together: cuota+propietario)
-- EstadoCuenta: calculado en vista estado_cuenta (no es modelo)
+- No crear vistas sin @media(max-width:600px)
 
 ## Bugs conocidos pendientes
 - T1: Visitante + VisitanteVehicular duplicados — pendiente unificar
-- T2: Django 3.2 EOL — pendiente (bloqueado por Python 3.7)
 ```

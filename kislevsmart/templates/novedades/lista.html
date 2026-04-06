@@ -1,0 +1,129 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Novedades — {{ request.user.conjunto.nombre }}</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',Arial,sans-serif;min-height:100vh;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%)}
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:rgba(255,255,255,0.05);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,0.1)}
+    .topbar h1{color:#fff;font-size:1.3rem;font-weight:700}
+    .topbar .sub{color:rgba(255,255,255,0.6);font-size:0.85rem}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;font-size:0.9rem;font-weight:600;text-decoration:none;border:none;cursor:pointer;transition:all .2s}
+    .btn-primary{background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff}
+    .btn-primary:hover{opacity:.9;transform:translateY(-1px)}
+    .btn-back{background:rgba(255,255,255,0.1);color:#fff}
+    .btn-back:hover{background:rgba(255,255,255,0.2)}
+    .container{max-width:900px;margin:0 auto;padding:32px 20px}
+    .grid{display:grid;gap:24px}
+    .card{background:rgba(255,255,255,0.07);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.12);border-radius:20px;overflow:hidden;transition:transform .2s,box-shadow .2s}
+    .card:hover{transform:translateY(-4px);box-shadow:0 20px 40px rgba(127,0,255,.3)}
+    .card-img{width:100%;height:200px;object-fit:cover}
+    .card-img-placeholder{width:100%;height:200px;background:linear-gradient(135deg,#7c3aed44,#db277744);display:flex;align-items:center;justify-content:center;font-size:3rem}
+    .card-body{padding:20px}
+    .card-meta{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+    .badge{background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:600}
+    .date{color:rgba(255,255,255,0.5);font-size:0.8rem}
+    .card-title{color:#fff;font-size:1.15rem;font-weight:700;margin-bottom:8px}
+    .card-preview{color:rgba(255,255,255,0.7);font-size:0.9rem;line-height:1.5;margin-bottom:16px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+    .card-footer{display:flex;align-items:center;justify-content:space-between}
+    .stats{display:flex;gap:16px;color:rgba(255,255,255,0.5);font-size:0.82rem}
+    .stats span{display:flex;align-items:center;gap:5px}
+    .empty{text-align:center;padding:80px 20px;color:rgba(255,255,255,0.5)}
+    .empty i{font-size:4rem;margin-bottom:16px;display:block;opacity:.4}
+    .messages{padding:12px 24px}
+    .msg-success{background:#d1fae5;color:#065f46;padding:10px 16px;border-radius:8px;margin-bottom:8px}
+    .msg-error{background:#fee2e2;color:#991b1b;padding:10px 16px;border-radius:8px;margin-bottom:8px}
+    .attachments{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .attach-badge{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);padding:4px 10px;border-radius:6px;font-size:0.75rem;display:flex;align-items:center;gap:5px}
+    @media(max-width:600px){
+      .topbar{flex-wrap:wrap;gap:10px;padding:12px 16px}
+      .topbar h1{font-size:1.1rem}
+      .btn{padding:8px 14px;font-size:0.82rem}
+      .container{padding:16px 12px}
+      .card-title{font-size:1rem}
+      .card-img,.card-img-placeholder{height:160px}
+      .card-footer{flex-direction:column;align-items:flex-start;gap:8px}
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div>
+      <h1><i class="fa fa-newspaper" style="color:#db2777"></i> Novedades</h1>
+      <div class="sub">{{ request.user.conjunto.nombre }}</div>
+    </div>
+    <div style="display:flex;gap:10px">
+      {% if request.user.user_type == 'administrador' %}
+        <a href="{% url 'crear_novedad' %}" class="btn btn-primary"><i class="fa fa-plus"></i> Publicar</a>
+      {% endif %}
+      <a href="javascript:history.back()" class="btn btn-back"><i class="fa fa-arrow-left"></i> Volver</a>
+    </div>
+  </div>
+
+  {% if messages %}
+  <div class="messages">
+    {% for m in messages %}
+      <div class="msg-{{ m.tags }}">{{ m }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="container">
+    {% if novedades %}
+      <div class="grid">
+        {% for n in novedades %}
+        <a href="{% url 'detalle_novedad' n.pk %}" style="text-decoration:none">
+          <div class="card">
+            {% if n.imagen %}
+              <img src="{{ n.imagen.url }}" class="card-img" alt="{{ n.titulo }}">
+            {% else %}
+              <div class="card-img-placeholder">📢</div>
+            {% endif %}
+            <div class="card-body">
+              <div class="card-meta">
+                <span class="badge">Novedad</span>
+                <span class="date"><i class="fa fa-clock"></i> {{ n.created_at|date:"d/m/Y H:i" }}</span>
+              </div>
+              <div class="card-title">{{ n.titulo }}</div>
+              <div class="card-preview">{{ n.contenido }}</div>
+              {% if n.archivos.all %}
+              <div class="attachments">
+                {% for a in n.archivos.all %}
+                <span class="attach-badge">
+                  {% if a.extension == 'pdf' %}<i class="fa fa-file-pdf" style="color:#ff4444"></i>
+                  {% elif a.extension == 'excel' %}<i class="fa fa-file-excel" style="color:#22c55e"></i>
+                  {% else %}<i class="fa fa-file"></i>{% endif %}
+                  {{ a.nombre_original }}
+                </span>
+                {% endfor %}
+              </div>
+              {% endif %}
+              <div class="card-footer" style="margin-top:14px">
+                <div class="stats">
+                  <span><i class="fa fa-heart" style="color:#ff3264"></i> {{ n.likes.count }}</span>
+                  <span><i class="fa fa-comment"></i> {{ n.comentarios.count }}</span>
+                  <span><i class="fa fa-user"></i> {{ n.autor.nombre }}</span>
+                </div>
+                <span style="color:#db2777;font-size:0.85rem;font-weight:600">Ver más →</span>
+              </div>
+            </div>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty">
+        <i class="fa fa-newspaper"></i>
+        <p>No hay novedades publicadas aún.</p>
+        {% if request.user.user_type == 'administrador' %}
+          <a href="{% url 'crear_novedad' %}" class="btn btn-primary" style="margin-top:16px"><i class="fa fa-plus"></i> Publicar primera novedad</a>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</body>
+</html>

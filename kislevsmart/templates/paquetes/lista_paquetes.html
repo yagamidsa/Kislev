@@ -1,0 +1,220 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paquetes</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',Arial,sans-serif;min-height:100vh;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%)}
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:rgba(255,255,255,0.05);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,0.1);flex-wrap:wrap;gap:8px}
+    .topbar h1{color:#fff;font-size:1.1rem;font-weight:700}
+    .topbar-right{display:flex;gap:8px;flex-wrap:wrap}
+    .btn{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:10px;font-size:0.85rem;font-weight:600;text-decoration:none;border:none;cursor:pointer;transition:all .2s}
+    .btn-back{background:rgba(255,255,255,0.1);color:#fff}
+    .btn-primary{background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff}
+    .container{max-width:1000px;margin:0 auto;padding:24px 20px}
+    /* Filters */
+    .filters{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:16px 20px;margin-bottom:20px;display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+    .filter-group{display:flex;flex-direction:column;gap:5px;min-width:120px;flex:1}
+    .filter-group label{font-size:0.75rem;color:rgba(255,255,255,0.55);font-weight:600}
+    select,input[type=text],input[type=date]{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:8px 12px;color:#fff;font-size:0.85rem;width:100%}
+    select option{background:#1a1a2e}
+    select:focus,input:focus{outline:none;border-color:#db2777}
+    .filter-btn{padding:9px 18px;background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:0.85rem;white-space:nowrap}
+    .clear-link{color:rgba(255,255,255,0.5);font-size:0.8rem;text-decoration:none;white-space:nowrap;align-self:center}
+    /* Entregar widget */
+    .entregar-widget{background:rgba(127,0,255,0.1);border:1px solid rgba(127,0,255,0.25);border-radius:16px;padding:18px 20px;margin-bottom:20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+    .entregar-widget h3{color:#fff;font-size:0.95rem;font-weight:700;flex-shrink:0}
+    .entregar-widget h3 i{color:#db2777;margin-right:6px}
+    .code-input{flex:1;min-width:160px;background:rgba(255,255,255,0.1);border:2px solid rgba(127,0,255,0.4);border-radius:10px;padding:11px 16px;color:#fff;font-size:1.1rem;font-weight:700;letter-spacing:6px;text-align:center}
+    .code-input::placeholder{letter-spacing:2px;font-size:0.9rem;font-weight:400}
+    .code-input:focus{outline:none;border-color:#db2777}
+    .btn-entregar{padding:11px 22px;background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:0.9rem;cursor:pointer}
+    .result-box{width:100%;font-size:0.9rem;padding:10px 14px;border-radius:8px;display:none}
+    .result-ok{background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);color:#4ade80}
+    .result-err{background:rgba(255,68,68,0.15);border:1px solid rgba(255,68,68,0.3);color:#ff6b6b}
+    /* Table */
+    .table-wrap{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:18px;overflow:hidden}
+    .table-head{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:center}
+    .table-head h3{color:#fff;font-size:0.95rem;font-weight:700}
+    .count-badge{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);padding:3px 10px;border-radius:20px;font-size:0.78rem}
+    .table-scroll{overflow-x:auto}
+    table{width:100%;border-collapse:collapse;min-width:600px}
+    th{padding:11px 16px;text-align:left;font-size:0.75rem;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid rgba(255,255,255,0.07)}
+    td{padding:13px 16px;font-size:0.88rem;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:middle}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:rgba(255,255,255,0.03)}
+    .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:700}
+    .badge-pendiente{background:rgba(251,191,36,0.2);color:#fbbf24;border:1px solid rgba(251,191,36,0.3)}
+    .badge-entregado{background:rgba(34,197,94,0.15);color:#4ade80;border:1px solid rgba(34,197,94,0.25)}
+    .wa-ok{color:#25d366;font-size:0.8rem}
+    .wa-no{color:rgba(255,255,255,0.3);font-size:0.8rem}
+    .empty{text-align:center;padding:60px 20px;color:rgba(255,255,255,0.4)}
+    .empty i{font-size:3rem;display:block;margin-bottom:12px;opacity:.4}
+    @media(max-width:600px){
+      .topbar{padding:12px 14px}.topbar h1{font-size:0.95rem}
+      .btn{padding:7px 12px;font-size:0.8rem}
+      .container{padding:12px 10px}
+      .filters{flex-direction:column;gap:10px}
+      .entregar-widget{flex-direction:column;align-items:stretch}
+      .code-input{text-align:center;width:100%}
+      .btn-entregar{width:100%;text-align:center}
+    }
+  </style>
+</head>
+<body>
+<div class="topbar">
+  <h1><i class="fa fa-boxes-stacked" style="color:#db2777"></i> Control de Paquetes</h1>
+  <div class="topbar-right">
+    <a href="{% url 'registrar_paquete' %}" class="btn btn-primary"><i class="fa fa-plus"></i> Registrar</a>
+    <a href="{% url 'metricas_paquetes' %}" class="btn btn-back"><i class="fa fa-chart-bar"></i> Métricas</a>
+    <a href="javascript:history.back()" class="btn btn-back"><i class="fa fa-arrow-left"></i> Volver</a>
+  </div>
+</div>
+
+<div class="container">
+  <!-- ENTREGAR WIDGET -->
+  <div class="entregar-widget">
+    <h3><i class="fa fa-key"></i> Entregar paquete</h3>
+    <input type="text" class="code-input" id="codigo-input" maxlength="6" placeholder="Código 6 dígitos" inputmode="numeric">
+    <button class="btn-entregar" onclick="entregar()"><i class="fa fa-check"></i> Entregar</button>
+    <div class="result-box" id="result-box"></div>
+  </div>
+
+  <!-- FILTROS -->
+  <form method="GET">
+    <div class="filters">
+      <div class="filter-group">
+        <label>Torre</label>
+        <select name="torre">
+          <option value="">Todas</option>
+          {% for t in torres %}<option value="{{ t.id }}" {% if filtros.torre_id == t.id|stringformat:'s' %}selected{% endif %}>{{ t.nombre }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Apto</label>
+        <input type="text" name="apto" value="{{ filtros.apto }}" placeholder="Ej: 101">
+      </div>
+      <div class="filter-group">
+        <label>Estado</label>
+        <select name="estado">
+          <option value="">Todos</option>
+          <option value="pendiente" {% if filtros.estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
+          <option value="entregado" {% if filtros.estado == 'entregado' %}selected{% endif %}>Entregado</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Desde</label>
+        <input type="date" name="desde" value="{{ filtros.desde }}">
+      </div>
+      <div class="filter-group">
+        <label>Hasta</label>
+        <input type="date" name="hasta" value="{{ filtros.hasta }}">
+      </div>
+      <button type="submit" class="filter-btn"><i class="fa fa-filter"></i> Filtrar</button>
+      <a href="{% url 'lista_paquetes' %}" class="clear-link">Limpiar</a>
+    </div>
+  </form>
+
+  <!-- TABLA -->
+  <div class="table-wrap">
+    <div class="table-head">
+      <h3><i class="fa fa-list" style="color:#db2777"></i> Historial</h3>
+      <span class="count-badge">{{ paquetes|length }} resultado(s)</span>
+    </div>
+    {% if paquetes %}
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Torre / Apto</th>
+            <th>Destinatario</th>
+            <th>Empresa</th>
+            <th>Registrado</th>
+            <th>Estado</th>
+            <th>WA</th>
+            <th>Entregado</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in paquetes %}
+          <tr>
+            <td><strong style="color:#db2777;letter-spacing:2px">{{ p.codigo }}</strong></td>
+            <td style="color:#fff">{{ p.torre.nombre }} · <strong>{{ p.apartamento }}</strong></td>
+            <td style="color:rgba(255,255,255,0.8)">{{ p.destinatario_nombre|default:"—" }}</td>
+            <td style="color:rgba(255,255,255,0.7)">{{ p.empresa_display }}</td>
+            <td style="color:rgba(255,255,255,0.5);font-size:0.8rem">{{ p.fecha_registro|date:"d/m/Y H:i" }}</td>
+            <td>
+              {% if p.estado == 'pendiente' %}
+                <span class="badge badge-pendiente"><i class="fa fa-clock"></i> Pendiente</span>
+              {% else %}
+                <span class="badge badge-entregado"><i class="fa fa-circle-check"></i> Entregado</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if p.whatsapp_enviado %}
+                <i class="fa fa-brands fa-whatsapp wa-ok" title="WhatsApp enviado"></i>
+              {% else %}
+                <i class="fa fa-minus wa-no" title="Sin WhatsApp"></i>
+              {% endif %}
+            </td>
+            <td style="color:rgba(255,255,255,0.45);font-size:0.8rem">
+              {% if p.fecha_entrega %}{{ p.fecha_entrega|date:"d/m/Y H:i" }}{% else %}—{% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty">
+      <i class="fa fa-box-open"></i>
+      <p>No se encontraron paquetes con esos filtros.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+var CSRF = '{{ csrf_token }}';
+
+function entregar() {
+  var codigo = document.getElementById('codigo-input').value.trim();
+  var box = document.getElementById('result-box');
+  if (!codigo || codigo.length !== 6) {
+    showResult(false, 'El código debe tener 6 dígitos');
+    return;
+  }
+  fetch('{% url "entregar_paquete" %}', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json', 'X-CSRFToken': CSRF},
+    body: JSON.stringify({codigo: codigo})
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(data){
+    showResult(data.ok, data.mensaje);
+    if (data.ok) {
+      document.getElementById('codigo-input').value = '';
+      setTimeout(function(){ location.reload(); }, 2000);
+    }
+  })
+  .catch(function(){ showResult(false, 'Error de conexión'); });
+}
+
+function showResult(ok, msg) {
+  var box = document.getElementById('result-box');
+  box.className = 'result-box ' + (ok ? 'result-ok' : 'result-err');
+  box.innerHTML = '<i class="fa ' + (ok ? 'fa-circle-check' : 'fa-circle-xmark') + '"></i> ' + msg;
+  box.style.display = 'block';
+}
+
+document.getElementById('codigo-input').addEventListener('keydown', function(e){
+  if (e.key === 'Enter') entregar();
+});
+</script>
+</body>
+</html>

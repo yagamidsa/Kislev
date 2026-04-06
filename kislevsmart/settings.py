@@ -226,28 +226,30 @@ AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', '')
 AWS_SES_REGION_NAME = os.environ.get('AWS_SES_REGION', 'us-east-1')
 AWS_SES_REGION_ENDPOINT = f'email.{AWS_SES_REGION_NAME}.amazonaws.com'
 
+# WhatsApp Cloud API (Meta)
+META_WHATSAPP_TOKEN = os.environ.get('META_WHATSAPP_TOKEN', '')
+META_WHATSAPP_PHONE_ID = os.environ.get('META_WHATSAPP_PHONE_ID', '')
+
+# WhatsApp via Twilio
+TWILIO_ACCOUNT_SID = os.environ.get('TWILIO_ACCOUNT_SID', '')
+TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN', '')
+TWILIO_WHATSAPP_FROM = os.environ.get('TWILIO_WHATSAPP_FROM', 'whatsapp:+14155238886')
+
 # Configuración del backend de email
 # Si hay credenciales de AWS configuradas, usar SES con API
 # Si no, usar SMTP como fallback o console en desarrollo
-if AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY:
-    EMAIL_BACKEND = 'django_ses.SESBackend'
-    # Configuración adicional de SES
-    AWS_SES_CONFIGURATION_SET = os.environ.get('AWS_SES_CONFIGURATION_SET', None)
-elif os.environ.get('AWS_SES_SMTP_USER') and os.environ.get('AWS_SES_SMTP_PASSWORD'):
-    # Fallback a SMTP si hay credenciales SMTP configuradas
+if os.environ.get('EMAIL_HOST_USER') and os.environ.get('EMAIL_HOST_PASSWORD'):
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = 'email-smtp.us-east-1.amazonaws.com'
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True
+    EMAIL_HOST = os.environ.get('EMAIL_HOST', 'email-smtp.us-east-1.amazonaws.com')
+    EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
+    EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
     EMAIL_USE_SSL = False
-    EMAIL_HOST_USER = os.environ.get('AWS_SES_SMTP_USER', '')
-    EMAIL_HOST_PASSWORD = os.environ.get('AWS_SES_SMTP_PASSWORD', '')
+    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 else:
-    # En desarrollo sin credenciales, mostrar en consola
     if DEBUG:
         EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
     else:
-        # En producción sin credenciales, usar dummy backend
         EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
 
 # Email por defecto para envíos

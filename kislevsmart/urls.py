@@ -40,6 +40,7 @@ urlpatterns = [
     path('zonas_comunes/', views.zonas_comunes, name='zonas_comunes'),
     path('carros/', views.disponibilidad_carros, name='disponibilidad_carros'),
     path('motos/', views.disponibilidad_motos, name='disponibilidad_motos'),
+    path('parqueadero/metricas/<str:tipo>/', views.metricas_parqueadero, name='metricas_parqueadero'),
     
     # Rutas de notificaciones
     path('noti_generales/', views.noti_generales, name='noti_generales'),
@@ -60,13 +61,31 @@ urlpatterns = [
     path('api/sala/<int:sala_id>/reservas/', views.get_reservas_sala, name='api_reservas_sala'),
     path('mis-reservas/', views.mis_reservas, name='mis_reservas'),
     path('reserva/<int:reserva_id>/cancelar/', views.cancelar_reserva, name='cancelar_reserva'),
+    path('reserva/<int:reserva_id>/aprobar/', views.aprobar_reserva, name='aprobar_reserva'),
+    path('salas/bloquear/', views.bloquear_sala, name='bloquear_sala'),
+
+    # Módulo de paquetes / mensajería
+    path('paquetes/', views.lista_paquetes, name='lista_paquetes'),
+    path('paquetes/registrar/', views.registrar_paquete, name='registrar_paquete'),
+    path('paquetes/entregar/', views.entregar_paquete, name='entregar_paquete'),
+    path('paquetes/metricas/', views.metricas_paquetes, name='metricas_paquetes'),
     path('sala/<int:sala_id>/reservar/', views.reservar_sala, name='reservar_sala'),
     path('api/sala/<int:sala_id>/horarios/<str:fecha>/', views.get_horarios_disponibles, name='api_horarios_disponibles'),
     path('visitor-stats/', views.get_visitor_stats, name='visitor-stats'),
     path('mis-visitantes/', views.historial_visitantes, name='historial_visitantes'),
+    path('mis-visitantes/<int:visitante_id>/regenerar-qr/', views.regenerar_qr_visitante, name='regenerar_qr_visitante'),
 
     # Reporte PDF
     path('reporte-mensual/', views.reporte_pdf_mensual, name='reporte_pdf_mensual'),
+
+    # Módulo de novedades
+    path('novedades/', views.lista_novedades, name='lista_novedades'),
+    path('novedades/<int:pk>/', views.detalle_novedad, name='detalle_novedad'),
+    path('novedades/<int:pk>/comentar/', views.agregar_comentario, name='agregar_comentario'),
+    path('novedades/crear/', views.crear_novedad, name='crear_novedad'),
+    path('novedades/<int:pk>/eliminar/', views.eliminar_novedad, name='eliminar_novedad'),
+    path('novedades/<int:pk>/like/', views.toggle_like, name='toggle_like'),
+    path('novedades/metricas/', views.metricas_novedades, name='metricas_novedades'),
 
     # Módulo financiero
     path('finanzas/', views.finanzas_admin, name='finanzas_admin'),
