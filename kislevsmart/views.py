@@ -2644,21 +2644,48 @@ def dashboard_kpi_paquetes(request):
 @login_required
 @require_POST
 def editar_paquete(request):
-    """Corrige torre/apto de un paquete pendiente. Solo celador y administrador."""
+    """Corrige torre/apto de un paquete pendiente y notifica al nuevo destinatario."""
     if request.user.user_type not in ('celador', 'administrador'):
         return JsonResponse({'ok': False, 'mensaje': 'Sin permiso'})
     try:
+        from .utils import send_whatsapp, mensaje_paquete
         data = json.loads(request.body)
         paquete = Paquete.objects.get(id=data['id'], conjunto=request.user.conjunto, estado='pendiente')
         torre = Torre.objects.get(id=data['torre_id'], conjunto=request.user.conjunto)
+        apto = data['apartamento'].strip()
+
         paquete.torre = torre
-        paquete.apartamento = data['apartamento'].strip()
+        paquete.apartamento = apto
         if data.get('destinatario_nombre'):
             paquete.destinatario_nombre = data['destinatario_nombre'].strip()
-        paquete.save(update_fields=['torre', 'apartamento', 'destinatario_nombre'])
+        paquete.whatsapp_enviado = False
+        paquete.save(update_fields=['torre', 'apartamento', 'destinatario_nombre', 'whatsapp_enviado'])
+
+        # Buscar teléfono del nuevo destinatario y enviar WhatsApp
+        residente = Usuario.objects.filter(
+            torre=torre, apartamento=apto, user_type='propietario', is_active=True
+        ).first()
+        if residente and residente.phone_number:
+            now = timezone.localtime(timezone.now())
+            msg = mensaje_paquete(
+                nombre=paquete.destinatario_nombre or residente.nombre,
+                conjunto=paquete.conjunto.nombre,
+                torre=torre.nombre,
+                apartamento=apto,
+                empresa=dict(Paquete.EMPRESAS).get(paquete.empresa, paquete.empresa),
+                fecha=now.strftime('%d/%m/%Y'),
+                hora=now.strftime('%I:%M %p'),
+                codigo=paquete.codigo,
+            )
+            wa_ok = send_whatsapp(residente.phone_number, msg)
+            if wa_ok:
+                paquete.whatsapp_enviado = True
+                paquete.save(update_fields=['whatsapp_enviado'])
+
         log_audit(request, 'paquete_editado',
-                  f"Código {paquete.codigo} → Torre {torre.nombre} Apto {paquete.apartamento}")
-        return JsonResponse({'ok': True, 'mensaje': 'Paquete corregido correctamente'})
+                  f"Código {paquete.codigo} → Torre {torre.nombre} Apto {apto}")
+        msg_resp = 'Paquete corregido y WhatsApp enviado al nuevo destinatario' if paquete.whatsapp_enviado else 'Paquete corregido (sin teléfono registrado)'
+        return JsonResponse({'ok': True, 'mensaje': msg_resp})
     except Paquete.DoesNotExist:
         return JsonResponse({'ok': False, 'mensaje': 'Paquete no encontrado o ya entregado'})
     except Torre.DoesNotExist:
