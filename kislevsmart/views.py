@@ -2642,6 +2642,32 @@ def dashboard_kpi_paquetes(request):
 
 
 @login_required
+@require_POST
+def editar_paquete(request):
+    """Corrige torre/apto de un paquete pendiente. Solo celador y administrador."""
+    if request.user.user_type not in ('celador', 'administrador'):
+        return JsonResponse({'ok': False, 'mensaje': 'Sin permiso'})
+    try:
+        data = json.loads(request.body)
+        paquete = Paquete.objects.get(id=data['id'], conjunto=request.user.conjunto, estado='pendiente')
+        torre = Torre.objects.get(id=data['torre_id'], conjunto=request.user.conjunto)
+        paquete.torre = torre
+        paquete.apartamento = data['apartamento'].strip()
+        if data.get('destinatario_nombre'):
+            paquete.destinatario_nombre = data['destinatario_nombre'].strip()
+        paquete.save(update_fields=['torre', 'apartamento', 'destinatario_nombre'])
+        log_audit(request, 'paquete_editado',
+                  f"Código {paquete.codigo} → Torre {torre.nombre} Apto {paquete.apartamento}")
+        return JsonResponse({'ok': True, 'mensaje': 'Paquete corregido correctamente'})
+    except Paquete.DoesNotExist:
+        return JsonResponse({'ok': False, 'mensaje': 'Paquete no encontrado o ya entregado'})
+    except Torre.DoesNotExist:
+        return JsonResponse({'ok': False, 'mensaje': 'Torre no válida'})
+    except Exception as e:
+        return JsonResponse({'ok': False, 'mensaje': str(e)})
+
+
+@login_required
 def lista_paquetes(request):
     conjunto = request.user.conjunto
     torres = Torre.objects.filter(conjunto=conjunto, activo=True)

@@ -54,6 +54,19 @@
     .wa-no{color:rgba(255,255,255,0.3);font-size:0.8rem}
     .empty{text-align:center;padding:60px 20px;color:rgba(255,255,255,0.4)}
     .empty i{font-size:3rem;display:block;margin-bottom:12px;opacity:.4}
+    .btn-edit{background:rgba(124,58,237,0.2);border:1px solid rgba(124,58,237,0.4);color:#a78bfa;padding:5px 10px;border-radius:7px;font-size:0.78rem;cursor:pointer;transition:.2s}
+    .btn-edit:hover{background:rgba(124,58,237,0.4)}
+    /* Modal */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000;display:none;align-items:center;justify-content:center}
+    .modal-overlay.open{display:flex}
+    .modal{background:#1a1a2e;border:1px solid rgba(124,58,237,0.4);border-radius:18px;padding:28px;width:100%;max-width:420px;position:relative}
+    .modal h2{color:#fff;font-size:1rem;font-weight:700;margin-bottom:18px}
+    .modal label{display:block;color:rgba(255,255,255,0.55);font-size:0.78rem;font-weight:600;margin-bottom:5px}
+    .modal select,.modal input{width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:10px 12px;color:#fff;font-size:0.9rem;margin-bottom:14px}
+    .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:4px}
+    .btn-cancel-modal{background:rgba(255,255,255,0.08);color:#fff;border:none;padding:9px 18px;border-radius:8px;cursor:pointer;font-size:0.85rem}
+    .btn-save-modal{background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;border:none;padding:9px 18px;border-radius:8px;cursor:pointer;font-weight:700;font-size:0.85rem}
+    .modal-msg{font-size:0.85rem;padding:8px 12px;border-radius:7px;margin-bottom:10px;display:none}
     @media(max-width:600px){
       .topbar{padding:12px 14px}.topbar h1{font-size:0.95rem}
       .btn{padding:7px 12px;font-size:0.8rem}
@@ -138,6 +151,7 @@
             <th>Estado</th>
             <th>WA</th>
             <th>Entregado</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -165,6 +179,13 @@
             <td style="color:rgba(255,255,255,0.45);font-size:0.8rem">
               {% if p.fecha_entrega %}{{ p.fecha_entrega|date:"d/m/Y H:i" }}{% else %}—{% endif %}
             </td>
+            <td>
+              {% if p.estado == 'pendiente' %}
+              <button class="btn-edit" onclick="abrirEditar({{ p.id }}, '{{ p.torre.id }}', '{{ p.apartamento }}', '{{ p.destinatario_nombre|escapejs }}')">
+                <i class="fa fa-pen"></i> Editar
+              </button>
+              {% endif %}
+            </td>
           </tr>
           {% endfor %}
         </tbody>
@@ -176,6 +197,29 @@
       <p>No se encontraron paquetes con esos filtros.</p>
     </div>
     {% endif %}
+  </div>
+</div>
+
+<!-- Modal editar paquete -->
+<div class="modal-overlay" id="modal-editar">
+  <div class="modal">
+    <h2><i class="fa fa-pen" style="color:#db2777"></i> Corregir paquete</h2>
+    <div class="modal-msg" id="modal-msg"></div>
+    <input type="hidden" id="edit-paquete-id">
+    <label>Torre</label>
+    <select id="edit-torre">
+      {% for t in torres %}
+      <option value="{{ t.id }}">{{ t.nombre }}</option>
+      {% endfor %}
+    </select>
+    <label>Apartamento</label>
+    <input type="text" id="edit-apto" placeholder="Ej: 0101" maxlength="10">
+    <label>Nombre destinatario</label>
+    <input type="text" id="edit-nombre" placeholder="Nombre del residente" maxlength="100">
+    <div class="modal-actions">
+      <button class="btn-cancel-modal" onclick="cerrarEditar()">Cancelar</button>
+      <button class="btn-save-modal" onclick="guardarEditar()"><i class="fa fa-save"></i> Guardar</button>
+    </div>
   </div>
 </div>
 
@@ -214,6 +258,50 @@ function showResult(ok, msg) {
 
 document.getElementById('codigo-input').addEventListener('keydown', function(e){
   if (e.key === 'Enter') entregar();
+});
+
+function abrirEditar(id, torreId, apto, nombre) {
+  document.getElementById('edit-paquete-id').value = id;
+  document.getElementById('edit-torre').value = torreId;
+  document.getElementById('edit-apto').value = apto;
+  document.getElementById('edit-nombre').value = nombre;
+  document.getElementById('modal-msg').style.display = 'none';
+  document.getElementById('modal-editar').classList.add('open');
+}
+function cerrarEditar() {
+  document.getElementById('modal-editar').classList.remove('open');
+}
+function guardarEditar() {
+  var id = document.getElementById('edit-paquete-id').value;
+  var torre = document.getElementById('edit-torre').value;
+  var apto = document.getElementById('edit-apto').value.trim();
+  var nombre = document.getElementById('edit-nombre').value.trim();
+  if (!apto) { mostrarMsgModal('error', 'El apartamento es obligatorio'); return; }
+  fetch('{% url "editar_paquete" %}', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json', 'X-CSRFToken': CSRF},
+    body: JSON.stringify({id: id, torre_id: torre, apartamento: apto, destinatario_nombre: nombre})
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.ok) {
+      mostrarMsgModal('ok', data.mensaje);
+      setTimeout(function(){ cerrarEditar(); location.reload(); }, 1200);
+    } else {
+      mostrarMsgModal('error', data.mensaje);
+    }
+  })
+  .catch(() => mostrarMsgModal('error', 'Error de conexión'));
+}
+function mostrarMsgModal(tipo, msg) {
+  var el = document.getElementById('modal-msg');
+  el.style.display = 'block';
+  if (tipo === 'ok') { el.style.background='rgba(34,197,94,0.15)'; el.style.color='#4ade80'; el.style.border='1px solid rgba(34,197,94,0.3)'; }
+  else { el.style.background='rgba(255,68,68,0.15)'; el.style.color='#ff6b6b'; el.style.border='1px solid rgba(255,68,68,0.3)'; }
+  el.textContent = msg;
+}
+document.getElementById('modal-editar').addEventListener('click', function(e){
+  if (e.target === this) cerrarEditar();
 });
 </script>
 </body>
