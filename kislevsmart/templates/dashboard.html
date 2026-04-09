@@ -1265,6 +1265,22 @@ document.addEventListener('DOMContentLoaded', function () {
     </script>
 
     <script>
+    // Refresca KPIs de paquetes via AJAX
+    function refreshKpiPaquetes() {
+        fetch('{% url "dashboard_kpi_paquetes" %}')
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('kpi-pendientes').textContent = data.pendientes;
+                document.getElementById('kpi-hoy-recibidos').textContent = data.hoy_recibidos;
+                document.getElementById('kpi-hoy-entregados').textContent = data.hoy_entregados;
+            })
+            .catch(() => {});
+    }
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) refreshKpiPaquetes();
+    });
+    setInterval(refreshKpiPaquetes, 30000);
+
     // Entregar paquete desde dashboard
     function dashEntregar() {
         var codigo = document.getElementById('dash-codigo').value.trim();
@@ -1307,22 +1323,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (inp) inp.addEventListener('keydown', function(e){ if(e.key==='Enter') dashEntregar(); });
     });
 
-    // Auto-refresco de KPIs de paquetes cada 30 segundos
-    function refreshKpiPaquetes() {
-        fetch('{% url "dashboard_kpi_paquetes" %}')
-            .then(r => r.json())
-            .then(data => {
-                document.getElementById('kpi-pendientes').textContent = data.pendientes;
-                document.getElementById('kpi-hoy-recibidos').textContent = data.hoy_recibidos;
-                document.getElementById('kpi-hoy-entregados').textContent = data.hoy_entregados;
-            })
-            .catch(() => {});
-    }
-    // Refrescar al volver a la pestaña
-    document.addEventListener('visibilitychange', function() {
-        if (!document.hidden) refreshKpiPaquetes();
-    });
-    setInterval(refreshKpiPaquetes, 30000);
     </script>
 </body>
 
