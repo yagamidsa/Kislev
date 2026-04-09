@@ -207,15 +207,19 @@
     <div class="modal-msg" id="modal-msg"></div>
     <input type="hidden" id="edit-paquete-id">
     <label>Torre</label>
-    <select id="edit-torre">
+    <select id="edit-torre" onchange="cargarApartamentos()">
       {% for t in torres %}
       <option value="{{ t.id }}">{{ t.nombre }}</option>
       {% endfor %}
     </select>
     <label>Apartamento</label>
-    <input type="text" id="edit-apto" placeholder="Ej: 0101" maxlength="10">
-    <label>Nombre destinatario</label>
-    <input type="text" id="edit-nombre" placeholder="Nombre del residente" maxlength="100">
+    <select id="edit-apto" onchange="cargarResidente()">
+      <option value="">— Selecciona torre primero —</option>
+    </select>
+    <label>Destinatario</label>
+    <div id="edit-nombre-wrap" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:10px 12px;color:rgba(255,255,255,0.5);font-size:0.9rem;margin-bottom:14px">
+      — selecciona apartamento —
+    </div>
     <div class="modal-actions">
       <button class="btn-cancel-modal" onclick="cerrarEditar()">Cancelar</button>
       <button class="btn-save-modal" onclick="guardarEditar()"><i class="fa fa-save"></i> Guardar</button>
@@ -260,27 +264,77 @@ document.getElementById('codigo-input').addEventListener('keydown', function(e){
   if (e.key === 'Enter') entregar();
 });
 
+var _editResidente = '';
+
 function abrirEditar(id, torreId, apto, nombre) {
   document.getElementById('edit-paquete-id').value = id;
-  document.getElementById('edit-torre').value = torreId;
-  document.getElementById('edit-apto').value = apto;
-  document.getElementById('edit-nombre').value = nombre;
   document.getElementById('modal-msg').style.display = 'none';
+  _editResidente = nombre;
   document.getElementById('modal-editar').classList.add('open');
+  // Cargar apartamentos de la torre actual y preseleccionar apto
+  document.getElementById('edit-torre').value = torreId;
+  cargarApartamentos(apto);
 }
+
+function cargarApartamentos(preselect) {
+  var torreId = document.getElementById('edit-torre').value;
+  var select = document.getElementById('edit-apto');
+  select.innerHTML = '<option value="">Cargando...</option>';
+  document.getElementById('edit-nombre-wrap').textContent = '— selecciona apartamento —';
+  _editResidente = '';
+  fetch('/api/torres/' + torreId + '/apartamentos/')
+    .then(r => r.json())
+    .then(data => {
+      select.innerHTML = '<option value="">— Selecciona —</option>';
+      (data.apartamentos || []).forEach(function(ap) {
+        var opt = document.createElement('option');
+        opt.value = ap;
+        opt.textContent = ap + (data.ocupados && data.ocupados.includes(ap) ? ' ✓' : '');
+        select.appendChild(opt);
+      });
+      if (preselect) {
+        select.value = preselect;
+        cargarResidente();
+      }
+    })
+    .catch(() => { select.innerHTML = '<option value="">Error cargando</option>'; });
+}
+
+function cargarResidente() {
+  var torreId = document.getElementById('edit-torre').value;
+  var apto = document.getElementById('edit-apto').value;
+  var wrap = document.getElementById('edit-nombre-wrap');
+  if (!apto) { wrap.textContent = '— selecciona apartamento —'; _editResidente = ''; return; }
+  wrap.textContent = 'Buscando...';
+  fetch('/api/torres/' + torreId + '/apartamentos/?apto=' + encodeURIComponent(apto))
+    .then(r => r.json())
+    .then(data => {
+      if (data.residente) {
+        wrap.textContent = data.residente;
+        wrap.style.color = '#fff';
+        _editResidente = data.residente;
+      } else {
+        wrap.textContent = '— Sin residente registrado —';
+        wrap.style.color = 'rgba(255,255,255,0.4)';
+        _editResidente = '';
+      }
+    })
+    .catch(() => { wrap.textContent = 'Error'; _editResidente = ''; });
+}
+
 function cerrarEditar() {
   document.getElementById('modal-editar').classList.remove('open');
 }
+
 function guardarEditar() {
   var id = document.getElementById('edit-paquete-id').value;
   var torre = document.getElementById('edit-torre').value;
-  var apto = document.getElementById('edit-apto').value.trim();
-  var nombre = document.getElementById('edit-nombre').value.trim();
-  if (!apto) { mostrarMsgModal('error', 'El apartamento es obligatorio'); return; }
+  var apto = document.getElementById('edit-apto').value;
+  if (!apto) { mostrarMsgModal('error', 'Selecciona un apartamento'); return; }
   fetch('{% url "editar_paquete" %}', {
     method: 'POST',
     headers: {'Content-Type': 'application/json', 'X-CSRFToken': CSRF},
-    body: JSON.stringify({id: id, torre_id: torre, apartamento: apto, destinatario_nombre: nombre})
+    body: JSON.stringify({id: id, torre_id: torre, apartamento: apto, destinatario_nombre: _editResidente})
   })
   .then(r => r.json())
   .then(data => {
@@ -293,6 +347,7 @@ function guardarEditar() {
   })
   .catch(() => mostrarMsgModal('error', 'Error de conexión'));
 }
+
 function mostrarMsgModal(tipo, msg) {
   var el = document.getElementById('modal-msg');
   el.style.display = 'block';
