@@ -24,7 +24,8 @@ from django_ratelimit.decorators import ratelimit
 from .utils import role_required
 from .forms import LoginForm, SelectConjuntoForm
 from .models import Usuario, ConjuntoResidencial
-from kislevsmart.models import Novedad, NovedadVista, Visitante, VisitanteVehicular
+from kislevsmart.models import Novedad, NovedadVista, Visitante, VisitanteVehicular, ConfigParqueadero
+from kislevsmart.utils import calcular_cobro_parqueadero
 from django.utils import timezone as tz
 
 
@@ -79,10 +80,39 @@ class ControlpropietarioView(TemplateView):
             conjunto=user.conjunto,
             activa=True,
         ).exclude(id__in=vistas_ids).order_by('-created_at')
+
+        # Vehículos visitantes activos del propietario
+        vehiculos_qs = VisitanteVehicular.objects.filter(
+            conjunto=request.user.conjunto,
+            tipo_vehiculo__in=['carro', 'moto'],
+            ultima_lectura__isnull=False,
+            segunda_lectura__isnull=True,
+            email_creador=request.user.email
+        ).order_by('-ultima_lectura')
+
+        vehiculos_activos = []
+        for v in vehiculos_qs:
+            config = ConfigParqueadero.objects.filter(
+                conjunto=request.user.conjunto,
+                tipo_vehiculo=v.tipo_vehiculo
+            ).first()
+            valor, mins, en_gracia = calcular_cobro_parqueadero(v.ultima_lectura, config)
+            horas = mins // 60
+            minutos = mins % 60
+            vehiculos_activos.append({
+                'placa': v.placa,
+                'tipo': v.get_tipo_vehiculo_display(),
+                'tiempo_str': f'{horas}h {minutos}m' if horas > 0 else f'{minutos}m',
+                'valor': valor,
+                'en_gracia': en_gracia,
+                'entrada': tz.localtime(v.ultima_lectura).strftime('%H:%M'),
+            })
+
         context = {
             'user': user,
             'novedades_no_vistas': novedades_no_vistas,
             'novedades_count': novedades_no_vistas.count(),
+            'vehiculos_activos': vehiculos_activos,
         }
         return self.render_to_response(context)
 

@@ -13,7 +13,7 @@ from django.utils import timezone
 from cryptography.fernet import InvalidToken
 from django.core.mail import EmailMessage
 from .models import Visitante
-from .utils import role_required, log_audit
+from .utils import role_required, log_audit, calcular_cobro_parqueadero
 from django.db.models import Count, F
 from django.db.models.functions import ExtractMonth, ExtractWeekDay, ExtractHour
 import json
@@ -31,7 +31,7 @@ from django.db import DatabaseError, transaction, models
 from django.http import HttpResponse
 from django.views.decorators.vary import vary_on_headers
 from .models import VisitanteVehicular
-from .models import ParqueaderoCarro, ParqueaderoMoto, Cuota, Pago, Novedad, ArchivoNovedad, ComentarioNovedad, LikeNovedad, NovedadVista
+from .models import ParqueaderoCarro, ParqueaderoMoto, Cuota, Pago, Novedad, ArchivoNovedad, ComentarioNovedad, LikeNovedad, NovedadVista, ConfigParqueadero
 from django.core.mail import EmailMultiAlternatives
 
 
@@ -1872,62 +1872,78 @@ def validar_qr_vehicular(request, encrypted_token):
     
 @login_required
 def disponibilidad_carros(request):
-    """Vista para mostrar solo la disponibilidad de carros"""
     conjunto_id = request.user.conjunto_id
-    
-    # Obtener o crear registro de parqueadero para el conjunto
-    parqueadero, created = ParqueaderoCarro.objects.get_or_create(
-        conjunto_id=conjunto_id,
-        defaults={'total_espacios': 0}
-    )
-    
-    # Obtener disponibilidad
-    disponibilidad = ParqueaderoCarro.get_disponibilidad(conjunto_id)
-    
-    # Obtener vehículos activos
-    vehiculos_activos = VisitanteVehicular.objects.filter(
+    disp = ParqueaderoCarro.get_disponibilidad(conjunto_id)
+    config = ConfigParqueadero.objects.filter(conjunto_id=conjunto_id, tipo_vehiculo='carro').first()
+
+    vehiculos_qs = VisitanteVehicular.objects.filter(
         conjunto_id=conjunto_id,
         tipo_vehiculo='carro',
         ultima_lectura__isnull=False,
         segunda_lectura__isnull=True
-    ).select_related('conjunto').order_by('-ultima_lectura')
-    
+    ).order_by('-ultima_lectura')
+
+    vehiculos_activos = []
+    for v in vehiculos_qs:
+        valor, mins, en_gracia = calcular_cobro_parqueadero(v.ultima_lectura, config)
+        horas = mins // 60
+        minutos = mins % 60
+        vehiculos_activos.append({
+            'obj': v,
+            'nombre': v.nombre,
+            'placa': v.placa,
+            'ultima_lectura': v.ultima_lectura,
+            'motivo': v.motivo,
+            'tiempo_str': f'{horas}h {minutos}m' if horas > 0 else f'{minutos}m',
+            'valor': valor,
+            'en_gracia': en_gracia,
+        })
+
     context = {
-        'disponibilidad': disponibilidad,
+        'disponibilidad': disp,
         'vehiculos_activos': vehiculos_activos,
         'conjunto': request.user.conjunto,
+        'config': config,
+        'tipo': 'carro',
     }
-    
     return render(request, 'parking/disponibilidad_tipo.html', context)
 
 @login_required
 def disponibilidad_motos(request):
-    """Vista para mostrar solo la disponibilidad de motos"""
     conjunto_id = request.user.conjunto_id
+    disp = ParqueaderoMoto.get_disponibilidad(conjunto_id)
+    config = ConfigParqueadero.objects.filter(conjunto_id=conjunto_id, tipo_vehiculo='moto').first()
 
-    # Obtener o crear registro de parqueadero para el conjunto
-    parqueadero, created = ParqueaderoMoto.objects.get_or_create(
-        conjunto_id=conjunto_id,
-        defaults={'total_espacios': 0}
-    )
-
-    # Obtener disponibilidad
-    disponibilidad = ParqueaderoMoto.get_disponibilidad(conjunto_id)
-
-    # Obtener vehículos activos
-    vehiculos_activos = VisitanteVehicular.objects.filter(
+    vehiculos_qs = VisitanteVehicular.objects.filter(
         conjunto_id=conjunto_id,
         tipo_vehiculo='moto',
         ultima_lectura__isnull=False,
         segunda_lectura__isnull=True
-    ).select_related('conjunto').order_by('-ultima_lectura')
+    ).order_by('-ultima_lectura')
+
+    vehiculos_activos = []
+    for v in vehiculos_qs:
+        valor, mins, en_gracia = calcular_cobro_parqueadero(v.ultima_lectura, config)
+        horas = mins // 60
+        minutos = mins % 60
+        vehiculos_activos.append({
+            'obj': v,
+            'nombre': v.nombre,
+            'placa': v.placa,
+            'ultima_lectura': v.ultima_lectura,
+            'motivo': v.motivo,
+            'tiempo_str': f'{horas}h {minutos}m' if horas > 0 else f'{minutos}m',
+            'valor': valor,
+            'en_gracia': en_gracia,
+        })
 
     context = {
-        'disponibilidad': disponibilidad,
+        'disponibilidad': disp,
         'vehiculos_activos': vehiculos_activos,
         'conjunto': request.user.conjunto,
+        'config': config,
+        'tipo': 'moto',
     }
-
     return render(request, 'parking/disponibilidad_tipo.html', context)
 
 
@@ -2020,6 +2036,33 @@ def metricas_parqueadero(request, tipo):
     dias_labels = [row['dia'].strftime('%d/%m') for row in dias_raw]
     dias_data = [row['total'] for row in dias_raw]
 
+    # Mes anterior comparison
+    if inicio_mes.month == 1:
+        inicio_mes_anterior = inicio_mes.replace(year=inicio_mes.year - 1, month=12)
+    else:
+        inicio_mes_anterior = inicio_mes.replace(month=inicio_mes.month - 1)
+    fin_mes_anterior = inicio_mes
+
+    ingresos_mes_anterior = base_qs.filter(
+        ultima_lectura__gte=inicio_mes_anterior,
+        ultima_lectura__lt=fin_mes_anterior
+    ).count()
+    variacion_mes = ingresos_mes - ingresos_mes_anterior
+
+    # Vehículos sin salida hace más de 12 horas (posible error o abandono)
+    hace_12h = now - timedelta(hours=12)
+    vehiculos_alerta = list(
+        base_qs.filter(
+            ultima_lectura__isnull=False,
+            segunda_lectura__isnull=True,
+            ultima_lectura__lt=hace_12h
+        ).values('placa', 'nombre', 'ultima_lectura').order_by('ultima_lectura')
+    )
+    for v in vehiculos_alerta:
+        mins = int((now - _tz.localtime(v['ultima_lectura'])).total_seconds() / 60)
+        v['tiempo_str'] = f'{mins // 60}h {mins % 60}m'
+        v['entrada_str'] = _tz.localtime(v['ultima_lectura']).strftime('%d/%m %H:%M')
+
     context = {
         'tipo': tipo,
         'tipo_label': 'Carros' if tipo == 'carro' else 'Motos',
@@ -2034,8 +2077,49 @@ def metricas_parqueadero(request, tipo):
         'dias_labels_json': json.dumps(dias_labels),
         'dias_data_json': json.dumps(dias_data),
         'now': now,
+        'ingresos_mes_anterior': ingresos_mes_anterior,
+        'variacion_mes': variacion_mes,
+        'vehiculos_alerta': vehiculos_alerta,
     }
     return render(request, 'parking/metricas_parqueadero.html', context)
+
+
+@login_required
+def config_parqueadero(request):
+    """Configuración de tarifas de parqueadero. Solo administrador."""
+    if request.user.user_type != 'administrador':
+        messages.error(request, 'Acceso restringido')
+        return redirect('parking')
+
+    conjunto = request.user.conjunto
+    config_carro, _ = ConfigParqueadero.objects.get_or_create(
+        conjunto=conjunto, tipo_vehiculo='carro'
+    )
+    config_moto, _ = ConfigParqueadero.objects.get_or_create(
+        conjunto=conjunto, tipo_vehiculo='moto'
+    )
+
+    if request.method == 'POST':
+        try:
+            config_carro.minutos_gracia = int(request.POST.get('carro_gracia', 0))
+            config_carro.valor_hora = int(request.POST.get('carro_valor_hora', 0))
+            config_carro.fraccion_minutos = int(request.POST.get('carro_fraccion', 60))
+            config_carro.save()
+
+            config_moto.minutos_gracia = int(request.POST.get('moto_gracia', 0))
+            config_moto.valor_hora = int(request.POST.get('moto_valor_hora', 0))
+            config_moto.fraccion_minutos = int(request.POST.get('moto_fraccion', 60))
+            config_moto.save()
+
+            messages.success(request, 'Tarifas actualizadas correctamente')
+        except Exception as e:
+            messages.error(request, f'Error al guardar: {e}')
+        return redirect('config_parqueadero')
+
+    return render(request, 'parking/config_parqueadero.html', {
+        'config_carro': config_carro,
+        'config_moto': config_moto,
+    })
 
 
 @login_required

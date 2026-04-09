@@ -168,7 +168,46 @@
         <div class="kpi-value">{% if tiempo_promedio_min %}{{ tiempo_promedio_min }}m{% else %}—{% endif %}</div>
         <div class="kpi-label">Tiempo prom. estadía</div>
     </div>
+    <!-- Mes anterior comparison -->
+    <div class="kpi-card">
+        <div class="kpi-icon">📊</div>
+        <div class="kpi-value">{{ ingresos_mes_anterior }}</div>
+        <div class="kpi-label">Ingresos mes anterior</div>
+        <div style="font-size:11px;margin-top:4px;{% if variacion_mes >= 0 %}color:#34d399{% else %}color:#f87171{% endif %}">
+            {% if variacion_mes >= 0 %}▲{% else %}▼{% endif %}
+            {{ variacion_mes|stringformat:"+d" }} vs mes ant.
+        </div>
+    </div>
 </div>
+
+<!-- Alerta vehículos con más de 12h sin salida -->
+{% if vehiculos_alerta %}
+<div class="section-card" style="border-color:rgba(251,191,36,0.3);background:rgba(251,191,36,0.05);margin-bottom:18px;">
+    <h3 style="color:#fbbf24;">⚠️ Vehículos sin salida registrada (+12 horas) — {{ vehiculos_alerta|length }}</h3>
+    <div style="overflow-x:auto;margin-top:10px;">
+    <table>
+        <thead>
+            <tr>
+                <th>Placa</th>
+                <th>Nombre</th>
+                <th>Entrada</th>
+                <th>Tiempo dentro</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for v in vehiculos_alerta %}
+            <tr>
+                <td><span class="placa-badge" style="background:rgba(251,191,36,0.2);color:#fbbf24;">{{ v.placa }}</span></td>
+                <td>{{ v.nombre }}</td>
+                <td>{{ v.entrada_str }}</td>
+                <td style="color:#fbbf24;font-weight:600">{{ v.tiempo_str }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+{% endif %}
 
 <!-- Barra de ocupación -->
 {% if disp.total > 0 %}

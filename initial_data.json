@@ -1264,8 +1264,8 @@
   "pk": 19,
   "fields": {
     "conjunto": 1,
-    "nombre": "Salón Social",
-    "descripcion": "Amplio salón para eventos, reuniones y celebraciones. Cuenta con mesas, sillas, cocina equipada y sistema de sonido.",
+    "nombre": "SalÃ³n Social",
+    "descripcion": "Amplio salÃ³n para eventos, reuniones y celebraciones. Cuenta con mesas, sillas, cocina equipada y sistema de sonido.",
     "capacidad": 80,
     "imagen": "",
     "amenities": {
@@ -1285,7 +1285,7 @@
   "fields": {
     "conjunto": 1,
     "nombre": "Gimnasio",
-    "descripcion": "Gimnasio equipado con máquinas cardiovasculares, pesas y zona de estiramiento.",
+    "descripcion": "Gimnasio equipado con mÃ¡quinas cardiovasculares, pesas y zona de estiramiento.",
     "capacidad": 20,
     "imagen": "",
     "amenities": {
@@ -1323,7 +1323,7 @@
   "fields": {
     "conjunto": 1,
     "nombre": "Sala de Juntas",
-    "descripcion": "Sala para reuniones de la copropiedad, comité de convivencia y asambleas pequeñas.",
+    "descripcion": "Sala para reuniones de la copropiedad, comitÃ© de convivencia y asambleas pequeÃ±as.",
     "capacidad": 15,
     "imagen": "",
     "amenities": {
@@ -1686,8 +1686,8 @@
   "pk": 3,
   "fields": {
     "conjunto": 2,
-    "nombre": "Administración Febrero 2026",
-    "descripcion": "Cuota pendiente de pago — Administración Febrero 2026",
+    "nombre": "AdministraciÃ³n Febrero 2026",
+    "descripcion": "Cuota pendiente de pago â€” AdministraciÃ³n Febrero 2026",
     "monto": 350000,
     "periodicidad": "mensual",
     "fecha_vencimiento": "2026-02-28",
@@ -1699,8 +1699,8 @@
   "pk": 4,
   "fields": {
     "conjunto": 2,
-    "nombre": "Administración Marzo 2026",
-    "descripcion": "Cuota pendiente — Administración Marzo 2026",
+    "nombre": "AdministraciÃ³n Marzo 2026",
+    "descripcion": "Cuota pendiente â€” AdministraciÃ³n Marzo 2026",
     "monto": 350000,
     "periodicidad": "mensual",
     "fecha_vencimiento": "2026-03-31",
@@ -1713,7 +1713,7 @@
   "fields": {
     "conjunto": 2,
     "nombre": "Fondo de imprevistos Q1",
-    "descripcion": "Cuota pendiente — Fondo de imprevistos Q1",
+    "descripcion": "Cuota pendiente â€” Fondo de imprevistos Q1",
     "monto": 150000,
     "periodicidad": "mensual",
     "fecha_vencimiento": "2026-03-15",
@@ -1725,8 +1725,8 @@
   "pk": 6,
   "fields": {
     "conjunto": 3,
-    "nombre": "Administración Febrero 2026",
-    "descripcion": "Cuota pendiente — Administración Febrero 2026",
+    "nombre": "AdministraciÃ³n Febrero 2026",
+    "descripcion": "Cuota pendiente â€” AdministraciÃ³n Febrero 2026",
     "monto": 420000,
     "periodicidad": "mensual",
     "fecha_vencimiento": "2026-02-28",
@@ -1738,8 +1738,8 @@
   "pk": 7,
   "fields": {
     "conjunto": 3,
-    "nombre": "Administración Marzo 2026",
-    "descripcion": "Cuota pendiente — Administración Marzo 2026",
+    "nombre": "AdministraciÃ³n Marzo 2026",
+    "descripcion": "Cuota pendiente â€” AdministraciÃ³n Marzo 2026",
     "monto": 420000,
     "periodicidad": "mensual",
     "fecha_vencimiento": "2026-03-31",
@@ -1752,7 +1752,7 @@
   "fields": {
     "conjunto": 3,
     "nombre": "Cuota extraordinaria Parque",
-    "descripcion": "Cuota pendiente — Cuota extraordinaria Parque",
+    "descripcion": "Cuota pendiente â€” Cuota extraordinaria Parque",
     "monto": 200000,
     "periodicidad": "mensual",
     "fecha_vencimiento": "2026-03-20",
@@ -1764,8 +1764,8 @@
   "pk": 9,
   "fields": {
     "conjunto": 1,
-    "nombre": "Administración Febrero 2026",
-    "descripcion": "Cuota pendiente — Administración Febrero 2026",
+    "nombre": "AdministraciÃ³n Febrero 2026",
+    "descripcion": "Cuota pendiente â€” AdministraciÃ³n Febrero 2026",
     "monto": 480000,
     "periodicidad": "mensual",
     "fecha_vencimiento": "2026-02-28",
@@ -1777,8 +1777,8 @@
   "pk": 10,
   "fields": {
     "conjunto": 1,
-    "nombre": "Administración Marzo 2026",
-    "descripcion": "Cuota pendiente — Administración Marzo 2026",
+    "nombre": "AdministraciÃ³n Marzo 2026",
+    "descripcion": "Cuota pendiente â€” AdministraciÃ³n Marzo 2026",
     "monto": 480000,
     "periodicidad": "mensual",
     "fecha_vencimiento": "2026-03-31",
@@ -1791,7 +1791,7 @@
   "fields": {
     "conjunto": 1,
     "nombre": "Fondo de imprevistos Q1",
-    "descripcion": "Cuota pendiente — Fondo de imprevistos Q1",
+    "descripcion": "Cuota pendiente â€” Fondo de imprevistos Q1",
     "monto": 200000,
     "periodicidad": "mensual",
     "fecha_vencimiento": "2026-03-15",
@@ -1835,7 +1835,7 @@
     ],
     "conjunto": 1,
     "accion": "paquete_registrado",
-    "detalle": "Torre Torre 14 Apto 704 | envia | código 491677",
+    "detalle": "Torre Torre 14 Apto 704 | envia | cÃ³digo 491677",
     "ip": "127.0.0.1",
     "fecha": "2026-04-03T22:47:56.518Z"
   }
@@ -1849,7 +1849,7 @@
     ],
     "conjunto": 1,
     "accion": "paquete_registrado",
-    "detalle": "Torre Torre 14 Apto 101 | interrapidisimo | código 728627",
+    "detalle": "Torre Torre 14 Apto 101 | interrapidisimo | cÃ³digo 728627",
     "ip": "127.0.0.1",
     "fecha": "2026-04-03T22:54:39.887Z"
   }
@@ -1863,7 +1863,7 @@
     ],
     "conjunto": 1,
     "accion": "paquete_entregado",
-    "detalle": "Código 728627 | Torre Torre 14 Apto 101",
+    "detalle": "CÃ³digo 728627 | Torre Torre 14 Apto 101",
     "ip": "127.0.0.1",
     "fecha": "2026-04-03T22:56:06.131Z"
   }
@@ -1877,7 +1877,7 @@
     ],
     "conjunto": 1,
     "accion": "paquete_registrado",
-    "detalle": "Torre Torre 1 Apto 0101 | servientrega | código 422719",
+    "detalle": "Torre Torre 1 Apto 0101 | servientrega | cÃ³digo 422719",
     "ip": "127.0.0.1",
     "fecha": "2026-04-03T22:57:07.736Z"
   }
@@ -1891,7 +1891,7 @@
     ],
     "conjunto": 1,
     "accion": "paquete_registrado",
-    "detalle": "Torre Torre 1 Apto 0101 | amazon | código 527091",
+    "detalle": "Torre Torre 1 Apto 0101 | amazon | cÃ³digo 527091",
     "ip": "127.0.0.1",
     "fecha": "2026-04-03T23:57:39.979Z"
   }
@@ -1905,7 +1905,7 @@
     ],
     "conjunto": 1,
     "accion": "paquete_registrado",
-    "detalle": "Torre Torre 2 Apto 0102 | amazon | código 167763",
+    "detalle": "Torre Torre 2 Apto 0102 | amazon | cÃ³digo 167763",
     "ip": "127.0.0.1",
     "fecha": "2026-04-03T23:58:29.675Z"
   }
@@ -1919,7 +1919,7 @@
     ],
     "conjunto": 1,
     "accion": "paquete_registrado",
-    "detalle": "Torre Torre 2 Apto 0501 | amazon | código 744169",
+    "detalle": "Torre Torre 2 Apto 0501 | amazon | cÃ³digo 744169",
     "ip": "127.0.0.1",
     "fecha": "2026-04-03T23:59:39.994Z"
   }
@@ -1933,7 +1933,7 @@
     ],
     "conjunto": 1,
     "accion": "paquete_entregado",
-    "detalle": "Código 167763 | Torre Torre 2 Apto 0102",
+    "detalle": "CÃ³digo 167763 | Torre Torre 2 Apto 0102",
     "ip": "127.0.0.1",
     "fecha": "2026-04-04T03:18:34.922Z"
   }
@@ -1947,7 +1947,7 @@
     ],
     "conjunto": 1,
     "accion": "paquete_entregado",
-    "detalle": "Código 422719 | Torre Torre 1 Apto 0101",
+    "detalle": "CÃ³digo 422719 | Torre Torre 1 Apto 0101",
     "ip": "127.0.0.1",
     "fecha": "2026-04-04T03:19:22.476Z"
   }
@@ -1961,7 +1961,7 @@
     ],
     "conjunto": 1,
     "accion": "paquete_entregado",
-    "detalle": "Código 491677 | Torre Torre 14 Apto 704",
+    "detalle": "CÃ³digo 491677 | Torre Torre 14 Apto 704",
     "ip": "127.0.0.1",
     "fecha": "2026-04-04T03:20:10.937Z"
   }
@@ -2003,7 +2003,7 @@
     ],
     "conjunto": 1,
     "accion": "reserva_creada",
-    "detalle": "Sala: Salón Social | Fecha: 2026-04-04 | 11:00:00-12:00:00",
+    "detalle": "Sala: SalÃ³n Social | Fecha: 2026-04-04 | 11:00:00-12:00:00",
     "ip": "127.0.0.1",
     "fecha": "2026-04-04T05:48:38.845Z"
   }
@@ -2017,7 +2017,7 @@
     ],
     "conjunto": 1,
     "accion": "reserva_creada",
-    "detalle": "Sala: Salón Social | Fecha: 2026-04-04 | 20:00:00-21:00:00",
+    "detalle": "Sala: SalÃ³n Social | Fecha: 2026-04-04 | 20:00:00-21:00:00",
     "ip": "127.0.0.1",
     "fecha": "2026-04-04T05:53:12.618Z"
   }

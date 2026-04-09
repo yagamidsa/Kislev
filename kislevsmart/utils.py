@@ -85,3 +85,28 @@ def log_audit(request, accion, detalle=''):
         )
     except Exception:
         pass
+
+
+def calcular_cobro_parqueadero(entrada_dt, config):
+    """
+    Calcula el tiempo y valor a cobrar por permanencia en parqueadero.
+    Returns: (valor_cop: int, minutos_total: int, en_gracia: bool)
+    """
+    import math
+    from django.utils import timezone
+    now = timezone.localtime(timezone.now())
+    entrada = timezone.localtime(entrada_dt)
+    minutos_total = int((now - entrada).total_seconds() / 60)
+
+    if not config or int(config.valor_hora) == 0:
+        return 0, minutos_total, True
+
+    minutos_cobrar = max(0, minutos_total - config.minutos_gracia)
+    if minutos_cobrar == 0:
+        return 0, minutos_total, True
+
+    fraccion = config.fraccion_minutos or 60
+    fracciones = math.ceil(minutos_cobrar / fraccion)
+    valor_fraccion = float(config.valor_hora) * fraccion / 60
+    valor = int(fracciones * valor_fraccion)
+    return valor, minutos_total, False

@@ -74,6 +74,20 @@
         .nav-card.alt .nav-icon { background: linear-gradient(135deg, #db2777, #7c3aed); }
         .nav-badge { background: linear-gradient(135deg, #db2777, #7c3aed); color: #fff; font-size: 0.65rem; padding: 2px 7px; border-radius: 10px; font-weight: 700; }
 
+        /* Vehículos visitantes */
+        .vehicles-section { width: 100%; max-width: 700px; margin-top: 28px; animation: fadeInUp 1.3s ease; }
+        .vehicles-section h3 { font-size: 13px; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; font-weight: 600; }
+        .vehicle-cards { display: flex; flex-direction: column; gap: 10px; }
+        .vehicle-card { display: flex; align-items: center; gap: 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 14px 18px; }
+        .vehicle-icon { width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #7c3aed, #db2777); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+        .vehicle-info { flex: 1; min-width: 0; }
+        .vehicle-placa { font-size: 15px; font-weight: 700; color: #e2e8f0; }
+        .vehicle-meta { font-size: 12px; color: rgba(255,255,255,0.45); margin-top: 2px; }
+        .vehicle-valor { text-align: right; flex-shrink: 0; }
+        .vehicle-valor .val { font-size: 15px; font-weight: 700; color: #a78bfa; }
+        .vehicle-valor .grace { font-size: 12px; color: #fbbf24; font-weight: 600; }
+        .no-vehicles { color: rgba(255,255,255,0.3); font-size: 0.85rem; padding: 14px 0; text-align: center; }
+
         @keyframes fadeInUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
         @keyframes fadeInDown { from{opacity:0;transform:translateY(-12px)} to{opacity:1;transform:translateY(0)} }
     </style>
@@ -163,6 +177,36 @@
                 Estado de cuenta
             </a>
         </div>
+
+        <!-- Vehículos visitantes activos -->
+        <div class="vehicles-section">
+            <h3><i class="fas fa-car" style="margin-right:6px;color:#7c3aed"></i>Mis vehículos visitantes activos</h3>
+            <div class="vehicle-cards">
+                {% if vehiculos_activos %}
+                    {% for v in vehiculos_activos %}
+                    <div class="vehicle-card">
+                        <div class="vehicle-icon">
+                            {% if v.tipo == 'Carro' %}🚗{% else %}🏍️{% endif %}
+                        </div>
+                        <div class="vehicle-info">
+                            <div class="vehicle-placa">{{ v.placa }}</div>
+                            <div class="vehicle-meta">{{ v.tipo }} &middot; Entró a las {{ v.entrada }} &middot; {{ v.tiempo_str }}</div>
+                        </div>
+                        <div class="vehicle-valor">
+                            {% if v.en_gracia %}
+                                <div class="grace">En gracia</div>
+                            {% else %}
+                                <div class="val">${{ v.valor|floatformat:0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="no-vehicles">No tienes vehículos de visitantes activos</div>
+                {% endif %}
+            </div>
+        </div>
+
     </div>
 </div>
 

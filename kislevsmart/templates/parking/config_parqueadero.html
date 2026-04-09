@@ -1,0 +1,255 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarifas de Parqueadero</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #09000f 0%, #1a0a2e 50%, #0a1a2e 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 24px 20px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .back-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            padding: 8px 18px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background .2s;
+        }
+        .back-btn:hover { background: rgba(255,255,255,0.2); }
+        h1 { font-size: 22px; font-weight: 700; }
+        h1 span { color: #a78bfa; }
+
+        .messages { margin-bottom: 20px; }
+        .msg {
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            margin-bottom: 8px;
+        }
+        .msg.success { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); color: #34d399; }
+        .msg.error { background: rgba(248,113,113,0.15); border: 1px solid rgba(248,113,113,0.3); color: #f87171; }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            max-width: 860px;
+        }
+        @media (max-width: 640px) { .config-grid { grid-template-columns: 1fr; } }
+
+        .config-card {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 24px;
+        }
+        .config-card h2 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .config-card.carro h2 { color: #FF1493; }
+        .config-card.moto h2 { color: #a78bfa; }
+
+        .form-group { margin-bottom: 18px; }
+        label {
+            display: block;
+            font-size: 12px;
+            color: rgba(255,255,255,0.55);
+            margin-bottom: 6px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        input[type="number"], select {
+            width: 100%;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 10px;
+            color: #fff;
+            padding: 10px 14px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            transition: border-color .2s;
+        }
+        input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: rgba(167,139,250,0.6);
+        }
+        select option { background: #1a0a2e; }
+
+        .preview-rule {
+            background: rgba(124,58,237,0.1);
+            border: 1px solid rgba(124,58,237,0.25);
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 12px;
+            color: rgba(255,255,255,0.7);
+            margin-top: 16px;
+            line-height: 1.5;
+        }
+        .preview-rule strong { color: #c4b5fd; }
+
+        .save-btn {
+            display: block;
+            width: 100%;
+            max-width: 860px;
+            margin-top: 24px;
+            background: linear-gradient(135deg, #7c3aed, #db2777);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            padding: 14px;
+            cursor: pointer;
+            transition: opacity .2s;
+        }
+        .save-btn:hover { opacity: 0.88; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <a href="{% url 'parking' %}" class="back-btn">← Volver</a>
+    <h1>Tarifas de <span>Parqueadero</span></h1>
+</div>
+
+{% if messages %}
+<div class="messages">
+    {% for message in messages %}
+    <div class="msg {% if message.tags == 'success' %}success{% else %}error{% endif %}">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
+    <div class="config-grid">
+
+        <!-- Carros -->
+        <div class="config-card carro">
+            <h2><i class="fas fa-car"></i> Carros</h2>
+
+            <div class="form-group">
+                <label for="carro_gracia">Minutos de gracia (gratuitos)</label>
+                <input type="number" id="carro_gracia" name="carro_gracia"
+                    min="0" max="1440" value="{{ config_carro.minutos_gracia }}"
+                    oninput="updatePreview('carro')">
+            </div>
+
+            <div class="form-group">
+                <label for="carro_valor_hora">Valor por hora (COP)</label>
+                <input type="number" id="carro_valor_hora" name="carro_valor_hora"
+                    min="0" max="999999" step="500" value="{{ config_carro.valor_hora }}"
+                    oninput="updatePreview('carro')">
+            </div>
+
+            <div class="form-group">
+                <label for="carro_fraccion">Fracción mínima de cobro</label>
+                <select id="carro_fraccion" name="carro_fraccion" onchange="updatePreview('carro')">
+                    <option value="15" {% if config_carro.fraccion_minutos == 15 %}selected{% endif %}>15 minutos</option>
+                    <option value="30" {% if config_carro.fraccion_minutos == 30 %}selected{% endif %}>30 minutos</option>
+                    <option value="60" {% if config_carro.fraccion_minutos == 60 %}selected{% endif %}>60 minutos (1 hora)</option>
+                </select>
+            </div>
+
+            <div class="preview-rule" id="preview-carro">
+                <strong>Regla:</strong> calculando…
+            </div>
+        </div>
+
+        <!-- Motos -->
+        <div class="config-card moto">
+            <h2><i class="fas fa-motorcycle"></i> Motos</h2>
+
+            <div class="form-group">
+                <label for="moto_gracia">Minutos de gracia (gratuitos)</label>
+                <input type="number" id="moto_gracia" name="moto_gracia"
+                    min="0" max="1440" value="{{ config_moto.minutos_gracia }}"
+                    oninput="updatePreview('moto')">
+            </div>
+
+            <div class="form-group">
+                <label for="moto_valor_hora">Valor por hora (COP)</label>
+                <input type="number" id="moto_valor_hora" name="moto_valor_hora"
+                    min="0" max="999999" step="500" value="{{ config_moto.valor_hora }}"
+                    oninput="updatePreview('moto')">
+            </div>
+
+            <div class="form-group">
+                <label for="moto_fraccion">Fracción mínima de cobro</label>
+                <select id="moto_fraccion" name="moto_fraccion" onchange="updatePreview('moto')">
+                    <option value="15" {% if config_moto.fraccion_minutos == 15 %}selected{% endif %}>15 minutos</option>
+                    <option value="30" {% if config_moto.fraccion_minutos == 30 %}selected{% endif %}>30 minutos</option>
+                    <option value="60" {% if config_moto.fraccion_minutos == 60 %}selected{% endif %}>60 minutos (1 hora)</option>
+                </select>
+            </div>
+
+            <div class="preview-rule" id="preview-moto">
+                <strong>Regla:</strong> calculando…
+            </div>
+        </div>
+
+    </div>
+
+    <button type="submit" class="save-btn">
+        <i class="fas fa-save"></i> Guardar tarifas
+    </button>
+</form>
+
+<script>
+function formatCOP(n) {
+    return '$' + Number(n).toLocaleString('es-CO');
+}
+
+function updatePreview(tipo) {
+    const gracia = parseInt(document.getElementById(tipo + '_gracia').value) || 0;
+    const valor = parseInt(document.getElementById(tipo + '_valor_hora').value) || 0;
+    const fraccion = parseInt(document.getElementById(tipo + '_fraccion').value) || 60;
+    const el = document.getElementById('preview-' + tipo);
+
+    if (valor === 0) {
+        el.innerHTML = '<strong>Regla:</strong> Entrada y salida gratuita (sin cobro)';
+        return;
+    }
+
+    const valorFraccion = Math.round(valor * fraccion / 60);
+    let texto = '';
+    if (gracia > 0) {
+        texto += `Los primeros <strong>${gracia} minutos</strong> son gratuitos. `;
+    }
+    texto += `Luego se cobra <strong>${formatCOP(valorFraccion)}</strong> por cada <strong>${fraccion} minutos</strong> (o fracción).`;
+
+    el.innerHTML = '<strong>Regla:</strong> ' + texto;
+}
+
+// Init previews on load
+updatePreview('carro');
+updatePreview('moto');
+</script>
+</body>
+</html>

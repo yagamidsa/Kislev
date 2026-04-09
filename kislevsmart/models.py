@@ -587,5 +587,35 @@ class Paquete(models.Model):
         return dict(self.EMPRESAS).get(self.empresa, self.empresa)
 
 
+class ConfigParqueadero(models.Model):
+    conjunto = models.ForeignKey(
+        'accounts.ConjuntoResidencial',
+        on_delete=models.CASCADE,
+        related_name='config_parqueadero'
+    )
+    tipo_vehiculo = models.CharField(
+        max_length=10,
+        choices=[('carro', 'Carro'), ('moto', 'Moto')]
+    )
+    minutos_gracia = models.PositiveIntegerField(
+        default=0,
+        help_text='Minutos gratuitos antes de comenzar a cobrar'
+    )
+    valor_hora = models.DecimalField(
+        max_digits=10, decimal_places=0, default=0,
+        help_text='Valor por hora en COP después de la gracia'
+    )
+    fraccion_minutos = models.PositiveIntegerField(
+        default=60,
+        help_text='Fracción mínima de cobro en minutos (ej: 30 = cobrar por medias horas)'
+    )
+
+    class Meta:
+        db_table = 'config_parqueadero'
+        unique_together = [['conjunto', 'tipo_vehiculo']]
+
+    def __str__(self):
+        return f"{self.conjunto.nombre} - {self.get_tipo_vehiculo_display()}"
+
 
         

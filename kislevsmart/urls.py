@@ -41,6 +41,7 @@ urlpatterns = [
     path('carros/', views.disponibilidad_carros, name='disponibilidad_carros'),
     path('motos/', views.disponibilidad_motos, name='disponibilidad_motos'),
     path('parqueadero/metricas/<str:tipo>/', views.metricas_parqueadero, name='metricas_parqueadero'),
+    path('parking/config/', views.config_parqueadero, name='config_parqueadero'),
     
     # Rutas de notificaciones
     path('noti_generales/', views.noti_generales, name='noti_generales'),
