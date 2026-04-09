@@ -60,6 +60,13 @@ body {
     animation-delay: 3s;
 }
 
+@media (max-width: 480px) {
+    .shape:nth-child(2) {
+        width: 150px;
+        height: 150px;
+    }
+}
+
 .shape:nth-child(3) {
     width: 150px;
     height: 150px;
@@ -345,16 +352,22 @@ body {
     .card-header {
         padding: 15px 10px;
     }
-    
+
     .card-content {
         padding: 15px 10px;
     }
-    
+
     .success-badge {
         padding: 6px 12px;
     }
-    
+
     .success-badge span {
         font-size: 12px;
     }
+}
+
+@media (max-width: 480px) {
+  .container, .card, .qr-container { padding: 16px !important; margin: 8px !important; }
+  .qr-image { max-width: 200px !important; }
+  .btn, button { min-height: 44px; }
 }

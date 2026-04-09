@@ -304,8 +304,14 @@ body {
     .success-card {
         max-height: 600px;
     }
-    
+
     .card-content {
         max-height: 520px;
     }
+}
+
+@media (max-width: 420px) {
+  .modal, .form-container, .card { max-width: 95vw !important; padding: 16px !important; }
+  input, select, textarea { font-size: 16px !important; } /* prevent iOS zoom */
+  button, .btn { min-height: 44px !important; }
 }

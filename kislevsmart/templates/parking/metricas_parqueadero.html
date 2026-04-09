@@ -124,6 +124,19 @@
             table { font-size: 11px; }
             th, td { padding: 6px 6px; }
         }
+        @media(max-width:768px){
+          input, select, textarea { font-size: 16px !important; }
+          canvas { max-width: 100%; height: auto; }
+        }
+        @media(max-width:480px){
+          .kpi-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 10px; }
+          .kpi-value { font-size: 20px; }
+          .kpi-card { padding: 12px 10px; }
+          h1 { font-size: clamp(1rem, 4vw, 1.4rem); }
+          .charts-grid { grid-template-columns: 1fr !important; }
+          canvas { max-width: 100% !important; height: auto !important; }
+          .section-card { padding: 12px; }
+        }
     </style>
 </head>
 <body>

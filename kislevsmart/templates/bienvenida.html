@@ -11,6 +11,16 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/restricciones.css' %}">
     <link rel="stylesheet" href="{% static 'css/formQR.css' %}">
+    <style>
+        @media(max-width:768px){
+          input, select, textarea { font-size: 16px !important; }
+        }
+        @media(max-width:480px){
+          .modal, .card, .form-container, .contact-form { max-width: 95vw !important; padding: 16px !important; }
+          input, select { font-size: 16px !important; min-height: 44px !important; }
+          button, .btn-open2, .apple-btn { min-height: 44px !important; }
+        }
+    </style>
 </head>
 
 <body>

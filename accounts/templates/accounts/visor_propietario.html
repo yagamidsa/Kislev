@@ -31,7 +31,7 @@
         .bell-btn { width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); color: #e2e8f0; font-size: 1.05rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; position: relative; }
         .bell-btn:hover { background: rgba(255,255,255,0.13); }
         .bell-badge { position: absolute; top: -4px; right: -4px; background: linear-gradient(135deg, #db2777, #7c3aed); color: #fff; font-size: 0.65rem; font-weight: 700; font-family: 'Poppins', sans-serif; min-width: 18px; height: 18px; border-radius: 9px; display: flex; align-items: center; justify-content: center; padding: 0 4px; border: 2px solid #09000f; }
-        .notif-dropdown { display: none; position: absolute; top: 50px; right: 0; width: 320px; background: #1a0a28; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); overflow: hidden; z-index: 200; }
+        .notif-dropdown { display: none; position: absolute; top: 50px; right: 0; width: min(320px, 90vw); background: #1a0a28; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); overflow: hidden; z-index: 200; }
         .notif-dropdown.open { display: block; }
         .notif-header { padding: 14px 18px; background: linear-gradient(135deg, #7c3aed22, #db277711); border-bottom: 1px solid rgba(255,255,255,0.07); font-size: 0.82rem; font-weight: 700; color: #a78bfa; font-family: 'Poppins', sans-serif; display: flex; align-items: center; gap: 8px; }
         .notif-list { max-height: 340px; overflow-y: auto; }
@@ -90,6 +90,21 @@
 
         @keyframes fadeInUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
         @keyframes fadeInDown { from{opacity:0;transform:translateY(-12px)} to{opacity:1;transform:translateY(0)} }
+
+        @media(max-width:768px){
+          input, select, textarea { font-size: 16px !important; }
+          .topbar { padding: 12px 16px; }
+        }
+        @media(max-width:480px){
+          .hero-title { font-size: clamp(1.3rem, 5vw, 1.8rem) !important; }
+          .nav-grid, .cards-grid { grid-template-columns: repeat(2,1fr) !important; gap: 10px !important; }
+          .notif-dropdown { width: min(320px, 90vw) !important; right: -8px !important; }
+          .topbar { padding: 10px 12px !important; gap: 8px !important; }
+          .hero { padding: 24px 16px !important; }
+          .clock-seg { font-size: clamp(2rem, 10vw, 3rem) !important; }
+          .clock-row { margin-bottom: 20px; flex-wrap: wrap; justify-content: center; }
+          .vehicle-card { padding: 10px 14px; }
+        }
     </style>
 </head>
 <body>

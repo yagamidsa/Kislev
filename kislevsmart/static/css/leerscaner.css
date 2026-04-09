@@ -37,7 +37,7 @@ h1 {
 
 .scanner-container {
     width: 90%;
-    max-width: 320px;
+    max-width: min(320px, 95vw);
     aspect-ratio: 1 / 1;
     position: relative;
     overflow: hidden;
@@ -64,7 +64,7 @@ h1 {
     -webkit-backdrop-filter: blur(20px);
     border-radius: 16px;
     padding: 16px 24px;
-    min-width: 300px;
+    min-width: min(300px, 90vw);
     box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
     border: 1px solid rgba(255, 255, 255, 0.18);
     display: flex;
@@ -220,4 +220,9 @@ h1 {
     100% {
         top: 5%;
     }
+}
+
+@media (max-width: 480px) {
+  .scanner-container, .video-container { width: 95vw !important; max-width: 95vw !important; }
+  button { min-height: 44px; }
 }

@@ -123,6 +123,18 @@
             body { padding: 14px; }
             h1 { font-size: 18px; }
         }
+        @media(max-width:768px){
+          input, select, textarea { font-size: 16px !important; }
+        }
+        @media(max-width:480px){
+          .stats-container { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+          .stat-value { font-size: 1.5rem; }
+          .tariff-info { font-size: 0.78rem; padding: 10px 12px; }
+          .vehicles-section { padding: 14px; }
+          table { font-size: 11px; }
+          th, td { padding: 6px 6px; }
+          h1 { font-size: clamp(1rem, 4vw, 1.4rem); }
+        }
     </style>
 </head>
 <body>

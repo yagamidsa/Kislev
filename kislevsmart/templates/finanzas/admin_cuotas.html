@@ -54,6 +54,14 @@
         .pendiente { color:#c62828; font-weight:600; }
 
         .back-link { display:inline-flex; align-items:center; gap:6px; color:#7c3aed; font-weight:600; font-size:0.85rem; text-decoration:none; margin-bottom:1.5rem; }
+        @media(max-width:768px){
+          input, select, textarea { font-size: 16px !important; }
+          .modal { max-width: min(480px, 95vw) !important; }
+        }
+        @media(max-width:480px){
+          .fin-wrap { padding: 0 0.5rem; }
+          .btn-primary, .btn-sm { min-height: 44px; }
+        }
     </style>
 </head>
 <body>
@@ -89,7 +97,8 @@
             </div>
         </div>
 
-        <table class="pagos-table">
+        <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
+        <table class="pagos-table" style="min-width:600px">
             <thead>
                 <tr>
                     <th>Propietario</th>
@@ -122,6 +131,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        </div>
         <div style="padding:.75rem 1.25rem; background:#fafafa; font-size:0.8rem; color:#888;">
             {{ cuota.pagos.count }} / {{ total_propietarios }} propietarios han pagado
         </div>

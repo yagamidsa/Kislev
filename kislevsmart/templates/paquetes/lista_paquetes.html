@@ -54,7 +54,7 @@
     .wa-no{color:rgba(255,255,255,0.3);font-size:0.8rem}
     .empty{text-align:center;padding:60px 20px;color:rgba(255,255,255,0.4)}
     .empty i{font-size:3rem;display:block;margin-bottom:12px;opacity:.4}
-    .btn-edit{background:rgba(124,58,237,0.2);border:1px solid rgba(124,58,237,0.4);color:#a78bfa;padding:5px 10px;border-radius:7px;font-size:0.78rem;cursor:pointer;transition:.2s}
+    .btn-edit{background:rgba(124,58,237,0.2);border:1px solid rgba(124,58,237,0.4);color:#a78bfa;padding:8px 12px;min-height:36px;border-radius:7px;font-size:0.78rem;cursor:pointer;transition:.2s}
     .btn-edit:hover{background:rgba(124,58,237,0.4)}
     /* Modal */
     .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000;display:none;align-items:center;justify-content:center}
@@ -75,6 +75,21 @@
       .entregar-widget{flex-direction:column;align-items:stretch}
       .code-input{text-align:center;width:100%}
       .btn-entregar{width:100%;text-align:center}
+    }
+    @media(max-width:768px){
+      input, select, textarea { font-size: 16px !important; }
+    }
+    @media(max-width:480px){
+      .topbar{padding:10px 12px;gap:6px}
+      .topbar h1{font-size:0.85rem}
+      .btn{padding:8px 10px;font-size:0.78rem}
+      .container{padding:10px 8px}
+      .filters{flex-direction:column}
+      .entregar-widget{flex-direction:column;align-items:stretch;gap:8px}
+      .code-input{width:100%;text-align:center}
+      .btn-entregar{width:100%;padding:12px;min-height:44px}
+      .btn-edit{padding:8px 12px;min-height:36px;font-size:0.8rem}
+      .modal{margin:8px;padding:20px}
     }
   </style>
 </head>

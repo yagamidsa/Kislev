@@ -556,3 +556,35 @@ html, body {
 .flex-1.flex.flex-col.overflow-hidden {
     height: 100%;
 }
+
+/* ── MOBILE RESPONSIVE FIXES ── */
+@media(max-width:768px){
+  input, select, textarea { font-size: 16px !important; }
+  canvas { max-width: 100%; }
+  .p-6 { padding: 1rem !important; }
+}
+
+@media(max-width:480px){
+  /* Parqueaderos grid → mobile */
+  [style*="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))"],
+  [style*="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))"] {
+    grid-template-columns: repeat(auto-fit, minmax(min(200px, 40vw), 1fr)) !important;
+  }
+
+  /* KPI paquetes grid (3 cols) — keep 3 cols but reduce padding */
+  .grid.grid-cols-3 { gap: 8px !important; }
+  .grid.grid-cols-3 > div { padding: 10px 8px !important; }
+  .grid.grid-cols-3 .text-3xl { font-size: 1.4rem !important; }
+
+  /* Delivery widget — stack vertically */
+  .flex.gap-3.flex-wrap { flex-direction: column !important; align-items: stretch !important; }
+  #dash-codigo { min-width: unset !important; width: 100% !important; }
+  button[onclick="dashEntregar()"] { width: 100% !important; min-height: 44px !important; }
+
+  /* General heading sizes */
+  .text-4xl { font-size: clamp(1.4rem, 6vw, 2rem) !important; }
+  .text-xl { font-size: clamp(0.95rem, 3vw, 1.2rem) !important; }
+
+  /* Quick action buttons */
+  .flex.flex-wrap.gap-3 > a { min-height: 44px; }
+}

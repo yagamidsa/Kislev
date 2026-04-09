@@ -53,6 +53,14 @@
             max-width: 860px;
         }
         @media (max-width: 640px) { .config-grid { grid-template-columns: 1fr; } }
+        @media(max-width:768px){
+          input, select, textarea { font-size: 16px !important; }
+        }
+        @media(max-width:600px){
+          .config-grid, .form-row { flex-direction: column !important; }
+          input[type=number], select { min-height: 44px; font-size: 16px; }
+          .save-btn { min-height: 44px; }
+        }
 
         .config-card {
             background: rgba(255,255,255,0.06);

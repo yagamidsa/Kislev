@@ -132,7 +132,7 @@
         /* ── GRID CARDS ── */
         .visitantes-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(min(280px, 90vw), 1fr));
             gap: 18px;
         }
 
@@ -314,6 +314,18 @@
             font-weight: 600;
             font-family: 'Poppins', sans-serif;
             cursor: pointer;
+        }
+
+        @media(max-width:768px){
+          input, select, textarea { font-size: 16px !important; }
+        }
+        @media(max-width:480px){
+          .visitantes-grid, .cards-grid { grid-template-columns: 1fr !important; }
+          .btn-filtrar, .btn-limpiar { min-height: 44px; }
+          .filtros-row { flex-direction: column; }
+          .modal-box { padding: 20px 16px; }
+          .btn-cancel-modal, .btn-confirm-modal { min-height: 44px; }
+          .container { padding: 16px 12px; }
         }
     </style>
 </head>
