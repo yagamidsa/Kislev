@@ -1,0 +1,2483 @@
+[
+{
+  "model": "accounts.conjuntoresidencial",
+  "pk": 1,
+  "fields": {
+    "nombre": "Kislev",
+    "direccion": "Calle 1 #1-1",
+    "nit": "900000001",
+    "telefono": null,
+    "email_contacto": null,
+    "estado": true,
+    "fecha_registro": "2026-04-03T06:22:08.472Z",
+    "link_pago": "https://www.avalpaycenter.com/wps/portal/portal-de-pagos/web/banco-avvillas/resultado-busqueda/realizar-pago?idConv=00024181"
+  }
+},
+{
+  "model": "accounts.conjuntoresidencial",
+  "pk": 2,
+  "fields": {
+    "nombre": "Oliva Madrid",
+    "direccion": "Calle 80 #50-20, Bogota",
+    "nit": "900111001",
+    "telefono": null,
+    "email_contacto": null,
+    "estado": true,
+    "fecha_registro": "2026-04-03T06:39:13.766Z",
+    "link_pago": "https://www.avalpaycenter.com/wps/portal/portal-de-pagos/web/banco-avvillas/resultado-busqueda/realizar-pago?idConv=00024181"
+  }
+},
+{
+  "model": "accounts.conjuntoresidencial",
+  "pk": 3,
+  "fields": {
+    "nombre": "Puerto Hayuelos 1",
+    "direccion": "Av. La Esperanza #68-99, Bogota",
+    "nit": "900222002",
+    "telefono": null,
+    "email_contacto": null,
+    "estado": true,
+    "fecha_registro": "2026-04-03T06:39:13.768Z",
+    "link_pago": "https://www.avalpaycenter.com/wps/portal/portal-de-pagos/web/banco-avvillas/resultado-busqueda/realizar-pago?idConv=00024181"
+  }
+},
+{
+  "model": "accounts.torre",
+  "pk": 1,
+  "fields": {
+    "conjunto": 2,
+    "nombre": "Torre A",
+    "numero_pisos": 1,
+    "aptos_por_piso": 4,
+    "activo": true
+  }
+},
+{
+  "model": "accounts.torre",
+  "pk": 2,
+  "fields": {
+    "conjunto": 3,
+    "nombre": "Torre A",
+    "numero_pisos": 1,
+    "aptos_por_piso": 4,
+    "activo": true
+  }
+},
+{
+  "model": "accounts.torre",
+  "pk": 3,
+  "fields": {
+    "conjunto": 1,
+    "nombre": "Torre 1",
+    "numero_pisos": 14,
+    "aptos_por_piso": 4,
+    "activo": true
+  }
+},
+{
+  "model": "accounts.torre",
+  "pk": 4,
+  "fields": {
+    "conjunto": 1,
+    "nombre": "Torre 2",
+    "numero_pisos": 14,
+    "aptos_por_piso": 4,
+    "activo": true
+  }
+},
+{
+  "model": "accounts.torre",
+  "pk": 5,
+  "fields": {
+    "conjunto": 1,
+    "nombre": "Torre 3",
+    "numero_pisos": 14,
+    "aptos_por_piso": 4,
+    "activo": true
+  }
+},
+{
+  "model": "accounts.torre",
+  "pk": 6,
+  "fields": {
+    "conjunto": 1,
+    "nombre": "Torre 4",
+    "numero_pisos": 14,
+    "aptos_por_piso": 4,
+    "activo": true
+  }
+},
+{
+  "model": "accounts.torre",
+  "pk": 7,
+  "fields": {
+    "conjunto": 1,
+    "nombre": "Torre 5",
+    "numero_pisos": 14,
+    "aptos_por_piso": 4,
+    "activo": true
+  }
+},
+{
+  "model": "accounts.torre",
+  "pk": 8,
+  "fields": {
+    "conjunto": 1,
+    "nombre": "Torre 6",
+    "numero_pisos": 14,
+    "aptos_por_piso": 4,
+    "activo": true
+  }
+},
+{
+  "model": "accounts.torre",
+  "pk": 9,
+  "fields": {
+    "conjunto": 1,
+    "nombre": "Torre 7",
+    "numero_pisos": 14,
+    "aptos_por_piso": 4,
+    "activo": true
+  }
+},
+{
+  "model": "accounts.torre",
+  "pk": 10,
+  "fields": {
+    "conjunto": 1,
+    "nombre": "Torre 8",
+    "numero_pisos": 14,
+    "aptos_por_piso": 4,
+    "activo": true
+  }
+},
+{
+  "model": "accounts.torre",
+  "pk": 11,
+  "fields": {
+    "conjunto": 1,
+    "nombre": "Torre 9",
+    "numero_pisos": 14,
+    "aptos_por_piso": 4,
+    "activo": true
+  }
+},
+{
+  "model": "accounts.torre",
+  "pk": 12,
+  "fields": {
+    "conjunto": 1,
+    "nombre": "Torre 10",
+    "numero_pisos": 14,
+    "aptos_por_piso": 4,
+    "activo": true
+  }
+},
+{
+  "model": "accounts.torre",
+  "pk": 13,
+  "fields": {
+    "conjunto": 1,
+    "nombre": "Torre 11",
+    "numero_pisos": 14,
+    "aptos_por_piso": 4,
+    "activo": true
+  }
+},
+{
+  "model": "accounts.torre",
+  "pk": 14,
+  "fields": {
+    "conjunto": 1,
+    "nombre": "Torre 12",
+    "numero_pisos": 14,
+    "aptos_por_piso": 4,
+    "activo": true
+  }
+},
+{
+  "model": "accounts.torre",
+  "pk": 15,
+  "fields": {
+    "conjunto": 1,
+    "nombre": "Torre 13",
+    "numero_pisos": 14,
+    "aptos_por_piso": 4,
+    "activo": true
+  }
+},
+{
+  "model": "accounts.torre",
+  "pk": 16,
+  "fields": {
+    "conjunto": 1,
+    "nombre": "Torre 14",
+    "numero_pisos": 14,
+    "aptos_por_piso": 4,
+    "activo": true
+  }
+},
+{
+  "model": "accounts.torre",
+  "pk": 17,
+  "fields": {
+    "conjunto": 1,
+    "nombre": "Torre 15",
+    "numero_pisos": 14,
+    "aptos_por_piso": 4,
+    "activo": true
+  }
+},
+{
+  "model": "accounts.torre",
+  "pk": 18,
+  "fields": {
+    "conjunto": 1,
+    "nombre": "Torre 16",
+    "numero_pisos": 14,
+    "aptos_por_piso": 4,
+    "activo": true
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$oOlhNv7lA8oL2QCgcN58wW$SVVYvwibMYVCUyA/4o1CunmhPNR1V6t/Clme7T+tGWw=",
+    "last_login": "2026-04-06T03:27:23.422Z",
+    "cedula": "80793840",
+    "unique_cedula": "80793840_1",
+    "nombre": "david",
+    "email": "yagamidsa@hotmail.com",
+    "conjunto": 1,
+    "phone_number": null,
+    "user_type": "administrador",
+    "torre": null,
+    "apartamento": "",
+    "is_active": true,
+    "is_staff": true,
+    "is_superuser": true,
+    "fecha_registro": "2026-04-03T06:28:28.875Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$VR3SeaB2DMFQfecpriKN9S$mRjaKRWUIddNHy0o0zAKoKGXKMyaXVbfaJILMDYW9go=",
+    "last_login": "2026-04-03T07:08:21.414Z",
+    "cedula": "10011001",
+    "unique_cedula": "10011001_2",
+    "nombre": "Carlos Martinez",
+    "email": "carlos@oliva.com",
+    "conjunto": 2,
+    "phone_number": null,
+    "user_type": "propietario",
+    "torre": 1,
+    "apartamento": "101",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T06:39:14.191Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$OHAlrI9w7qVe9Q0C5emDXY$7cni7dLEsr2eHJD/LrniEZHZSbgZZ+0KNSO1z1ykqks=",
+    "last_login": "2026-04-09T02:22:50.097Z",
+    "cedula": "10011002",
+    "unique_cedula": "10011002_2",
+    "nombre": "Ana Garcia",
+    "email": "ana@oliva.com",
+    "conjunto": 2,
+    "phone_number": null,
+    "user_type": "propietario",
+    "torre": 1,
+    "apartamento": "102",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T06:39:14.645Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$eyEfKo5fUz5tychM0lSbim$RwuH/kLkVjdLsEgOFGp+Or1C6EGh4cv5iYfbEGdaD3Y=",
+    "last_login": null,
+    "cedula": "10011003",
+    "unique_cedula": "10011003_2",
+    "nombre": "Luis Rodriguez",
+    "email": "luis@oliva.com",
+    "conjunto": 2,
+    "phone_number": null,
+    "user_type": "propietario",
+    "torre": 1,
+    "apartamento": "201",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T06:39:15.054Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$gjEpNWUKcZ28fkIyHqfNW8$I/eghGi++ngB38a7zL436FDPS4UbdmwwK9naGxsqqsk=",
+    "last_login": null,
+    "cedula": "10011004",
+    "unique_cedula": "10011004_2",
+    "nombre": "Maria Lopez",
+    "email": "maria@oliva.com",
+    "conjunto": 2,
+    "phone_number": null,
+    "user_type": "propietario",
+    "torre": 1,
+    "apartamento": "202",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T06:39:15.589Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$zDnOjnZVRoVvGCnvZnJvKp$0Gyg0iNsjTxQN96dgAFL4h31F/E6Z/CEVPpqGZtIXtA=",
+    "last_login": null,
+    "cedula": "10011005",
+    "unique_cedula": "10011005_2",
+    "nombre": "Jorge Sanchez",
+    "email": "jorge@oliva.com",
+    "conjunto": 2,
+    "phone_number": null,
+    "user_type": "propietario",
+    "torre": 1,
+    "apartamento": "301",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T06:39:16.042Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$XMd0shq7mm4Q0egpUGTPRZ$REwCB4a/6g27BqaY9B51wkNsUWgBtrxJg1Z91zKHm7s=",
+    "last_login": null,
+    "cedula": "10011006",
+    "unique_cedula": "10011006_2",
+    "nombre": "Laura Perez",
+    "email": "laura@oliva.com",
+    "conjunto": 2,
+    "phone_number": null,
+    "user_type": "propietario",
+    "torre": 1,
+    "apartamento": "302",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T06:39:16.512Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$3m5Mvkpj206GKFaP8Yziqb$zzls4BV6lwuGurzbTLt2Z7lC37VqAwO5VY1tl5GhssY=",
+    "last_login": null,
+    "cedula": "10011007",
+    "unique_cedula": "10011007_2",
+    "nombre": "Andres Torres",
+    "email": "andres@oliva.com",
+    "conjunto": 2,
+    "phone_number": null,
+    "user_type": "propietario",
+    "torre": 1,
+    "apartamento": "401",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T06:39:16.955Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$ZNc5cGQUSKe3kIYq68edlC$BPnC3OETG/+N5D/mt6C1jNSZC7bSIIchpn5Qh80QGLU=",
+    "last_login": null,
+    "cedula": "10011008",
+    "unique_cedula": "10011008_2",
+    "nombre": "Diana Vargas",
+    "email": "diana@oliva.com",
+    "conjunto": 2,
+    "phone_number": null,
+    "user_type": "propietario",
+    "torre": 1,
+    "apartamento": "402",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T06:39:17.400Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$e4suFWdtDTv4cwWYk9Mkkq$DHr/ldweyrLA4Ep6G2oBGPYBTyHcc8YUz6qzTKEOI00=",
+    "last_login": null,
+    "cedula": "10011009",
+    "unique_cedula": "10011009_2",
+    "nombre": "Sebastian Mora",
+    "email": "sebastian@oliva.com",
+    "conjunto": 2,
+    "phone_number": null,
+    "user_type": "propietario",
+    "torre": 1,
+    "apartamento": "501",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T06:39:17.856Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$F9VSaRh2iy0hzi1CUDr8Xv$1MOxFGnJcz2+2QSqeAYPZeMDovSouMt9yQHIE716j8A=",
+    "last_login": null,
+    "cedula": "10011010",
+    "unique_cedula": "10011010_2",
+    "nombre": "Valentina Castro",
+    "email": "valentina@oliva.com",
+    "conjunto": 2,
+    "phone_number": null,
+    "user_type": "propietario",
+    "torre": 1,
+    "apartamento": "502",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T06:39:18.320Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$jx63Ob2AVIp06XUZYYdWVe$pWfzsEysNuoyR2mSwd5Cs0kL6uDoOijUn5ue8u4w8mI=",
+    "last_login": null,
+    "cedula": "20022001",
+    "unique_cedula": "20022001_3",
+    "nombre": "Roberto Jimenez",
+    "email": "roberto@hayuelos.com",
+    "conjunto": 3,
+    "phone_number": null,
+    "user_type": "propietario",
+    "torre": 2,
+    "apartamento": "101",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T06:39:18.783Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$yZtrxLoRlfNyPIEeCLR4EW$47vi+UeAvZWC5k+PhUo6wAL/YzWLdfgfZIUT2a1xX18=",
+    "last_login": null,
+    "cedula": "20022002",
+    "unique_cedula": "20022002_3",
+    "nombre": "Claudia Herrera",
+    "email": "claudia@hayuelos.com",
+    "conjunto": 3,
+    "phone_number": null,
+    "user_type": "propietario",
+    "torre": 2,
+    "apartamento": "102",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T06:39:19.216Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$6D97HrsSUBdTqoHJhlhkXj$7ZEGz7NWzlivyQKBaTOJQj4H8JxtLyWDrz66F6RW8WY=",
+    "last_login": null,
+    "cedula": "20022003",
+    "unique_cedula": "20022003_3",
+    "nombre": "Felipe Gomez",
+    "email": "felipe@hayuelos.com",
+    "conjunto": 3,
+    "phone_number": null,
+    "user_type": "propietario",
+    "torre": 2,
+    "apartamento": "201",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T06:39:19.692Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$D8qbgIE3JKVEUoz2odHFGX$dCNMSb1jzpGFgAW+aivI9fONIGPenooWMCgnMiI3pqw=",
+    "last_login": null,
+    "cedula": "20022004",
+    "unique_cedula": "20022004_3",
+    "nombre": "Sandra Ruiz",
+    "email": "sandra@hayuelos.com",
+    "conjunto": 3,
+    "phone_number": null,
+    "user_type": "propietario",
+    "torre": 2,
+    "apartamento": "202",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T06:39:20.140Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$G6l9v0k4b6wEj5Sbs03omI$McKmc1e3tkoHAP9UJ0JYEoHP43xqvQQaGTvzQC4w79w=",
+    "last_login": null,
+    "cedula": "20022005",
+    "unique_cedula": "20022005_3",
+    "nombre": "Miguel Diaz",
+    "email": "miguel@hayuelos.com",
+    "conjunto": 3,
+    "phone_number": null,
+    "user_type": "propietario",
+    "torre": 2,
+    "apartamento": "301",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T06:39:20.590Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$gv1FLX69Tt8ZVxCspzpgeh$yzYQRoHgE27YAZcw01PaRghnYJHdAo6J25FppTdkhpU=",
+    "last_login": null,
+    "cedula": "20022006",
+    "unique_cedula": "20022006_3",
+    "nombre": "Patricia Moreno",
+    "email": "patricia@hayuelos.com",
+    "conjunto": 3,
+    "phone_number": null,
+    "user_type": "propietario",
+    "torre": 2,
+    "apartamento": "302",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T06:39:21.034Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$SWc8AGLrVoc1MClLC8vQj9$jm8mrjhPN4zfcM5pDQqNQjpDRsq6E3Q9IMOTkcwGYFw=",
+    "last_login": null,
+    "cedula": "20022007",
+    "unique_cedula": "20022007_3",
+    "nombre": "Alejandro Reyes",
+    "email": "alejandro@hayuelos.com",
+    "conjunto": 3,
+    "phone_number": null,
+    "user_type": "propietario",
+    "torre": 2,
+    "apartamento": "401",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T06:39:21.516Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$OqkwTjrB5iEOjBewqGC5IY$dlqFt8FiL+KLu02tGbtzjnXGWQZQUouoWVPEozGDKiE=",
+    "last_login": null,
+    "cedula": "20022008",
+    "unique_cedula": "20022008_3",
+    "nombre": "Natalia Silva",
+    "email": "natalia@hayuelos.com",
+    "conjunto": 3,
+    "phone_number": null,
+    "user_type": "propietario",
+    "torre": 2,
+    "apartamento": "402",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T06:39:21.980Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$SzNhSHIBKSsxGL4NOfFMS8$dz16Cr1JyZHzmT7jiOdefq5vCM+Yspb8I5j4yZ4+VTc=",
+    "last_login": null,
+    "cedula": "20022009",
+    "unique_cedula": "20022009_3",
+    "nombre": "David Ortega",
+    "email": "david@hayuelos.com",
+    "conjunto": 3,
+    "phone_number": null,
+    "user_type": "propietario",
+    "torre": 2,
+    "apartamento": "501",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T06:39:22.429Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$oEy8ZxG8HgYfuTWFoMGuUI$CFxUfbmMgivio0bEPFDHzC5FBhGMpTZfkv1O6f0lokA=",
+    "last_login": null,
+    "cedula": "20022010",
+    "unique_cedula": "20022010_3",
+    "nombre": "Isabella Ramirez",
+    "email": "isabella@hayuelos.com",
+    "conjunto": 3,
+    "phone_number": null,
+    "user_type": "propietario",
+    "torre": 2,
+    "apartamento": "502",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T06:39:22.904Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$Ta25Cz1eDIW4hdBTOGUaIz$XiZB58lxb3zSUh5cOU/DnVD4NMOoxjg0ZXjWUtjTs7Y=",
+    "last_login": null,
+    "cedula": "10000000",
+    "unique_cedula": "10000000_1",
+    "nombre": "Carlos Ramirez",
+    "email": "carlos.ramirez@kislev.co",
+    "conjunto": 1,
+    "phone_number": "3118026851",
+    "user_type": "propietario",
+    "torre": 3,
+    "apartamento": "0101",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T22:11:59.809Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$V86DQ5nQ9b03k0ynFw0YRA$QjwX6MKPnS8/qkFSF+C2DSdyQv4JEj4jNxXpHt+hnSY=",
+    "last_login": null,
+    "cedula": "11234567",
+    "unique_cedula": "11234567_1",
+    "nombre": "Maria Gonzalez",
+    "email": "maria.gonzalez@kislev.co",
+    "conjunto": 1,
+    "phone_number": "3118026851",
+    "user_type": "propietario",
+    "torre": 12,
+    "apartamento": "0202",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T22:12:00.190Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$0hNfWgmKfZFD9MqgPR7FJF$a9uDSYcQGJ6He1q/P8C4KW9NOvA4EKWYy64tWHN9YJU=",
+    "last_login": null,
+    "cedula": "12469134",
+    "unique_cedula": "12469134_1",
+    "nombre": "Jorge Martinez",
+    "email": "jorge.martinez@kislev.co",
+    "conjunto": 1,
+    "phone_number": "3118026851",
+    "user_type": "propietario",
+    "torre": 13,
+    "apartamento": "0303",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T22:12:00.559Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$jmu9e5ULh0HvZRvvBy7Czu$si/rX4knC3LdFygzET7uQ/8kW/qCYH2NdOAnYbREkUw=",
+    "last_login": null,
+    "cedula": "13703701",
+    "unique_cedula": "13703701_1",
+    "nombre": "Ana Lopez",
+    "email": "ana.lopez@kislev.co",
+    "conjunto": 1,
+    "phone_number": "3118026851",
+    "user_type": "propietario",
+    "torre": 14,
+    "apartamento": "0404",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T22:12:00.921Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$2UiK4NVODNKLFRravvjF0B$/xJr7cT7qO79KVOxBc/Xj7Ica0QzxknT+BFYjqm/zCU=",
+    "last_login": null,
+    "cedula": "14938268",
+    "unique_cedula": "14938268_1",
+    "nombre": "Pedro Hernandez",
+    "email": "pedro.hernandez@kislev.co",
+    "conjunto": 1,
+    "phone_number": "3118026851",
+    "user_type": "propietario",
+    "torre": 15,
+    "apartamento": "0101",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T22:12:01.296Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$6uO9kDlwIo7HaOlZ9XDixy$RnXBJWt4IJB7ilOw+AHjmnOdRm9yHYAq2KfsaTvOVnw=",
+    "last_login": null,
+    "cedula": "16172835",
+    "unique_cedula": "16172835_1",
+    "nombre": "Laura Torres",
+    "email": "laura.torres@kislev.co",
+    "conjunto": 1,
+    "phone_number": "3118026851",
+    "user_type": "propietario",
+    "torre": 16,
+    "apartamento": "0202",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T22:12:01.657Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$kqfniO6GRO9oYNPUK8pxpp$0DbkDCBfvuA+/KG4//C+bSX4UucmZUVFiss6faFXzKs=",
+    "last_login": null,
+    "cedula": "17407402",
+    "unique_cedula": "17407402_1",
+    "nombre": "Andres Vargas",
+    "email": "andres.vargas@kislev.co",
+    "conjunto": 1,
+    "phone_number": "3118026851",
+    "user_type": "propietario",
+    "torre": 17,
+    "apartamento": "0303",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T22:12:02.011Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$ul1TfrVxQq73gNv4TAU185$ySBjot82turCuW3gaWPwUwAxchsTDZnw9ttgJSveLGk=",
+    "last_login": null,
+    "cedula": "18641969",
+    "unique_cedula": "18641969_1",
+    "nombre": "Claudia Moreno",
+    "email": "claudia.moreno@kislev.co",
+    "conjunto": 1,
+    "phone_number": "3118026851",
+    "user_type": "propietario",
+    "torre": 18,
+    "apartamento": "0404",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T22:12:02.376Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$qRr2mGvN6bFRodv92Jssl4$Nu+AlmFsKabdzqWjjtLIDeebUYp/MJoJNgTgWG2CPTM=",
+    "last_login": null,
+    "cedula": "19876536",
+    "unique_cedula": "19876536_1",
+    "nombre": "Santiago Jimenez",
+    "email": "santiago.jimenez@kislev.co",
+    "conjunto": 1,
+    "phone_number": "3118026851",
+    "user_type": "propietario",
+    "torre": 4,
+    "apartamento": "0501",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T22:12:02.745Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$aIFZKzlQZhmjOqvdTvS4C0$l6zKoDviA4gctXSeFcubTmcjjVUPybxxzIAvf4Mi22g=",
+    "last_login": null,
+    "cedula": "21111103",
+    "unique_cedula": "21111103_1",
+    "nombre": "Valentina Ruiz",
+    "email": "valentina.ruiz@kislev.co",
+    "conjunto": 1,
+    "phone_number": "3118026851",
+    "user_type": "propietario",
+    "torre": 5,
+    "apartamento": "0602",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T22:12:03.107Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$IdQDJJztsYrp2AZn3dnbJz$UcaGzyw4d3B21GaI9DwzsXO+8nqaZqtDB9WYMfO9P5c=",
+    "last_login": null,
+    "cedula": "22345670",
+    "unique_cedula": "22345670_1",
+    "nombre": "Felipe Castro",
+    "email": "felipe.castro@kislev.co",
+    "conjunto": 1,
+    "phone_number": "3118026851",
+    "user_type": "propietario",
+    "torre": 6,
+    "apartamento": "0703",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T22:12:03.476Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$karxy8jPXmvFo32h1nbbG7$/6/keL1GE+KyZ1CgvsGPL7PP+o1ua8kAed2fjbyV7Og=",
+    "last_login": null,
+    "cedula": "23580237",
+    "unique_cedula": "23580237_1",
+    "nombre": "Daniela Ortiz",
+    "email": "daniela.ortiz@kislev.co",
+    "conjunto": 1,
+    "phone_number": "3118026851",
+    "user_type": "propietario",
+    "torre": 7,
+    "apartamento": "0804",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T22:12:03.843Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$ZTC640YVEC5UBToKmDelvC$aZqwt8UUB3JzKKGNy5S/X905XFAdfSePzQnjBDMJyzU=",
+    "last_login": null,
+    "cedula": "24814804",
+    "unique_cedula": "24814804_1",
+    "nombre": "Miguel Perez",
+    "email": "miguel.perez@kislev.co",
+    "conjunto": 1,
+    "phone_number": "3118026851",
+    "user_type": "propietario",
+    "torre": 8,
+    "apartamento": "0901",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T22:12:04.210Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$mHcs8BsFdjr9rzObK4GMSw$A/hpfHoLzSa1XYF6BWvuC2uDgvVaDdgLdAR95qCKQjw=",
+    "last_login": null,
+    "cedula": "26049371",
+    "unique_cedula": "26049371_1",
+    "nombre": "Camila Reyes",
+    "email": "camila.reyes@kislev.co",
+    "conjunto": 1,
+    "phone_number": "3118026851",
+    "user_type": "propietario",
+    "torre": 9,
+    "apartamento": "1002",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T22:12:04.582Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$58wAgtGBZN3ry75wXds2X5$f+VhmCxGBasFG3gnJSffXEJtzlya7VG/1bU4xhtNFQ0=",
+    "last_login": null,
+    "cedula": "27283938",
+    "unique_cedula": "27283938_1",
+    "nombre": "David Suarez",
+    "email": "david.suarez@kislev.co",
+    "conjunto": 1,
+    "phone_number": "3118026851",
+    "user_type": "propietario",
+    "torre": 10,
+    "apartamento": "1103",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T22:12:04.947Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$jbUFOXPjtDHXpBQ6J942IO$NuTwOT9IboEfxojdvpY5IdZXbqID+rjIxJDWqOrtyVA=",
+    "last_login": null,
+    "cedula": "28518505",
+    "unique_cedula": "28518505_1",
+    "nombre": "Isabela Mendoza",
+    "email": "isabela.mendoza@kislev.co",
+    "conjunto": 1,
+    "phone_number": "3118026851",
+    "user_type": "propietario",
+    "torre": 11,
+    "apartamento": "1204",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T22:12:05.308Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$7BHOKvJ0Y11p80jZBngyx4$c++JSOh9NN1kUT+w1VuMtEfwD5/VAIoZWWOXN+WqrhA=",
+    "last_login": null,
+    "cedula": "29753072",
+    "unique_cedula": "29753072_1",
+    "nombre": "Juan Pardo",
+    "email": "juan.pardo@kislev.co",
+    "conjunto": 1,
+    "phone_number": "3118026851",
+    "user_type": "propietario",
+    "torre": 3,
+    "apartamento": "0201",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T22:12:05.685Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$YqgsoKAUPDfr8TH3gyPwC9$lYNsCdKc6f3+7gdrzKPY608hHOhJk05QaxH9r7/N1fc=",
+    "last_login": null,
+    "cedula": "30987639",
+    "unique_cedula": "30987639_1",
+    "nombre": "Natalia Florez",
+    "email": "natalia.florez@kislev.co",
+    "conjunto": 1,
+    "phone_number": "3118026851",
+    "user_type": "propietario",
+    "torre": 12,
+    "apartamento": "0302",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T22:12:06.049Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$CgClIDI3zXSVjGvYdlFvAe$La6csFnT4GOPGB2sb23kyEh0B/1LkPxXYus4Re5zyv4=",
+    "last_login": null,
+    "cedula": "32222206",
+    "unique_cedula": "32222206_1",
+    "nombre": "Sergio Salcedo",
+    "email": "sergio.salcedo@kislev.co",
+    "conjunto": 1,
+    "phone_number": "3118026851",
+    "user_type": "propietario",
+    "torre": 13,
+    "apartamento": "0403",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T22:12:06.414Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$yeBWNgzNSceljVY7RmQ1sc$3D/gzxmOtpLaKS6FA5Hgk4QqL8E52maVKMYYFclaUcw=",
+    "last_login": null,
+    "cedula": "33456773",
+    "unique_cedula": "33456773_1",
+    "nombre": "Paola Arango",
+    "email": "paola.arango@kislev.co",
+    "conjunto": 1,
+    "phone_number": "3118026851",
+    "user_type": "propietario",
+    "torre": 14,
+    "apartamento": "0504",
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-03T22:12:06.783Z"
+  }
+},
+{
+  "model": "accounts.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$870000$macRI2rdPPPr0Cr163P6eN$O35L5EM/o+lT3OxehjK0qQlu5dCHsg4WU7MGhysnMXw=",
+    "last_login": "2026-04-04T06:33:48.070Z",
+    "cedula": "99999999",
+    "unique_cedula": "99999999_2",
+    "nombre": "Admin Oliva",
+    "email": "admin@olivamadrid.com",
+    "conjunto": 2,
+    "phone_number": null,
+    "user_type": "administrador",
+    "torre": null,
+    "apartamento": "",
+    "is_active": true,
+    "is_staff": true,
+    "is_superuser": false,
+    "fecha_registro": "2026-04-04T06:19:26.580Z"
+  }
+},
+{
+  "model": "kislevsmart.sala",
+  "pk": 7,
+  "fields": {
+    "conjunto": 2,
+    "nombre": "Gym",
+    "descripcion": "Gimnasio equipado con maquinas de cardio y pesas",
+    "capacidad": 30,
+    "imagen": "",
+    "amenities": {},
+    "estado": true,
+    "created_at": "2026-04-03T06:44:09.151Z",
+    "updated_at": "2026-04-03T06:44:09.151Z"
+  }
+},
+{
+  "model": "kislevsmart.sala",
+  "pk": 8,
+  "fields": {
+    "conjunto": 2,
+    "nombre": "Piscina",
+    "descripcion": "Piscina comunal para adultos y ninos",
+    "capacidad": 50,
+    "imagen": "",
+    "amenities": {},
+    "estado": true,
+    "created_at": "2026-04-03T06:44:09.157Z",
+    "updated_at": "2026-04-03T06:44:09.157Z"
+  }
+},
+{
+  "model": "kislevsmart.sala",
+  "pk": 9,
+  "fields": {
+    "conjunto": 2,
+    "nombre": "Sala de Juegos",
+    "descripcion": "Sala de entretenimiento con juegos de mesa y billar",
+    "capacidad": 20,
+    "imagen": "",
+    "amenities": {},
+    "estado": true,
+    "created_at": "2026-04-03T06:44:09.161Z",
+    "updated_at": "2026-04-03T06:44:09.161Z"
+  }
+},
+{
+  "model": "kislevsmart.sala",
+  "pk": 10,
+  "fields": {
+    "conjunto": 2,
+    "nombre": "Salon de Eventos 1",
+    "descripcion": "Salon multiple para eventos sociales y reuniones",
+    "capacidad": 80,
+    "imagen": "",
+    "amenities": {},
+    "estado": true,
+    "created_at": "2026-04-03T06:44:09.164Z",
+    "updated_at": "2026-04-03T06:44:09.164Z"
+  }
+},
+{
+  "model": "kislevsmart.sala",
+  "pk": 11,
+  "fields": {
+    "conjunto": 2,
+    "nombre": "Salon de Eventos 2",
+    "descripcion": "Salon multiple para eventos sociales y reuniones",
+    "capacidad": 80,
+    "imagen": "",
+    "amenities": {},
+    "estado": true,
+    "created_at": "2026-04-03T06:44:09.168Z",
+    "updated_at": "2026-04-03T06:44:09.168Z"
+  }
+},
+{
+  "model": "kislevsmart.sala",
+  "pk": 12,
+  "fields": {
+    "conjunto": 2,
+    "nombre": "BBQ",
+    "descripcion": "Zona de asados con parrillas y zona de picnic",
+    "capacidad": 40,
+    "imagen": "",
+    "amenities": {},
+    "estado": true,
+    "created_at": "2026-04-03T06:44:09.171Z",
+    "updated_at": "2026-04-03T06:44:09.171Z"
+  }
+},
+{
+  "model": "kislevsmart.sala",
+  "pk": 13,
+  "fields": {
+    "conjunto": 3,
+    "nombre": "Gym",
+    "descripcion": "Gimnasio equipado con maquinas de cardio y pesas",
+    "capacidad": 30,
+    "imagen": "",
+    "amenities": {},
+    "estado": true,
+    "created_at": "2026-04-03T06:44:09.174Z",
+    "updated_at": "2026-04-03T06:44:09.174Z"
+  }
+},
+{
+  "model": "kislevsmart.sala",
+  "pk": 14,
+  "fields": {
+    "conjunto": 3,
+    "nombre": "Piscina",
+    "descripcion": "Piscina comunal para adultos y ninos",
+    "capacidad": 50,
+    "imagen": "",
+    "amenities": {},
+    "estado": true,
+    "created_at": "2026-04-03T06:44:09.177Z",
+    "updated_at": "2026-04-03T06:44:09.177Z"
+  }
+},
+{
+  "model": "kislevsmart.sala",
+  "pk": 15,
+  "fields": {
+    "conjunto": 3,
+    "nombre": "Sala de Juegos",
+    "descripcion": "Sala de entretenimiento con juegos de mesa y billar",
+    "capacidad": 20,
+    "imagen": "",
+    "amenities": {},
+    "estado": true,
+    "created_at": "2026-04-03T06:44:09.179Z",
+    "updated_at": "2026-04-03T06:44:09.179Z"
+  }
+},
+{
+  "model": "kislevsmart.sala",
+  "pk": 16,
+  "fields": {
+    "conjunto": 3,
+    "nombre": "Salon de Eventos 1",
+    "descripcion": "Salon multiple para eventos sociales y reuniones",
+    "capacidad": 80,
+    "imagen": "",
+    "amenities": {},
+    "estado": true,
+    "created_at": "2026-04-03T06:44:09.181Z",
+    "updated_at": "2026-04-03T06:44:09.181Z"
+  }
+},
+{
+  "model": "kislevsmart.sala",
+  "pk": 17,
+  "fields": {
+    "conjunto": 3,
+    "nombre": "Salon de Eventos 2",
+    "descripcion": "Salon multiple para eventos sociales y reuniones",
+    "capacidad": 80,
+    "imagen": "",
+    "amenities": {},
+    "estado": true,
+    "created_at": "2026-04-03T06:44:09.183Z",
+    "updated_at": "2026-04-03T06:44:09.183Z"
+  }
+},
+{
+  "model": "kislevsmart.sala",
+  "pk": 18,
+  "fields": {
+    "conjunto": 3,
+    "nombre": "BBQ",
+    "descripcion": "Zona de asados con parrillas y zona de picnic",
+    "capacidad": 40,
+    "imagen": "",
+    "amenities": {},
+    "estado": true,
+    "created_at": "2026-04-03T06:44:09.185Z",
+    "updated_at": "2026-04-03T06:44:09.185Z"
+  }
+},
+{
+  "model": "kislevsmart.sala",
+  "pk": 19,
+  "fields": {
+    "conjunto": 1,
+    "nombre": "Salón Social",
+    "descripcion": "Amplio salón para eventos, reuniones y celebraciones. Cuenta con mesas, sillas, cocina equipada y sistema de sonido.",
+    "capacidad": 80,
+    "imagen": "",
+    "amenities": {
+      "cocina": true,
+      "sonido": true,
+      "proyector": true,
+      "aire_acondicionado": true
+    },
+    "estado": true,
+    "created_at": "2026-04-04T05:47:04.916Z",
+    "updated_at": "2026-04-04T05:47:04.916Z"
+  }
+},
+{
+  "model": "kislevsmart.sala",
+  "pk": 20,
+  "fields": {
+    "conjunto": 1,
+    "nombre": "Gimnasio",
+    "descripcion": "Gimnasio equipado con máquinas cardiovasculares, pesas y zona de estiramiento.",
+    "capacidad": 20,
+    "imagen": "",
+    "amenities": {
+      "lockers": true,
+      "vestiarios": true,
+      "aire_acondicionado": true
+    },
+    "estado": true,
+    "created_at": "2026-04-04T05:47:04.920Z",
+    "updated_at": "2026-04-04T05:47:04.920Z"
+  }
+},
+{
+  "model": "kislevsmart.sala",
+  "pk": 21,
+  "fields": {
+    "conjunto": 1,
+    "nombre": "Zona BBQ",
+    "descripcion": "Zona de asados al aire libre con parrillas, mesas y zona de juegos infantiles.",
+    "capacidad": 40,
+    "imagen": "",
+    "amenities": {
+      "mesas": true,
+      "parrillas": true,
+      "zona_infantil": true
+    },
+    "estado": true,
+    "created_at": "2026-04-04T05:47:04.921Z",
+    "updated_at": "2026-04-04T05:47:04.921Z"
+  }
+},
+{
+  "model": "kislevsmart.sala",
+  "pk": 22,
+  "fields": {
+    "conjunto": 1,
+    "nombre": "Sala de Juntas",
+    "descripcion": "Sala para reuniones de la copropiedad, comité de convivencia y asambleas pequeñas.",
+    "capacidad": 15,
+    "imagen": "",
+    "amenities": {
+      "proyector": true,
+      "videoconferencia": true,
+      "aire_acondicionado": true
+    },
+    "estado": true,
+    "created_at": "2026-04-04T05:47:04.922Z",
+    "updated_at": "2026-04-04T05:47:04.922Z"
+  }
+},
+{
+  "model": "kislevsmart.reserva",
+  "pk": 1,
+  "fields": {
+    "sala": 7,
+    "usuario": null,
+    "fecha": "2026-04-04",
+    "hora_inicio": "10:00:00",
+    "hora_fin": "11:00:00",
+    "estado": "true",
+    "notas": "",
+    "aprobada_por": null,
+    "fecha_aprobacion": null,
+    "motivo_rechazo": "",
+    "created_at": "2026-04-04T05:23:00.335Z"
+  }
+},
+{
+  "model": "kislevsmart.reserva",
+  "pk": 2,
+  "fields": {
+    "sala": 20,
+    "usuario": [
+      "80793840"
+    ],
+    "fecha": "2026-04-04",
+    "hora_inicio": "08:00:00",
+    "hora_fin": "09:00:00",
+    "estado": "aprobada",
+    "notas": "",
+    "aprobada_por": null,
+    "fecha_aprobacion": null,
+    "motivo_rechazo": "",
+    "created_at": "2026-04-04T05:47:36.085Z"
+  }
+},
+{
+  "model": "kislevsmart.reserva",
+  "pk": 3,
+  "fields": {
+    "sala": 19,
+    "usuario": [
+      "80793840"
+    ],
+    "fecha": "2026-04-04",
+    "hora_inicio": "11:00:00",
+    "hora_fin": "12:00:00",
+    "estado": "aprobada",
+    "notas": "",
+    "aprobada_por": null,
+    "fecha_aprobacion": null,
+    "motivo_rechazo": "",
+    "created_at": "2026-04-04T05:48:38.842Z"
+  }
+},
+{
+  "model": "kislevsmart.reserva",
+  "pk": 4,
+  "fields": {
+    "sala": 19,
+    "usuario": [
+      "80793840"
+    ],
+    "fecha": "2026-04-04",
+    "hora_inicio": "20:00:00",
+    "hora_fin": "21:00:00",
+    "estado": "aprobada",
+    "notas": "",
+    "aprobada_por": null,
+    "fecha_aprobacion": null,
+    "motivo_rechazo": "",
+    "created_at": "2026-04-04T05:53:12.614Z"
+  }
+},
+{
+  "model": "kislevsmart.reserva",
+  "pk": 5,
+  "fields": {
+    "sala": 20,
+    "usuario": [
+      "80793840"
+    ],
+    "fecha": "2026-04-04",
+    "hora_inicio": "09:00:00",
+    "hora_fin": "10:00:00",
+    "estado": "aprobada",
+    "notas": "",
+    "aprobada_por": [
+      "80793840"
+    ],
+    "fecha_aprobacion": null,
+    "motivo_rechazo": "",
+    "created_at": "2026-04-04T05:59:08.551Z"
+  }
+},
+{
+  "model": "kislevsmart.reserva",
+  "pk": 6,
+  "fields": {
+    "sala": 21,
+    "usuario": [
+      "80793840"
+    ],
+    "fecha": "2026-04-04",
+    "hora_inicio": "08:00:00",
+    "hora_fin": "09:00:00",
+    "estado": "aprobada",
+    "notas": "",
+    "aprobada_por": [
+      "80793840"
+    ],
+    "fecha_aprobacion": null,
+    "motivo_rechazo": "",
+    "created_at": "2026-04-04T06:07:11.990Z"
+  }
+},
+{
+  "model": "kislevsmart.reserva",
+  "pk": 7,
+  "fields": {
+    "sala": 12,
+    "usuario": [
+      "10011002"
+    ],
+    "fecha": "2026-04-04",
+    "hora_inicio": "08:00:00",
+    "hora_fin": "09:00:00",
+    "estado": "aprobada",
+    "notas": "",
+    "aprobada_por": [
+      "99999999"
+    ],
+    "fecha_aprobacion": "2026-04-04T06:20:53.381Z",
+    "motivo_rechazo": "",
+    "created_at": "2026-04-04T06:11:29.864Z"
+  }
+},
+{
+  "model": "kislevsmart.reserva",
+  "pk": 8,
+  "fields": {
+    "sala": 7,
+    "usuario": [
+      "10011002"
+    ],
+    "fecha": "2026-04-04",
+    "hora_inicio": "08:00:00",
+    "hora_fin": "09:00:00",
+    "estado": "aprobada",
+    "notas": "",
+    "aprobada_por": [
+      "99999999"
+    ],
+    "fecha_aprobacion": "2026-04-04T06:21:01.686Z",
+    "motivo_rechazo": "",
+    "created_at": "2026-04-04T06:11:50.032Z"
+  }
+},
+{
+  "model": "kislevsmart.reserva",
+  "pk": 9,
+  "fields": {
+    "sala": 8,
+    "usuario": [
+      "10011002"
+    ],
+    "fecha": "2026-04-04",
+    "hora_inicio": "08:00:00",
+    "hora_fin": "09:00:00",
+    "estado": "aprobada",
+    "notas": "",
+    "aprobada_por": [
+      "99999999"
+    ],
+    "fecha_aprobacion": "2026-04-04T06:20:58.213Z",
+    "motivo_rechazo": "",
+    "created_at": "2026-04-04T06:12:04.110Z"
+  }
+},
+{
+  "model": "kislevsmart.reserva",
+  "pk": 10,
+  "fields": {
+    "sala": 9,
+    "usuario": [
+      "10011002"
+    ],
+    "fecha": "2026-04-04",
+    "hora_inicio": "08:00:00",
+    "hora_fin": "09:00:00",
+    "estado": "aprobada",
+    "notas": "",
+    "aprobada_por": [
+      "99999999"
+    ],
+    "fecha_aprobacion": "2026-04-04T06:20:36.992Z",
+    "motivo_rechazo": "",
+    "created_at": "2026-04-04T06:12:37.404Z"
+  }
+},
+{
+  "model": "kislevsmart.reserva",
+  "pk": 11,
+  "fields": {
+    "sala": 12,
+    "usuario": [
+      "10011002"
+    ],
+    "fecha": "2026-04-04",
+    "hora_inicio": "09:00:00",
+    "hora_fin": "10:00:00",
+    "estado": "cancelada",
+    "notas": "",
+    "aprobada_por": [
+      "10011002"
+    ],
+    "fecha_aprobacion": "2026-04-04T06:33:26.441Z",
+    "motivo_rechazo": "Cancelada por Ana Garcia",
+    "created_at": "2026-04-04T06:18:15.755Z"
+  }
+},
+{
+  "model": "kislevsmart.reserva",
+  "pk": 12,
+  "fields": {
+    "sala": 12,
+    "usuario": [
+      "10011002"
+    ],
+    "fecha": "2026-04-09",
+    "hora_inicio": "08:00:00",
+    "hora_fin": "09:00:00",
+    "estado": "pendiente",
+    "notas": "",
+    "aprobada_por": null,
+    "fecha_aprobacion": null,
+    "motivo_rechazo": "",
+    "created_at": "2026-04-09T02:23:50.539Z"
+  }
+},
+{
+  "model": "kislevsmart.reserva",
+  "pk": 13,
+  "fields": {
+    "sala": 7,
+    "usuario": [
+      "10011002"
+    ],
+    "fecha": "2026-04-09",
+    "hora_inicio": "10:00:00",
+    "hora_fin": "11:00:00",
+    "estado": "pendiente",
+    "notas": "",
+    "aprobada_por": null,
+    "fecha_aprobacion": null,
+    "motivo_rechazo": "",
+    "created_at": "2026-04-09T02:24:26.065Z"
+  }
+},
+{
+  "model": "kislevsmart.parqueaderocarro",
+  "pk": 1,
+  "fields": {
+    "conjunto": 1,
+    "total_espacios": 30,
+    "descripcion": null,
+    "actualizado": "2026-04-03T06:31:34.853Z"
+  }
+},
+{
+  "model": "kislevsmart.parqueaderocarro",
+  "pk": 2,
+  "fields": {
+    "conjunto": 2,
+    "total_espacios": 30,
+    "descripcion": "Parqueadero visitantes carros Oliva Madrid",
+    "actualizado": "2026-04-03T06:42:53.921Z"
+  }
+},
+{
+  "model": "kislevsmart.parqueaderocarro",
+  "pk": 3,
+  "fields": {
+    "conjunto": 3,
+    "total_espacios": 50,
+    "descripcion": "Parqueadero visitantes carros Puerto Hayuelos 1",
+    "actualizado": "2026-04-03T06:42:53.927Z"
+  }
+},
+{
+  "model": "kislevsmart.parqueaderomoto",
+  "pk": 1,
+  "fields": {
+    "conjunto": 1,
+    "total_espacios": 10,
+    "descripcion": null,
+    "actualizado": "2026-04-03T06:31:43.979Z"
+  }
+},
+{
+  "model": "kislevsmart.parqueaderomoto",
+  "pk": 2,
+  "fields": {
+    "conjunto": 2,
+    "total_espacios": 10,
+    "descripcion": "Parqueadero visitantes motos Oliva Madrid",
+    "actualizado": "2026-04-03T06:42:53.925Z"
+  }
+},
+{
+  "model": "kislevsmart.parqueaderomoto",
+  "pk": 3,
+  "fields": {
+    "conjunto": 3,
+    "total_espacios": 10,
+    "descripcion": "Parqueadero visitantes motos Puerto Hayuelos 1",
+    "actualizado": "2026-04-03T06:42:53.929Z"
+  }
+},
+{
+  "model": "kislevsmart.cuota",
+  "pk": 1,
+  "fields": {
+    "conjunto": 1,
+    "nombre": "Ximena Ceballos",
+    "descripcion": "",
+    "monto": 200000,
+    "periodicidad": "mensual",
+    "fecha_vencimiento": "2026-04-03",
+    "creado_en": "2026-04-03T06:32:46.394Z"
+  }
+},
+{
+  "model": "kislevsmart.cuota",
+  "pk": 2,
+  "fields": {
+    "conjunto": 1,
+    "nombre": "administracion 2026",
+    "descripcion": "",
+    "monto": 2800000,
+    "periodicidad": "mensual",
+    "fecha_vencimiento": "2026-04-02",
+    "creado_en": "2026-04-03T06:33:44.419Z"
+  }
+},
+{
+  "model": "kislevsmart.cuota",
+  "pk": 3,
+  "fields": {
+    "conjunto": 2,
+    "nombre": "Administración Febrero 2026",
+    "descripcion": "Cuota pendiente de pago — Administración Febrero 2026",
+    "monto": 350000,
+    "periodicidad": "mensual",
+    "fecha_vencimiento": "2026-02-28",
+    "creado_en": "2026-04-04T06:46:12.313Z"
+  }
+},
+{
+  "model": "kislevsmart.cuota",
+  "pk": 4,
+  "fields": {
+    "conjunto": 2,
+    "nombre": "Administración Marzo 2026",
+    "descripcion": "Cuota pendiente — Administración Marzo 2026",
+    "monto": 350000,
+    "periodicidad": "mensual",
+    "fecha_vencimiento": "2026-03-31",
+    "creado_en": "2026-04-04T06:46:27.705Z"
+  }
+},
+{
+  "model": "kislevsmart.cuota",
+  "pk": 5,
+  "fields": {
+    "conjunto": 2,
+    "nombre": "Fondo de imprevistos Q1",
+    "descripcion": "Cuota pendiente — Fondo de imprevistos Q1",
+    "monto": 150000,
+    "periodicidad": "mensual",
+    "fecha_vencimiento": "2026-03-15",
+    "creado_en": "2026-04-04T06:46:27.713Z"
+  }
+},
+{
+  "model": "kislevsmart.cuota",
+  "pk": 6,
+  "fields": {
+    "conjunto": 3,
+    "nombre": "Administración Febrero 2026",
+    "descripcion": "Cuota pendiente — Administración Febrero 2026",
+    "monto": 420000,
+    "periodicidad": "mensual",
+    "fecha_vencimiento": "2026-02-28",
+    "creado_en": "2026-04-04T06:46:27.716Z"
+  }
+},
+{
+  "model": "kislevsmart.cuota",
+  "pk": 7,
+  "fields": {
+    "conjunto": 3,
+    "nombre": "Administración Marzo 2026",
+    "descripcion": "Cuota pendiente — Administración Marzo 2026",
+    "monto": 420000,
+    "periodicidad": "mensual",
+    "fecha_vencimiento": "2026-03-31",
+    "creado_en": "2026-04-04T06:46:27.719Z"
+  }
+},
+{
+  "model": "kislevsmart.cuota",
+  "pk": 8,
+  "fields": {
+    "conjunto": 3,
+    "nombre": "Cuota extraordinaria Parque",
+    "descripcion": "Cuota pendiente — Cuota extraordinaria Parque",
+    "monto": 200000,
+    "periodicidad": "mensual",
+    "fecha_vencimiento": "2026-03-20",
+    "creado_en": "2026-04-04T06:46:27.725Z"
+  }
+},
+{
+  "model": "kislevsmart.cuota",
+  "pk": 9,
+  "fields": {
+    "conjunto": 1,
+    "nombre": "Administración Febrero 2026",
+    "descripcion": "Cuota pendiente — Administración Febrero 2026",
+    "monto": 480000,
+    "periodicidad": "mensual",
+    "fecha_vencimiento": "2026-02-28",
+    "creado_en": "2026-04-04T06:46:27.729Z"
+  }
+},
+{
+  "model": "kislevsmart.cuota",
+  "pk": 10,
+  "fields": {
+    "conjunto": 1,
+    "nombre": "Administración Marzo 2026",
+    "descripcion": "Cuota pendiente — Administración Marzo 2026",
+    "monto": 480000,
+    "periodicidad": "mensual",
+    "fecha_vencimiento": "2026-03-31",
+    "creado_en": "2026-04-04T06:46:27.733Z"
+  }
+},
+{
+  "model": "kislevsmart.cuota",
+  "pk": 11,
+  "fields": {
+    "conjunto": 1,
+    "nombre": "Fondo de imprevistos Q1",
+    "descripcion": "Cuota pendiente — Fondo de imprevistos Q1",
+    "monto": 200000,
+    "periodicidad": "mensual",
+    "fecha_vencimiento": "2026-03-15",
+    "creado_en": "2026-04-04T06:46:27.738Z"
+  }
+},
+{
+  "model": "kislevsmart.auditlog",
+  "pk": 1,
+  "fields": {
+    "usuario": [
+      "80793840"
+    ],
+    "conjunto": 1,
+    "accion": "reserva_creada",
+    "detalle": "Cuota creada: Ximena Ceballos $200,000",
+    "ip": "127.0.0.1",
+    "fecha": "2026-04-03T06:32:46.424Z"
+  }
+},
+{
+  "model": "kislevsmart.auditlog",
+  "pk": 2,
+  "fields": {
+    "usuario": [
+      "80793840"
+    ],
+    "conjunto": 1,
+    "accion": "reserva_creada",
+    "detalle": "Cuota creada: administracion 2026 $2,800,000",
+    "ip": "127.0.0.1",
+    "fecha": "2026-04-03T06:33:44.426Z"
+  }
+},
+{
+  "model": "kislevsmart.auditlog",
+  "pk": 3,
+  "fields": {
+    "usuario": [
+      "80793840"
+    ],
+    "conjunto": 1,
+    "accion": "paquete_registrado",
+    "detalle": "Torre Torre 14 Apto 704 | envia | código 491677",
+    "ip": "127.0.0.1",
+    "fecha": "2026-04-03T22:47:56.518Z"
+  }
+},
+{
+  "model": "kislevsmart.auditlog",
+  "pk": 4,
+  "fields": {
+    "usuario": [
+      "80793840"
+    ],
+    "conjunto": 1,
+    "accion": "paquete_registrado",
+    "detalle": "Torre Torre 14 Apto 101 | interrapidisimo | código 728627",
+    "ip": "127.0.0.1",
+    "fecha": "2026-04-03T22:54:39.887Z"
+  }
+},
+{
+  "model": "kislevsmart.auditlog",
+  "pk": 5,
+  "fields": {
+    "usuario": [
+      "80793840"
+    ],
+    "conjunto": 1,
+    "accion": "paquete_entregado",
+    "detalle": "Código 728627 | Torre Torre 14 Apto 101",
+    "ip": "127.0.0.1",
+    "fecha": "2026-04-03T22:56:06.131Z"
+  }
+},
+{
+  "model": "kislevsmart.auditlog",
+  "pk": 6,
+  "fields": {
+    "usuario": [
+      "80793840"
+    ],
+    "conjunto": 1,
+    "accion": "paquete_registrado",
+    "detalle": "Torre Torre 1 Apto 0101 | servientrega | código 422719",
+    "ip": "127.0.0.1",
+    "fecha": "2026-04-03T22:57:07.736Z"
+  }
+},
+{
+  "model": "kislevsmart.auditlog",
+  "pk": 7,
+  "fields": {
+    "usuario": [
+      "80793840"
+    ],
+    "conjunto": 1,
+    "accion": "paquete_registrado",
+    "detalle": "Torre Torre 1 Apto 0101 | amazon | código 527091",
+    "ip": "127.0.0.1",
+    "fecha": "2026-04-03T23:57:39.979Z"
+  }
+},
+{
+  "model": "kislevsmart.auditlog",
+  "pk": 8,
+  "fields": {
+    "usuario": [
+      "80793840"
+    ],
+    "conjunto": 1,
+    "accion": "paquete_registrado",
+    "detalle": "Torre Torre 2 Apto 0102 | amazon | código 167763",
+    "ip": "127.0.0.1",
+    "fecha": "2026-04-03T23:58:29.675Z"
+  }
+},
+{
+  "model": "kislevsmart.auditlog",
+  "pk": 9,
+  "fields": {
+    "usuario": [
+      "80793840"
+    ],
+    "conjunto": 1,
+    "accion": "paquete_registrado",
+    "detalle": "Torre Torre 2 Apto 0501 | amazon | código 744169",
+    "ip": "127.0.0.1",
+    "fecha": "2026-04-03T23:59:39.994Z"
+  }
+},
+{
+  "model": "kislevsmart.auditlog",
+  "pk": 10,
+  "fields": {
+    "usuario": [
+      "80793840"
+    ],
+    "conjunto": 1,
+    "accion": "paquete_entregado",
+    "detalle": "Código 167763 | Torre Torre 2 Apto 0102",
+    "ip": "127.0.0.1",
+    "fecha": "2026-04-04T03:18:34.922Z"
+  }
+},
+{
+  "model": "kislevsmart.auditlog",
+  "pk": 11,
+  "fields": {
+    "usuario": [
+      "80793840"
+    ],
+    "conjunto": 1,
+    "accion": "paquete_entregado",
+    "detalle": "Código 422719 | Torre Torre 1 Apto 0101",
+    "ip": "127.0.0.1",
+    "fecha": "2026-04-04T03:19:22.476Z"
+  }
+},
+{
+  "model": "kislevsmart.auditlog",
+  "pk": 12,
+  "fields": {
+    "usuario": [
+      "80793840"
+    ],
+    "conjunto": 1,
+    "accion": "paquete_entregado",
+    "detalle": "Código 491677 | Torre Torre 14 Apto 704",
+    "ip": "127.0.0.1",
+    "fecha": "2026-04-04T03:20:10.937Z"
+  }
+},
+{
+  "model": "kislevsmart.auditlog",
+  "pk": 13,
+  "fields": {
+    "usuario": [
+      "10011002"
+    ],
+    "conjunto": 2,
+    "accion": "reserva_creada",
+    "detalle": "Sala: Gym | Fecha: 2026-04-04 | 10:00:00-11:00:00",
+    "ip": "127.0.0.1",
+    "fecha": "2026-04-04T05:23:00.340Z"
+  }
+},
+{
+  "model": "kislevsmart.auditlog",
+  "pk": 14,
+  "fields": {
+    "usuario": [
+      "80793840"
+    ],
+    "conjunto": 1,
+    "accion": "reserva_creada",
+    "detalle": "Sala: Gimnasio | Fecha: 2026-04-04 | 08:00:00-09:00:00",
+    "ip": "127.0.0.1",
+    "fecha": "2026-04-04T05:47:36.091Z"
+  }
+},
+{
+  "model": "kislevsmart.auditlog",
+  "pk": 15,
+  "fields": {
+    "usuario": [
+      "80793840"
+    ],
+    "conjunto": 1,
+    "accion": "reserva_creada",
+    "detalle": "Sala: Salón Social | Fecha: 2026-04-04 | 11:00:00-12:00:00",
+    "ip": "127.0.0.1",
+    "fecha": "2026-04-04T05:48:38.845Z"
+  }
+},
+{
+  "model": "kislevsmart.auditlog",
+  "pk": 16,
+  "fields": {
+    "usuario": [
+      "80793840"
+    ],
+    "conjunto": 1,
+    "accion": "reserva_creada",
+    "detalle": "Sala: Salón Social | Fecha: 2026-04-04 | 20:00:00-21:00:00",
+    "ip": "127.0.0.1",
+    "fecha": "2026-04-04T05:53:12.618Z"
+  }
+},
+{
+  "model": "kislevsmart.auditlog",
+  "pk": 17,
+  "fields": {
+    "usuario": [
+      "80793840"
+    ],
+    "conjunto": 1,
+    "accion": "reserva_creada",
+    "detalle": "Sala: Gimnasio | Fecha: 2026-04-04 | 09:00:00-10:00:00",
+    "ip": "127.0.0.1",
+    "fecha": "2026-04-04T05:59:08.554Z"
+  }
+},
+{
+  "model": "kislevsmart.auditlog",
+  "pk": 18,
+  "fields": {
+    "usuario": [
+      "80793840"
+    ],
+    "conjunto": 1,
+    "accion": "reserva_creada",
+    "detalle": "Sala: Zona BBQ | Fecha: 2026-04-04 | 08:00:00-09:00:00",
+    "ip": "127.0.0.1",
+    "fecha": "2026-04-04T06:07:11.991Z"
+  }
+},
+{
+  "model": "kislevsmart.auditlog",
+  "pk": 19,
+  "fields": {
+    "usuario": [
+      "10011002"
+    ],
+    "conjunto": 2,
+    "accion": "reserva_creada",
+    "detalle": "Sala: BBQ | Fecha: 2026-04-04 | 08:00:00-09:00:00",
+    "ip": "127.0.0.1",
+    "fecha": "2026-04-04T06:11:29.866Z"
+  }
+},
+{
+  "model": "kislevsmart.auditlog",
+  "pk": 20,
+  "fields": {
+    "usuario": [
+      "10011002"
+    ],
+    "conjunto": 2,
+    "accion": "reserva_creada",
+    "detalle": "Sala: Gym | Fecha: 2026-04-04 | 08:00:00-09:00:00",
+    "ip": "127.0.0.1",
+    "fecha": "2026-04-04T06:11:50.033Z"
+  }
+},
+{
+  "model": "kislevsmart.auditlog",
+  "pk": 21,
+  "fields": {
+    "usuario": [
+      "10011002"
+    ],
+    "conjunto": 2,
+    "accion": "reserva_creada",
+    "detalle": "Sala: Piscina | Fecha: 2026-04-04 | 08:00:00-09:00:00",
+    "ip": "127.0.0.1",
+    "fecha": "2026-04-04T06:12:04.114Z"
+  }
+},
+{
+  "model": "kislevsmart.auditlog",
+  "pk": 22,
+  "fields": {
+    "usuario": [
+      "10011002"
+    ],
+    "conjunto": 2,
+    "accion": "reserva_creada",
+    "detalle": "Sala: Sala de Juegos | Fecha: 2026-04-04 | 08:00:00-09:00:00",
+    "ip": "127.0.0.1",
+    "fecha": "2026-04-04T06:12:37.406Z"
+  }
+},
+{
+  "model": "kislevsmart.auditlog",
+  "pk": 23,
+  "fields": {
+    "usuario": [
+      "10011002"
+    ],
+    "conjunto": 2,
+    "accion": "reserva_creada",
+    "detalle": "Sala: BBQ | Fecha: 2026-04-04 | 09:00:00-10:00:00",
+    "ip": "127.0.0.1",
+    "fecha": "2026-04-04T06:18:15.759Z"
+  }
+},
+{
+  "model": "kislevsmart.auditlog",
+  "pk": 24,
+  "fields": {
+    "usuario": [
+      "10011002"
+    ],
+    "conjunto": 2,
+    "accion": "reserva_creada",
+    "detalle": "Sala: BBQ | Fecha: 2026-04-09 | 08:00:00-09:00:00",
+    "ip": "127.0.0.1",
+    "fecha": "2026-04-09T02:23:50.549Z"
+  }
+},
+{
+  "model": "kislevsmart.auditlog",
+  "pk": 25,
+  "fields": {
+    "usuario": [
+      "10011002"
+    ],
+    "conjunto": 2,
+    "accion": "reserva_creada",
+    "detalle": "Sala: Gym | Fecha: 2026-04-09 | 10:00:00-11:00:00",
+    "ip": "127.0.0.1",
+    "fecha": "2026-04-09T02:24:26.073Z"
+  }
+},
+{
+  "model": "kislevsmart.novedad",
+  "pk": 1,
+  "fields": {
+    "conjunto": 2,
+    "autor": [
+      "80793840"
+    ],
+    "titulo": "Reunion de propietarios - Sabado 15 de Abril",
+    "imagen": "novedades/imagenes/reunion_propietarios.jpg",
+    "contenido": "Estimados propietarios de Oliva Madrid,\n\nLos invitamos a la reunion ordinaria del sabado 15 de abril a las 10:00 AM en el salon comunal Torre A.\n\nAgenda:\n- Presentacion estados financieros\n- Aprobacion presupuesto 2025\n- Obras de mantenimiento fachada\n- Varios\n\nConfirmar asistencia: https://forms.gle/ejemplo-oliva-reunion\nMas info: https://kislev.net.co",
+    "activa": true,
+    "created_at": "2026-04-03T07:43:19.294Z",
+    "updated_at": "2026-04-03T07:47:40.047Z"
+  }
+},
+{
+  "model": "kislevsmart.novedad",
+  "pk": 2,
+  "fields": {
+    "conjunto": 2,
+    "autor": [
+      "80793840"
+    ],
+    "titulo": "Mantenimiento Piscina - Suspension 10 al 14 de Abril",
+    "imagen": "novedades/imagenes/piscina_mantenimiento.jpg",
+    "contenido": "Informamos que la piscina estara fuera de servicio del 10 al 14 de abril por mantenimiento preventivo anual.\n\nTrabajos:\n- Cambio de filtros y sistema de recirculacion\n- Tratamiento quimico profundo\n- Pintura zona bordes\n\nEstado en tiempo real: https://status.kislev.net.co/piscina\nSoporte: soporte@kislev.net.co\n\nLa piscina reabre el 15 de abril. Disculpen los inconvenientes.\n\nAdministracion Oliva Madrid",
+    "activa": true,
+    "created_at": "2026-04-03T07:43:19.313Z",
+    "updated_at": "2026-04-03T07:47:40.051Z"
+  }
+},
+{
+  "model": "kislevsmart.novedad",
+  "pk": 3,
+  "fields": {
+    "conjunto": 3,
+    "autor": [
+      "80793840"
+    ],
+    "titulo": "Nuevo sistema de acceso vehicular operativo",
+    "imagen": "novedades/imagenes/acceso_vehicular.jpg",
+    "contenido": "Residentes de Puerto Hayuelos 1,\n\nEl nuevo sistema de control de acceso vehicular ya esta operativo.\n\nNovedades:\n- Barrera automatica con sensor de proximidad\n- Registro fotografico de placas\n- App para residentes\n\nDescarga la app: https://play.google.com/store/apps/ejemplo-kislev\nPanel web: https://acceso.kislev.net.co\nTutorial: https://youtube.com/ejemplo-kislev-acceso\n\nSoporte: soporte@kislev.net.co\n\nAdministracion Puerto Hayuelos 1",
+    "activa": true,
+    "created_at": "2026-04-03T07:43:19.324Z",
+    "updated_at": "2026-04-03T07:47:40.054Z"
+  }
+},
+{
+  "model": "kislevsmart.novedad",
+  "pk": 4,
+  "fields": {
+    "conjunto": 3,
+    "autor": [
+      "80793840"
+    ],
+    "titulo": "Convocatoria Comite de Convivencia 2025",
+    "imagen": "novedades/imagenes/comite_convivencia.jpg",
+    "contenido": "Vecinos de Puerto Hayuelos 1,\n\nInvitamos a postularse al Comite de Convivencia 2025.\n\nFunciones:\n- Mediar conflictos entre vecinos\n- Promover eventos comunitarios\n- Reuniones mensuales (1 hora)\n\nRequisitos:\n- Ser propietario o residente activo\n- Sin mora en cuotas de administracion\n\nPostulate aqui: https://forms.gle/ejemplo-comite-hayuelos\nMas info: https://kislev.net.co/convivencia\n\nLimite inscripcion: 20 de abril | Eleccion: 25 de abril via app\n\nJuntos hacemos un mejor conjunto!\nAdministracion Puerto Hayuelos 1",
+    "activa": true,
+    "created_at": "2026-04-03T07:43:19.339Z",
+    "updated_at": "2026-04-03T07:47:40.056Z"
+  }
+},
+{
+  "model": "kislevsmart.archivonovedad",
+  "pk": 1,
+  "fields": {
+    "novedad": 1,
+    "archivo": "novedades/archivos/Orden_del_dia_Abril2025.txt",
+    "nombre_original": "Orden_del_dia_Abril2025.txt",
+    "created_at": "2026-04-03T07:43:19.300Z"
+  }
+},
+{
+  "model": "kislevsmart.archivonovedad",
+  "pk": 2,
+  "fields": {
+    "novedad": 1,
+    "archivo": "novedades/archivos/Reglamento_asamblea.txt",
+    "nombre_original": "Reglamento_asamblea.txt",
+    "created_at": "2026-04-03T07:43:19.304Z"
+  }
+},
+{
+  "model": "kislevsmart.archivonovedad",
+  "pk": 3,
+  "fields": {
+    "novedad": 2,
+    "archivo": "novedades/archivos/Cronograma_mantenimiento.txt",
+    "nombre_original": "Cronograma_mantenimiento.txt",
+    "created_at": "2026-04-03T07:43:19.317Z"
+  }
+},
+{
+  "model": "kislevsmart.archivonovedad",
+  "pk": 4,
+  "fields": {
+    "novedad": 3,
+    "archivo": "novedades/archivos/Manual_acceso_vehicular.txt",
+    "nombre_original": "Manual_acceso_vehicular.txt",
+    "created_at": "2026-04-03T07:43:19.327Z"
+  }
+},
+{
+  "model": "kislevsmart.archivonovedad",
+  "pk": 5,
+  "fields": {
+    "novedad": 3,
+    "archivo": "novedades/archivos/Tarifas_parqueadero_visitantes.txt",
+    "nombre_original": "Tarifas_parqueadero_visitantes.txt",
+    "created_at": "2026-04-03T07:43:19.330Z"
+  }
+},
+{
+  "model": "kislevsmart.archivonovedad",
+  "pk": 6,
+  "fields": {
+    "novedad": 4,
+    "archivo": "novedades/archivos/Funciones_comite_convivencia.txt",
+    "nombre_original": "Funciones_comite_convivencia.txt",
+    "created_at": "2026-04-03T07:43:19.341Z"
+  }
+},
+{
+  "model": "kislevsmart.comentarionovedad",
+  "pk": 1,
+  "fields": {
+    "novedad": 2,
+    "usuario": [
+      "10011001"
+    ],
+    "texto": "esta bien que hagan esto gracias admin",
+    "created_at": "2026-04-03T07:45:13.029Z"
+  }
+},
+{
+  "model": "kislevsmart.comentarionovedad",
+  "pk": 2,
+  "fields": {
+    "novedad": 2,
+    "usuario": [
+      "10011002"
+    ],
+    "texto": "gracias por la info!!!",
+    "created_at": "2026-04-03T21:35:12.899Z"
+  }
+},
+{
+  "model": "kislevsmart.likenovedad",
+  "pk": 5,
+  "fields": {
+    "novedad": 2,
+    "usuario": [
+      "10011001"
+    ],
+    "created_at": "2026-04-03T07:45:00.749Z"
+  }
+},
+{
+  "model": "kislevsmart.likenovedad",
+  "pk": 7,
+  "fields": {
+    "novedad": 2,
+    "usuario": [
+      "10011002"
+    ],
+    "created_at": "2026-04-04T05:21:14.175Z"
+  }
+},
+{
+  "model": "kislevsmart.novedadvista",
+  "pk": 1,
+  "fields": {
+    "novedad": 2,
+    "usuario": [
+      "10011002"
+    ],
+    "visto_en": "2026-04-06T03:13:55.539Z"
+  }
+},
+{
+  "model": "kislevsmart.novedadvista",
+  "pk": 2,
+  "fields": {
+    "novedad": 1,
+    "usuario": [
+      "10011002"
+    ],
+    "visto_en": "2026-04-06T03:16:16.195Z"
+  }
+},
+{
+  "model": "kislevsmart.paquete",
+  "pk": 1,
+  "fields": {
+    "conjunto": 1,
+    "torre": 16,
+    "apartamento": "704",
+    "empresa": "envia",
+    "descripcion": "",
+    "codigo": "491677",
+    "estado": "entregado",
+    "destinatario_nombre": "Residente Apto 704",
+    "destinatario_telefono": "",
+    "whatsapp_enviado": false,
+    "registrado_por": [
+      "80793840"
+    ],
+    "fecha_registro": "2026-04-03T22:47:56.504Z",
+    "fecha_entrega": "2026-04-04T03:20:10.922Z",
+    "entregado_por": [
+      "80793840"
+    ]
+  }
+},
+{
+  "model": "kislevsmart.paquete",
+  "pk": 2,
+  "fields": {
+    "conjunto": 1,
+    "torre": 16,
+    "apartamento": "101",
+    "empresa": "interrapidisimo",
+    "descripcion": "",
+    "codigo": "728627",
+    "estado": "entregado",
+    "destinatario_nombre": "Residente Apto 101",
+    "destinatario_telefono": "",
+    "whatsapp_enviado": false,
+    "registrado_por": [
+      "80793840"
+    ],
+    "fecha_registro": "2026-04-03T22:54:39.885Z",
+    "fecha_entrega": "2026-04-03T22:56:06.117Z",
+    "entregado_por": [
+      "80793840"
+    ]
+  }
+},
+{
+  "model": "kislevsmart.paquete",
+  "pk": 3,
+  "fields": {
+    "conjunto": 1,
+    "torre": 3,
+    "apartamento": "0101",
+    "empresa": "servientrega",
+    "descripcion": "",
+    "codigo": "422719",
+    "estado": "entregado",
+    "destinatario_nombre": "Carlos Ramirez",
+    "destinatario_telefono": "3118026851",
+    "whatsapp_enviado": false,
+    "registrado_por": [
+      "80793840"
+    ],
+    "fecha_registro": "2026-04-03T22:57:06.650Z",
+    "fecha_entrega": "2026-04-04T03:19:22.473Z",
+    "entregado_por": [
+      "80793840"
+    ]
+  }
+},
+{
+  "model": "kislevsmart.paquete",
+  "pk": 4,
+  "fields": {
+    "conjunto": 1,
+    "torre": 3,
+    "apartamento": "0101",
+    "empresa": "amazon",
+    "descripcion": "",
+    "codigo": "527091",
+    "estado": "pendiente",
+    "destinatario_nombre": "Carlos Ramirez",
+    "destinatario_telefono": "3118026851",
+    "whatsapp_enviado": true,
+    "registrado_por": [
+      "80793840"
+    ],
+    "fecha_registro": "2026-04-03T23:57:39.033Z",
+    "fecha_entrega": null,
+    "entregado_por": null
+  }
+},
+{
+  "model": "kislevsmart.paquete",
+  "pk": 5,
+  "fields": {
+    "conjunto": 1,
+    "torre": 4,
+    "apartamento": "0102",
+    "empresa": "amazon",
+    "descripcion": "",
+    "codigo": "167763",
+    "estado": "entregado",
+    "destinatario_nombre": "Residente Apto 0102",
+    "destinatario_telefono": "",
+    "whatsapp_enviado": false,
+    "registrado_por": [
+      "80793840"
+    ],
+    "fecha_registro": "2026-04-03T23:58:29.673Z",
+    "fecha_entrega": "2026-04-04T03:18:34.908Z",
+    "entregado_por": [
+      "80793840"
+    ]
+  }
+},
+{
+  "model": "kislevsmart.paquete",
+  "pk": 6,
+  "fields": {
+    "conjunto": 1,
+    "torre": 4,
+    "apartamento": "0501",
+    "empresa": "amazon",
+    "descripcion": "",
+    "codigo": "744169",
+    "estado": "pendiente",
+    "destinatario_nombre": "Santiago Jimenez",
+    "destinatario_telefono": "3118026851",
+    "whatsapp_enviado": true,
+    "registrado_por": [
+      "80793840"
+    ],
+    "fecha_registro": "2026-04-03T23:59:39.201Z",
+    "fecha_entrega": null,
+    "entregado_por": null
+  }
+}
+]
