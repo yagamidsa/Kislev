@@ -2573,7 +2573,7 @@ def registrar_paquete(request):
             else:
                 messages.success(request, f'Paquete registrado ✓ · Código: {codigo} · El residente no tiene teléfono registrado')
 
-            return redirect('registrar_paquete')
+            return redirect('dashboard')
 
         except Exception as e:
             messages.error(request, f'Error al registrar: {e}')
@@ -2626,6 +2626,19 @@ def entregar_paquete(request):
             'destinatario': paquete.destinatario_nombre,
         }
     })
+
+
+@login_required
+def dashboard_kpi_paquetes(request):
+    """Endpoint AJAX para refrescar KPIs de paquetes en el dashboard."""
+    conjunto_id = request.user.conjunto_id
+    fecha_actual = timezone.localtime(timezone.now()).date()
+    data = {
+        'pendientes': Paquete.objects.filter(conjunto_id=conjunto_id, estado='pendiente').count(),
+        'hoy_recibidos': Paquete.objects.filter(conjunto_id=conjunto_id, fecha_registro__date=fecha_actual).count(),
+        'hoy_entregados': Paquete.objects.filter(conjunto_id=conjunto_id, fecha_entrega__date=fecha_actual).count(),
+    }
+    return JsonResponse(data)
 
 
 @login_required

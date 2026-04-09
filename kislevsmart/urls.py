@@ -69,6 +69,7 @@ urlpatterns = [
     path('paquetes/registrar/', views.registrar_paquete, name='registrar_paquete'),
     path('paquetes/entregar/', views.entregar_paquete, name='entregar_paquete'),
     path('paquetes/metricas/', views.metricas_paquetes, name='metricas_paquetes'),
+    path('api/paquetes/kpi/', views.dashboard_kpi_paquetes, name='dashboard_kpi_paquetes'),
     path('sala/<int:sala_id>/reservar/', views.reservar_sala, name='reservar_sala'),
     path('api/sala/<int:sala_id>/horarios/<str:fecha>/', views.get_horarios_disponibles, name='api_horarios_disponibles'),
     path('visitor-stats/', views.get_visitor_stats, name='visitor-stats'),

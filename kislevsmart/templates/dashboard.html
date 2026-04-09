@@ -495,15 +495,15 @@
                         <div class="grid grid-cols-3 gap-4 mb-6">
                             <div class="glass-effect rounded-xl p-4 text-center">
                                 <p class="text-white/60 text-xs mb-1">⏳ Pendientes</p>
-                                <p class="text-3xl font-bold" style="color:#fbbf24">{{ paq_pendientes }}</p>
+                                <p id="kpi-pendientes" class="text-3xl font-bold" style="color:#fbbf24">{{ paq_pendientes }}</p>
                             </div>
                             <div class="glass-effect rounded-xl p-4 text-center">
                                 <p class="text-white/60 text-xs mb-1">📦 Hoy recibidos</p>
-                                <p class="text-3xl font-bold text-white">{{ paq_hoy_registrados }}</p>
+                                <p id="kpi-hoy-recibidos" class="text-3xl font-bold text-white">{{ paq_hoy_registrados }}</p>
                             </div>
                             <div class="glass-effect rounded-xl p-4 text-center">
                                 <p class="text-white/60 text-xs mb-1">✅ Hoy entregados</p>
-                                <p class="text-3xl font-bold" style="color:#4ade80">{{ paq_hoy_entregados }}</p>
+                                <p id="kpi-hoy-entregados" class="text-3xl font-bold" style="color:#4ade80">{{ paq_hoy_entregados }}</p>
                             </div>
                         </div>
 
@@ -1305,6 +1305,23 @@ document.addEventListener('DOMContentLoaded', function () {
         var inp = document.getElementById('dash-codigo');
         if (inp) inp.addEventListener('keydown', function(e){ if(e.key==='Enter') dashEntregar(); });
     });
+
+    // Auto-refresco de KPIs de paquetes cada 30 segundos
+    function refreshKpiPaquetes() {
+        fetch('{% url "dashboard_kpi_paquetes" %}')
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('kpi-pendientes').textContent = data.pendientes;
+                document.getElementById('kpi-hoy-recibidos').textContent = data.hoy_recibidos;
+                document.getElementById('kpi-hoy-entregados').textContent = data.hoy_entregados;
+            })
+            .catch(() => {});
+    }
+    // Refrescar al volver a la pestaña
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) refreshKpiPaquetes();
+    });
+    setInterval(refreshKpiPaquetes, 30000);
     </script>
 </body>
 
