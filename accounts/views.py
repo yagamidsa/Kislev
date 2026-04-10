@@ -370,7 +370,7 @@ class CustomPasswordChangeView(LoginRequiredMixin, View):
             form.save()
             update_session_auth_hash(request, request.user)
             messages.success(request, 'Tu contraseña ha sido cambiada con éxito.')
-            return redirect('kislevsmart:dashboard')
+            return redirect('dashboard')
         messages.error(request, 'Por favor, corrige los errores.')
         return render(request, 'accounts/cambiar_password.html', {'form': form})
 
