@@ -1,140 +1,471 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Validación QR</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/restricciones.css' %}">
-    <link rel="stylesheet" href="{% static 'css/validar_qr.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#07091A">
+  <title>Acceso Permitido</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/restricciones.css' %}">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+      min-height: 100vh;
+      background: #07091A;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+      color: #fff;
+    }
+
+    /* ── Fondo ── */
+    .bg {
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse at 15% 50%, rgba(16,185,129,.14) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 20%, rgba(124,58,237,.14) 0%, transparent 50%),
+        #07091A;
+    }
+
+    /* ── Partículas ── */
+    #pts {
+      position: fixed; inset: 0; z-index: 1;
+      pointer-events: none; overflow: hidden;
+    }
+    .pt {
+      position: absolute; border-radius: 50%;
+      animation: ptrise linear infinite; opacity: 0;
+    }
+    @keyframes ptrise {
+      0%   { transform: translateY(0); opacity: 0; }
+      8%   { opacity: .6; }
+      90%  { opacity: .2; }
+      100% { transform: translateY(-110vh); opacity: 0; }
+    }
+
+    /* ── Wrapper ── */
+    .wrap {
+      position: relative; z-index: 2;
+      width: 100%; min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 32px 20px;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: rgba(255,255,255,.04);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 28px;
+      width: 100%; max-width: 440px;
+      overflow: hidden;
+      box-shadow:
+        0 40px 90px rgba(0,0,0,.55),
+        0 0 80px rgba(16,185,129,.05),
+        inset 0 0 0 1px rgba(255,255,255,.05);
+      animation: cardIn .65s cubic-bezier(.34,1.3,.64,1) both;
+    }
+    @keyframes cardIn {
+      from { opacity:0; transform: translateY(44px) scale(.93); }
+      to   { opacity:1; transform: translateY(0) scale(1); }
+    }
+
+    /* ── Header gradiente ── */
+    .card-hdr {
+      background: linear-gradient(160deg, #064e3b 0%, #065f46 50%, #047857 100%);
+      padding: 36px 32px 28px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .card-hdr::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% -10%, rgba(52,211,153,.25) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    /* Check animado */
+    .check-wrap {
+      position: relative;
+      width: 90px; height: 90px;
+      margin: 0 auto 18px;
+    }
+    .check-svg {
+      width: 90px; height: 90px;
+    }
+    .arc {
+      fill: none;
+      stroke: rgba(255,255,255,.25);
+      stroke-width: 4;
+      stroke-linecap: round;
+    }
+    .arc-anim {
+      fill: none;
+      stroke: #fff;
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-dasharray: 245;
+      stroke-dashoffset: 245;
+      transform-origin: 45px 45px;
+      transform: rotate(-90deg);
+      animation: drawarc .8s .1s cubic-bezier(.65,0,.35,1) forwards;
+    }
+    @keyframes drawarc { to { stroke-dashoffset: 0; } }
+
+    .tick {
+      fill: none;
+      stroke: #fff;
+      stroke-width: 5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 58;
+      stroke-dashoffset: 58;
+      animation: drawtick .38s .9s ease forwards;
+    }
+    @keyframes drawtick { to { stroke-dashoffset: 0; } }
+
+    /* Glow ring */
+    .check-glow {
+      position: absolute; inset: 0; border-radius: 50%;
+      animation: glowpulse 2.4s 1.3s ease infinite;
+    }
+    @keyframes glowpulse {
+      0%  { box-shadow: 0 0 0 0 rgba(52,211,153,.5); }
+      70% { box-shadow: 0 0 0 22px rgba(52,211,153,0); }
+      100%{ box-shadow: 0 0 0 0 rgba(52,211,153,0); }
+    }
+
+    /* Badge "Acceso Permitido" */
+    .access-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.3);
+      border-radius: 50px; padding: 7px 20px;
+      font-size: 13px; font-weight: 700;
+      letter-spacing: .5px; color: #fff;
+      margin-bottom: 12px;
+      animation: fadeup .4s 1s ease both;
+    }
+    .access-badge svg { width:15px; height:15px; stroke:#34d399; fill:none; stroke-width:2.5; }
+
+    .hdr-title {
+      font-size: 1.7rem; font-weight: 800; color: #fff;
+      animation: fadeup .4s 1.1s ease both;
+    }
+
+    /* Personas badge */
+    .personas-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(52,211,153,.2);
+      border: 1px solid rgba(52,211,153,.4);
+      border-radius: 50px; padding: 6px 18px;
+      font-size: 13px; font-weight: 700; color: #6ee7b7;
+      margin-top: 14px;
+      animation: fadeup .4s 1.2s ease both;
+    }
+    .personas-badge svg { width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:2; }
+
+    /* ── Body ── */
+    .card-body { padding: 28px 28px 8px; }
+
+    /* Sección */
+    .sec {
+      margin-bottom: 20px;
+      animation: fadeup .4s ease both;
+    }
+    .sec:nth-child(1) { animation-delay: 1.05s; }
+    .sec:nth-child(2) { animation-delay: 1.15s; }
+    .sec:nth-child(3) { animation-delay: 1.25s; }
+
+    .sec-title {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 10px; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 1.1px;
+      color: #6ee7b7; margin-bottom: 12px; opacity: .85;
+    }
+    .sec-title::after {
+      content: ''; flex: 1; height: 1px;
+      background: rgba(255,255,255,.08);
+    }
+    .sec-title svg { width:13px; height:13px; stroke:currentColor; fill:none; stroke-width:2; flex-shrink:0; }
+
+    /* Filas de info */
+    .info-row {
+      display: flex; align-items: flex-start;
+      gap: 12px; margin-bottom: 10px;
+    }
+    .info-row:last-child { margin-bottom: 0; }
+
+    .info-icon {
+      width: 34px; height: 34px; flex-shrink: 0;
+      background: rgba(52,211,153,.1);
+      border: 1px solid rgba(52,211,153,.2);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .info-icon svg { width:15px; height:15px; stroke:#34d399; fill:none; stroke-width:2; }
+
+    .info-content { flex: 1; min-width: 0; }
+    .info-lbl {
+      font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .7px;
+      color: rgba(255,255,255,.5); margin-bottom: 2px;
+    }
+    .info-val {
+      font-size: 15px; font-weight: 600; color: #fff;
+      word-break: break-word;
+    }
+
+    /* Vehicle section */
+    .vehicle-sec .info-icon {
+      background: rgba(124,58,237,.12);
+      border-color: rgba(124,58,237,.25);
+    }
+    .vehicle-sec .info-icon svg { stroke: #a78bfa; }
+    .vehicle-sec .sec-title { color: #a78bfa; }
+
+    /* Placa destacada */
+    .placa-val {
+      font-size: 18px; font-weight: 800;
+      letter-spacing: 3px; color: #fff;
+      background: rgba(124,58,237,.15);
+      border: 1px solid rgba(124,58,237,.3);
+      border-radius: 8px; padding: 4px 12px;
+      display: inline-block;
+    }
+
+    /* Timestamp section */
+    .time-sec .info-icon {
+      background: rgba(190,24,93,.1);
+      border-color: rgba(190,24,93,.2);
+    }
+    .time-sec .info-icon svg { stroke: #f9a8d4; }
+    .time-sec .sec-title { color: #f9a8d4; }
+
+    /* ── Footer ── */
+    .card-ftr {
+      padding: 20px 28px 28px;
+      animation: fadeup .4s 1.35s ease both;
+    }
+    .btn-volver {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; padding: 15px;
+      background: linear-gradient(135deg, #059669, #047857);
+      color: #fff; border: none; border-radius: 15px;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      text-decoration: none; font-family: inherit;
+      box-shadow: 0 4px 22px rgba(5,150,105,.38);
+      transition: transform .25s, box-shadow .25s;
+    }
+    .btn-volver svg { width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:2; }
+    .btn-volver:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(5,150,105,.5); }
+
+    @keyframes fadeup {
+      from { opacity:0; transform: translateY(14px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+
+    @media(max-width:480px) {
+      .card-hdr { padding: 28px 22px 22px; }
+      .card-body { padding: 22px 20px 6px; }
+      .card-ftr  { padding: 16px 20px 24px; }
+      .hdr-title { font-size: 1.45rem; }
+    }
+  </style>
 </head>
 <body>
-    <div class="background-shapes">
-        <div class="shape"></div>
-        <div class="shape"></div>
-        <div class="shape"></div>
-        <div class="shape"></div>
+
+<div class="bg"></div>
+<div id="pts"></div>
+
+<div class="wrap">
+  <div class="card">
+
+    <!-- Header verde -->
+    <div class="card-hdr">
+      <div class="check-wrap">
+        <svg class="check-svg" viewBox="0 0 90 90">
+          <circle class="arc" cx="45" cy="45" r="39"/>
+          <circle class="arc-anim" cx="45" cy="45" r="39"/>
+          <polyline class="tick" points="26,47 38,59 65,33"/>
+        </svg>
+        <div class="check-glow"></div>
+      </div>
+
+      <div class="access-badge">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        Acceso Permitido
+      </div>
+      <h1 class="hdr-title">¡Bienvenid@!</h1>
+
+      <div class="personas-badge">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+        {{ visitante.numper }} persona{% if visitante.numper != 1 %}s{% endif %}
+      </div>
     </div>
 
-    <div class="validation-card">
-        <div class="card-header">
-            <div class="success-badge">
-                <svg viewBox="0 0 24 24" width="24" height="24">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" fill="none" stroke="currentColor" stroke-width="2"/>
-                    <polyline points="22 4 12 14.01 9 11.01" fill="none" stroke="currentColor" stroke-width="2"/>
-                </svg>
-                <span>Validado</span>
-            </div>
-            <h1>Acceso Permitido</h1>
-            <div class="visitors-count">
-                <span class="visitor-icon">
-                    <i class="fas fa-users"></i>
-                </span>
-                <span class="count">{{ visitante.numper }}</span>
-            </div>
+    <!-- Body -->
+    <div class="card-body">
+
+      <!-- Datos visitante -->
+      <div class="sec">
+        <div class="sec-title">
+          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Visitante
         </div>
-        
-        <div class="card-content">
-            <div class="visitor-info">
-                <div class="info-group">
-                    <div class="info-row">
-                        <div class="info-label">
-                            <i class="fas fa-user"></i>
-                            <span>Nombre</span>
-                        </div>
-                        <div class="info-value">{{ visitante.nombre }}</div>
-                    </div>
-                    
-                    <div class="info-row">
-                        <div class="info-label">
-                            <i class="fas fa-envelope"></i>
-                            <span>Email</span>
-                        </div>
-                        <div class="info-value">{{ visitante.email }}</div>
-                    </div>
-                    
-                    <div class="info-row">
-                        <div class="info-label">
-                            <i class="fas fa-mobile-alt"></i>
-                            <span>Celular</span>
-                        </div>
-                        <div class="info-value">{{ visitante.celular }}</div>
-                    </div>
-                    
-                    <div class="info-row">
-                        <div class="info-label">
-                            <i class="fas fa-comment"></i>
-                            <span>Motivo</span>
-                        </div>
-                        <div class="info-value">{{ visitante.motivo }}</div>
-                    </div>
-                </div>
-                
-                {% if visitante.tipo_vehiculo %}
-                <div class="info-group vehicle-info">
-                    <div class="group-title">
-                        <i class="fas fa-car"></i>
-                        <span>Información del Vehículo</span>
-                    </div>
-                    
-                    <div class="info-row">
-                        <div class="info-label">
-                            <span>Tipo</span>
-                        </div>
-                        <div class="info-value">{{ visitante.get_tipo_vehiculo_display }}</div>
-                    </div>
-                    
-                    <div class="info-row">
-                        <div class="info-label">
-                            <span>Placa</span>
-                        </div>
-                        <div class="info-value">{{ visitante.placa }}</div>
-                    </div>
-                </div>
-                {% endif %}
-                
-                <div class="info-group timestamp-info">
-                    <div class="group-title">
-                        <i class="fas fa-clock"></i>
-                        <span>Registros de Tiempo</span>
-                    </div>
-                    
-                    {% if visitante.segunda_lectura %}
-                    <div class="info-row">
-                        <div class="info-label">
-                            <i class="fas fa-sign-in-alt"></i>
-                            <span>Entrada</span>
-                        </div>
-                        <div class="info-value">{{ visitante.ultima_lectura }}</div>
-                    </div>
-                    
-                    <div class="info-row">
-                        <div class="info-label">
-                            <i class="fas fa-sign-out-alt"></i>
-                            <span>Salida</span>
-                        </div>
-                        <div class="info-value">{{ visitante.segunda_lectura }}</div>
-                    </div>
-                    {% else %}
-                    <div class="info-row">
-                        <div class="info-label">
-                            <i class="fas fa-history"></i>
-                            <span>Última Lectura</span>
-                        </div>
-                        <div class="info-value">{{ visitante.ultima_lectura }}</div>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
+
+        <div class="info-row">
+          <div class="info-icon">
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div class="info-content">
+            <div class="info-lbl">Nombre</div>
+            <div class="info-val">{{ visitante.nombre }}</div>
+          </div>
         </div>
-        
-        <div class="card-footer">
-            <a href="{% url 'accounts:control_porteria' %}" class="btn">
-                <i class="fas fa-arrow-left"></i>
-                Volver al Panel
-            </a>
+
+        <div class="info-row">
+          <div class="info-icon">
+            <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div class="info-content">
+            <div class="info-lbl">Correo</div>
+            <div class="info-val">{{ visitante.email }}</div>
+          </div>
         </div>
+
+        <div class="info-row">
+          <div class="info-icon">
+            <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.4 7.34 19.79 19.79 0 01.31 6.82 2 2 0 012.3 4.62h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 12.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+          </div>
+          <div class="info-content">
+            <div class="info-lbl">Celular</div>
+            <div class="info-val">{{ visitante.celular }}</div>
+          </div>
+        </div>
+
+        <div class="info-row">
+          <div class="info-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          </div>
+          <div class="info-content">
+            <div class="info-lbl">Motivo</div>
+            <div class="info-val">{{ visitante.motivo }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vehículo (solo si aplica) -->
+      {% if visitante.tipo_vehiculo %}
+      <div class="sec vehicle-sec">
+        <div class="sec-title">
+          <svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+          Vehículo
+        </div>
+
+        <div class="info-row">
+          <div class="info-icon">
+            <svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+          </div>
+          <div class="info-content">
+            <div class="info-lbl">Tipo</div>
+            <div class="info-val">{{ visitante.get_tipo_vehiculo_display }}</div>
+          </div>
+        </div>
+
+        <div class="info-row">
+          <div class="info-icon">
+            <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+          </div>
+          <div class="info-content">
+            <div class="info-lbl">Placa</div>
+            <div class="placa-val">{{ visitante.placa }}</div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Tiempo -->
+      <div class="sec time-sec">
+        <div class="sec-title">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Registro de tiempo
+        </div>
+
+        {% if visitante.segunda_lectura %}
+        <div class="info-row">
+          <div class="info-icon">
+            <svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+          </div>
+          <div class="info-content">
+            <div class="info-lbl">Entrada</div>
+            <div class="info-val">{{ visitante.ultima_lectura }}</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">
+            <svg viewBox="0 0 24 24"><path d="M9 21H3v-6M15 3h6v6M3 15l7-7M21 9l-7 7"/></svg>
+          </div>
+          <div class="info-content">
+            <div class="info-lbl">Salida</div>
+            <div class="info-val">{{ visitante.segunda_lectura }}</div>
+          </div>
+        </div>
+        {% else %}
+        <div class="info-row">
+          <div class="info-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="info-content">
+            <div class="info-lbl">Registrado</div>
+            <div class="info-val">{{ visitante.ultima_lectura }}</div>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+
     </div>
+
+    <!-- Footer -->
+    <div class="card-ftr">
+      <a href="{% url 'accounts:control_porteria' %}" class="btn-volver">
+        <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+        Volver al Panel
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function() {
+  const c = document.getElementById('pts');
+  const cols = ['#34d399','#6ee7b7','#a78bfa','#f9a8d4','#ffffff'];
+  function spawn() {
+    const el = document.createElement('div');
+    el.className = 'pt';
+    const sz  = 2 + Math.random()*5;
+    const dur = 6 + Math.random()*9;
+    el.style.cssText = [
+      'width:'+sz+'px','height:'+sz+'px',
+      'left:'+(Math.random()*100)+'vw',
+      'bottom:-'+sz+'px',
+      'background:'+cols[Math.floor(Math.random()*cols.length)],
+      'animation-duration:'+dur+'s',
+      'animation-delay:'+(Math.random()*3)+'s'
+    ].join(';');
+    c.appendChild(el);
+    setTimeout(()=>el.remove(),(dur+3)*1000);
+  }
+  for(let i=0;i<18;i++) setTimeout(spawn, i*180);
+  setInterval(spawn, 550);
+})();
+</script>
+
 </body>
 </html>
