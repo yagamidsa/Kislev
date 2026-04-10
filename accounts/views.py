@@ -327,14 +327,31 @@ class CustomPasswordResetView(PasswordResetView):
     success_url = reverse_lazy('accounts:password_reset_done')
 
     def form_valid(self, form):
+        import threading
         email = form.cleaned_data['email']
         if not Usuario.objects.filter(email=email).exists():
             messages.error(self.request, 'No hay una cuenta asociada a ese correo electrónico.')
             return self.form_invalid(form)
 
-        response = super().form_valid(form)
+        # Enviar email en hilo separado para no bloquear el worker
+        def send_reset_email():
+            try:
+                form.save(
+                    request=self.request,
+                    use_https=self.request.is_secure(),
+                    from_email=None,
+                    email_template_name=self.email_template_name,
+                    subject_template_name=self.subject_template_name,
+                    html_email_template_name=self.html_email_template_name,
+                    extra_email_context=self.extra_email_context,
+                )
+            except Exception:
+                pass
+
+        threading.Thread(target=send_reset_email, daemon=True).start()
         messages.success(self.request, 'Se ha enviado un enlace para restablecer la contraseña al correo electrónico mencionado.')
-        return response
+        from django.shortcuts import redirect
+        return redirect(self.success_url)
 
 
 class CustomSetPasswordForm(SetPasswordForm):
