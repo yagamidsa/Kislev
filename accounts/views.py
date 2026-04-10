@@ -335,6 +335,8 @@ class CustomPasswordResetView(PasswordResetView):
 
         # Enviar email en hilo separado para no bloquear el worker
         def send_reset_email():
+            import logging
+            logger = logging.getLogger(__name__)
             try:
                 form.save(
                     request=self.request,
@@ -345,8 +347,9 @@ class CustomPasswordResetView(PasswordResetView):
                     html_email_template_name=self.html_email_template_name,
                     extra_email_context=self.extra_email_context,
                 )
-            except Exception:
-                pass
+                logger.info("Email de reset enviado correctamente")
+            except Exception as e:
+                logger.error(f"Error enviando email de reset: {e}")
 
         threading.Thread(target=send_reset_email, daemon=True).start()
         messages.success(self.request, 'Se ha enviado un enlace para restablecer la contraseña al correo electrónico mencionado.')
