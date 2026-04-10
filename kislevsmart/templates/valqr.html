@@ -7,84 +7,264 @@
   <title>QR Enviado con Éxito</title>
   {% load static %}
   <link rel="stylesheet" href="{% static 'css/restricciones.css' %}">
-  <link rel="stylesheet" href="{% static 'css/formenvioQR.css' %}">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+      min-height: 100vh;
+      background: #07091A;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      color: #fff;
+    }
+
+    /* ── Fondo animado ── */
+    .bg {
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(124,58,237,.2) 0%, transparent 55%),
+        radial-gradient(ellipse at 80% 20%, rgba(190,24,93,.2) 0%, transparent 50%),
+        #07091A;
+    }
+
+    /* ── Partículas ── */
+    #particles {
+      position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden;
+    }
+    .p {
+      position: absolute; border-radius: 50%;
+      animation: pfloat linear infinite; opacity: 0;
+    }
+    @keyframes pfloat {
+      0%   { transform: translateY(0); opacity: 0; }
+      8%   { opacity: .7; }
+      90%  { opacity: .3; }
+      100% { transform: translateY(-110vh); opacity: 0; }
+    }
+
+    /* ── Card ── */
+    .wrap {
+      position: relative; z-index: 2;
+      width: 100%; min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 32px 20px;
+    }
+
+    .card {
+      background: rgba(255,255,255,.04);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 28px;
+      padding: 52px 40px 44px;
+      width: 100%; max-width: 420px;
+      text-align: center;
+      box-shadow:
+        0 40px 90px rgba(0,0,0,.55),
+        0 0 80px rgba(190,24,93,.06),
+        inset 0 0 0 1px rgba(255,255,255,.05);
+      animation: cardIn .6s cubic-bezier(.34,1.3,.64,1) both;
+    }
+    @keyframes cardIn {
+      from { opacity:0; transform: translateY(40px) scale(.93); }
+      to   { opacity:1; transform: translateY(0) scale(1); }
+    }
+
+    /* ── Ícono check ── */
+    .check-wrap {
+      position: relative;
+      width: 110px; height: 110px;
+      margin: 0 auto 32px;
+    }
+
+    /* Círculo de fondo con gradiente */
+    .check-bg {
+      position: absolute; inset: 0; border-radius: 50%;
+      background: linear-gradient(135deg, rgba(190,24,93,.18), rgba(124,58,237,.18));
+      border: 2px solid rgba(190,24,93,.3);
+      animation: pulsering 2.5s 1.2s ease infinite;
+    }
+    @keyframes pulsering {
+      0%  { box-shadow: 0 0 0 0 rgba(190,24,93,.45); }
+      70% { box-shadow: 0 0 0 24px rgba(190,24,93,0); }
+      100%{ box-shadow: 0 0 0 0 rgba(190,24,93,0); }
+    }
+
+    /* SVG del check */
+    .check-svg {
+      position: absolute; inset: 0;
+      width: 110px; height: 110px;
+    }
+
+    /* Arco animado */
+    .arc {
+      fill: none;
+      stroke: url(#g1);
+      stroke-width: 4.5;
+      stroke-linecap: round;
+      stroke-dasharray: 283;
+      stroke-dashoffset: 283;
+      transform-origin: 55px 55px;
+      transform: rotate(-90deg);
+      animation: drawarc .9s .1s cubic-bezier(.65,0,.35,1) forwards;
+    }
+    @keyframes drawarc { to { stroke-dashoffset: 0; } }
+
+    /* Palomita */
+    .tick {
+      fill: none;
+      stroke: #fff;
+      stroke-width: 5.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 70;
+      stroke-dashoffset: 70;
+      animation: drawtick .4s 1s ease forwards;
+    }
+    @keyframes drawtick { to { stroke-dashoffset: 0; } }
+
+    /* ── Textos ── */
+    .title {
+      font-size: 2.2rem; font-weight: 800; line-height: 1.1;
+      background: linear-gradient(135deg, #fff 40%, #f9a8d4);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+      animation: fadeup .45s 1.05s ease both;
+    }
+    .subtitle {
+      font-size: 14px; color: rgba(255,255,255,.5);
+      line-height: 1.65; margin-bottom: 28px;
+      animation: fadeup .45s 1.15s ease both;
+    }
+
+    /* ── Email chip ── */
+    .email-chip {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: rgba(190,24,93,.12);
+      border: 1px solid rgba(190,24,93,.3);
+      border-radius: 50px; padding: 11px 22px;
+      font-size: 13px; font-weight: 600; color: #f9a8d4;
+      margin-bottom: 20px; word-break: break-all; max-width: 100%;
+      animation: fadeup .45s 1.25s ease both;
+    }
+    .email-chip svg { width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:2; flex-shrink:0; }
+
+    /* ── Nota ── */
+    .nota {
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.09);
+      border-radius: 14px; padding: 15px 18px;
+      font-size: 13px; color: rgba(255,255,255,.42);
+      line-height: 1.65; margin-bottom: 32px;
+      animation: fadeup .45s 1.35s ease both;
+    }
+
+    /* ── Botones ── */
+    .actions {
+      display: flex; gap: 12px;
+      animation: fadeup .45s 1.45s ease both;
+    }
+    .btn-panel {
+      flex: 1.6;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 15px 16px;
+      background: linear-gradient(135deg,#be185d,#9d174d);
+      color: #fff; border-radius: 14px; text-decoration: none;
+      font-size: 14px; font-weight: 700;
+      box-shadow: 0 4px 22px rgba(190,24,93,.38);
+      transition: transform .25s, box-shadow .25s;
+    }
+    .btn-panel:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(190,24,93,.5); }
+    .btn-panel svg { width:17px; height:17px; stroke:currentColor; fill:none; stroke-width:2; }
+
+    .btn-nuevo {
+      flex: 1;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 15px 12px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.14);
+      color: rgba(255,255,255,.75); border-radius: 14px;
+      text-decoration: none; font-size: 14px; font-weight: 600;
+      transition: background .2s, color .2s;
+    }
+    .btn-nuevo:hover { background: rgba(255,255,255,.13); color: #fff; }
+    .btn-nuevo svg { width:17px; height:17px; stroke:currentColor; fill:none; stroke-width:2.5; }
+
+    @keyframes fadeup {
+      from { opacity:0; transform: translateY(14px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+
+    @media(max-width:480px) {
+      .card { padding: 38px 22px 34px; }
+      .title { font-size: 1.85rem; }
+      .actions { flex-direction: column; }
+    }
+  </style>
 </head>
 <body>
 
-<!-- ── Particles ── -->
-<div class="particles" id="particles"></div>
+<div class="bg"></div>
+<div id="particles"></div>
 
-<!-- ── Card ── -->
-<div class="success-wrapper">
-  <div class="success-card">
+<div class="wrap">
+  <div class="card">
 
-    <!-- Animated check circle -->
-    <div class="check-ring">
-      <svg class="check-svg" viewBox="0 0 108 108">
+    <!-- Check animado -->
+    <div class="check-wrap">
+      <div class="check-bg"></div>
+      <svg class="check-svg" viewBox="0 0 110 110">
         <defs>
-          <linearGradient id="pgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%"   stop-color="#be185d"/>
             <stop offset="100%" stop-color="#7c3aed"/>
           </linearGradient>
         </defs>
-        <circle class="check-track" cx="54" cy="54" r="44"/>
-        <circle class="check-circle" cx="54" cy="54" r="44"/>
-        <polyline class="check-mark" points="32,56 47,71 76,38"/>
+        <!-- track -->
+        <circle cx="55" cy="55" r="45" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="4.5"/>
+        <!-- arco animado -->
+        <circle class="arc" cx="55" cy="55" r="45"/>
+        <!-- palomita -->
+        <polyline class="tick" points="33,57 47,72 78,39"/>
       </svg>
-      <div class="check-glow"></div>
     </div>
 
-    <h1 class="success-title">¡QR Enviado!</h1>
-    <p class="success-sub">El código de acceso fue generado y enviado correctamente al visitante</p>
+    <h1 class="title">¡QR Enviado!</h1>
+    <p class="subtitle">El código de acceso fue generado y enviado correctamente al visitante</p>
 
-    <!-- Email chip -->
     <div class="email-chip">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-        <polyline points="22,6 12,13 2,6"/>
-      </svg>
-      <span>{{ email }}</span>
+      <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      {{ email }}
     </div>
 
-    <!-- Note -->
-    <div class="success-note">
+    <div class="nota">
       El visitante recibirá el QR adjunto en su correo. Debe presentarlo en portería al momento de llegar.
     </div>
 
-    <!-- Actions -->
-    <div class="success-actions">
+    <div class="actions">
       {% if request.user.user_type == 'administrador' %}
         <a href="{% url 'accounts:visor_admin' %}" class="btn-panel">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
-            <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
-          </svg>
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
           Ir al Panel
         </a>
       {% elif request.user.user_type == 'propietario' %}
         <a href="{% url 'accounts:visor_propietario' %}" class="btn-panel">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
-            <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
-          </svg>
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
           Ir al Panel
         </a>
       {% elif request.user.user_type == 'porteria' %}
         <a href="{% url 'accounts:control_porteria' %}" class="btn-panel">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
-            <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
-          </svg>
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
           Ir al Panel
         </a>
-      {% else %}
-        <a href="#" class="btn-panel">Ir al Panel</a>
       {% endif %}
 
-      <a href="{% url 'bienvenida' %}" class="btn-new">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-        </svg>
+      <a href="{% url 'bienvenida' %}" class="btn-nuevo">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Nuevo QR
       </a>
     </div>
@@ -93,30 +273,27 @@
 </div>
 
 <script>
-// ── Particle effect ──
 (function() {
-  const container = document.getElementById('particles');
-  const colors = ['#be185d','#f9a8d4','#7c3aed','#a78bfa','#ffffff'];
-
+  const c = document.getElementById('particles');
+  const cols = ['#be185d','#f9a8d4','#7c3aed','#a78bfa','#ffffff'];
   function spawn() {
     const el = document.createElement('div');
-    el.className = 'particle';
-    const size = Math.random() * 5 + 2;
-    const dur  = Math.random() * 8 + 6;
-    const x    = Math.random() * 100;
-    el.style.cssText = `
-      width:${size}px; height:${size}px;
-      left:${x}vw; bottom:-${size}px;
-      background:${colors[Math.floor(Math.random()*colors.length)]};
-      animation-duration:${dur}s;
-      animation-delay:${Math.random()*4}s;
-    `;
-    container.appendChild(el);
-    setTimeout(() => el.remove(), (dur + 4) * 1000);
+    el.className = 'p';
+    const sz  = 2 + Math.random()*5;
+    const dur = 6 + Math.random()*9;
+    el.style.cssText = [
+      'width:'+sz+'px', 'height:'+sz+'px',
+      'left:'+(Math.random()*100)+'vw',
+      'bottom:-'+sz+'px',
+      'background:'+cols[Math.floor(Math.random()*cols.length)],
+      'animation-duration:'+dur+'s',
+      'animation-delay:'+(Math.random()*3)+'s'
+    ].join(';');
+    c.appendChild(el);
+    setTimeout(()=>el.remove(),(dur+3)*1000);
   }
-
-  for (let i = 0; i < 22; i++) setTimeout(spawn, i * 200);
-  setInterval(spawn, 600);
+  for(let i=0;i<20;i++) setTimeout(spawn, i*180);
+  setInterval(spawn, 550);
 })();
 </script>
 
