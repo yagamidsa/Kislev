@@ -132,8 +132,6 @@ body {
   letter-spacing: .9px;
   text-transform: uppercase;
   margin-bottom: 22px;
-  opacity: 0;
-  animation: slideDown .55s ease forwards;
 }
 .conjunto-badge svg {
   width: 14px; height: 14px;
@@ -145,8 +143,6 @@ body {
   font-weight: 800;
   line-height: 1.15;
   margin: 0 0 6px;
-  opacity: 0;
-  animation: slideDown .6s .06s ease forwards;
 }
 .hero-name {
   display: block;
@@ -161,8 +157,6 @@ body {
   font-size: 14px;
   color: var(--muted);
   margin: 0 0 28px;
-  opacity: 0;
-  animation: slideDown .6s .12s ease forwards;
   max-width: 320px;
 }
 
@@ -171,8 +165,6 @@ body {
   display: flex;
   gap: 10px;
   margin-bottom: 28px;
-  opacity: 0;
-  animation: slideDown .6s .18s ease forwards;
 }
 
 .tipo-pill {
@@ -224,8 +216,6 @@ body {
   transition: all .3s;
   box-shadow: 0 0 32px var(--pink-glow), 0 8px 32px rgba(0,0,0,.4);
   letter-spacing: .3px;
-  opacity: 0;
-  animation: slideUp .6s .24s ease forwards;
   font-family: 'Inter', sans-serif;
 }
 .hero-cta svg {
@@ -248,14 +238,16 @@ body {
   align-items: flex-end;
   justify-content: center;
   pointer-events: none;
-  overflow: hidden;
-  transition: background .35s;
+  visibility: hidden;
+  transition: background .35s, visibility 0s .35s;
 }
 .modal-overlay.open {
   background: rgba(0,0,0,.72);
   pointer-events: all;
+  visibility: visible;
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
+  transition: background .35s, visibility 0s 0s;
 }
 
 /* ── Modal panel ── */
