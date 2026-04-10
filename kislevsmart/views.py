@@ -1106,12 +1106,8 @@ cipher = Fernet(_fernet_key.encode())
 
 @login_required
 def bienvenida(request):
-    print("🔥🔥🔥 BIENVENIDA FUNCTION CALLED 🔥🔥🔥")
-    print(f"REQUEST METHOD: {request.method}")
     if request.method == 'POST':
-        print("🔥🔥🔥 INSIDE POST 🔥🔥🔥")
         try:
-            print("🔥🔥🔥 INSIDE TRY 🔥🔥🔥")
             with transaction.atomic():
                 # Generar token único
                 uuid_token = str(uuid.uuid4())
@@ -1169,63 +1165,51 @@ def bienvenida(request):
 
                 logger.info(f"QR generado en memoria para visitante {visitante.id}")
 
-                # Preparar mensaje de email según tipo de visitante
-                mensaje_adicional = ""
-                if tipo_visitante == 'vehicular':
-                    mensaje_adicional = f"\n\nNota: Este código QR es válido para registrar tanto la entrada como la salida del vehículo."
+                logger.info(f"QR generado para visitante {visitante.id} ({tipo_visitante})")
 
-                # INICIO DE LOGS
-                logger.info("=" * 50)
-                logger.info("INICIANDO ENVÍO DE EMAIL CON QR")
-                logger.info(f"Visitante ID: {visitante.id}")
-                logger.info(f"Visitante nombre: {visitante.nombre}")
-                logger.info(f"Visitante email: {visitante.email}")
-                logger.info("QR generado en memoria (BytesIO)")
-                logger.info(f"DEFAULT_FROM_EMAIL: {settings.DEFAULT_FROM_EMAIL}")
-                logger.info(f"EMAIL_BACKEND: {settings.EMAIL_BACKEND}")
-                logger.info("=" * 50)
-                # FIN DE LOGS
-
-                # Enviar email
+                # Enviar email con template HTML
                 try:
-                    # Sanitizar todos los datos antes de enviar
+                    import urllib.parse
                     nombre_limpio = sanitize_text(visitante.nombre)
-                    email_limpio = sanitize_text(visitante.email)
-                    mensaje_limpio = sanitize_text(mensaje_adicional) if mensaje_adicional else ""
-                    
-                    # LOGS ADICIONALES
-                    logger.info(f"Datos sanitizados:")
-                    logger.info(f"  - nombre_limpio: {nombre_limpio}")
-                    logger.info(f"  - email_limpio: {email_limpio}")
-                    logger.info(f"  - mensaje_limpio: {mensaje_limpio}")
-                    
-                    logger.info("Creando EmailMessage...")
-                    # FIN LOGS ADICIONALES
-                    
-                    email_message = EmailMessage(
-                        sanitize_text("Tu Codigo QR de Visitante"),
-                        sanitize_text(f"Hola {nombre_limpio},\n\nAdjunto encontraras tu codigo QR para la visita.{mensaje_limpio}"),
-                        sanitize_text(settings.DEFAULT_FROM_EMAIL),
-                        [email_limpio]
+                    email_limpio  = sanitize_text(visitante.email)
+
+                    conjunto = request.user.conjunto
+                    dir_encoded = urllib.parse.quote(conjunto.direccion)
+
+                    email_ctx = {
+                        'visitante':        visitante,
+                        'tipo_visitante':   tipo_visitante,
+                        'conjunto':         conjunto,
+                        'google_maps_url':  f"https://www.google.com/maps/search/?api=1&query={dir_encoded}",
+                        'waze_url':         f"https://waze.com/ul?q={dir_encoded}",
+                        'apple_maps_url':   f"http://maps.apple.com/?q={dir_encoded}",
+                    }
+
+                    html_body  = render_to_string('emails/qr_visitante.html', email_ctx)
+                    text_body  = (
+                        f"Hola {nombre_limpio},\n\n"
+                        f"Adjunto encontrarás tu código QR para visitar {conjunto.nombre}.\n"
+                        f"Preséntalo en portería al llegar.\n\n"
+                        f"Dirección: {conjunto.direccion}\n\n"
+                        f"Google Maps: https://www.google.com/maps/search/?api=1&query={dir_encoded}\n"
+                        f"Waze: https://waze.com/ul?q={dir_encoded}"
                     )
-                    
+
+                    email_message = EmailMultiAlternatives(
+                        subject=sanitize_text(f"Tu Código QR de Visita – {conjunto.nombre}"),
+                        body=text_body,
+                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        to=[email_limpio]
+                    )
+                    email_message.attach_alternative(html_body, "text/html")
                     email_message.attach(f'qr_{visitante.id}.png', qr_buffer.getvalue(), 'image/png')
 
-                    logger.info("Enviando email...")
+                    logger.info(f"Enviando email QR a {email_limpio}...")
                     result = email_message.send()
-                    logger.info(f"Email enviado. Resultado: {result}")
-                    logger.info(f"✓ QR enviado exitosamente a {email_limpio}")
-                    
-                except Exception as e:
-                    logger.error("!" * 50)
-                    logger.error(f"ERROR ENVIANDO EMAIL: {str(e)}")
-                    logger.error(f"Tipo de error: {type(e).__name__}")
-                    import traceback
-                    logger.error(f"Traceback completo:")
-                    logger.error(traceback.format_exc())
-                    logger.error("!" * 50)
+                    logger.info(f"✓ QR enviado exitosamente a {email_limpio}. Resultado: {result}")
 
-                logger.info("Proceso de envío de email completado")
+                except Exception as e:
+                    logger.error(f"ERROR ENVIANDO EMAIL QR: {type(e).__name__}: {e}")
 
                 email_b64 = base64.urlsafe_b64encode(visitante.email.encode()).decode()
                 redirect_url = reverse('valqr', kwargs={'email_b64': email_b64})
@@ -1251,7 +1235,8 @@ def bienvenida(request):
             messages.error(request, 'Error al generar el QR. Por favor, intente nuevamente.')
             return render(request, 'bienvenida.html', {'error': str(e)})
 
-    return render(request, 'bienvenida.html')
+    conjunto = request.user.conjunto if request.user.is_authenticated else None
+    return render(request, 'bienvenida.html', {'conjunto': conjunto})
 
 
 

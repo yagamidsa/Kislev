@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tu QR de Visita – {{ conjunto.nombre }}</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#eef0f6;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-text-size-adjust:100%}
+    .wrap{background:#eef0f6;padding:40px 16px}
+    .container{max-width:580px;margin:0 auto}
+    /* Header */
+    .hdr{background:linear-gradient(160deg,#07091A 0%,#1a0535 55%,#07091A 100%);border-radius:22px 22px 0 0;padding:44px 36px 36px;text-align:center;position:relative;overflow:hidden}
+    .hdr::before{content:'';position:absolute;top:-40%;left:-20%;width:80%;height:180%;background:radial-gradient(circle,rgba(190,24,93,.18) 0%,transparent 65%);pointer-events:none}
+    .hdr::after{content:'';position:absolute;bottom:-30%;right:-10%;width:60%;height:120%;background:radial-gradient(circle,rgba(124,58,237,.14) 0%,transparent 65%);pointer-events:none}
+    .badge{display:inline-block;background:rgba(190,24,93,.18);border:1px solid rgba(190,24,93,.45);color:#f9a8d4;padding:6px 20px;border-radius:50px;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:18px}
+    .hdr-icon{font-size:42px;display:block;margin-bottom:12px}
+    .hdr-title{font-size:30px;font-weight:800;color:#fff;line-height:1.15;margin-bottom:8px}
+    .hdr-sub{font-size:14px;color:rgba(255,255,255,.55);font-weight:400}
+    /* QR notice bar */
+    .qr-bar{background:linear-gradient(135deg,#be185d,#7c3aed);padding:16px 24px;text-align:center}
+    .qr-bar p{color:#fff;font-size:13px;font-weight:600;letter-spacing:.3px}
+    /* Body */
+    .body{background:#fff;padding:40px 36px}
+    .greeting{font-size:22px;font-weight:800;color:#0f0a2a;margin-bottom:6px}
+    .greeting-sub{font-size:14px;color:#6b7280;line-height:1.65;margin-bottom:32px}
+    /* Info card */
+    .info-card{background:#f7f4fe;border-left:4px solid #be185d;border-radius:0 14px 14px 0;padding:20px 22px;margin-bottom:28px}
+    .info-row{display:flex;align-items:flex-start;gap:14px;margin-bottom:14px}
+    .info-row:last-child{margin-bottom:0}
+    .info-ico{width:38px;height:38px;background:rgba(190,24,93,.1);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;line-height:38px;text-align:center}
+    .info-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#be185d;margin-bottom:3px}
+    .info-val{font-size:15px;font-weight:700;color:#0f0a2a}
+    /* Instructions */
+    .instr{background:linear-gradient(160deg,#07091A,#150830);border-radius:18px;padding:26px;margin-bottom:28px}
+    .instr-title{color:#f9a8d4;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:18px}
+    .step{display:flex;align-items:flex-start;gap:14px;margin-bottom:14px}
+    .step:last-child{margin-bottom:0}
+    .step-n{width:26px;height:26px;background:rgba(190,24,93,.25);border:1px solid rgba(190,24,93,.5);border-radius:50%;font-size:11px;font-weight:800;color:#f9a8d4;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .step-t{font-size:13px;color:rgba(255,255,255,.75);line-height:1.6;padding-top:4px}
+    /* Divider */
+    .div{height:1px;background:linear-gradient(to right,transparent,#e5e7eb,transparent);margin:32px 0}
+    /* Location */
+    .loc-title{font-size:17px;font-weight:800;color:#0f0a2a;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+    .loc-sub{font-size:13px;color:#9ca3af;margin-bottom:14px;line-height:1.5}
+    .addr-box{background:#f7f4fe;border:1px solid rgba(190,24,93,.2);border-radius:14px;padding:16px 20px;font-size:14px;font-weight:600;color:#374151;margin-bottom:20px;line-height:1.5}
+    /* Map buttons */
+    .map-btns{display:flex;gap:10px;flex-wrap:wrap}
+    .map-btn{flex:1;min-width:140px;padding:13px 14px;border-radius:13px;text-decoration:none;font-size:13px;font-weight:700;text-align:center;display:block;line-height:1.4}
+    .map-g{background:#4285f4;color:#fff}
+    .map-w{background:#33ccff;color:#0a0a0a}
+    .map-a{background:#1d1d1f;color:#fff}
+    /* Footer */
+    .ftr{background:linear-gradient(160deg,#07091A,#150830);border-radius:0 0 22px 22px;padding:32px 36px;text-align:center}
+    .ftr-name{color:#fff;font-size:17px;font-weight:700;margin-bottom:10px}
+    .ftr-info{color:rgba(255,255,255,.45);font-size:12px;margin-bottom:6px}
+    .ftr-hr{border:none;border-top:1px solid rgba(255,255,255,.1);margin:18px 0}
+    .ftr-copy{color:rgba(255,255,255,.25);font-size:11px}
+    /* Mobile */
+    @media(max-width:600px){
+      .wrap{padding:16px 8px}
+      .hdr,.body,.ftr{padding:28px 20px}
+      .hdr-title{font-size:24px}
+      .greeting{font-size:18px}
+      .map-btns{flex-direction:column}
+      .map-btn{min-width:unset;flex:unset}
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+<div class="container">
+
+  <!-- Header -->
+  <div class="hdr">
+    <span class="badge">Código de Acceso</span>
+    <span class="hdr-icon">🏢</span>
+    <h1 class="hdr-title">Tu QR de Visita</h1>
+    <p class="hdr-sub">{{ conjunto.nombre }}</p>
+  </div>
+
+  <!-- QR notice bar -->
+  <div class="qr-bar">
+    <p>📎 Tu código QR está adjunto a este correo — ábrelo y preséntalo en portería</p>
+  </div>
+
+  <!-- Body -->
+  <div class="body">
+    <p class="greeting">¡Hola, {{ visitante.nombre }}!</p>
+    <p class="greeting-sub">
+      Has recibido este correo porque se ha generado un código QR para tu visita a
+      <strong>{{ conjunto.nombre }}</strong>. Presenta el archivo adjunto al llegar a la portería.
+    </p>
+
+    <!-- Detalles de la visita -->
+    <div class="info-card">
+      <div class="info-row">
+        <div class="info-ico">👤</div>
+        <div>
+          <div class="info-lbl">Visitante</div>
+          <div class="info-val">{{ visitante.nombre }}</div>
+        </div>
+      </div>
+      <div class="info-row">
+        <div class="info-ico">{% if tipo_visitante == 'vehicular' %}🚗{% else %}🚶{% endif %}</div>
+        <div>
+          <div class="info-lbl">Tipo de visita</div>
+          <div class="info-val">{{ tipo_visitante|capfirst }}</div>
+        </div>
+      </div>
+      {% if tipo_visitante == 'vehicular' and visitante.placa %}
+      <div class="info-row">
+        <div class="info-ico">🔤</div>
+        <div>
+          <div class="info-lbl">Placa</div>
+          <div class="info-val">{{ visitante.placa }}</div>
+        </div>
+      </div>
+      {% endif %}
+      <div class="info-row">
+        <div class="info-ico">📋</div>
+        <div>
+          <div class="info-lbl">Motivo</div>
+          <div class="info-val">{{ visitante.motivo }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Instrucciones -->
+    <div class="instr">
+      <p class="instr-title">📱 Instrucciones de uso</p>
+      <div class="step">
+        <div class="step-n">1</div>
+        <div class="step-t">Abre el archivo QR adjunto a este correo en tu celular</div>
+      </div>
+      <div class="step">
+        <div class="step-n">2</div>
+        <div class="step-t">Preséntalo en portería cuando llegues a <strong style="color:#f9a8d4">{{ conjunto.nombre }}</strong></div>
+      </div>
+      <div class="step">
+        <div class="step-n">3</div>
+        <div class="step-t">El portero escaneará el código para registrar tu ingreso</div>
+      </div>
+      {% if tipo_visitante == 'vehicular' %}
+      <div class="step">
+        <div class="step-n">4</div>
+        <div class="step-t">Para vehículos, el mismo QR registra tanto la entrada como la salida</div>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="div"></div>
+
+    <!-- Ubicación -->
+    <div>
+      <p class="loc-title">📍 ¿Cómo llegar?</p>
+      <p class="loc-sub">Toca cualquiera de los botones para abrir la dirección en tu aplicación de mapas preferida:</p>
+
+      <div class="addr-box">📌 {{ conjunto.direccion }}</div>
+
+      <div class="map-btns">
+        <a href="{{ google_maps_url }}" class="map-btn map-g" target="_blank" rel="noopener">
+          🗺 Google Maps
+        </a>
+        <a href="{{ waze_url }}" class="map-btn map-w" target="_blank" rel="noopener">
+          🔵 Waze
+        </a>
+        <a href="{{ apple_maps_url }}" class="map-btn map-a" target="_blank" rel="noopener">
+          🍎 Apple Maps
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="ftr">
+    <p class="ftr-name">{{ conjunto.nombre }}</p>
+    {% if conjunto.telefono %}
+    <p class="ftr-info">📞 {{ conjunto.telefono }}</p>
+    {% endif %}
+    {% if conjunto.email_contacto %}
+    <p class="ftr-info">✉️ {{ conjunto.email_contacto }}</p>
+    {% endif %}
+    <hr class="ftr-hr">
+    <p class="ftr-copy">Mensaje generado automáticamente por Kislev • Sistema de Gestión Residencial</p>
+  </div>
+
+</div>
+</div>
+</body>
+</html>
