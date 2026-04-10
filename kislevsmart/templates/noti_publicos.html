@@ -67,6 +67,21 @@
                 height: 16px;
             }
         }
+
+        @keyframes resultFadeIn {
+            from { opacity: 0; transform: translateY(16px) scale(0.96); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .result-check {
+            stroke-dasharray: 50;
+            stroke-dashoffset: 50;
+            animation: drawCheck 0.6s ease 0.2s forwards;
+        }
+
+        @keyframes drawCheck {
+            to { stroke-dashoffset: 0; }
+        }
     </style>
     <!-- Botón de regreso al panel de notificaciones -->
 <a href="{% url 'notificaciones' %}" class="back-button">
@@ -426,30 +441,20 @@
 
                 if (data.status === 'success') {
                     updateProgress(data.successful_sends, data.total_processed);
-
                     setTimeout(() => {
-                        hideProgressModal();
-                        showResultNotification(true,
-                            `Proceso completado exitosamente:\n` +
-                            `✓ ${data.successful_sends} correos enviados\n` +
-                            `${data.failed_sends > 0 ? `✕ ${data.failed_sends} fallidos\n` : ''}` +
-                            `Total procesado: ${data.total_processed}`,
-                            {
-                                successful: data.successful_sends,
-                                failed: data.failed_sends,
-                                total: data.total_processed
-                            }
-                        );
-                    }, 1000);
+                        showResultNotification(true, '', {
+                            successful: data.successful_sends,
+                            failed: data.failed_sends,
+                            total: data.total_processed
+                        });
+                    }, 800);
                 } else {
-                    hideProgressModal();
-                    showError(data.message || 'Error al enviar las notificaciones');
+                    showResultNotification(false, data.message || 'Error al enviar las notificaciones', null);
                 }
 
             } catch (error) {
                 console.error('Error:', error);
-                hideProgressModal();
-                showError(`Error en el proceso de envío: ${error.message}`);
+                showResultNotification(false, `Error en el proceso de envío: ${error.message}`, null);
             } finally {
                 const button = document.querySelector(`.send-button[onclick*="${currentService}"]`);
                 if (button) {
@@ -508,23 +513,27 @@
 
         // Funciones del modal de progreso
         function showProgressModal() {
-            if (progressModal) {
-                progressModal.remove();
-            }
+            if (progressModal) progressModal.remove();
 
             const modalHTML = `
         <div class="progress-modal" id="progressModal">
-            <div class="progress-content">
-                <div class="sending-animation">
-                    <svg viewBox="0 0 24 24" width="64" height="64" stroke="#4CAF50" fill="none">
-                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke-width="2"/>
+            <div class="progress-content" id="progressContent">
+                <div class="sending-animation" id="sendingIcon">
+                    <svg viewBox="0 0 24 24" width="64" height="64" fill="none" style="filter:drop-shadow(0 0 16px #a855f7)">
+                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="url(#grad1)" stroke-width="2"/>
+                        <defs>
+                            <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#a855f7"/>
+                                <stop offset="100%" style="stop-color:#ec4899"/>
+                            </linearGradient>
+                        </defs>
                     </svg>
                 </div>
-                <h3>Enviando Notificaciones</h3>
-                <div class="progress-status">
-                    <p class="current-status">Preparando envío...</p>
+                <h3 id="progressTitle">Enviando Notificaciones</h3>
+                <div class="progress-status" id="progressStatus">
+                    <p class="current-status" id="currentStatus">Preparando envío...</p>
                     <div class="progress-bar">
-                        <div class="progress-fill"></div>
+                        <div class="progress-fill" id="progressFill"></div>
                     </div>
                     <div class="progress-stats">
                         <div class="progress-stat">
@@ -538,76 +547,98 @@
                     </div>
                 </div>
             </div>
-        </div>
-    `;
+        </div>`;
 
-            progressModal = document.createElement('div');
-            progressModal.innerHTML = modalHTML;
-            document.body.appendChild(progressModal.firstElementChild);
+            const wrapper = document.createElement('div');
+            wrapper.innerHTML = modalHTML;
+            document.body.appendChild(wrapper.firstElementChild);
             progressModal = document.getElementById('progressModal');
         }
 
         function updateProgress(sent, total) {
             if (!progressModal) return;
-
             const progress = (sent / total) * 100;
-            const progressBar = progressModal.querySelector('.progress-fill');
-            const statusText = progressModal.querySelector('.current-status');
-            const sentCount = progressModal.querySelector('#sent-count');
-            const totalCount = progressModal.querySelector('#total-count');
-
-            if (progressBar) progressBar.style.width = `${progress}%`;
-            if (statusText) statusText.textContent = `Enviando ${sent} de ${total} notificaciones...`;
-            if (sentCount) sentCount.textContent = sent;
-            if (totalCount) totalCount.textContent = total;
+            const fill = document.getElementById('progressFill');
+            const status = document.getElementById('currentStatus');
+            const sentEl = document.getElementById('sent-count');
+            const totalEl = document.getElementById('total-count');
+            if (fill) fill.style.width = `${progress}%`;
+            if (status) status.textContent = `Enviando ${sent} de ${total} notificaciones...`;
+            if (sentEl) sentEl.textContent = sent;
+            if (totalEl) totalEl.textContent = total;
         }
 
         function hideProgressModal() {
             if (progressModal && progressModal.parentElement) {
                 progressModal.classList.add('fade-out');
-                setTimeout(() => {
-                    progressModal.remove();
-                    progressModal = null;
-                }, 300);
+                setTimeout(() => { progressModal.remove(); progressModal = null; }, 350);
             }
         }
 
         function showResultNotification(success, message, stats) {
-            const notification = document.createElement('div');
-            notification.className = `result-notification ${success ? 'success' : 'error'}`;
+            if (!progressModal) return;
 
-            notification.innerHTML = `
-        <div class="notification-content">
-            <div class="notification-icon">
-                ${success ? `
-                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="#4CAF50" fill="none">
-                        <path d="M20 6L9 17l-5-5" stroke-width="2"/>
-                    </svg>
-                ` : `
-                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="#f44336" fill="none">
-                        <path d="M18 6L6 18M6 6l12 12" stroke-width="2"/>
-                    </svg>
-                `}
-            </div>
-            <div class="notification-message">
-                <h4>${success ? 'Envío Completado' : 'Error en el Envío'}</h4>
-                <p>${message}</p>
-                ${stats ? `
-                    <div class="notification-stats">
-                        <span>✓ ${stats.successful} exitosos</span>
-                        ${stats.failed > 0 ? `<span>✕ ${stats.failed} fallidos</span>` : ''}
-                    </div>
-                ` : ''}
-            </div>
-        </div>
-    `;
+            // Transformar el modal de progreso en pantalla de resultado
+            const content = document.getElementById('progressContent');
+            if (!content) return;
 
-            document.body.appendChild(notification);
-            setTimeout(() => notification.classList.add('show'), 100);
+            const icon = success
+                ? `<svg viewBox="0 0 52 52" width="72" height="72" style="filter:drop-shadow(0 0 18px #a855f7)">
+                        <circle cx="26" cy="26" r="25" fill="none" stroke="url(#rg)" stroke-width="2"/>
+                        <path class="result-check" d="M14 27l8 8 16-16" fill="none" stroke="url(#rg)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        <defs>
+                            <linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#a855f7"/>
+                                <stop offset="100%" style="stop-color:#ec4899"/>
+                            </linearGradient>
+                        </defs>
+                   </svg>`
+                : `<svg viewBox="0 0 52 52" width="72" height="72" style="filter:drop-shadow(0 0 18px #ec4899)">
+                        <circle cx="26" cy="26" r="25" fill="none" stroke="#ec4899" stroke-width="2"/>
+                        <path d="M16 16l20 20M36 16l-20 20" fill="none" stroke="#ec4899" stroke-width="3" stroke-linecap="round"/>
+                   </svg>`;
+
+            const statsHTML = stats
+                ? `<div style="display:flex;gap:24px;justify-content:center;margin-top:12px">
+                        <div style="text-align:center">
+                            <div style="font-size:1.8rem;font-weight:700;background:linear-gradient(135deg,#a855f7,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent">${stats.successful}</div>
+                            <div style="font-size:0.8rem;color:#9ca3af;margin-top:2px">Enviados</div>
+                        </div>
+                        ${stats.failed > 0 ? `<div style="text-align:center">
+                            <div style="font-size:1.8rem;font-weight:700;color:#f87171">${stats.failed}</div>
+                            <div style="font-size:0.8rem;color:#9ca3af;margin-top:2px">Fallidos</div>
+                        </div>` : ''}
+                        <div style="text-align:center">
+                            <div style="font-size:1.8rem;font-weight:700;color:#e2e8f0">${stats.total}</div>
+                            <div style="font-size:0.8rem;color:#9ca3af;margin-top:2px">Total</div>
+                        </div>
+                   </div>`
+                : '';
+
+            content.style.transition = 'opacity 0.3s ease';
+            content.style.opacity = '0';
+
             setTimeout(() => {
-                notification.classList.remove('show');
-                setTimeout(() => notification.remove(), 300);
-            }, 5000);
+                content.innerHTML = `
+                    <div style="display:flex;flex-direction:column;align-items:center;gap:16px;animation:resultFadeIn 0.5s ease forwards">
+                        ${icon}
+                        <h3 style="font-size:1.3rem;font-weight:700;background:linear-gradient(135deg,#a855f7,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:0">
+                            ${success ? 'Notificaciones Enviadas' : 'Error en el Envío'}
+                        </h3>
+                        ${statsHTML}
+                        <button onclick="cerrarResultado()" style="margin-top:8px;padding:10px 28px;border-radius:12px;border:none;background:linear-gradient(135deg,#a855f7,#ec4899);color:#fff;font-weight:600;font-size:0.95rem;cursor:pointer;transition:all 0.2s ease;box-shadow:0 4px 15px rgba(168,85,247,0.4)" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(168,85,247,0.5)'" onmouseout="this.style.transform='none';this.style.boxShadow='0 4px 15px rgba(168,85,247,0.4)'">
+                            Cerrar
+                        </button>
+                    </div>`;
+                content.style.opacity = '1';
+            }, 300);
+        }
+
+        function cerrarResultado() {
+            if (progressModal) {
+                progressModal.classList.add('fade-out');
+                setTimeout(() => { progressModal.remove(); progressModal = null; }, 350);
+            }
         }
 
         // Inicialización y event listeners
