@@ -240,14 +240,12 @@ TWILIO_WHATSAPP_FROM = os.environ.get('TWILIO_WHATSAPP_FROM', 'whatsapp:+1415523
 # Configuración del backend de email
 # Si hay credenciales de AWS configuradas, usar SES con API
 # Si no, usar SMTP como fallback o console en desarrollo
-if os.environ.get('EMAIL_HOST_USER') and os.environ.get('EMAIL_HOST_PASSWORD'):
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = os.environ.get('EMAIL_HOST', 'email-smtp.us-east-1.amazonaws.com')
-    EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
-    EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL', 'False') == 'True'
-    EMAIL_USE_TLS = not EMAIL_USE_SSL and (os.environ.get('EMAIL_USE_TLS', 'True') == 'True')
-    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
-    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+if os.environ.get('AWS_SES_ACCESS_KEY_ID') and os.environ.get('AWS_SES_SECRET_ACCESS_KEY'):
+    EMAIL_BACKEND = 'django_ses.SESBackend'
+    AWS_SES_ACCESS_KEY_ID = os.environ.get('AWS_SES_ACCESS_KEY_ID')
+    AWS_SES_SECRET_ACCESS_KEY = os.environ.get('AWS_SES_SECRET_ACCESS_KEY')
+    AWS_SES_REGION_NAME = os.environ.get('AWS_SES_REGION_NAME', 'us-east-1')
+    AWS_SES_REGION_ENDPOINT = f"email.{os.environ.get('AWS_SES_REGION_NAME', 'us-east-1')}.amazonaws.com"
 else:
     if DEBUG:
         EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
