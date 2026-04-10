@@ -149,8 +149,8 @@ body {
 }
 
 .success-sub {
-  font-size: 14px;
-  color: rgba(255,255,255,.5);
+  font-size: 15px;
+  color: rgba(255,255,255,.85);
   margin: 0 0 28px;
   line-height: 1.6;
   animation: fadeUp .5s 1.15s ease both;
@@ -177,12 +177,12 @@ body {
 
 /* ── Note ── */
 .success-note {
-  background: rgba(255,255,255,.04);
-  border: 1px solid rgba(255,255,255,.09);
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.15);
   border-radius: 15px;
   padding: 16px 18px;
-  font-size: 13px;
-  color: rgba(255,255,255,.45);
+  font-size: 14px;
+  color: rgba(255,255,255,.85);
   line-height: 1.65;
   margin-bottom: 34px;
   animation: fadeUp .5s 1.35s ease both;

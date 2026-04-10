@@ -511,7 +511,7 @@ h1::after {
 
 .progress-stat-label {
     font-size: 0.9em;
-    color: #666;
+    color: rgba(255,255,255,.85);
 }
 
 
@@ -720,7 +720,7 @@ h1::after {
     }
     
     .notification-message p {
-        color: #bdc3c7;
+        color: #e8eaed;
     }
     
     .notification-stats span {
