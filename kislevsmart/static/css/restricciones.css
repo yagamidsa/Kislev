@@ -88,9 +88,12 @@
     border: 0;
   }
   
-  /* Prevenir pull-to-refresh en móviles */
+  /* Prevenir pull-to-refresh y elastic bounce en iOS */
+  html {
+    overscroll-behavior: none;
+  }
   body {
-    overscroll-behavior-y: contain;
+    overscroll-behavior: none;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
   }
