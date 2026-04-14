@@ -104,7 +104,8 @@
             display: flex; flex-direction: column;
             transform: translateY(-100%);
             transition: transform .48s cubic-bezier(.4,0,.2,1);
-            overflow: hidden; /* panel outer no scrollea */
+            overflow: hidden;
+            overscroll-behavior: none;
         }
         .panel.open { transform: translateY(0); }
 
@@ -842,12 +843,31 @@ const conjuntoId = JSON.parse(document.getElementById('conjunto-id-data').textCo
 const meses = JSON.parse(document.getElementById('meses-data').textContent);
 const datosGrafico = JSON.parse(document.getElementById('visitantes-data').textContent);
 
+/* ── Body lock (iOS-safe) ── */
+let _lockScrollY = 0;
+function lockBody() {
+    _lockScrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = '-' + _lockScrollY + 'px';
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.overflow = 'hidden';
+}
+function unlockBody() {
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.overflow = '';
+    window.scrollTo(0, _lockScrollY);
+}
+
 /* ── Panel control ── */
 const chartsInited = {};
 
 function openPanel(id) {
     document.getElementById('panel-' + id).classList.add('open');
-    document.body.style.overflow = 'hidden';
+    lockBody();
     if (id === 'visitantes' && !chartsInited.visitantes) {
         chartsInited.visitantes = true;
         setTimeout(initVisitantesCharts, 80);
@@ -860,13 +880,13 @@ function openPanel(id) {
 
 function closePanel(id) {
     document.getElementById('panel-' + id).classList.remove('open');
-    document.body.style.overflow = '';
+    unlockBody();
 }
 
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         document.querySelectorAll('.panel.open').forEach(p => p.classList.remove('open'));
-        document.body.style.overflow = '';
+        unlockBody();
     }
 });
 

@@ -431,22 +431,38 @@ function tick(){
 }
 tick(); setInterval(tick, 1000);
 
+/* ── Body lock (iOS-safe) ── */
+let _lockScrollY = 0;
+function lockBody() {
+    _lockScrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = '-' + _lockScrollY + 'px';
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.overflow = 'hidden';
+}
+function unlockBody() {
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.overflow = '';
+    window.scrollTo(0, _lockScrollY);
+}
+
 /* ── Panels ── */
 function openPanel(id){
     document.getElementById('panel-'+id).classList.add('open');
-    document.body.style.overflow = 'hidden';
+    lockBody();
 }
 function closePanel(id){
     document.getElementById('panel-'+id).classList.remove('open');
-    document.body.style.overflow = '';
+    unlockBody();
 }
-// Cerrar con tecla Escape
 document.addEventListener('keydown', function(e){
     if(e.key === 'Escape'){
-        document.querySelectorAll('.panel.open').forEach(p => {
-            p.classList.remove('open');
-        });
-        document.body.style.overflow = '';
+        document.querySelectorAll('.panel.open').forEach(p => p.classList.remove('open'));
+        unlockBody();
     }
 });
 
