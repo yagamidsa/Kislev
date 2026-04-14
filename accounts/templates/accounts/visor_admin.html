@@ -183,21 +183,33 @@
             input,select,textarea { font-size: 16px !important; }
             .topbar { padding: 12px 16px; }
             .status-pill { display: none; }
-            .kpi-grid { grid-template-columns: repeat(2,1fr); }
+            .kpi-grid { grid-template-columns: repeat(2,1fr); gap: 10px; margin-bottom: 18px; }
+            .kpi-card { padding: 14px 10px; }
+            .kpi-value { font-size: 1.5rem; }
+            .tablero-btn-wrap { margin-bottom: 18px; }
+            .clock-row { margin-bottom: 20px; }
         }
         @media(max-width:600px){
             .sel-card { flex: 0 0 calc(50% - 7px); min-width: 130px; }
         }
         @media(max-width:480px){
-            .hero-title { font-size: clamp(1.3rem,6vw,1.9rem) !important; }
-            .clock-seg { font-size: clamp(1.9rem,9vw,2.6rem) !important; }
-            .hero { padding: 24px 16px 32px !important; }
-            .kpi-card { padding: 14px 10px; }
-            .clock-row { margin-bottom: 24px; }
-            .kpi-grid { gap: 10px; }
+            /* Oculta KPIs en móvil — el layout no cabe en pantalla pequeña */
+            .kpi-grid { display: none !important; }
+            .tablero-btn-wrap { margin-bottom: 14px; }
+            .btn-tablero { padding: 8px 16px; font-size: .76rem; }
+            .hero { padding: 14px 12px 20px !important; }
+            .hero-title { font-size: clamp(1.2rem, 5.5vw, 1.7rem) !important; }
+            .conjunto-badge { margin-bottom: 10px; padding: 5px 14px; font-size: .7rem; }
+            .hero-sub { margin-bottom: 12px; font-size: .86rem; }
+            .clock-seg { font-size: clamp(1.6rem, 8vw, 2rem) !important; }
+            .clock-row { margin-bottom: 12px; }
+            /* 3 columnas compactas para que quepan las 5 cards */
+            .sel-card { flex: 0 0 calc(33.33% - 10px); min-width: 86px; padding: 14px 8px; gap: 6px; }
+            .sel-icon { width: 38px; height: 38px; font-size: .95rem; }
+            .sel-label { font-size: .72rem; }
         }
         @media(max-width:360px){
-            .sel-card { flex: 0 0 100%; }
+            .sel-card { flex: 0 0 calc(50% - 7px); min-width: 120px; }
         }
     </style>
 </head>
