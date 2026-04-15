@@ -1,133 +1,325 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Escanear QR - Kislev</title>
+    <meta name="theme-color" content="#07091A">
+    <title>Escanear QR — Kislev Smart</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/restricciones.css' %}">
-    <link rel="stylesheet" href="{% static 'css/leerscaner.css' %}">
-</head>
+    <style>
+        /* ── Base ── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; overflow: hidden; background: #07091A; font-family: 'Poppins', sans-serif; color: #fff; }
 
+        /* ── Fondo ── */
+        .bg {
+            position: fixed; inset: 0; z-index: 0;
+            background:
+                radial-gradient(ellipse at 20% 20%, rgba(124,58,237,.22) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(219,39,119,.18) 0%, transparent 50%),
+                #07091A;
+        }
+
+        /* ── Layout principal ── */
+        .page {
+            position: relative; z-index: 1;
+            height: 100%; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 24px 20px 32px; gap: 0;
+        }
+
+        /* ── Header ── */
+        .sc-header {
+            display: flex; flex-direction: column; align-items: center;
+            gap: 6px; margin-bottom: 28px;
+        }
+        .sc-brand {
+            font-size: .68rem; font-weight: 700; letter-spacing: 1.2px;
+            text-transform: uppercase; color: rgba(167,139,250,.7);
+        }
+        .sc-title {
+            font-size: 1.4rem; font-weight: 800; color: #fff; line-height: 1.1;
+        }
+        .sc-sub {
+            font-size: .78rem; color: rgba(255,255,255,.45); margin-top: 2px;
+        }
+
+        /* ── Scanner box ── */
+        .sc-box {
+            position: relative;
+            width: min(300px, 82vw);
+            aspect-ratio: 1 / 1;
+            border-radius: 24px;
+            overflow: hidden;
+            background: #000;
+            box-shadow:
+                0 0 0 1px rgba(124,58,237,.25),
+                0 24px 64px rgba(0,0,0,.7),
+                0 0 60px rgba(124,58,237,.12);
+        }
+
+        /* Video */
+        #video {
+            width: 100%; height: 100%;
+            object-fit: cover; display: block;
+        }
+
+        /* ── Overlay exterior semitransparente ── */
+        .sc-overlay {
+            position: absolute; inset: 0; pointer-events: none; z-index: 2;
+            background: linear-gradient(
+                to bottom,
+                rgba(0,0,0,.35) 0%,
+                transparent 22%,
+                transparent 78%,
+                rgba(0,0,0,.35) 100%
+            );
+        }
+
+        /* ── Esquinas del frame ── */
+        .sc-corner {
+            position: absolute; width: 28px; height: 28px;
+            border-color: #a78bfa; border-style: solid;
+            z-index: 3; pointer-events: none;
+            filter: drop-shadow(0 0 6px rgba(167,139,250,.9));
+        }
+        .sc-corner-tl { top: 16px; left: 16px; border-width: 3px 0 0 3px; border-radius: 6px 0 0 0; }
+        .sc-corner-tr { top: 16px; right: 16px; border-width: 3px 3px 0 0; border-radius: 0 6px 0 0; }
+        .sc-corner-bl { bottom: 16px; left: 16px; border-width: 0 0 3px 3px; border-radius: 0 0 0 6px; }
+        .sc-corner-br { bottom: 16px; right: 16px; border-width: 0 3px 3px 0; border-radius: 0 0 6px 0; }
+
+        /* ── Línea de escaneo ── */
+        .sc-line {
+            position: absolute; left: 16px; right: 16px; height: 2px;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                rgba(167,139,250,.6) 20%,
+                #a78bfa 50%,
+                rgba(167,139,250,.6) 80%,
+                transparent 100%
+            );
+            box-shadow: 0 0 10px rgba(167,139,250,.7), 0 0 20px rgba(124,58,237,.4);
+            border-radius: 1px;
+            z-index: 3; pointer-events: none;
+            animation: scanline 2.2s ease-in-out infinite;
+        }
+        @keyframes scanline {
+            0%   { top: 16px; opacity: 0; }
+            8%   { opacity: 1; }
+            92%  { opacity: 1; }
+            100% { top: calc(100% - 18px); opacity: 0; }
+        }
+
+        /* ── Hint debajo del scanner ── */
+        .sc-hint {
+            margin-top: 20px;
+            display: flex; align-items: center; gap: 8px;
+            font-size: .8rem; color: rgba(255,255,255,.45);
+        }
+        .sc-hint svg { width: 16px; height: 16px; stroke: rgba(167,139,250,.7); fill: none; stroke-width: 2; flex-shrink: 0; }
+
+        /* ── Estado del scanner ── */
+        .sc-status {
+            margin-top: 10px;
+            font-size: .75rem; font-weight: 600;
+            color: rgba(167,139,250,.8);
+            letter-spacing: .3px;
+            min-height: 18px;
+            transition: color .3s;
+        }
+        .sc-status.ok { color: #4ade80; }
+        .sc-status.err { color: #f87171; }
+
+        /* ── Error toast ── */
+        .sc-toast {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            background: rgba(220,38,38,.18); border: 1px solid rgba(220,38,38,.35);
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border-radius: 14px; padding: 14px 22px;
+            display: flex; align-items: center; gap: 10px;
+            font-size: .85rem; font-weight: 600; color: #fca5a5;
+            z-index: 100; white-space: nowrap;
+            animation: toastIn .28s cubic-bezier(.34,1.2,.64,1) both;
+        }
+        .sc-toast svg { width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 2.5; flex-shrink: 0; }
+        @keyframes toastIn { from{opacity:0;transform:translate(-50%,-16px)} to{opacity:1;transform:translate(-50%,0)} }
+
+        /* ── Botón regresar ── */
+        .sc-back {
+            margin-top: 28px;
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 14px 32px;
+            background: rgba(255,255,255,.07);
+            border: 1px solid rgba(255,255,255,.13);
+            border-radius: 14px; color: rgba(255,255,255,.8);
+            text-decoration: none; font-family: 'Poppins', sans-serif;
+            font-size: .9rem; font-weight: 600;
+            transition: background .2s, color .2s, border-color .2s;
+        }
+        .sc-back:hover { background: rgba(124,58,237,.18); border-color: rgba(124,58,237,.4); color: #fff; }
+        .sc-back svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2.5; }
+
+        /* ── Responsive ── */
+        @media(max-width:360px) {
+            .sc-box { width: 88vw; }
+            .sc-title { font-size: 1.2rem; }
+            .sc-header { margin-bottom: 20px; }
+        }
+        @media(orientation:landscape) and (max-height:520px) {
+            .page { flex-direction: row; flex-wrap: wrap; gap: 16px; padding: 16px; justify-content: center; }
+            .sc-header { margin-bottom: 0; flex-direction: row; gap: 12px; align-items: center; width: 100%; justify-content: center; }
+            .sc-box { width: min(240px, 50vh); }
+            .sc-hint, .sc-status { display: none; }
+            .sc-back { margin-top: 0; }
+        }
+    </style>
+</head>
 <body>
-    <div class="container">
-        <h1>Escanear Código QR</h1>
-        <div class="scanner-container">
-            <video id="video" playsinline></video>
-            <div class="scan-animation">
-                <div class="scan-line"></div>
-            </div>
-            <p id="message">Coloca el código QR dentro del marco</p>
-            <div id="error-container"></div>
-        </div>
-        <a href="
-        {% if user.user_type == 'administrador' %}
-            {% url 'accounts:visor_admin' %}
-        {% elif user.user_type == 'porteria' %}
-            {% url 'accounts:control_porteria' %}
-        {% else %}
-            {% url 'accounts:login' %}
-        {% endif %}
-        " class="return-button">Regresar</a>
+
+<div class="bg"></div>
+
+<div class="page">
+
+    <!-- Header -->
+    <div class="sc-header">
+        <div class="sc-brand">Kislev Smart</div>
+        <div class="sc-title">Escanear QR</div>
+        <div class="sc-sub">Apunta la cámara al código del visitante</div>
     </div>
 
-    <script src="https://unpkg.com/@zxing/library@latest"></script>
-    <script>
-        const maxFailedAttempts = 5;
-        let failedAttempts = 0;
-        let isShowingError = false; // Variable para controlar mensajes de error
-        let scanned = false; // Evita procesar el mismo QR múltiples veces
+    <!-- Scanner -->
+    <div class="sc-box">
+        <video id="video" playsinline autoplay muted></video>
 
-        async function startCamera() {
-            const codeReader = new ZXing.BrowserQRCodeReader();
-            const videoElement = document.getElementById('video');
+        <!-- Overlay -->
+        <div class="sc-overlay"></div>
 
-            try {
-                const devices = await codeReader.getVideoInputDevices();
-                if (devices.length === 0) throw new Error('No se encontraron cámaras.');
+        <!-- Esquinas -->
+        <div class="sc-corner sc-corner-tl"></div>
+        <div class="sc-corner sc-corner-tr"></div>
+        <div class="sc-corner sc-corner-bl"></div>
+        <div class="sc-corner sc-corner-br"></div>
 
-                const preferredDevice = devices[devices.length - 1];
-                codeReader.decodeFromVideoDevice(preferredDevice.deviceId, 'video', (result, error) => {
-                    if (result && !scanned) {
-                        scanned = true; // bloquea llamadas repetidas del mismo frame
-                        console.log('QR detectado:', result.text);
-                        failedAttempts = 0;
-                        processQRContent(result.text);
-                    } else if (error) {
-                        if (!(error instanceof ZXing.NotFoundException)) {
-                            console.error('Error durante el escaneo:', error);
-                            failedAttempts++;
+        <!-- Línea de escaneo -->
+        <div class="sc-line"></div>
+    </div>
 
-                            if (failedAttempts >= maxFailedAttempts) {
-                                showErrorMessage("Error escaneando el QR");
-                            }
+    <div class="sc-hint">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="5" height="5" rx="1"/><rect x="16" y="3" width="5" height="5" rx="1"/><rect x="3" y="16" width="5" height="5" rx="1"/><path d="M16 16h5v5M16 16v5"/></svg>
+        Mantén el QR dentro del marco
+    </div>
+
+    <div class="sc-status" id="scanStatus">Iniciando cámara...</div>
+
+    <!-- Botón regresar -->
+    <a href="{% if user.user_type == 'administrador' %}{% url 'accounts:visor_admin' %}{% elif user.user_type == 'porteria' %}{% url 'accounts:control_porteria' %}{% else %}{% url 'accounts:login' %}{% endif %}" class="sc-back">
+        <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+        Regresar
+    </a>
+
+</div>
+
+<script src="https://unpkg.com/@zxing/library@latest"></script>
+<script>
+    const maxFailedAttempts = 5;
+    let failedAttempts = 0;
+    let isShowingError = false;
+    let scanned = false;
+
+    const statusEl = document.getElementById('scanStatus');
+
+    function setStatus(text, type) {
+        statusEl.textContent = text;
+        statusEl.className = 'sc-status' + (type ? ' ' + type : '');
+    }
+
+    async function startCamera() {
+        const codeReader = new ZXing.BrowserQRCodeReader();
+
+        try {
+            const devices = await codeReader.getVideoInputDevices();
+            if (devices.length === 0) throw new Error('No se encontraron cámaras.');
+
+            const preferredDevice = devices[devices.length - 1];
+            setStatus('Listo — buscando QR...');
+
+            codeReader.decodeFromVideoDevice(preferredDevice.deviceId, 'video', (result, error) => {
+                if (result && !scanned) {
+                    scanned = true;
+                    setStatus('QR detectado ✓', 'ok');
+                    failedAttempts = 0;
+                    processQRContent(result.text);
+                } else if (error) {
+                    if (!(error instanceof ZXing.NotFoundException)) {
+                        failedAttempts++;
+                        if (failedAttempts >= maxFailedAttempts) {
+                            showToast('Error al escanear el QR');
+                            failedAttempts = 0;
                         }
                     }
-                });
-
-            } catch (error) {
-                console.error("Error al acceder a la cámara:", error);
-                showErrorMessage("Error al acceder a la cámara");
-            }
-        }
-
-        function processQRContent(content) {
-            try {
-                const url = new URL(content);
-                const baseUrl = window.location.origin;
-
-                if (url.pathname.startsWith("/validar_qr/")) {
-                    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-                    const fullUrl = `${baseUrl}${url.pathname}${url.search ? url.search + '&' : '?'}source=scan`;
-
-                    // Solo para Safari/iOS usamos replace
-                    if (isSafari) {
-                        window.location.replace(fullUrl);
-                    } else {
-                        window.location.href = fullUrl;
-                    }
-                } else {
-                    showErrorMessage("Código QR no válido");
                 }
-            } catch (e) {
-                console.error("Error procesando QR:", e);
-                showErrorMessage("QR no válido");
-            }
+            });
+
+        } catch (error) {
+            setStatus('Sin acceso a cámara', 'err');
+            showToast('No se pudo acceder a la cámara');
         }
+    }
 
-        function showErrorMessage(message) {
-            if (isShowingError) return;
+    function processQRContent(content) {
+        try {
+            const url = new URL(content);
+            const baseUrl = window.location.origin;
 
-            const existing = document.querySelectorAll('.error-message');
-            existing.forEach(el => el.remove());
+            if (url.pathname.startsWith('/validar_qr/')) {
+                const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+                const fullUrl = `${baseUrl}${url.pathname}${url.search ? url.search + '&' : '?'}source=scan`;
 
-            isShowingError = true;
-
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'error-message';
-            errorDiv.innerHTML = `
-                <img src="https://fonts.gstatic.com/s/i/materialicons/error/v6/24px.svg" alt="Error" class="error-icon">
-                <p>${message}</p>
-            `;
-            document.getElementById('error-container').appendChild(errorDiv);
-            errorDiv.style.display = 'block';
-
-            setTimeout(() => {
-                errorDiv.remove();
-                isShowingError = false;
-            }, 3000);
-        }
-
-        document.addEventListener('DOMContentLoaded', startCamera);
-
-        window.addEventListener('beforeunload', () => {
-            const videoElement = document.getElementById('video');
-            if (videoElement.srcObject) {
-                videoElement.srcObject.getTracks().forEach(track => track.stop());
+                if (isSafari) {
+                    window.location.replace(fullUrl);
+                } else {
+                    window.location.href = fullUrl;
+                }
+            } else {
+                scanned = false;
+                setStatus('Listo — buscando QR...');
+                showToast('Código QR no válido');
             }
-        });
-    </script>
+        } catch (e) {
+            scanned = false;
+            setStatus('Listo — buscando QR...');
+            showToast('QR no reconocido');
+        }
+    }
+
+    function showToast(message) {
+        if (isShowingError) return;
+        isShowingError = true;
+
+        const toast = document.createElement('div');
+        toast.className = 'sc-toast';
+        toast.innerHTML = `
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            ${message}
+        `;
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.remove();
+            isShowingError = false;
+        }, 3000);
+    }
+
+    document.addEventListener('DOMContentLoaded', startCamera);
+
+    window.addEventListener('beforeunload', () => {
+        const video = document.getElementById('video');
+        if (video && video.srcObject) {
+            video.srcObject.getTracks().forEach(t => t.stop());
+        }
+    });
+</script>
 </body>
-
 </html>
