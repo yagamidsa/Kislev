@@ -411,201 +411,290 @@
                 transform: translateY(0);
             }
         }
-    </style>
-    <!-- Botón de regreso al panel de notificaciones -->
-    <a href="{% url 'notificaciones' %}" class="back-button">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M15 18l-6-6 6-6" />
-        </svg>
-        Volver a Notificaciones
-    </a>
 
-    <style>
-        .back-button {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            color: #ffffff;
-            padding: 10px 15px;
-            border-radius: 10px;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            transition: all 0.3s ease;
-            z-index: 1000;
-            font-size: 14px;
-            font-weight: 500;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+        /* ── iOS fix ── */
+        html, body { height: 100%; overflow: hidden; }
+        .scroll-root { height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: none; }
+
+        /* ── TOPBAR ── */
+        .noti-topbar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+            display: flex; align-items: center; justify-content: space-between; gap: 12px;
+            padding: 14px 24px;
+            background: rgba(15,5,30,.88); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(124,58,237,.22);
         }
-
-        .back-button:hover {
-            background: rgba(255, 255, 255, 0.2);
-            color: #f9a8d4;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
+        .noti-back-btn {
+            display: flex; align-items: center; gap: 7px;
+            background: rgba(124,58,237,.1); border: 1px solid rgba(124,58,237,.28);
+            border-radius: 10px; color: #a78bfa; font-family: inherit;
+            font-size: .82rem; font-weight: 600; padding: 8px 14px; cursor: pointer;
+            text-decoration: none; transition: all .2s; flex-shrink: 0;
         }
-
-        .back-button svg {
-            margin-right: 8px;
-            width: 20px;
-            height: 20px;
-            stroke: currentColor;
+        .noti-back-btn:hover { background: rgba(124,58,237,.2); color: #c4b5fd; }
+        .noti-back-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2.5; }
+        .noti-topbar-title {
+            flex: 1; text-align: center; font-size: .92rem; font-weight: 700;
+            background: linear-gradient(135deg,#c4b5fd,#f9a8d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
+        .noti-logo { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .noti-logo-dot { width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg,#7c3aed,#db2777); display: flex; align-items: center; justify-content: center; font-size: .8rem; }
+        .noti-logo-name { font-size: .8rem; font-weight: 700; background: linear-gradient(135deg,#a78bfa,#f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; white-space: nowrap; }
 
-        /* Responsive */
-        @media screen and (max-width: 768px) {
-            .back-button {
-                padding: 8px 12px;
-                font-size: 12px;
-            }
+        /* ── PAGE WRAP ── */
+        .page-wrap { position: relative; z-index: 2; min-height: 100vh; padding: 86px 16px 40px; display: flex; align-items: flex-start; justify-content: center; }
 
-            .back-button svg {
-                width: 16px;
-                height: 16px;
-            }
+        /* ── FORM CARD ── */
+        .form-card {
+            width: 100%; max-width: 680px;
+            background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);
+            border-radius: 24px; position: relative; overflow: hidden;
+            animation: formSlideDown .5s cubic-bezier(.34,1.2,.64,1) both;
+            box-shadow: 0 32px 80px rgba(0,0,0,.45), 0 0 0 1px rgba(124,58,237,.1);
+        }
+        .form-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background: linear-gradient(90deg,#7c3aed,#db2777,#7c3aed); }
+        @keyframes formSlideDown { from{opacity:0;transform:translateY(-35px) scale(.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+
+        /* ── FORM CARD HEADER ── */
+        .fcard-header { display: flex; align-items: center; justify-content: space-between; padding: 28px 28px 0; }
+        .fcard-title-row { display: flex; align-items: center; gap: 14px; }
+        .fcard-icon { width: 46px; height: 46px; border-radius: 14px; background: linear-gradient(135deg,#7c3aed,#db2777); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; box-shadow: 0 6px 20px rgba(124,58,237,.4); }
+        .fcard-title { font-size: 1.15rem; font-weight: 800; color: #fff; }
+        .fcard-sub { font-size: .75rem; color: rgba(255,255,255,.45); margin-top: 2px; }
+        .fcard-close { width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); color: rgba(255,255,255,.6); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .2s; flex-shrink: 0; text-decoration: none; }
+        .fcard-close:hover { background: rgba(248,113,113,.15); border-color: rgba(248,113,113,.3); color: #fca5a5; }
+        .fcard-close svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2.5; }
+
+        /* ── FORM BODY ── */
+        .fcard-body { padding: 24px 28px 28px; display: flex; flex-direction: column; gap: 22px; }
+
+        /* ── SEC LABEL ── */
+        .f-sec { display: flex; align-items: center; gap: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #a78bfa; margin-bottom: 12px; }
+        .f-sec::after { content:''; flex:1; height:1px; background: rgba(255,255,255,.08); }
+        .f-sec svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; flex-shrink: 0; }
+
+        /* ── SELECTS GRID ── */
+        .f-selects { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        @media(max-width:480px) { .f-selects { grid-template-columns: 1fr; } }
+
+        /* ── FIELD ── */
+        .f-field { display: flex; flex-direction: column; gap: 5px; }
+        .f-lbl { font-size: .72rem; font-weight: 600; color: rgba(255,255,255,.55); }
+        .f-select, .f-textarea {
+            background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1);
+            border-radius: 12px; color: #fff; font-family: inherit;
+            transition: border-color .2s, box-shadow .2s;
+        }
+        .f-select { padding: 12px 38px 12px 14px; font-size: 14px; cursor: pointer; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237c3aed' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px; }
+        .f-select:focus, .f-textarea:focus { outline: none; border-color: #7c3aed; box-shadow: 0 0 0 3px rgba(124,58,237,.18); }
+        .f-select option { background: #1e1035; color: #fff; }
+        .f-select:disabled { opacity: .5; cursor: not-allowed; }
+        .f-textarea { padding: 14px; font-size: 14px; resize: none; min-height: 130px; }
+
+        /* ── DEST BADGE ── */
+        .f-dest { display: inline-flex; align-items: center; gap: 8px; background: rgba(124,58,237,.12); border: 1px solid rgba(124,58,237,.25); border-radius: 10px; padding: 9px 14px; font-size: .8rem; font-weight: 600; color: #a78bfa; margin-top: 10px; animation: fadeup .3s ease; }
+        .f-dest.err { background: rgba(239,68,68,.1); border-color: rgba(239,68,68,.2); color: #fca5a5; }
+        .f-dest svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; flex-shrink: 0; }
+
+        /* ── FILE AREA ── */
+        .f-files { background: rgba(255,255,255,.03); border: 1px dashed rgba(255,255,255,.12); border-radius: 12px; padding: 12px; min-height: 54px; }
+        .f-files .no-files { color: rgba(255,255,255,.35); font-size: .8rem; text-align: center; padding: 6px; font-style: italic; }
+        .file-item { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.08); border-radius: 8px; padding: 8px 12px; margin-bottom: 6px; font-size: .8rem; color: rgba(255,255,255,.85); }
+        .file-item:last-child { margin-bottom: 0; }
+        .file-item .file-preview { display: flex; align-items: center; gap: 8px; flex: 1; overflow: hidden; }
+        .file-item .file-name { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .file-item .file-size { color: rgba(255,255,255,.4); font-size: .72rem; flex-shrink:0; }
+        .file-item .remove-file { background: none; border: none; color: rgba(255,255,255,.35); cursor: pointer; font-size: 1.1rem; line-height: 1; padding: 0 2px; transition: color .15s; }
+        .file-item .remove-file:hover { color: #f87171; }
+
+        /* ── ACTION BUTTONS ── */
+        .f-actions { display: flex; gap: 12px; margin-top: 4px; }
+        .btn-attach { display: flex; align-items: center; gap: 7px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 12px; color: rgba(255,255,255,.75); padding: 12px 18px; font-family: inherit; font-size: .86rem; font-weight: 600; cursor: pointer; transition: background .2s; white-space: nowrap; }
+        .btn-attach:hover { background: rgba(255,255,255,.1); color: #fff; }
+        .btn-attach svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; }
+        .btn-send { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg,#7c3aed,#db2777); border: none; border-radius: 12px; color: #fff; padding: 13px 20px; font-family: inherit; font-size: .9rem; font-weight: 700; cursor: pointer; box-shadow: 0 4px 20px rgba(124,58,237,.4); transition: transform .2s, box-shadow .2s; }
+        .btn-send:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(124,58,237,.55); }
+        .btn-send:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+        .btn-send svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+        /* ── CONFIRM MODAL ── */
+        .modal-backdrop { position: fixed; inset: 0; z-index: 9990; display: none; align-items: center; justify-content: center; padding: 24px; background: rgba(4,2,14,.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+        .modal { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); border-radius: 24px; padding: 36px 32px; text-align: center; max-width: 360px; width: 100%; }
+        @keyframes modalAppear { from{opacity:0;transform:translateY(-20px) scale(.95)} to{opacity:1;transform:translateY(0) scale(1)} }
+        .modal-content h2 { font-size: 1.15rem; font-weight: 800; color: #fff; margin-bottom: 8px; }
+        .modal-confirm-icon { font-size: 2rem; margin-bottom: 16px; }
+        .modal-confirm-sub { font-size: .84rem; color: rgba(255,255,255,.6); margin-bottom: 24px; line-height: 1.6; }
+        .modal-buttons { display: flex; gap: 12px; }
+        .btn-modal-no { flex: 1; padding: 12px; border-radius: 12px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); color: rgba(255,255,255,.8); font-family: inherit; font-size: .88rem; font-weight: 600; cursor: pointer; transition: background .2s; }
+        .btn-modal-no:hover { background: rgba(255,255,255,.12); }
+        .btn-modal-yes { flex: 1.4; padding: 12px; border-radius: 12px; background: linear-gradient(135deg,#7c3aed,#db2777); border: none; color: #fff; font-family: inherit; font-size: .88rem; font-weight: 700; cursor: pointer; box-shadow: 0 4px 16px rgba(124,58,237,.4); transition: transform .2s, box-shadow .2s; }
+        .btn-modal-yes:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(124,58,237,.55); }
+
+        @media(max-width:480px) {
+            .noti-topbar { padding: 12px 16px; }
+            .noti-logo-name { display: none; }
+            .fcard-header { padding: 20px 18px 0; }
+            .fcard-body { padding: 18px 18px 24px; }
+            .f-actions { flex-direction: column; }
+            .btn-attach { justify-content: center; }
         }
     </style>
 </head>
 
 <body>
+{% csrf_token %}
+<div class="envelope-background">
+    <div class="envelope-icon">
+        <svg viewBox="0 0 24 24">
+            <rect x="2" y="4" width="20" height="16" rx="2" />
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+        </svg>
+    </div>
+    <div class="envelope-icon">
+        <svg viewBox="0 0 24 24">
+            <rect x="2" y="4" width="20" height="16" rx="2" />
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+        </svg>
+    </div>
+    <div class="envelope-icon">
+        <svg viewBox="0 0 24 24">
+            <rect x="2" y="4" width="20" height="16" rx="2" />
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+        </svg>
+    </div>
+    <div class="envelope-icon">
+        <svg viewBox="0 0 24 24">
+            <rect x="2" y="4" width="20" height="16" rx="2" />
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+        </svg>
+    </div>
+    <div class="envelope-icon">
+        <svg viewBox="0 0 24 24">
+            <rect x="2" y="4" width="20" height="16" rx="2" />
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+        </svg>
+    </div>
+    <div class="envelope-icon">
+        <svg viewBox="0 0 24 24">
+            <rect x="2" y="4" width="20" height="16" rx="2" />
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+        </svg>
+    </div>
+</div>
 
-    {% csrf_token %}
-    <div class="envelope-background">
-        <!-- Repetir 6 veces para diferentes sobres -->
-        <div class="envelope-icon">
-            <svg viewBox="0 0 24 24">
-                <rect x="2" y="4" width="20" height="16" rx="2" />
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-            </svg>
+<div class="scroll-root">
+<!-- Topbar -->
+<nav class="noti-topbar">
+    <a href="{% url 'notificaciones' %}" class="noti-back-btn">
+        <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+        Notificaciones
+    </a>
+    <span class="noti-topbar-title">Notificación Individual</span>
+    <div class="noti-logo">
+        <div class="noti-logo-dot">✉️</div>
+        <span class="noti-logo-name">Kislev Smart</span>
+    </div>
+</nav>
+
+<!-- Content -->
+<div class="page-wrap">
+  <div class="form-card">
+    <!-- Card header -->
+    <div class="fcard-header">
+      <div class="fcard-title-row">
+        <div class="fcard-icon">✉️</div>
+        <div>
+          <div class="fcard-title">Notificación Individual</div>
+          <div class="fcard-sub">Envía un mensaje directo al propietario</div>
         </div>
-        <div class="envelope-icon">
-            <svg viewBox="0 0 24 24">
-                <rect x="2" y="4" width="20" height="16" rx="2" />
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-            </svg>
-        </div>
-        <div class="envelope-icon">
-            <svg viewBox="0 0 24 24">
-                <rect x="2" y="4" width="20" height="16" rx="2" />
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-            </svg>
-        </div>
-        <div class="envelope-icon">
-            <svg viewBox="0 0 24 24">
-                <rect x="2" y="4" width="20" height="16" rx="2" />
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-            </svg>
-        </div>
-        <div class="envelope-icon">
-            <svg viewBox="0 0 24 24">
-                <rect x="2" y="4" width="20" height="16" rx="2" />
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-            </svg>
-        </div>
-        <div class="envelope-icon">
-            <svg viewBox="0 0 24 24">
-                <rect x="2" y="4" width="20" height="16" rx="2" />
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-            </svg>
-        </div>
+      </div>
+      <a href="{% url 'notificaciones' %}" class="fcard-close">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </a>
     </div>
 
+    <!-- Form body -->
+    <div class="fcard-body">
+      <form class="notification-form" id="notificationForm">
 
-    <!-- Contenedor principal -->
-    <div class="container">
-        <h1>Notificaciones Individuales</h1>
-
-        <form class="notification-form" id="notificationForm">
-            <!-- Sección de ubicación -->
-            <div class="form-section">
-                <h2 class="form-section-title">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path
-                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1" />
-                    </svg>
-                    Ubicación del Propietario
-                </h2>
-                <div class="selects-container">
-                    <div class="select-group">
-                        <label for="tower">Torre/Interior</label>
-                        <select id="tower" required>
-                            <option value="">Cargando torres...</option>
-                        </select>
-                    </div>
-                    <div class="select-group">
-                        <label for="apartment">Apartamento</label>
-                        <select id="apartment" required disabled>
-                            <option value="">Seleccione torre primero</option>
-                        </select>
-                    </div>
-                </div>
-                <div id="destinatario-info" style="display: none;"></div>
+        <!-- Ubicación -->
+        <div>
+          <div class="f-sec">
+            <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Ubicación del propietario
+          </div>
+          <div class="f-selects">
+            <div class="f-field">
+              <label class="f-lbl" for="tower">Torre / Interior</label>
+              <select id="tower" class="f-select" required>
+                <option value="">Cargando torres...</option>
+              </select>
             </div>
-
-            <!-- Sección de mensaje -->
-            <div class="message-section">
-                <h2 class="form-section-title">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path
-                            d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z" />
-                    </svg>
-                    Mensaje
-                </h2>
-                <textarea id="message" placeholder="Escribe tu mensaje aquí..." required></textarea>
+            <div class="f-field">
+              <label class="f-lbl" for="apartment">Apartamento</label>
+              <select id="apartment" class="f-select" required disabled>
+                <option value="">Seleccione torre primero</option>
+              </select>
             </div>
+          </div>
+          <div id="destinatario-info" style="display:none;"></div>
+        </div>
 
-            <!-- Sección de archivos adjuntos -->
-            <div class="files-section">
-                <h2 class="form-section-title">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path
-                            d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l8.57-8.57A4 4 0 1118 8.84l-8.59 8.57a2 2 0 01-2.83-2.83l8.49-8.48" />
-                    </svg>
-                    Documentos Adjuntos
-                </h2>
+        <!-- Mensaje -->
+        <div>
+          <div class="f-sec">
+            <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            Mensaje
+          </div>
+          <div class="message-section">
+            <textarea id="message" class="f-textarea" placeholder="Escribe tu mensaje aquí..." required></textarea>
+          </div>
+        </div>
 
-                <div id="fileList" class="file-list">
-                    <div class="no-files">No hay archivos adjuntos</div>
-                </div>
+        <!-- Archivos -->
+        <div>
+          <div class="f-sec">
+            <svg viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l8.57-8.57A4 4 0 1118 8.84l-8.59 8.57a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+            Archivos adjuntos (opcional)
+          </div>
+          <div id="fileList" class="f-files">
+            <div class="no-files">No hay archivos adjuntos</div>
+          </div>
+        </div>
 
-                <!-- Sección de botones -->
-                <div class="buttons-container">
-                    <input type="file" id="fileInput" class="file-input" accept="*/*" multiple>
-                    <label for="fileInput" class="btn btn-secondary">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path
-                                d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l8.57-8.57A4 4 0 1118 8.84l-8.59 8.57a2 2 0 01-2.83-2.83l8.49-8.48" />
-                        </svg>
-                        Adjuntar Documentos
-                    </label>
+        <!-- Acciones -->
+        <div class="f-actions">
+          <input type="file" id="fileInput" class="file-input" accept="*/*" multiple>
+          <label for="fileInput" class="btn-attach">
+            <svg viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l8.57-8.57A4 4 0 1118 8.84l-8.59 8.57a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+            Adjuntar
+          </label>
+          <button type="button" class="btn-send" onclick="showConfirmation()">
+            <svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+            Enviar mensaje
+          </button>
+        </div>
 
-                    <button type="button" class="btn btn-primary" onclick="showConfirmation()">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
-                        </svg>
-                        Enviar Mensaje
-                    </button>
-                </div>
-            </div>
-        </form>
+      </form>
     </div>
+  </div>
+</div>
+</div><!-- /scroll-root -->
 
-    <!-- Modal de confirmación -->
-    <div class="modal-backdrop" id="confirmModal">
-        <div class="modal">
-            <div class="modal-content">
-                <h2 style="margin-bottom: 1rem;">¿Está seguro de enviar el mensaje?</h2>
-                <div class="modal-buttons">
-                    <button class="btn btn-secondary" onclick="hideConfirmation()">No</button>
-                    <button class="btn btn-primary" onclick="sendMessage()">Sí</button>
-                </div>
+<!-- Confirmation Modal -->
+<div class="modal-backdrop" id="confirmModal">
+    <div class="modal">
+        <div class="modal-content">
+            <div class="modal-confirm-icon">📨</div>
+            <h2>¿Enviar mensaje?</h2>
+            <p class="modal-confirm-sub">El propietario recibirá esta notificación directamente en su correo electrónico.</p>
+            <div class="modal-buttons">
+                <button class="btn-modal-no" onclick="hideConfirmation()">Cancelar</button>
+                <button class="btn-modal-yes" onclick="sendMessage()">Sí, enviar</button>
             </div>
         </div>
     </div>
+</div>
 
     <!-- Scripts -->
     <script>
@@ -856,7 +945,7 @@
         function actualizarUISeleccionDestinatario() {
             const apartmentSelect = document.getElementById('apartment');
             const messageContainer = document.querySelector('.message-section');
-            const submitButton = document.querySelector('.btn-primary');
+            const submitButton = document.querySelector('.btn-send');
 
             // Verificar si hay un apartamento seleccionado y si está ocupado
             const selectedOption = apartmentSelect.options[apartmentSelect.selectedIndex];
@@ -878,8 +967,9 @@
                         const towerName = towerSelect.options[towerSelect.selectedIndex].textContent;
 
                         destinatarioInfo.innerHTML = `
-                            <div class="destinatario-badge">
-                                <span class="icon">📬</span> Enviar a: ${towerName} - Apto ${selectedOption.value}
+                            <div class="f-dest">
+                                <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                Enviar a: ${towerName} - Apto ${selectedOption.value}
                             </div>
                         `;
                     }
@@ -893,8 +983,9 @@
                     if (destinatarioInfo) {
                         destinatarioInfo.style.display = 'block';
                         destinatarioInfo.innerHTML = `
-                            <div class="destinatario-badge error">
-                                <span class="icon">⚠️</span> No hay propietarios registrados en este apartamento
+                            <div class="f-dest err">
+                                <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                                No hay propietarios registrados en este apartamento
                             </div>
                         `;
                     }
@@ -949,7 +1040,7 @@
             console.log('Número de archivos:', selectedFiles.length);
 
             // Deshabilitar botón mientras se envía
-            const sendButton = document.querySelector('.btn-primary');
+            const sendButton = document.querySelector('.btn-send');
             if (sendButton) {
                 sendButton.disabled = true;
                 sendButton.innerHTML = `
@@ -989,7 +1080,7 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
                         </svg>
-                        Enviar Mensaje
+                        Enviar mensaje
                     `;
                     }
 
@@ -1045,7 +1136,7 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
                         </svg>
-                        Enviar Mensaje`;
+                        Enviar mensaje`;
                     }
                     console.error('Error:', error);
                     showErrorOverlay('Error de conexión. Por favor intenta nuevamente.');
@@ -1132,7 +1223,7 @@
             messageSection.style.pointerEvents = 'none';
 
             // Deshabilitar botón de envío inicialmente
-            const submitButton = document.querySelector('.btn-primary');
+            const submitButton = document.querySelector('.btn-send');
             submitButton.disabled = true;
 
             // Inicializar la lista de archivos

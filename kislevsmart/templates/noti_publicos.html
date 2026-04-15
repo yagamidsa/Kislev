@@ -11,63 +11,7 @@
     <link rel="stylesheet" href="{% static 'css/restricciones.css' %}">
     <link rel="stylesheet" href="{% static 'css/noti_publicos.css' %}">
 
-    <!-- Botón de regreso al panel de notificaciones -->
-    <a href="{% url 'notificaciones' %}" class="back-button">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M15 18l-6-6 6-6" />
-        </svg>
-        Volver a Notificaciones
-    </a>
-
     <style>
-        .back-button {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            color: #ffffff;
-            padding: 10px 15px;
-            border-radius: 10px;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            transition: all 0.3s ease;
-            z-index: 1000;
-            font-size: 14px;
-            font-weight: 500;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-        }
-
-        .back-button:hover {
-            background: rgba(255, 255, 255, 0.2);
-            color: #f9a8d4;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
-        }
-
-        .back-button svg {
-            margin-right: 8px;
-            width: 20px;
-            height: 20px;
-            stroke: currentColor;
-        }
-
-        /* Responsive */
-        @media screen and (max-width: 768px) {
-            .back-button {
-                padding: 8px 12px;
-                font-size: 12px;
-            }
-
-            .back-button svg {
-                width: 16px;
-                height: 16px;
-            }
-        }
-
         @keyframes resultFadeIn {
             from { opacity: 0; transform: translateY(16px) scale(0.96); }
             to   { opacity: 1; transform: translateY(0) scale(1); }
@@ -82,71 +26,88 @@
         @keyframes drawCheck {
             to { stroke-dashoffset: 0; }
         }
+
+        /* ── iOS fix ── */
+        html, body { height: 100%; overflow: hidden; }
+        .scroll-root { height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: none; }
+
+        /* ── TOPBAR ── */
+        .noti-topbar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+            display: flex; align-items: center; justify-content: space-between; gap: 12px;
+            padding: 14px 24px;
+            background: rgba(15,5,30,.88); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(124,58,237,.22);
+        }
+        .noti-back-btn {
+            display: flex; align-items: center; gap: 7px;
+            background: rgba(124,58,237,.1); border: 1px solid rgba(124,58,237,.28);
+            border-radius: 10px; color: #a78bfa; font-family: inherit;
+            font-size: .82rem; font-weight: 600; padding: 8px 14px; cursor: pointer;
+            text-decoration: none; transition: all .2s; flex-shrink: 0;
+        }
+        .noti-back-btn:hover { background: rgba(124,58,237,.2); color: #c4b5fd; }
+        .noti-back-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2.5; }
+        .noti-topbar-title {
+            flex: 1; text-align: center; font-size: .92rem; font-weight: 700;
+            background: linear-gradient(135deg,#c4b5fd,#f9a8d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .noti-logo { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .noti-logo-dot { width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg,#7c3aed,#db2777); display: flex; align-items: center; justify-content: center; font-size: .8rem; }
+        .noti-logo-name { font-size: .8rem; font-weight: 700; background: linear-gradient(135deg,#a78bfa,#f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; white-space: nowrap; }
+
+        /* ── PAGE WRAP ── */
+        .page-wrap { position: relative; z-index: 2; min-height: 100vh; padding: 86px 16px 40px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
+
+        /* ── PAGE TITLE CARD ── */
+        .page-title-card {
+            width: 100%; max-width: 760px;
+            background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);
+            border-radius: 20px; padding: 24px 28px;
+            display: flex; align-items: center; gap: 16px;
+            margin-bottom: 24px;
+            animation: formSlideDown .4s cubic-bezier(.34,1.2,.64,1) both;
+            box-shadow: 0 20px 60px rgba(0,0,0,.35), 0 0 0 1px rgba(124,58,237,.1);
+            position: relative; overflow: hidden;
+        }
+        .page-title-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background: linear-gradient(90deg,#7c3aed,#db2777,#7c3aed); }
+        .ptc-icon { width: 52px; height: 52px; border-radius: 16px; background: linear-gradient(135deg,#7c3aed,#db2777); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; box-shadow: 0 6px 20px rgba(124,58,237,.4); }
+        .ptc-text { flex: 1; }
+        .ptc-title { font-size: 1.25rem; font-weight: 800; color: #fff; }
+        .ptc-sub { font-size: .8rem; color: rgba(255,255,255,.45); margin-top: 3px; }
+
+        /* ── SERVICES WRAPPER ── */
+        .services-wrapper {
+            width: 100%; max-width: 760px;
+            animation: formSlideDown .5s .08s cubic-bezier(.34,1.2,.64,1) both;
+        }
+        @keyframes formSlideDown { from{opacity:0;transform:translateY(-35px) scale(.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+
+        /* ── CONFIRM MODAL ── */
+        .modal-backdrop { position: fixed; inset: 0; z-index: 9990; display: none; align-items: center; justify-content: center; padding: 24px; background: rgba(4,2,14,.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+        .modal { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); border-radius: 24px; padding: 36px 32px; text-align: center; max-width: 360px; width: 100%; }
+        @keyframes modalAppear { from{opacity:0;transform:translateY(-20px) scale(.95)} to{opacity:1;transform:translateY(0) scale(1)} }
+        .modal-content h2 { font-size: 1.1rem; font-weight: 800; color: #fff; margin-bottom: 8px; }
+        .modal-confirm-icon { font-size: 2rem; margin-bottom: 16px; }
+        .modal-confirm-sub { font-size: .84rem; color: rgba(255,255,255,.6); margin-bottom: 24px; line-height: 1.6; }
+        .modal-buttons { display: flex; gap: 12px; }
+        .btn-modal-no { flex: 1; padding: 12px; border-radius: 12px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); color: rgba(255,255,255,.8); font-family: inherit; font-size: .88rem; font-weight: 600; cursor: pointer; transition: background .2s; }
+        .btn-modal-no:hover { background: rgba(255,255,255,.12); }
+        .btn-modal-yes { flex: 1.4; padding: 12px; border-radius: 12px; background: linear-gradient(135deg,#7c3aed,#db2777); border: none; color: #fff; font-family: inherit; font-size: .88rem; font-weight: 700; cursor: pointer; box-shadow: 0 4px 16px rgba(124,58,237,.4); transition: transform .2s, box-shadow .2s; }
+        .btn-modal-yes:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(124,58,237,.55); }
+
+        @media(max-width:480px) {
+            .noti-topbar { padding: 12px 16px; }
+            .noti-logo-name { display: none; }
+            .page-title-card { padding: 18px 16px; }
+        }
     </style>
-    <!-- Botón de regreso al panel de notificaciones -->
-<a href="{% url 'notificaciones' %}" class="back-button">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M15 18l-6-6 6-6" />
-    </svg>
-    Volver a Notificaciones
-</a>
-
-<style>
-    .back-button {
-        position: fixed;
-        top: 20px;
-        left: 20px;
-        background: rgba(126, 0, 255, 0.1);
-        color: #7c3aed;
-        padding: 10px 15px;
-        border-radius: 10px;
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid rgba(126, 0, 255, 0.2);
-        transition: all 0.3s ease;
-        z-index: 1000;
-        font-size: 14px;
-        font-weight: 500;
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-    }
-
-    .back-button:hover {
-        background: rgba(126, 0, 255, 0.2);
-        color: #db2777;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 10px rgba(126, 0, 255, 0.1);
-    }
-
-    .back-button svg {
-        margin-right: 8px;
-        width: 20px;
-        height: 20px;
-        stroke: currentColor;
-    }
-
-    /* Responsive */
-    @media screen and (max-width: 768px) {
-        .back-button {
-            padding: 8px 12px;
-            font-size: 12px;
-        }
-
-        .back-button svg {
-            width: 16px;
-            height: 16px;
-        }
-    }
-</style>
 </head>
 
 <body>
     {% csrf_token %}
     <!-- Patrón de sobres en el fondo -->
     <div class="envelope-pattern">
-        <!-- 24 sobres para crear un patrón uniforme -->
         <div class="envelope">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                 <rect x="2" y="4" width="20" height="16" rx="2" />
@@ -221,72 +182,98 @@
         </div>
     </div>
 
-    <!-- Contenedor principal -->
-    <div class="container">
-        <h1>Notificaciones de Servicios Públicos</h1>
+    <div class="scroll-root">
+    <!-- Topbar -->
+    <nav class="noti-topbar">
+        <a href="{% url 'notificaciones' %}" class="noti-back-btn">
+            <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+            Notificaciones
+        </a>
+        <span class="noti-topbar-title">Servicios Públicos</span>
+        <div class="noti-logo">
+            <div class="noti-logo-dot">📡</div>
+            <span class="noti-logo-name">Kislev Smart</span>
+        </div>
+    </nav>
 
-        <div class="services-grid">
-            <!-- Tarjeta de Luz -->
-            <div class="service-card">
-                <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path
-                        d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
-                <h2 class="service-name">Luz</h2>
-                <button class="send-button" data-service="Luz" onclick="showConfirmation('Luz')">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
-                    </svg>
-                    Enviar Notificación
-                </button>
-            </div>
-            <!-- Tarjeta de Gas -->
-            <div class="service-card">
-                <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <!-- Manguera/tubería de gas -->
-                    <path d="M3 7v2c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V7m4 0v2c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V7" />
-                    <path d="M3 7h18" />
-                    <path d="M3 10v7a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-7" />
-                    <path d="M15 10v7a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-7" />
-                    <!-- Válvula -->
-                    <circle cx="7" cy="7" r="1" />
-                    <circle cx="19" cy="7" r="1" />
-                </svg>
-                <h2 class="service-name">Gas</h2>
-                <button class="send-button" data-service="Gas" onclick="showConfirmation('Gas')">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
-                    </svg>
-                    Enviar Notificación
-                </button>
-            </div>
+    <!-- Content -->
+    <div class="page-wrap">
 
-            <!-- Tarjeta de Agua -->
-            <div class="service-card">
-                <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path
-                        d="M12 22c4.97 0 9-4.03 9-9s-9-13-9-13-9 8.03-9 13 4.03 9 9 9zm0-16c.64.64 6 5.37 6 7 0 3.31-2.69 6-6 6s-6-2.69-6-6c0-1.63 5.36-6.36 6-7z" />
-                </svg>
-                <h2 class="service-name">Agua</h2>
-                <button class="send-button" data-service="Agua" onclick="showConfirmation('Agua')">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
-                    </svg>
-                    Enviar Notificación
-                </button>
+        <!-- Page title card -->
+        <div class="page-title-card">
+            <div class="ptc-icon">⚡</div>
+            <div class="ptc-text">
+                <div class="ptc-title">Servicios Públicos</div>
+                <div class="ptc-sub">Notifica a todos los propietarios sobre cortes o interrupciones de servicios</div>
             </div>
         </div>
+
+        <!-- Services grid -->
+        <div class="services-wrapper">
+            <div class="services-grid">
+                <!-- Tarjeta de Luz -->
+                <div class="service-card">
+                    <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                    </svg>
+                    <h2 class="service-name">Luz</h2>
+                    <button class="send-button" data-service="Luz" onclick="showConfirmation('Luz')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+                        </svg>
+                        Enviar Notificación
+                    </button>
+                </div>
+                <!-- Tarjeta de Gas -->
+                <div class="service-card">
+                    <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 7v2c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V7m4 0v2c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V7" />
+                        <path d="M3 7h18" />
+                        <path d="M3 10v7a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-7" />
+                        <path d="M15 10v7a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-7" />
+                        <circle cx="7" cy="7" r="1" />
+                        <circle cx="19" cy="7" r="1" />
+                    </svg>
+                    <h2 class="service-name">Gas</h2>
+                    <button class="send-button" data-service="Gas" onclick="showConfirmation('Gas')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+                        </svg>
+                        Enviar Notificación
+                    </button>
+                </div>
+
+                <!-- Tarjeta de Agua -->
+                <div class="service-card">
+                    <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M12 22c4.97 0 9-4.03 9-9s-9-13-9-13-9 8.03-9 13 4.03 9 9 9zm0-16c.64.64 6 5.37 6 7 0 3.31-2.69 6-6 6s-6-2.69-6-6c0-1.63 5.36-6.36 6-7z" />
+                    </svg>
+                    <h2 class="service-name">Agua</h2>
+                    <button class="send-button" data-service="Agua" onclick="showConfirmation('Agua')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+                        </svg>
+                        Enviar Notificación
+                    </button>
+                </div>
+            </div>
+        </div>
+
     </div>
+    </div><!-- /scroll-root -->
 
     <!-- Modal de confirmación -->
     <div class="modal-backdrop" id="confirmModal">
         <div class="modal">
             <div class="modal-content">
-                <h2 style="margin-bottom: 1rem;">¿Está seguro de enviar la notificación de <span
-                        id="serviceType"></span>?</h2>
+                <div class="modal-confirm-icon">📡</div>
+                <h2>¿Enviar notificación de <span id="serviceType"></span>?</h2>
+                <p class="modal-confirm-sub">Todos los propietarios recibirán esta notificación directamente en su correo electrónico.</p>
                 <div class="modal-buttons">
-                    <button class="modal-button no" onclick="hideConfirmation()">No</button>
-                    <button class="modal-button yes" onclick="sendNotification()">Sí</button>
+                    <button class="btn-modal-no" onclick="hideConfirmation()">Cancelar</button>
+                    <button class="btn-modal-yes" onclick="sendNotification()">Sí, enviar</button>
                 </div>
             </div>
         </div>
