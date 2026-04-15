@@ -1,212 +1,188 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Notificaciones</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
-    <title>Notificaciones</title>
+    <title>Panel de Notificaciones — Kislev Smart</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/restricciones.css' %}">
     <link rel="stylesheet" href="{% static 'css/notificaciones.css' %}">
+    <style>
+        /* ── iOS scroll fix ── */
+        html, body { height: 100%; overflow: hidden; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        .scroll-root { height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: none; }
+
+        /* ── PAGE ── */
+        .nc-page {
+            position: relative; z-index: 2;
+            min-height: 100vh; padding: 28px 16px 40px;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* ── MAIN CARD ── */
+        .nc-wrap {
+            width: 100%; max-width: 680px;
+            background: rgba(12,4,28,.75);
+            border: 1px solid rgba(124,58,237,.22);
+            border-radius: 28px; overflow: hidden;
+            animation: ncSlideDown .52s cubic-bezier(.34,1.2,.64,1) both;
+            box-shadow: 0 40px 100px rgba(0,0,0,.65), 0 0 80px rgba(124,58,237,.08),
+                        inset 0 0 0 1px rgba(255,255,255,.04);
+        }
+        @keyframes ncSlideDown { from{opacity:0;transform:translateY(-50px) scale(.95)} to{opacity:1;transform:translateY(0) scale(1)} }
+        @keyframes ncSlideUp   { from{opacity:1;transform:translateY(0) scale(1)} to{opacity:0;transform:translateY(-60px) scale(.95)} }
+
+        /* ── HEADER ── */
+        .nc-header {
+            background: linear-gradient(135deg, #1a0336 0%, #2e0a5c 50%, #1a0336 100%);
+            padding: 28px 24px 24px;
+            display: flex; align-items: flex-start; justify-content: space-between;
+            position: relative;
+        }
+        .nc-header::after { content:''; position:absolute; bottom:0; left:0; right:0; height:1px; background: linear-gradient(90deg,transparent,rgba(167,139,250,.4),transparent); }
+        .nc-header-row { display: flex; align-items: center; gap: 16px; }
+        .nc-icon { width: 52px; height: 52px; border-radius: 16px; background: linear-gradient(135deg,#7c3aed,#db2777); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; box-shadow: 0 8px 24px rgba(124,58,237,.5); }
+        .nc-brand { font-size: .7rem; font-weight: 700; color: rgba(167,139,250,.7); letter-spacing: .8px; text-transform: uppercase; margin-bottom: 3px; }
+        .nc-title { font-size: 1.18rem; font-weight: 800; color: #fff; line-height: 1.2; }
+        .nc-sub { font-size: .74rem; color: rgba(196,181,253,.6); margin-top: 3px; }
+        .nc-close { width: 38px; height: 38px; border-radius: 10px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); color: rgba(255,255,255,.65); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .2s; flex-shrink: 0; font-family: inherit; }
+        .nc-close:hover { background: rgba(248,113,113,.18); border-color: rgba(248,113,113,.4); color: #fca5a5; transform: scale(1.05); }
+        .nc-close svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2.5; }
+
+        /* ── BODY ── */
+        .nc-body { padding: 28px 24px 32px; }
+
+        /* ── SELECTION CARDS GRID ── */
+        .nc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        @media(max-width: 520px) { .nc-grid { grid-template-columns: 1fr; } }
+
+        /* ── SEL CARD ── */
+        .nc-sel {
+            background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);
+            border-radius: 20px; padding: 28px 20px 24px;
+            cursor: pointer; transition: all .28s cubic-bezier(.4,0,.2,1);
+            display: flex; flex-direction: column; align-items: center;
+            gap: 14px; text-align: center; position: relative; overflow: hidden;
+            text-decoration: none;
+        }
+        .nc-sel::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background: linear-gradient(90deg,#7c3aed,#db2777); opacity:0; transition: opacity .28s; }
+        .nc-sel:hover { background: rgba(124,58,237,.1); border-color: rgba(124,58,237,.35); transform: translateY(-4px); box-shadow: 0 16px 40px rgba(124,58,237,.2); }
+        .nc-sel:hover::before { opacity: 1; }
+        .nc-sel:active { transform: translateY(-2px); }
+
+        .ns-icon { width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg,rgba(124,58,237,.18),rgba(219,39,119,.18)); border: 1px solid rgba(124,58,237,.3); display: flex; align-items: center; justify-content: center; transition: all .28s; }
+        .ns-icon svg { width: 26px; height: 26px; stroke: #a78bfa; fill: none; stroke-width: 1.8; }
+        .nc-sel:hover .ns-icon { background: linear-gradient(135deg,#7c3aed,#db2777); border-color: transparent; box-shadow: 0 6px 20px rgba(124,58,237,.4); }
+        .nc-sel:hover .ns-icon svg { stroke: #fff; }
+
+        .ns-title { font-size: .95rem; font-weight: 800; color: #fff; line-height: 1.2; }
+        .ns-desc { font-size: .75rem; color: rgba(255,255,255,.45); line-height: 1.5; }
+
+        .ns-arrow { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; background: rgba(124,58,237,.1); border: 1px solid rgba(124,58,237,.2); transition: all .28s; margin-top: 4px; }
+        .ns-arrow svg { width: 14px; height: 14px; stroke: #a78bfa; fill: none; stroke-width: 2.5; transition: transform .2s; }
+        .nc-sel:hover .ns-arrow { background: rgba(124,58,237,.2); border-color: rgba(124,58,237,.4); }
+        .nc-sel:hover .ns-arrow svg { transform: translateX(3px); }
+
+        @media(max-width:480px) {
+            .nc-page { padding: 16px 12px 32px; align-items: flex-start; }
+            .nc-header { padding: 22px 18px 20px; }
+            .nc-body { padding: 20px 18px 28px; }
+            .nc-sel { padding: 22px 16px 20px; flex-direction: row; text-align: left; align-items: center; gap: 16px; }
+            .ns-arrow { margin-top: 0; margin-left: auto; flex-shrink: 0; }
+            .ns-desc { display: none; }
+        }
+        @media(max-width:360px) {
+            .nc-wrap { border-radius: 20px; }
+        }
+    </style>
 </head>
-
-<style>
-    .back-to-admin-btn {
-        position: fixed;
-        top: 20px;
-        left: 20px;
-        background: rgba(255, 255, 255, 0.1);
-        color: #ffffff;
-        padding: 8px 15px;
-        border-radius: 10px;
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        transition: all 0.3s ease;
-        z-index: 1000;
-        font-size: 14px;
-        font-weight: 500;
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-    }
-
-    .back-to-admin-btn:hover {
-        background: rgba(255, 255, 255, 0.2);
-        color: #f9a8d4;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
-    }
-
-    .back-to-admin-btn svg {
-        margin-right: 8px;
-        width: 20px;
-        height: 20px;
-        stroke: currentColor;
-    }
-
-    /* Estilos para dispositivos móviles */
-    @media screen and (max-width: 768px) {
-        .back-to-admin-btn {
-            top: 15px;
-            left: 15px;
-            padding: 6px 12px;
-            font-size: 12px;
-            border-radius: 8px;
-        }
-
-        .back-to-admin-btn svg {
-            width: 16px;
-            height: 16px;
-            margin-right: 6px;
-        }
-    }
-
-    /* Estilos para pantallas muy pequeñas */
-    @media screen and (max-width: 480px) {
-        .back-to-admin-btn {
-            top: 10px;
-            left: 10px;
-            padding: 5px 10px;
-            font-size: 11px;
-            border-radius: 6px;
-        }
-
-        .back-to-admin-btn svg {
-            width: 14px;
-            height: 14px;
-            margin-right: 4px;
-        }
-    }
-</style>
-
 <body>
 
-    <div class="envelope-pattern">
-        <!-- Sobres animados -->
-        <div class="envelope">
-            <svg viewBox="0 0 24 24">
-                <rect x="2" y="4" width="20" height="16" rx="2" />
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-            </svg>
+<!-- Floating envelopes background (from notificaciones.css) -->
+<div class="envelope-pattern">
+    <div class="envelope"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div>
+    <div class="envelope"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div>
+    <div class="envelope"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div>
+    <div class="envelope"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div>
+    <div class="envelope"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div>
+    <div class="envelope"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div>
+</div>
+
+<div class="scroll-root">
+<div class="nc-page">
+  <div class="nc-wrap" id="mainCard">
+
+    <!-- Gradient header -->
+    <div class="nc-header">
+      <div class="nc-header-row">
+        <div class="nc-icon">🔔</div>
+        <div>
+          <div class="nc-brand">Kislev Smart</div>
+          <div class="nc-title">Panel de Notificaciones</div>
+          <div class="nc-sub">Selecciona el tipo de notificación a enviar</div>
         </div>
-        <div class="envelope">
-            <svg viewBox="0 0 24 24">
-                <rect x="2" y="4" width="20" height="16" rx="2" />
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-            </svg>
-        </div>
-        <div class="envelope">
-            <svg viewBox="0 0 24 24">
-                <rect x="2" y="4" width="20" height="16" rx="2" />
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-            </svg>
-        </div>
-        <div class="envelope">
-            <svg viewBox="0 0 24 24">
-                <rect x="2" y="4" width="20" height="16" rx="2" />
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-            </svg>
-        </div>
-        <div class="envelope">
-            <svg viewBox="0 0 24 24">
-                <rect x="2" y="4" width="20" height="16" rx="2" />
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-            </svg>
-        </div>
-        <div class="envelope">
-            <svg viewBox="0 0 24 24">
-                <rect x="2" y="4" width="20" height="16" rx="2" />
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-            </svg>
-        </div>
-        <div class="envelope">
-            <svg viewBox="0 0 24 24">
-                <rect x="2" y="4" width="20" height="16" rx="2" />
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-            </svg>
-        </div>
-        <div class="envelope">
-            <svg viewBox="0 0 24 24">
-                <rect x="2" y="4" width="20" height="16" rx="2" />
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-            </svg>
-        </div>
-        <div class="envelope">
-            <svg viewBox="0 0 24 24">
-                <rect x="2" y="4" width="20" height="16" rx="2" />
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-            </svg>
-        </div>
-        <div class="envelope">
-            <svg viewBox="0 0 24 24">
-                <rect x="2" y="4" width="20" height="16" rx="2" />
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-            </svg>
-        </div>
+      </div>
+      <button class="nc-close" onclick="closePage()" title="Ir al panel">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
 
-    <!-- Botón de regreso al panel de administración -->
-    <a href="
-{% if user.user_type == 'administrador' %}
-    {% url 'accounts:visor_admin' %}
-{% elif user.user_type == 'propietario' %}
-    {% url 'accounts:visor_propietario' %}
-{% elif user.user_type == 'porteria' %}
-    {% url 'accounts:control_porteria' %}
-{% endif %}
-" class="back-to-admin-btn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M15 18l-6-6 6-6" />
-        </svg>
-        Volver al Panel
-    </a>
+    <!-- Selection cards -->
+    <div class="nc-body">
+      <div class="nc-grid">
 
-    <div class="light-effect"></div>
-    <div class="container">
-        <h1>¡Bienvenid@ al Panel de Notificaciones!</h1>
+        <!-- Notificación Individual -->
+        <a href="{% url 'noti_individual' %}" class="nc-sel">
+          <div class="ns-icon">
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div>
+            <div class="ns-title">Notificación Individual</div>
+            <div class="ns-desc">Mensaje directo y personalizado a un propietario específico</div>
+          </div>
+          <div class="ns-arrow">
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </a>
 
-        <div class="cards-container">
-            <!-- Card 1: Notificaciones Individuales -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Notificaciones Individuales</h2>
-                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path
-                            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
-                        </path>
-                    </svg>
-                </div>
-                <p class="card-content">Envia notificaciones personalizadas y mensajes directos.</p>
-                <button class="card-button" data-url="{% url 'noti_individual' %}"
-                    onclick="redirectTo(this)">Aceptar</button>
-            </div>
+        <!-- Servicios Públicos -->
+        <a href="{% url 'noti_publicos' %}" class="nc-sel">
+          <div class="ns-icon">
+            <svg viewBox="0 0 24 24"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+          </div>
+          <div>
+            <div class="ns-title">Servicios Públicos</div>
+            <div class="ns-desc">Notifica cortes o interrupciones de agua, gas o luz a todos</div>
+          </div>
+          <div class="ns-arrow">
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </a>
 
-            <!-- Card 3: Servicios Públicos -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">Servicios Públicos</h2>
-                    <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
-                    </svg>
-                </div>
-                <p class="card-content">Manten informado a tus propietarios sobre la llegada de los servicios públicos.
-                </p>
-                <button class="card-button" data-url="{% url 'noti_publicos' %}"
-                    onclick="redirectTo(this)">Aceptar</button>
-            </div>
-        </div>
+      </div>
     </div>
-    <script>
-        function redirectTo(button) {
-            const url = button.dataset.url;
-            window.location.href = url;
-        }
-    </script>
+
+  </div>
+</div>
+</div><!-- /scroll-root -->
+
+<script>
+    {% if user.user_type == 'administrador' %}
+    const PANEL_URL = "{% url 'accounts:visor_admin' %}";
+    {% elif user.user_type == 'propietario' %}
+    const PANEL_URL = "{% url 'accounts:visor_propietario' %}";
+    {% elif user.user_type == 'porteria' %}
+    const PANEL_URL = "{% url 'accounts:control_porteria' %}";
+    {% else %}
+    const PANEL_URL = "/";
+    {% endif %}
+
+    function closePage() {
+        const card = document.getElementById('mainCard');
+        if (card) card.style.animation = 'ncSlideUp .38s cubic-bezier(.4,0,.8,.3) forwards';
+        setTimeout(function() { window.location = PANEL_URL; }, 360);
+    }
+</script>
 </body>
-
 </html>
