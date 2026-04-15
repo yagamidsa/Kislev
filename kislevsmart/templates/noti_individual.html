@@ -416,53 +416,36 @@
         html, body { height: 100%; overflow: hidden; }
         .scroll-root { height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: none; }
 
-        /* ── TOPBAR ── */
-        .noti-topbar {
-            position: fixed; top: 0; left: 0; right: 0; z-index: 200;
-            display: flex; align-items: center; justify-content: space-between; gap: 12px;
-            padding: 14px 24px;
-            background: rgba(15,5,30,.88); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-            border-bottom: 1px solid rgba(124,58,237,.22);
-        }
-        .noti-back-btn {
-            display: flex; align-items: center; gap: 7px;
-            background: rgba(124,58,237,.1); border: 1px solid rgba(124,58,237,.28);
-            border-radius: 10px; color: #a78bfa; font-family: inherit;
-            font-size: .82rem; font-weight: 600; padding: 8px 14px; cursor: pointer;
-            text-decoration: none; transition: all .2s; flex-shrink: 0;
-        }
-        .noti-back-btn:hover { background: rgba(124,58,237,.2); color: #c4b5fd; }
-        .noti-back-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2.5; }
-        .noti-topbar-title {
-            flex: 1; text-align: center; font-size: .92rem; font-weight: 700;
-            background: linear-gradient(135deg,#c4b5fd,#f9a8d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .noti-logo { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-        .noti-logo-dot { width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg,#7c3aed,#db2777); display: flex; align-items: center; justify-content: center; font-size: .8rem; }
-        .noti-logo-name { font-size: .8rem; font-weight: 700; background: linear-gradient(135deg,#a78bfa,#f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; white-space: nowrap; }
-
         /* ── PAGE WRAP ── */
-        .page-wrap { position: relative; z-index: 2; min-height: 100vh; padding: 86px 16px 40px; display: flex; align-items: flex-start; justify-content: center; }
+        .page-wrap { position: relative; z-index: 2; min-height: 100vh; padding: 32px 16px 40px; display: flex; align-items: center; justify-content: center; }
 
         /* ── FORM CARD ── */
         .form-card {
             width: 100%; max-width: 680px;
-            background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);
-            border-radius: 24px; position: relative; overflow: hidden;
-            animation: formSlideDown .5s cubic-bezier(.34,1.2,.64,1) both;
-            box-shadow: 0 32px 80px rgba(0,0,0,.45), 0 0 0 1px rgba(124,58,237,.1);
+            background: rgba(12,4,28,.7);
+            border: 1px solid rgba(124,58,237,.2);
+            border-radius: 28px; position: relative; overflow: hidden;
+            animation: formSlideDown .52s cubic-bezier(.34,1.2,.64,1) both;
+            box-shadow: 0 40px 100px rgba(0,0,0,.6), 0 0 80px rgba(124,58,237,.08), inset 0 0 0 1px rgba(255,255,255,.04);
         }
-        .form-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background: linear-gradient(90deg,#7c3aed,#db2777,#7c3aed); }
-        @keyframes formSlideDown { from{opacity:0;transform:translateY(-35px) scale(.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+        @keyframes formSlideDown { from{opacity:0;transform:translateY(-50px) scale(.95)} to{opacity:1;transform:translateY(0) scale(1)} }
+        @keyframes formSlideUp   { from{opacity:1;transform:translateY(0) scale(1)} to{opacity:0;transform:translateY(-60px) scale(.95)} }
 
-        /* ── FORM CARD HEADER ── */
-        .fcard-header { display: flex; align-items: center; justify-content: space-between; padding: 28px 28px 0; }
-        .fcard-title-row { display: flex; align-items: center; gap: 14px; }
-        .fcard-icon { width: 46px; height: 46px; border-radius: 14px; background: linear-gradient(135deg,#7c3aed,#db2777); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; box-shadow: 0 6px 20px rgba(124,58,237,.4); }
-        .fcard-title { font-size: 1.15rem; font-weight: 800; color: #fff; }
-        .fcard-sub { font-size: .75rem; color: rgba(255,255,255,.45); margin-top: 2px; }
-        .fcard-close { width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); color: rgba(255,255,255,.6); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .2s; flex-shrink: 0; text-decoration: none; }
-        .fcard-close:hover { background: rgba(248,113,113,.15); border-color: rgba(248,113,113,.3); color: #fca5a5; }
+        /* ── FORM CARD HEADER (gradient like app panels) ── */
+        .fcard-header {
+            background: linear-gradient(135deg, #1a0336 0%, #2e0a5c 50%, #1a0336 100%);
+            padding: 28px 24px 24px;
+            display: flex; align-items: flex-start; justify-content: space-between;
+            position: relative;
+        }
+        .fcard-header::after { content:''; position:absolute; bottom:0; left:0; right:0; height:1px; background: linear-gradient(90deg,transparent,rgba(167,139,250,.4),transparent); }
+        .fcard-title-row { display: flex; align-items: center; gap: 16px; }
+        .fcard-icon { width: 52px; height: 52px; border-radius: 16px; background: linear-gradient(135deg,#7c3aed,#db2777); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; box-shadow: 0 8px 24px rgba(124,58,237,.5); }
+        .fcard-brand { font-size: .7rem; font-weight: 700; color: rgba(167,139,250,.7); letter-spacing: .8px; text-transform: uppercase; margin-bottom: 3px; }
+        .fcard-title { font-size: 1.18rem; font-weight: 800; color: #fff; line-height: 1.2; }
+        .fcard-sub { font-size: .74rem; color: rgba(196,181,253,.6); margin-top: 3px; }
+        .fcard-close { width: 38px; height: 38px; border-radius: 10px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); color: rgba(255,255,255,.65); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .2s; flex-shrink: 0; font-family: inherit; }
+        .fcard-close:hover { background: rgba(248,113,113,.18); border-color: rgba(248,113,113,.4); color: #fca5a5; transform: scale(1.05); }
         .fcard-close svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2.5; }
 
         /* ── FORM BODY ── */
@@ -531,9 +514,8 @@
         .btn-modal-yes:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(124,58,237,.55); }
 
         @media(max-width:480px) {
-            .noti-topbar { padding: 12px 16px; }
-            .noti-logo-name { display: none; }
-            .fcard-header { padding: 20px 18px 0; }
+            .page-wrap { padding: 16px 12px 32px; align-items: flex-start; }
+            .fcard-header { padding: 22px 18px 20px; }
             .fcard-body { padding: 18px 18px 24px; }
             .f-actions { flex-direction: column; }
             .btn-attach { justify-content: center; }
@@ -583,34 +565,22 @@
 </div>
 
 <div class="scroll-root">
-<!-- Topbar -->
-<nav class="noti-topbar">
-    <a href="{% url 'notificaciones' %}" class="noti-back-btn">
-        <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
-        Notificaciones
-    </a>
-    <span class="noti-topbar-title">Notificación Individual</span>
-    <div class="noti-logo">
-        <div class="noti-logo-dot">✉️</div>
-        <span class="noti-logo-name">Kislev Smart</span>
-    </div>
-</nav>
-
-<!-- Content -->
 <div class="page-wrap">
-  <div class="form-card">
-    <!-- Card header -->
+  <div class="form-card" id="mainCard">
+
+    <!-- Gradient header -->
     <div class="fcard-header">
       <div class="fcard-title-row">
         <div class="fcard-icon">✉️</div>
         <div>
+          <div class="fcard-brand">Kislev Smart</div>
           <div class="fcard-title">Notificación Individual</div>
           <div class="fcard-sub">Envía un mensaje directo al propietario</div>
         </div>
       </div>
-      <a href="{% url 'notificaciones' %}" class="fcard-close">
+      <button class="fcard-close" onclick="closePage()" title="Cerrar">
         <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </a>
+      </button>
     </div>
 
     <!-- Form body -->
@@ -698,6 +668,13 @@
 
     <!-- Scripts -->
     <script>
+        // ── Cerrar con animación slide-up ──
+        function closePage() {
+            const card = document.getElementById('mainCard');
+            if (card) card.style.animation = 'formSlideUp .38s cubic-bezier(.4,0,.8,.3) forwards';
+            setTimeout(function() { window.location = "{% url 'notificaciones' %}"; }, 360);
+        }
+
         // Elementos del DOM
         const form = document.getElementById('notificationForm');
         const fileInput = document.getElementById('fileInput');
