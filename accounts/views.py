@@ -765,3 +765,199 @@ def upload_conjunto(request):
         success_msg += f' ({len(email_errors)} errores de email)'
     messages.success(request, success_msg)
     return redirect('accounts:saas_dashboard')
+
+
+# ── Gestión de usuarios (admin panel) ───────────────────────────────────────
+
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+import json
+
+@login_required
+def gestion_usuarios(request):
+    """Panel de gestión de residentes para administradores (y saas_owner con ?conjunto=id)."""
+    user = request.user
+
+    if user.is_saas_owner and request.GET.get('conjunto'):
+        try:
+            conjunto = ConjuntoResidencial.objects.get(pk=request.GET['conjunto'])
+        except ConjuntoResidencial.DoesNotExist:
+            conjunto = user.conjunto
+    elif user.user_type == 'administrador' or user.is_saas_owner:
+        conjunto = user.conjunto
+    else:
+        from django.http import HttpResponseForbidden
+        return HttpResponseForbidden()
+
+    from accounts.models import Torre
+    torres = Torre.objects.filter(conjunto=conjunto, activo=True).order_by('nombre')
+
+    torre_id = request.GET.get('torre')
+    user_type_filter = request.GET.get('tipo', '')
+    search = request.GET.get('q', '').strip()
+    estado_filter = request.GET.get('estado', '')
+
+    usuarios_qs = Usuario.objects.filter(conjunto=conjunto).exclude(is_saas_owner=True).order_by('torre__nombre', 'apartamento', 'nombre')
+
+    if torre_id:
+        usuarios_qs = usuarios_qs.filter(torre_id=torre_id)
+    if user_type_filter:
+        usuarios_qs = usuarios_qs.filter(user_type=user_type_filter)
+    if search:
+        from django.db.models import Q
+        usuarios_qs = usuarios_qs.filter(Q(nombre__icontains=search) | Q(cedula__icontains=search) | Q(apartamento__icontains=search))
+    if estado_filter == 'activo':
+        usuarios_qs = usuarios_qs.filter(is_active=True)
+    elif estado_filter == 'inactivo':
+        usuarios_qs = usuarios_qs.filter(is_active=False)
+
+    context = {
+        'conjunto': conjunto,
+        'torres': torres,
+        'usuarios': usuarios_qs,
+        'torre_id': torre_id,
+        'user_type_filter': user_type_filter,
+        'search': search,
+        'estado_filter': estado_filter,
+        'total': usuarios_qs.count(),
+        'is_saas_owner': user.is_saas_owner,
+        'all_conjuntos': ConjuntoResidencial.objects.all() if user.is_saas_owner else None,
+    }
+    return render(request, 'accounts/gestion_usuarios.html', context)
+
+
+@require_POST
+@login_required
+def toggle_usuario_activo(request, usuario_id):
+    """AJAX: activa o desactiva un usuario."""
+    if request.user.user_type not in ('administrador',) and not request.user.is_saas_owner:
+        return JsonResponse({'error': 'Sin permiso'}, status=403)
+    try:
+        target = Usuario.objects.get(pk=usuario_id)
+    except Usuario.DoesNotExist:
+        return JsonResponse({'error': 'No encontrado'}, status=404)
+    if not request.user.is_saas_owner and target.conjunto != request.user.conjunto:
+        return JsonResponse({'error': 'Sin permiso'}, status=403)
+    target.is_active = not target.is_active
+    target.save(update_fields=['is_active'])
+    return JsonResponse({'is_active': target.is_active})
+
+
+@require_POST
+@login_required
+def editar_usuario(request, usuario_id):
+    """AJAX: edita torre, apartamento, teléfono y tipo de un usuario."""
+    if request.user.user_type not in ('administrador',) and not request.user.is_saas_owner:
+        return JsonResponse({'error': 'Sin permiso'}, status=403)
+    try:
+        target = Usuario.objects.get(pk=usuario_id)
+    except Usuario.DoesNotExist:
+        return JsonResponse({'error': 'No encontrado'}, status=404)
+    if not request.user.is_saas_owner and target.conjunto != request.user.conjunto:
+        return JsonResponse({'error': 'Sin permiso'}, status=403)
+
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'JSON inválido'}, status=400)
+
+    from accounts.models import Torre
+    fields_updated = []
+
+    if 'torre_id' in data:
+        if data['torre_id']:
+            try:
+                torre = Torre.objects.get(pk=data['torre_id'], conjunto=target.conjunto)
+                target.torre = torre
+            except Torre.DoesNotExist:
+                return JsonResponse({'error': 'Torre no válida'}, status=400)
+        else:
+            target.torre = None
+        fields_updated.append('torre')
+
+    if 'apartamento' in data:
+        target.apartamento = str(data['apartamento']).strip()[:10]
+        fields_updated.append('apartamento')
+
+    if 'phone_number' in data:
+        target.phone_number = str(data['phone_number']).strip()[:15]
+        fields_updated.append('phone_number')
+
+    if 'user_type' in data and data['user_type'] in ('propietario', 'administrador', 'porteria'):
+        target.user_type = data['user_type']
+        fields_updated.append('user_type')
+
+    if fields_updated:
+        target.save(update_fields=fields_updated)
+
+    return JsonResponse({
+        'ok': True,
+        'torre': target.torre.nombre if target.torre else '',
+        'apartamento': target.apartamento,
+        'phone_number': target.phone_number or '',
+        'user_type': target.user_type,
+    })
+
+
+@login_required
+def exportar_usuarios_excel(request):
+    """Descarga la lista de usuarios del conjunto en Excel."""
+    if request.user.user_type not in ('administrador',) and not request.user.is_saas_owner:
+        from django.http import HttpResponseForbidden
+        return HttpResponseForbidden()
+
+    if request.user.is_saas_owner and request.GET.get('conjunto'):
+        try:
+            conjunto = ConjuntoResidencial.objects.get(pk=request.GET['conjunto'])
+        except ConjuntoResidencial.DoesNotExist:
+            conjunto = request.user.conjunto
+    else:
+        conjunto = request.user.conjunto
+
+    try:
+        import openpyxl
+        from openpyxl.styles import Font, PatternFill, Alignment
+        from openpyxl.utils import get_column_letter
+    except ImportError:
+        from django.http import HttpResponse
+        return HttpResponse('openpyxl no instalado', status=500)
+
+    import io
+    from django.http import HttpResponse
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = 'Residentes'
+
+    headers = ['Nombre', 'Cédula', 'Email', 'Teléfono', 'Torre', 'Apartamento', 'Tipo', 'Estado']
+    header_font = Font(bold=True, color='FFFFFF')
+    header_fill = PatternFill(fill_type='solid', fgColor='4F2984')
+    center = Alignment(horizontal='center')
+
+    for col_idx, h in enumerate(headers, start=1):
+        cell = ws.cell(row=1, column=col_idx, value=h)
+        cell.font = header_font
+        cell.fill = header_fill
+        cell.alignment = center
+        ws.column_dimensions[get_column_letter(col_idx)].width = max(len(h) + 4, 16)
+
+    usuarios = Usuario.objects.filter(conjunto=conjunto).exclude(is_saas_owner=True).order_by('torre__nombre', 'apartamento', 'nombre')
+    for row_idx, u in enumerate(usuarios, start=2):
+        ws.cell(row=row_idx, column=1, value=u.nombre)
+        ws.cell(row=row_idx, column=2, value=u.cedula)
+        ws.cell(row=row_idx, column=3, value=u.email)
+        ws.cell(row=row_idx, column=4, value=u.phone_number or '')
+        ws.cell(row=row_idx, column=5, value=u.torre.nombre if u.torre else '')
+        ws.cell(row=row_idx, column=6, value=u.apartamento)
+        ws.cell(row=row_idx, column=7, value=u.get_user_type_display())
+        ws.cell(row=row_idx, column=8, value='Activo' if u.is_active else 'Inactivo')
+
+    buffer = io.BytesIO()
+    wb.save(buffer)
+    buffer.seek(0)
+    response = HttpResponse(
+        buffer.getvalue(),
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    )
+    response['Content-Disposition'] = f'attachment; filename="residentes_{conjunto.nit}.xlsx"'
+    return response

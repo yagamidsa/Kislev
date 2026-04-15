@@ -119,9 +119,14 @@
                 <span class="stat-pill"><strong>{{ item.admins }}</strong> admin{{ item.admins|pluralize }}</span>
                 <span class="stat-pill"><strong>{{ item.porteria }}</strong> portería</span>
             </div>
-            <span class="conj-status {% if item.conjunto.estado %}status-active{% else %}status-inactive{% endif %}">
-                {% if item.conjunto.estado %}Activo{% else %}Inactivo{% endif %}
-            </span>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px;">
+                <span class="conj-status {% if item.conjunto.estado %}status-active{% else %}status-inactive{% endif %}">
+                    {% if item.conjunto.estado %}Activo{% else %}Inactivo{% endif %}
+                </span>
+                <a href="{% url 'accounts:gestion_usuarios' %}?conjunto={{ item.conjunto.id }}" class="btn btn-outline" style="font-size:11px;padding:5px 12px;">
+                    <i class="fas fa-users-cog"></i> Gestionar
+                </a>
+            </div>
         </div>
         {% endfor %}
     </div>

@@ -1,0 +1,443 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Residentes — {{ conjunto.nombre }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        html,body{height:100%;overflow:hidden;font-family:'Poppins',sans-serif;background:#09000f;color:#e2e8f0;}
+        .scroll-root{height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+        #particles{position:fixed;inset:0;z-index:0;pointer-events:none;}
+        .page{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;}
+
+        /* ── TOPBAR ── */
+        .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;gap:12px;background:rgba(255,255,255,.03);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06);flex-wrap:wrap;}
+        .topbar-left{display:flex;align-items:center;gap:10px;}
+        .logo-icon{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#7c3aed,#db2777);display:flex;align-items:center;justify-content:center;font-size:.9rem;color:#fff;flex-shrink:0;}
+        .logo-text{font-size:.95rem;font-weight:700;background:linear-gradient(135deg,#a78bfa,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+        .page-title-bar{font-size:.82rem;color:rgba(255,255,255,.45);margin-left:6px;padding-left:6px;border-left:1px solid rgba(255,255,255,.12);}
+        .topbar-right{display:flex;align-items:center;gap:8px;}
+        .btn-sm{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:10px;font-size:.78rem;font-weight:600;font-family:'Poppins',sans-serif;border:none;cursor:pointer;text-decoration:none;transition:all .2s;white-space:nowrap;}
+        .btn-back{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#e2e8f0;}
+        .btn-back:hover{background:rgba(255,255,255,.12);}
+        .btn-export{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.3);color:#34d399;}
+        .btn-export:hover{background:rgba(16,185,129,.22);}
+
+        /* ── CONTENT ── */
+        .content{padding:24px 28px 40px;max-width:1100px;margin:0 auto;width:100%;}
+
+        /* ── HEADER SECTION ── */
+        .section-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;gap:12px;flex-wrap:wrap;}
+        .section-title{font-size:1.4rem;font-weight:800;background:linear-gradient(135deg,#c4b5fd,#f9a8d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+        .section-sub{font-size:.8rem;color:rgba(255,255,255,.4);margin-top:3px;}
+        .count-pill{background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.3);border-radius:20px;padding:4px 14px;font-size:.78rem;font-weight:600;color:#a78bfa;white-space:nowrap;align-self:center;}
+
+        /* ── FILTROS ── */
+        .filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
+        .filter-group{display:flex;align-items:center;gap:0;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;overflow:hidden;}
+        .filter-icon{padding:0 12px;color:rgba(255,255,255,.35);font-size:.82rem;display:flex;align-items:center;height:38px;}
+        .filter-select,.filter-input{background:transparent;border:none;color:#e2e8f0;font-family:'Poppins',sans-serif;font-size:.82rem;padding:0 10px 0 0;height:38px;outline:none;cursor:pointer;}
+        .filter-select option{background:#1a0836;color:#e2e8f0;}
+        .filter-input{padding:0 12px 0 0;min-width:160px;}
+        .filter-input::placeholder{color:rgba(255,255,255,.3);}
+        .btn-filter{padding:0 16px;height:38px;background:linear-gradient(135deg,#7c3aed,#db2777);border:none;border-radius:10px;color:#fff;font-family:'Poppins',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;}
+        .btn-clear{padding:0 12px;height:38px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:rgba(255,255,255,.5);font-family:'Poppins',sans-serif;font-size:.8rem;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;}
+
+        /* ── TABLA / CARDS ── */
+        .user-grid{display:flex;flex-direction:column;gap:10px;}
+        .user-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:16px 20px;display:grid;grid-template-columns:44px 1fr auto;gap:14px;align-items:center;transition:border-color .2s,transform .2s;}
+        .user-card:hover{border-color:rgba(124,58,237,.3);transform:translateX(3px);}
+        .user-card.inactive{opacity:.55;}
+
+        /* Avatar */
+        .u-avatar{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;color:#fff;flex-shrink:0;}
+        .av-prop{background:linear-gradient(135deg,#7c3aed,#6d28d9);}
+        .av-admin{background:linear-gradient(135deg,#db2777,#9d174d);}
+        .av-port{background:linear-gradient(135deg,#f59e0b,#d97706);}
+
+        /* Info */
+        .u-info{}
+        .u-name{font-size:.92rem;font-weight:700;color:#e2e8f0;margin-bottom:3px;}
+        .u-meta{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+        .u-cedula{font-size:.75rem;color:rgba(255,255,255,.4);}
+        .u-loc{font-size:.75rem;color:rgba(255,255,255,.5);display:flex;align-items:center;gap:4px;}
+        .u-loc i{font-size:.65rem;color:#a78bfa;}
+        .u-type-badge{font-size:.68rem;font-weight:600;padding:2px 8px;border-radius:10px;}
+        .badge-prop{background:rgba(124,58,237,.2);color:#a78bfa;}
+        .badge-admin{background:rgba(219,39,119,.2);color:#f472b6;}
+        .badge-port{background:rgba(245,158,11,.2);color:#fcd34d;}
+
+        /* Actions */
+        .u-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+        .btn-icon{width:34px;height:34px;border-radius:9px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.82rem;transition:all .2s;}
+        .btn-edit{background:rgba(124,58,237,.15);color:#a78bfa;}
+        .btn-edit:hover{background:rgba(124,58,237,.3);}
+        .btn-toggle{background:rgba(16,185,129,.12);color:#34d399;}
+        .btn-toggle:hover{background:rgba(16,185,129,.25);}
+        .btn-toggle.is-inactive{background:rgba(239,68,68,.12);color:#f87171;}
+        .btn-toggle.is-inactive:hover{background:rgba(239,68,68,.25);}
+
+        /* Status dot */
+        .u-status{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+        .u-status.on{background:#34d399;box-shadow:0 0 6px rgba(52,211,153,.6);}
+        .u-status.off{background:#6b7280;}
+
+        /* ── MODAL ── */
+        .modal-overlay{position:fixed;inset:0;z-index:500;background:rgba(6,3,18,.85);backdrop-filter:blur(18px);display:none;align-items:center;justify-content:center;padding:20px;}
+        .modal-overlay.open{display:flex;}
+        .modal{background:rgba(20,8,45,.95);border:1px solid rgba(255,255,255,.12);border-radius:20px;width:100%;max-width:420px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.6);}
+        .modal-header{background:linear-gradient(135deg,#4F2984,#db2777);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;}
+        .modal-header h3{color:#fff;font-size:1rem;font-weight:700;}
+        .modal-close{background:rgba(255,255,255,.15);border:none;color:#fff;width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;}
+        .modal-body{padding:24px;}
+        .form-row{margin-bottom:16px;}
+        .form-label{display:block;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,.5);margin-bottom:6px;}
+        .form-control{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:10px;color:#e2e8f0;font-family:'Poppins',sans-serif;font-size:.88rem;padding:10px 14px;outline:none;transition:border-color .2s;}
+        .form-control:focus{border-color:#7c3aed;}
+        .form-control option{background:#1a0836;}
+        .modal-footer{padding:0 24px 20px;display:flex;gap:10px;justify-content:flex-end;}
+        .btn-cancel{padding:10px 20px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:10px;color:#e2e8f0;font-family:'Poppins',sans-serif;font-size:.84rem;cursor:pointer;}
+        .btn-save{padding:10px 24px;background:linear-gradient(135deg,#7c3aed,#db2777);border:none;border-radius:10px;color:#fff;font-family:'Poppins',sans-serif;font-size:.84rem;font-weight:700;cursor:pointer;}
+
+        /* ── TOAST ── */
+        .toast{position:fixed;bottom:28px;right:28px;z-index:900;background:rgba(20,8,45,.95);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:14px 20px;font-size:.84rem;color:#e2e8f0;display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,.5);transform:translateY(80px);opacity:0;transition:all .35s cubic-bezier(.4,0,.2,1);}
+        .toast.show{transform:translateY(0);opacity:1;}
+        .toast.success .t-icon{color:#34d399;}
+        .toast.error .t-icon{color:#f87171;}
+
+        /* ── EMPTY ── */
+        .empty{text-align:center;padding:60px 20px;color:rgba(255,255,255,.3);}
+        .empty-icon{font-size:3rem;margin-bottom:14px;}
+
+        /* ── RESPONSIVE ── */
+        @media(max-width:768px){
+            input,select{font-size:16px !important;}
+            .content{padding:16px;}
+            .topbar{padding:12px 16px;}
+            .user-card{grid-template-columns:38px 1fr;padding:12px 14px;}
+            .u-actions{display:none;}
+            .user-card{cursor:pointer;}
+            /* En móvil el tap abre el modal de edición */
+        }
+        @media(max-width:480px){
+            .filters{gap:8px;}
+            .section-head{flex-direction:column;gap:8px;}
+        }
+    </style>
+</head>
+<body>
+<canvas id="particles"></canvas>
+<div class="scroll-root">
+<div class="page">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+        <div class="topbar-left">
+            <div class="logo-icon"><i class="fas fa-building"></i></div>
+            <span class="logo-text">Kislev Smart</span>
+            <span class="page-title-bar">Residentes</span>
+        </div>
+        <div class="topbar-right">
+            <a href="{% url 'accounts:exportar_usuarios_excel' %}{% if is_saas_owner and request.GET.conjunto %}?conjunto={{ request.GET.conjunto }}{% endif %}" class="btn-sm btn-export">
+                <i class="fas fa-file-excel"></i> Exportar Excel
+            </a>
+            <a href="{% if is_saas_owner %}{% url 'accounts:saas_dashboard' %}{% else %}{% url 'accounts:visor_admin' %}{% endif %}" class="btn-sm btn-back">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+        <!-- Header -->
+        <div class="section-head">
+            <div>
+                <div class="section-title">{{ conjunto.nombre }}</div>
+                <div class="section-sub">Gestión de residentes y personal</div>
+            </div>
+            <div class="count-pill"><i class="fas fa-users"></i> {{ total }} usuario{{ total|pluralize }}</div>
+        </div>
+
+        <!-- Filtros -->
+        <form method="GET" action="">
+            {% if is_saas_owner and request.GET.conjunto %}
+            <input type="hidden" name="conjunto" value="{{ request.GET.conjunto }}">
+            {% endif %}
+            <div class="filters">
+                <!-- Buscar -->
+                <div class="filter-group" style="flex:1;min-width:180px;">
+                    <span class="filter-icon"><i class="fas fa-search"></i></span>
+                    <input class="filter-input" type="text" name="q" value="{{ search }}" placeholder="Nombre, cédula o apto…">
+                </div>
+                <!-- Torre -->
+                <div class="filter-group">
+                    <span class="filter-icon"><i class="fas fa-building"></i></span>
+                    <select class="filter-select" name="torre">
+                        <option value="">Todas las torres</option>
+                        {% for t in torres %}
+                        <option value="{{ t.id }}" {% if torre_id == t.id|stringformat:"s" %}selected{% endif %}>{{ t.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <!-- Tipo -->
+                <div class="filter-group">
+                    <span class="filter-icon"><i class="fas fa-user-tag"></i></span>
+                    <select class="filter-select" name="tipo">
+                        <option value="">Todos los roles</option>
+                        <option value="propietario" {% if user_type_filter == 'propietario' %}selected{% endif %}>Propietario</option>
+                        <option value="administrador" {% if user_type_filter == 'administrador' %}selected{% endif %}>Administrador</option>
+                        <option value="porteria" {% if user_type_filter == 'porteria' %}selected{% endif %}>Portería</option>
+                    </select>
+                </div>
+                <!-- Estado -->
+                <div class="filter-group">
+                    <span class="filter-icon"><i class="fas fa-circle"></i></span>
+                    <select class="filter-select" name="estado">
+                        <option value="">Todos</option>
+                        <option value="activo" {% if estado_filter == 'activo' %}selected{% endif %}>Activos</option>
+                        <option value="inactivo" {% if estado_filter == 'inactivo' %}selected{% endif %}>Inactivos</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-filter"><i class="fas fa-filter"></i> Filtrar</button>
+                {% if search or torre_id or user_type_filter or estado_filter %}
+                <a href="?{% if is_saas_owner and request.GET.conjunto %}conjunto={{ request.GET.conjunto }}{% endif %}" class="btn-clear"><i class="fas fa-times"></i> Limpiar</a>
+                {% endif %}
+            </div>
+        </form>
+
+        <!-- Lista de usuarios -->
+        <div class="user-grid">
+            {% for u in usuarios %}
+            <div class="user-card {% if not u.is_active %}inactive{% endif %}" id="card-{{ u.id }}">
+                <!-- Avatar -->
+                <div class="u-avatar {% if u.user_type == 'administrador' %}av-admin{% elif u.user_type == 'porteria' %}av-port{% else %}av-prop{% endif %}">
+                    {{ u.nombre|slice:":1"|upper }}
+                </div>
+                <!-- Info -->
+                <div class="u-info">
+                    <div class="u-name">
+                        <span class="u-status {% if u.is_active %}on{% else %}off{% endif %}"></span>
+                        &nbsp;{{ u.nombre }}
+                    </div>
+                    <div class="u-meta">
+                        <span class="u-cedula"><i class="fas fa-id-card"></i> {{ u.cedula }}</span>
+                        {% if u.torre %}
+                        <span class="u-loc"><i class="fas fa-map-marker-alt"></i> {{ u.torre.nombre }} — Apto {{ u.apartamento|default:"–" }}</span>
+                        {% endif %}
+                        {% if u.phone_number %}
+                        <span class="u-loc"><i class="fas fa-phone"></i> {{ u.phone_number }}</span>
+                        {% endif %}
+                        <span class="u-type-badge {% if u.user_type == 'administrador' %}badge-admin{% elif u.user_type == 'porteria' %}badge-port{% else %}badge-prop{% endif %}">
+                            {{ u.get_user_type_display }}
+                        </span>
+                    </div>
+                </div>
+                <!-- Acciones -->
+                <div class="u-actions">
+                    <button class="btn-icon btn-edit" title="Editar"
+                        onclick="openEditModal({{ u.id }}, '{{ u.nombre|escapejs }}', '{{ u.torre.id|default:'' }}', '{{ u.apartamento|escapejs }}', '{{ u.phone_number|default:''|escapejs }}', '{{ u.user_type }}')">
+                        <i class="fas fa-pen"></i>
+                    </button>
+                    <button class="btn-icon btn-toggle {% if not u.is_active %}is-inactive{% endif %}" title="{% if u.is_active %}Desactivar{% else %}Activar{% endif %}"
+                        onclick="toggleActivo({{ u.id }}, this)">
+                        <i class="fas fa-{% if u.is_active %}toggle-on{% else %}toggle-off{% endif %}"></i>
+                    </button>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty">
+                <div class="empty-icon">👥</div>
+                <p>No se encontraron usuarios con estos filtros.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div><!-- /content -->
+</div><!-- /page -->
+</div><!-- /scroll-root -->
+
+
+<!-- ── MODAL EDITAR ── -->
+<div class="modal-overlay" id="editModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3><i class="fas fa-pen"></i> Editar residente</h3>
+            <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="editUserId">
+            <div class="form-row">
+                <label class="form-label">Torre</label>
+                <select class="form-control" id="editTorre">
+                    <option value="">Sin torre</option>
+                    {% for t in torres %}
+                    <option value="{{ t.id }}">{{ t.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-row">
+                <label class="form-label">Apartamento</label>
+                <input type="text" class="form-control" id="editApto" placeholder="Ej: 0101" maxlength="10">
+            </div>
+            <div class="form-row">
+                <label class="form-label">Teléfono</label>
+                <input type="text" class="form-control" id="editPhone" placeholder="Ej: 3001234567" maxlength="15">
+            </div>
+            <div class="form-row">
+                <label class="form-label">Rol</label>
+                <select class="form-control" id="editTipo">
+                    <option value="propietario">Propietario</option>
+                    <option value="administrador">Administrador</option>
+                    <option value="porteria">Portería</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+            <button class="btn-save" onclick="guardarEdicion()"><i class="fas fa-save"></i> Guardar</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── TOAST ── -->
+<div class="toast" id="toast">
+    <i class="fas fa-check-circle t-icon"></i>
+    <span id="toastMsg"></span>
+</div>
+
+<script>
+/* ── Toast ── */
+function showToast(msg, type='success'){
+    const t = document.getElementById('toast');
+    t.className = 'toast ' + type;
+    t.querySelector('.t-icon').className = 'fas t-icon ' + (type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle');
+    document.getElementById('toastMsg').textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+/* ── Toggle activo/inactivo ── */
+function toggleActivo(userId, btn){
+    const card = document.getElementById('card-' + userId);
+    fetch('/accounts/usuarios/' + userId + '/toggle/', {
+        method: 'POST',
+        headers: {'X-CSRFToken': getCsrf()},
+    })
+    .then(r => r.json())
+    .then(data => {
+        if(data.is_active){
+            btn.classList.remove('is-inactive');
+            btn.title = 'Desactivar';
+            btn.querySelector('i').className = 'fas fa-toggle-on';
+            card.classList.remove('inactive');
+            card.querySelector('.u-status').className = 'u-status on';
+            showToast('Usuario activado');
+        } else {
+            btn.classList.add('is-inactive');
+            btn.title = 'Activar';
+            btn.querySelector('i').className = 'fas fa-toggle-off';
+            card.classList.add('inactive');
+            card.querySelector('.u-status').className = 'u-status off';
+            showToast('Usuario desactivado', 'error');
+        }
+    })
+    .catch(() => showToast('Error al cambiar estado', 'error'));
+}
+
+/* ── Modal editar ── */
+let _editingId = null;
+function openEditModal(id, nombre, torreId, apto, phone, tipo){
+    _editingId = id;
+    document.getElementById('editUserId').value = id;
+    document.getElementById('editTorre').value = torreId;
+    document.getElementById('editApto').value = apto;
+    document.getElementById('editPhone').value = phone;
+    document.getElementById('editTipo').value = tipo;
+    document.getElementById('editModal').classList.add('open');
+}
+function closeModal(){
+    document.getElementById('editModal').classList.remove('open');
+    _editingId = null;
+}
+document.getElementById('editModal').addEventListener('click', function(e){
+    if(e.target === this) closeModal();
+});
+
+function guardarEdicion(){
+    if(!_editingId) return;
+    const payload = {
+        torre_id: document.getElementById('editTorre').value,
+        apartamento: document.getElementById('editApto').value,
+        phone_number: document.getElementById('editPhone').value,
+        user_type: document.getElementById('editTipo').value,
+    };
+    fetch('/accounts/usuarios/' + _editingId + '/editar/', {
+        method: 'POST',
+        headers: {'X-CSRFToken': getCsrf(), 'Content-Type': 'application/json'},
+        body: JSON.stringify(payload),
+    })
+    .then(r => r.json())
+    .then(data => {
+        if(data.ok){
+            // Actualizar la card sin recargar
+            const card = document.getElementById('card-' + _editingId);
+            const loc = card.querySelector('.u-loc');
+            const torre = document.getElementById('editTorre').options[document.getElementById('editTorre').selectedIndex].text;
+            const apto = data.apartamento;
+            if(loc){
+                loc.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${torre !== 'Sin torre' ? torre + ' — Apto ' + (apto || '–') : '–'}`;
+            }
+            // Actualizar badge de tipo
+            const badge = card.querySelector('.u-type-badge');
+            const tipos = {propietario:'Propietario',administrador:'Administrador',porteria:'Portería'};
+            const clases = {propietario:'badge-prop',administrador:'badge-admin',porteria:'badge-port'};
+            badge.className = 'u-type-badge ' + clases[data.user_type];
+            badge.textContent = tipos[data.user_type];
+            closeModal();
+            showToast('Datos actualizados');
+        } else {
+            showToast(data.error || 'Error al guardar', 'error');
+        }
+    })
+    .catch(() => showToast('Error de conexión', 'error'));
+}
+
+/* ── Mobile tap → edit ── */
+document.querySelectorAll('.user-card').forEach(card => {
+    card.addEventListener('click', function(e){
+        if(window.innerWidth > 768) return; // en desktop usa botones
+        if(e.target.closest('button')) return;
+        const id = this.id.replace('card-','');
+        const btn = this.querySelector('.btn-edit');
+        if(btn) btn.click();
+    });
+});
+
+function getCsrf(){
+    return document.cookie.split(';').map(c=>c.trim()).find(c=>c.startsWith('csrftoken='))?.split('=')[1] || '';
+}
+
+/* ── Partículas ── */
+(function(){
+    const c=document.getElementById('particles'),ctx=c.getContext('2d');
+    let W,H,pts=[];
+    function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}
+    resize();window.addEventListener('resize',resize);
+    const COLORS=[[167,139,250],[219,39,119],[124,58,237],[244,114,182]];
+    for(let i=0;i<120;i++){const col=COLORS[Math.floor(Math.random()*COLORS.length)];pts.push({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,r:Math.random()*1.5+.3,a:Math.random()*.6+.1,col,pulse:Math.random()*Math.PI*2,pulseSpeed:Math.random()*.02+.005});}
+    function draw(){
+        ctx.clearRect(0,0,W,H);
+        pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.pulse+=p.pulseSpeed;if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;const alpha=p.a*(0.5+0.5*Math.sin(p.pulse)),r=p.r*(0.85+0.15*Math.sin(p.pulse));const grd=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,r*4);grd.addColorStop(0,`rgba(${p.col[0]},${p.col[1]},${p.col[2]},${alpha})`);grd.addColorStop(1,`rgba(${p.col[0]},${p.col[1]},${p.col[2]},0)`);ctx.beginPath();ctx.arc(p.x,p.y,r*4,0,Math.PI*2);ctx.fillStyle=grd;ctx.fill();ctx.beginPath();ctx.arc(p.x,p.y,r,0,Math.PI*2);ctx.fillStyle=`rgba(${p.col[0]},${p.col[1]},${p.col[2]},${alpha})`;ctx.fill();});
+        for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<110){ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.strokeStyle=`rgba(124,58,237,${(1-d/110)*.15})`;ctx.lineWidth=.5;ctx.stroke();}}
+        requestAnimationFrame(draw);
+    }
+    draw();
+})();
+</script>
+</body>
+</html>
