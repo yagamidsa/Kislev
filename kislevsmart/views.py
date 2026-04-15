@@ -1310,7 +1310,20 @@ def validar_qr(request, encrypted_token):
                     visitante.ultima_lectura = tiempo_actual
                     mensaje = "Entrada registrada"
                 else:
-                    # Segunda lectura (salida)
+                    # Segunda lectura (salida) — protección anti doble-escaneo:
+                    # si la entrada fue hace menos de 30 segundos se considera
+                    # un escaneo duplicado accidental, no una salida real.
+                    segundos_desde_entrada = (tiempo_actual - visitante.ultima_lectura).total_seconds()
+                    if segundos_desde_entrada < 30:
+                        logger.warning(
+                            f"Doble escaneo vehicular ignorado — "
+                            f"{segundos_desde_entrada:.1f}s desde entrada | Placa: {visitante.placa}"
+                        )
+                        return render(request, 'validar_qr.html', {
+                            'visitante': visitante,
+                            'mensaje': "Entrada registrada",
+                            'user_type': request.user.user_type,
+                        })
                     visitante.segunda_lectura = tiempo_actual
                     mensaje = "Salida registrada"
                 
@@ -1383,7 +1396,8 @@ def validar_qr(request, encrypted_token):
 
             return render(request, 'validar_qr.html', {
                 'visitante': visitante,
-                'mensaje': mensaje
+                'mensaje': mensaje,
+                'user_type': request.user.user_type,
             })
 
     except Exception as e:

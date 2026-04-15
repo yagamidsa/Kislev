@@ -19,7 +19,13 @@
         </div>
         <h1>QR Desactivado</h1>
         <p>{{ mensaje }}</p>
-        <a href="{% url 'control_porteria' %}" class="button">Volver al Inicio</a>
+        {% if request.user.user_type == 'administrador' %}
+        <a href="{% url 'accounts:visor_admin' %}" class="button">Volver al Panel</a>
+        {% elif request.user.user_type == 'porteria' %}
+        <a href="{% url 'accounts:control_porteria' %}" class="button">Volver al Panel</a>
+        {% else %}
+        <a href="{% url 'accounts:visor_propietario' %}" class="button">Volver al Panel</a>
+        {% endif %}
     </div>
 </body>
 </html>

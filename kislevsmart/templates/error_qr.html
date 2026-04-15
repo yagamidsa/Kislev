@@ -37,7 +37,13 @@
             Cada código es de un solo uso por razones de seguridad.
         </p>
 
+        {% if request.user.user_type == 'administrador' %}
+        <a href="{% url 'accounts:visor_admin' %}" class="back-button">
+        {% elif request.user.user_type == 'porteria' %}
         <a href="{% url 'accounts:control_porteria' %}" class="back-button">
+        {% else %}
+        <a href="{% url 'accounts:visor_propietario' %}" class="back-button">
+        {% endif %}
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M19 12H5M12 19l-7-7 7-7"/>
             </svg>

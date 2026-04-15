@@ -37,6 +37,7 @@
         const maxFailedAttempts = 5;
         let failedAttempts = 0;
         let isShowingError = false; // Variable para controlar mensajes de error
+        let scanned = false; // Evita procesar el mismo QR múltiples veces
 
         async function startCamera() {
             const codeReader = new ZXing.BrowserQRCodeReader();
@@ -48,7 +49,8 @@
 
                 const preferredDevice = devices[devices.length - 1];
                 codeReader.decodeFromVideoDevice(preferredDevice.deviceId, 'video', (result, error) => {
-                    if (result) {
+                    if (result && !scanned) {
+                        scanned = true; // bloquea llamadas repetidas del mismo frame
                         console.log('QR detectado:', result.text);
                         failedAttempts = 0;
                         processQRContent(result.text);

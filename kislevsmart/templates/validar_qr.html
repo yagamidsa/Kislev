@@ -440,7 +440,13 @@
 
     <!-- Footer -->
     <div class="card-ftr">
+      {% if request.user.user_type == 'administrador' %}
+      <a href="{% url 'accounts:visor_admin' %}" class="btn-volver">
+      {% elif request.user.user_type == 'porteria' %}
       <a href="{% url 'accounts:control_porteria' %}" class="btn-volver">
+      {% else %}
+      <a href="{% url 'accounts:visor_propietario' %}" class="btn-volver">
+      {% endif %}
         <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
         Volver al Panel
       </a>
