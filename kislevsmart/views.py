@@ -2319,10 +2319,14 @@ def finanzas_admin(request):
         conjunto_id=conjunto_id, user_type='propietario', is_active=True
     ).select_related('torre')
 
+    from django.utils import timezone as _tz
+    cuotas_vencidas_count = sum(1 for c in cuotas if c.vencida)
+
     return render(request, 'finanzas/admin_cuotas.html', {
         'cuotas': cuotas,
         'propietarios': propietarios,
         'total_propietarios': propietarios.count(),
+        'cuotas_vencidas_count': cuotas_vencidas_count,
     })
 
 

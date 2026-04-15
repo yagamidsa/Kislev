@@ -4,172 +4,227 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Estado de Cuenta</title>
+    <title>Mi Estado de Cuenta — Kislev</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #09000f 0%, #1a0a2e 50%, #0a1a2e 100%);
-            min-height: 100vh;
-            color: #fff;
-            padding: 24px 16px;
-        }
+        *{margin:0;padding:0;box-sizing:border-box;}
+        html,body{height:100%;overflow:hidden;font-family:'Poppins',sans-serif;background:#09000f;color:#e2e8f0;}
+        .scroll-root{height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+        #particles{position:fixed;inset:0;z-index:0;pointer-events:none;}
+        .page{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;}
 
-        .wrap { max-width: 780px; margin: 0 auto; }
+        /* ── TOPBAR ── */
+        .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;gap:12px;background:rgba(255,255,255,.03);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06);}
+        .topbar-left{display:flex;align-items:center;gap:10px;}
+        .logo-icon{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#7c3aed,#db2777);display:flex;align-items:center;justify-content:center;font-size:.9rem;color:#fff;flex-shrink:0;}
+        .logo-text{font-size:.95rem;font-weight:700;background:linear-gradient(135deg,#a78bfa,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+        .btn-back{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:10px;font-size:.78rem;font-weight:600;font-family:'Poppins',sans-serif;border:none;cursor:pointer;text-decoration:none;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#e2e8f0;transition:all .2s;}
+        .btn-back:hover{background:rgba(255,255,255,.12);}
 
-        .back-link {
-            display: inline-flex; align-items: center; gap: 8px;
-            color: rgba(255,255,255,0.6); font-size: 13px; font-weight: 600;
-            text-decoration: none; margin-bottom: 24px;
-            background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
-            padding: 8px 16px; border-radius: 10px; transition: background .2s;
-        }
-        .back-link:hover { background: rgba(255,255,255,0.12); color: #fff; }
+        /* ── CONTENT ── */
+        .content{padding:28px 28px 48px;max-width:700px;margin:0 auto;width:100%;}
 
-        /* Resumen */
-        .resumen-card {
-            background: linear-gradient(135deg, #7c3aed, #db2777);
-            border-radius: 18px; padding: 24px 28px; margin-bottom: 24px;
-            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
-        }
-        .resumen-card h2 { font-size: 13px; opacity: .85; margin-bottom: 4px; font-weight: 500; }
-        .resumen-card .monto { font-size: 36px; font-weight: 800; letter-spacing: -1px; }
-        .resumen-card .sub { font-size: 12px; opacity: .7; margin-top: 4px; }
-        .resumen-icon { font-size: 48px; opacity: .25; }
+        /* ── STATUS HERO ── */
+        .status-hero{border-radius:22px;padding:28px 28px;margin-bottom:24px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+        .status-hero.al-dia{background:linear-gradient(135deg,#064e3b,#065f46,#047857);}
+        .status-hero.en-mora{background:linear-gradient(135deg,#7f1d1d,#991b1b,#dc2626);}
+        .status-hero.pendiente{background:linear-gradient(135deg,#78350f,#92400e,#b45309);}
+        .status-hero::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.08),transparent);pointer-events:none;}
+        .status-hero-glow{position:absolute;right:-20px;top:-20px;width:140px;height:140px;border-radius:50%;opacity:.15;filter:blur(30px);}
+        .al-dia .status-hero-glow{background:#34d399;}
+        .en-mora .status-hero-glow{background:#f87171;}
+        .pendiente .status-hero-glow{background:#fcd34d;}
 
-        /* Cuotas */
-        .cuota-row {
-            background: rgba(255,255,255,0.07);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 14px; padding: 18px 20px;
-            margin-bottom: 12px;
-            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
-            transition: transform .2s;
-        }
-        .cuota-row:hover { transform: translateY(-2px); }
-        .cuota-row.pendiente { border-color: rgba(239,68,68,0.3); }
-        .cuota-row.vencida   { border-color: rgba(245,158,11,0.3); }
-        .cuota-row.pagada    { border-color: rgba(34,197,94,0.2); }
+        .status-label{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;opacity:.8;margin-bottom:6px;}
+        .status-badge{display:inline-flex;align-items:center;gap:8px;font-size:1.5rem;font-weight:800;color:#fff;margin-bottom:6px;}
+        .status-badge i{font-size:1.4rem;}
+        .status-sub{font-size:.82rem;opacity:.75;color:#fff;}
+        .status-amount{text-align:right;}
+        .status-amount .amount-label{font-size:.72rem;opacity:.7;margin-bottom:4px;}
+        .status-amount .amount-val{font-size:2rem;font-weight:800;color:#fff;letter-spacing:-1px;}
 
-        .cuota-info h3 { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 4px; }
-        .cuota-info p  { font-size: 12px; color: rgba(255,255,255,0.45); }
-        .detalle-pago  { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 4px; }
+        /* ── UBICACION ── */
+        .ubicacion-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.3);border-radius:20px;padding:6px 16px;font-size:.78rem;color:#a78bfa;font-weight:600;margin-bottom:20px;}
 
-        .cuota-right { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; text-align: right; }
+        /* ── SECTION TITLE ── */
+        .sec-title{font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.35);margin-bottom:12px;}
 
-        .estado-badge {
-            display: inline-flex; align-items: center; gap: 6px;
-            padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 700;
-        }
-        .badge-pagado   { background: rgba(34,197,94,0.15);  color: #86efac; border: 1px solid rgba(34,197,94,0.3); }
-        .badge-pendiente{ background: rgba(239,68,68,0.15);  color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
-        .badge-vencida  { background: rgba(245,158,11,0.15); color: #fcd34d; border: 1px solid rgba(245,158,11,0.3); }
+        /* ── CUOTA CARDS ── */
+        .cuota-list{display:flex;flex-direction:column;gap:10px;}
+        .cuota-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;transition:border-color .2s,transform .2s;}
+        .cuota-card:hover{transform:translateX(3px);}
+        .cuota-card.pagada{border-color:rgba(34,197,94,.2);}
+        .cuota-card.vencida{border-color:rgba(239,68,68,.25);}
+        .cuota-card.pendiente-c{border-color:rgba(245,158,11,.2);}
 
-        .monto-val {
-            font-size: 18px; font-weight: 800;
-        }
-        .monto-pendiente { color: #fca5a5; }
-        .monto-vencida   { color: #fcd34d; }
-        .monto-pagado    { color: #86efac; }
+        .cuota-left{}
+        .cuota-nombre{font-size:.92rem;font-weight:700;color:#e2e8f0;margin-bottom:4px;}
+        .cuota-meta{font-size:.75rem;color:rgba(255,255,255,.4);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+        .cuota-meta i{font-size:.65rem;color:#a78bfa;}
+        .cuota-comprobante{font-size:.72rem;color:rgba(255,255,255,.3);margin-top:4px;}
 
-        .btn-pagar {
-            display: inline-flex; align-items: center; gap: 6px;
-            background: linear-gradient(135deg, #7c3aed, #db2777);
-            color: #fff; padding: 10px 18px; border-radius: 10px;
-            font-size: 13px; font-weight: 700; text-decoration: none;
-            transition: opacity .2s; white-space: nowrap;
-        }
-        .btn-pagar:hover { opacity: .85; }
+        .cuota-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap;flex-shrink:0;}
 
-        .empty-state {
-            text-align: center; padding: 60px 20px;
-            color: rgba(255,255,255,0.35);
-        }
-        .empty-state i { font-size: 48px; margin-bottom: 12px; display: block; }
+        .estado-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:999px;font-size:.72rem;font-weight:700;}
+        .badge-pagado{background:rgba(34,197,94,.12);color:#86efac;border:1px solid rgba(34,197,94,.25);}
+        .badge-pendiente{background:rgba(245,158,11,.12);color:#fcd34d;border:1px solid rgba(245,158,11,.25);}
+        .badge-vencida{background:rgba(239,68,68,.12);color:#fca5a5;border:1px solid rgba(239,68,68,.25);}
 
-        @media(max-width:600px) {
-            .resumen-card .monto { font-size: 28px; }
-            .cuota-right { justify-content: flex-start; }
-            .wrap { padding: 0; }
+        .cuota-monto{font-size:1.1rem;font-weight:800;}
+        .monto-pagado{color:#86efac;}
+        .monto-pendiente{color:#fcd34d;}
+        .monto-vencida{color:#fca5a5;}
+
+        .btn-pagar{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;padding:9px 18px;border-radius:10px;font-size:.78rem;font-weight:700;text-decoration:none;white-space:nowrap;transition:opacity .2s;box-shadow:0 4px 16px rgba(124,58,237,.35);}
+        .btn-pagar:hover{opacity:.88;}
+        .btn-pagar i{font-size:.82rem;}
+
+        /* ── EMPTY ── */
+        .empty{text-align:center;padding:60px 20px;color:rgba(255,255,255,.3);}
+        .empty i{font-size:3rem;margin-bottom:14px;display:block;}
+
+        /* ── RESPONSIVE ── */
+        @media(max-width:600px){
+            input,select{font-size:16px !important;}
+            .content{padding:16px 16px 40px;}
+            .topbar{padding:12px 16px;}
+            .status-hero{flex-direction:column;align-items:flex-start;}
+            .status-amount{text-align:left;}
+            .status-amount .amount-val{font-size:1.6rem;}
         }
     </style>
 </head>
 <body>
-<div class="wrap">
+<canvas id="particles"></canvas>
+<div class="scroll-root">
+<div class="page">
 
-    <a href="{% url 'accounts:visor_propietario' %}" class="back-link">
-        <i class="fas fa-arrow-left"></i> Volver al panel
-    </a>
-
-    <!-- Resumen deuda -->
-    <div class="resumen-card">
-        <div>
-            <h2>Total pendiente de pago</h2>
-            <div class="monto">${{ total_deuda|floatformat:"0" }}</div>
-            <div class="sub">{{ user.get_ubicacion_completa }}</div>
+    <!-- TOPBAR -->
+    <div class="topbar">
+        <div class="topbar-left">
+            <div class="logo-icon"><i class="fas fa-building"></i></div>
+            <span class="logo-text">Kislev Smart</span>
         </div>
-        <div class="resumen-icon"><i class="fas fa-wallet"></i></div>
+        <a href="{% url 'accounts:visor_propietario' %}" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Mi panel
+        </a>
     </div>
 
-    <!-- Lista cuotas -->
-    {% for item in resumen %}
-    {% if item.pago and item.pendiente == 0 %}
-    <div class="cuota-row pagada">
-    {% elif item.cuota.vencida %}
-    <div class="cuota-row vencida">
-    {% else %}
-    <div class="cuota-row pendiente">
-    {% endif %}
-        <div class="cuota-info">
-            <h3>{{ item.cuota.nombre }}</h3>
-            <p>Vence: {{ item.cuota.fecha_vencimiento|date:"d/m/Y" }} · {{ item.cuota.get_periodicidad_display }}</p>
-            {% if item.pago %}
-            <p class="detalle-pago">
-                Pagado el {{ item.pago.fecha_pago|date:"d/m/Y" }}
-                vía {{ item.pago.get_metodo_display }}
-                {% if item.pago.comprobante %} · Ref: {{ item.pago.comprobante }}{% endif %}
-            </p>
-            {% endif %}
+    <div class="content">
+
+        <!-- STATUS HERO -->
+        {% if total_deuda == 0 %}
+        <div class="status-hero al-dia">
+            <div class="status-hero-glow"></div>
+            <div>
+                <div class="status-label">Estado de cuenta</div>
+                <div class="status-badge"><i class="fas fa-check-circle"></i> Al día</div>
+                <div class="status-sub">Todas tus cuotas están pagadas</div>
+            </div>
+            <div class="status-amount">
+                <div class="amount-label">Saldo pendiente</div>
+                <div class="amount-val">$0</div>
+            </div>
+        </div>
+        {% else %}
+        <div class="status-hero {% if resumen and resumen.0.cuota.vencida %}en-mora{% else %}pendiente{% endif %}">
+            <div class="status-hero-glow"></div>
+            <div>
+                <div class="status-label">Estado de cuenta</div>
+                <div class="status-badge">
+                    {% if resumen and resumen.0.cuota.vencida %}
+                    <i class="fas fa-exclamation-circle"></i> En mora
+                    {% else %}
+                    <i class="fas fa-clock"></i> Pago pendiente
+                    {% endif %}
+                </div>
+                <div class="status-sub">Tienes cuotas por cancelar</div>
+            </div>
+            <div class="status-amount">
+                <div class="amount-label">Total pendiente</div>
+                <div class="amount-val">${{ total_deuda|floatformat:"0" }}</div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Ubicación -->
+        <div class="ubicacion-pill">
+            <i class="fas fa-map-marker-alt"></i>
+            {{ user.get_ubicacion_completa }}
         </div>
 
-        <div class="cuota-right">
-            {% if item.pago and item.pendiente == 0 %}
-                <div>
-                    <span class="estado-badge badge-pagado"><i class="fas fa-check-circle"></i> Pagado</span>
-                    <div class="monto-val monto-pagado" style="margin-top:6px">${{ item.pago.monto_pagado|floatformat:"0" }}</div>
+        <!-- Lista cuotas -->
+        <div class="sec-title">Detalle de cuotas</div>
+        <div class="cuota-list">
+            {% for item in resumen %}
+            <div class="cuota-card {% if item.pago and item.pendiente == 0 %}pagada{% elif item.cuota.vencida %}vencida{% else %}pendiente-c{% endif %}">
+                <div class="cuota-left">
+                    <div class="cuota-nombre">{{ item.cuota.nombre }}</div>
+                    <div class="cuota-meta">
+                        <i class="fas fa-calendar-alt"></i> Vence {{ item.cuota.fecha_vencimiento|date:"d/m/Y" }}
+                        &nbsp;·&nbsp;
+                        <i class="fas fa-sync-alt"></i> {{ item.cuota.get_periodicidad_display }}
+                    </div>
+                    {% if item.pago %}
+                    <div class="cuota-comprobante">
+                        Pagado el {{ item.pago.fecha_pago|date:"d/m/Y" }} vía {{ item.pago.get_metodo_display }}
+                        {% if item.pago.comprobante %} · Ref: {{ item.pago.comprobante }}{% endif %}
+                    </div>
+                    {% endif %}
                 </div>
-            {% elif item.cuota.vencida %}
-                <div>
-                    <span class="estado-badge badge-vencida"><i class="fas fa-exclamation-triangle"></i> Vencida</span>
-                    <div class="monto-val monto-vencida" style="margin-top:6px">${{ item.pendiente|floatformat:"0" }}</div>
-                </div>
-                {% if user.conjunto.link_pago %}
-                <a href="{{ user.conjunto.link_pago }}" target="_blank" class="btn-pagar">
-                    <i class="fas fa-credit-card"></i> Pagar ahora
-                </a>
-                {% endif %}
-            {% else %}
-                <div>
-                    <span class="estado-badge badge-pendiente"><i class="fas fa-clock"></i> Pendiente</span>
-                    <div class="monto-val monto-pendiente" style="margin-top:6px">${{ item.pendiente|floatformat:"0" }}</div>
-                </div>
-                {% if user.conjunto.link_pago %}
-                <a href="{{ user.conjunto.link_pago }}" target="_blank" class="btn-pagar">
-                    <i class="fas fa-credit-card"></i> Pagar ahora
-                </a>
-                {% endif %}
-            {% endif %}
-        </div>
-    </div>
-    {% empty %}
-    <div class="empty-state">
-        <i class="fas fa-check-circle" style="color:rgba(34,197,94,0.4)"></i>
-        <p>No hay cuotas registradas para tu conjunto.</p>
-    </div>
-    {% endfor %}
 
+                <div class="cuota-right">
+                    {% if item.pago and item.pendiente == 0 %}
+                        <span class="estado-badge badge-pagado"><i class="fas fa-check-circle"></i> Pagado</span>
+                        <span class="cuota-monto monto-pagado">${{ item.pago.monto_pagado|floatformat:"0" }}</span>
+                    {% elif item.cuota.vencida %}
+                        <span class="estado-badge badge-vencida"><i class="fas fa-exclamation-triangle"></i> Vencida</span>
+                        <span class="cuota-monto monto-vencida">${{ item.pendiente|floatformat:"0" }}</span>
+                        {% if user.conjunto.link_pago %}
+                        <a href="{{ user.conjunto.link_pago }}" target="_blank" class="btn-pagar">
+                            <i class="fas fa-credit-card"></i> Pagar ahora
+                        </a>
+                        {% endif %}
+                    {% else %}
+                        <span class="estado-badge badge-pendiente"><i class="fas fa-clock"></i> Pendiente</span>
+                        <span class="cuota-monto monto-pendiente">${{ item.pendiente|floatformat:"0" }}</span>
+                        {% if user.conjunto.link_pago %}
+                        <a href="{{ user.conjunto.link_pago }}" target="_blank" class="btn-pagar">
+                            <i class="fas fa-credit-card"></i> Pagar ahora
+                        </a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty">
+                <i class="fas fa-check-circle" style="color:rgba(34,197,94,.4)"></i>
+                <p>No hay cuotas registradas para tu conjunto.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
 </div>
+</div>
+
+<script>
+(function(){
+    const c=document.getElementById('particles'),ctx=c.getContext('2d');
+    let W,H,pts=[];
+    function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}
+    resize();window.addEventListener('resize',resize);
+    const COLORS=[[167,139,250],[219,39,119],[124,58,237],[244,114,182]];
+    for(let i=0;i<100;i++){const col=COLORS[Math.floor(Math.random()*COLORS.length)];pts.push({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,r:Math.random()*1.5+.3,a:Math.random()*.5+.1,col,pulse:Math.random()*Math.PI*2,pulseSpeed:Math.random()*.018+.004});}
+    function draw(){
+        ctx.clearRect(0,0,W,H);
+        pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.pulse+=p.pulseSpeed;if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;const alpha=p.a*(0.5+0.5*Math.sin(p.pulse)),r=p.r*(0.85+0.15*Math.sin(p.pulse));const grd=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,r*4);grd.addColorStop(0,`rgba(${p.col[0]},${p.col[1]},${p.col[2]},${alpha})`);grd.addColorStop(1,`rgba(${p.col[0]},${p.col[1]},${p.col[2]},0)`);ctx.beginPath();ctx.arc(p.x,p.y,r*4,0,Math.PI*2);ctx.fillStyle=grd;ctx.fill();});
+        for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<100){ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.strokeStyle=`rgba(124,58,237,${(1-d/100)*.12})`;ctx.lineWidth=.5;ctx.stroke();}}
+        requestAnimationFrame(draw);
+    }
+    draw();
+})();
+</script>
 </body>
 </html>
