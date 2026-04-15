@@ -551,25 +551,40 @@ def download_template(request):
 
     # Sheet 1: Conjunto
     make_sheet(wb, 'Conjunto',
-               ['campo', 'valor'],
+               ['campo', 'valor', 'opciones_validas'],
                first=True)
     ws_c = wb['Conjunto']
     fields = [
-        ('nombre', 'Conjunto Residencial El Prado'),
-        ('nit', '900123456-7'),
-        ('direccion', 'Cra 15 # 80-20, Bogotá'),
-        ('telefono', '3001234567'),
-        ('email_contacto', 'admin@elprado.com'),
-        ('link_pago', 'https://pagos.ejemplo.com/elprado'),
+        ('nombre',             'Conjunto Residencial El Prado', ''),
+        ('nit',                '900123456-7',                   ''),
+        ('direccion',          'Cra 15 # 80-20, Bogotá',        ''),
+        ('telefono',           '3001234567',                    ''),
+        ('email_contacto',     'admin@elprado.com',             ''),
+        ('link_pago',          'https://pagos.ejemplo.com/elprado', ''),
+        ('tipo_distribucion',  'torre_apto',
+         'torre_apto | interior_apto | bloque_apto | manzana_casa | solo_apto | solo_casa'),
     ]
-    for i, (campo, ejemplo) in enumerate(fields, start=2):
-        ws_c.cell(row=i, column=1, value=campo)
-        ws_c.cell(row=i, column=2, value=ejemplo)
+    # Estilo especial para columna de opciones
+    from openpyxl.styles import Font as _Font, PatternFill as _Fill, Alignment as _Align
+    note_font = _Font(italic=True, color='888888', size=9)
+    for i, row_vals in enumerate(fields, start=2):
+        ws_c.cell(row=i, column=1, value=row_vals[0])
+        ws_c.cell(row=i, column=2, value=row_vals[1])
+        if row_vals[2]:
+            cell = ws_c.cell(row=i, column=3, value=row_vals[2])
+            cell.font = note_font
+    ws_c.column_dimensions['C'].width = 70
 
-    # Sheet 2: Torres
-    make_sheet(wb, 'Torres',
+    # Sheet 2: Agrupaciones (Torres / Interiores / Bloques / Manzanas)
+    make_sheet(wb, 'Agrupaciones',
                ['nombre', 'numero_pisos', 'aptos_por_piso'],
                example_row=['Torre 1', 5, 4])
+    # Nota en celda A1
+    ws_ag = wb['Agrupaciones']
+    ws_ag['A1'].comment = None
+    note_row = ws_ag.cell(row=ws_ag.max_row + 2, column=1,
+                          value='💡 Usa el nombre que corresponda al tipo_distribucion: Torre 1, Interior A, Bloque 3, Manzana 5, etc.')
+    note_row.font = note_font
 
     # Sheet 3: Administrador
     make_sheet(wb, 'Administrador',
@@ -578,8 +593,13 @@ def download_template(request):
 
     # Sheet 4: Propietarios
     make_sheet(wb, 'Propietarios',
-               ['cedula', 'nombre', 'email', 'telefono', 'torre', 'apartamento'],
+               ['cedula', 'nombre', 'email', 'telefono', 'agrupacion', 'unidad'],
                example_row=['52987654', 'María López', 'maria@gmail.com', '3151234567', 'Torre 1', '0101'])
+    ws_p = wb['Propietarios']
+    ws_p.cell(row=1, column=5).comment = None
+    note_p = ws_p.cell(row=ws_p.max_row + 2, column=1,
+                       value='💡 "agrupacion" = nombre de la Torre/Interior/Bloque/Manzana. Déjalo vacío si el conjunto no usa agrupaciones.')
+    note_p.font = note_font
 
     # Sheet 5: Portería
     make_sheet(wb, 'Portería',
@@ -609,6 +629,7 @@ def upload_conjunto(request):
 
     excel_file = request.FILES.get('excel')
     send_emails = request.POST.get('send_emails') == 'on'
+    tipo_dist_form = request.POST.get('tipo_distribucion', 'torre_apto')
 
     if not excel_file:
         messages.error(request, 'Debes adjuntar un archivo Excel.')
@@ -676,6 +697,12 @@ def upload_conjunto(request):
             if not data.get(field):
                 raise ValueError(f'Hoja "Conjunto": falta el campo "{field}"')
 
+        # tipo_distribucion: primero del Excel, luego del form web
+        tipo_dist = str(data.get('tipo_distribucion', '') or tipo_dist_form or 'torre_apto').strip()
+        valid_tipos = [c[0] for c in ConjuntoResidencial.DISTRIBUCION_CHOICES]
+        if tipo_dist not in valid_tipos:
+            tipo_dist = 'torre_apto'
+
         conjunto, _ = ConjuntoResidencial.objects.get_or_create(
             nit=str(data['nit']).strip(),
             defaults={
@@ -684,12 +711,14 @@ def upload_conjunto(request):
                 'telefono': str(data.get('telefono', '') or ''),
                 'email_contacto': str(data.get('email_contacto', '') or '') or None,
                 'link_pago': str(data.get('link_pago', '') or '') or None,
+                'tipo_distribucion': tipo_dist,
             },
         )
 
-        # Torres
+        # Agrupaciones — soporta hoja "Agrupaciones" (nueva) y "Torres" (antigua)
         torres_map = {}
-        ws_torres = wb['Torres']
+        sheet_name = 'Agrupaciones' if 'Agrupaciones' in wb.sheetnames else 'Torres'
+        ws_torres = wb[sheet_name]
         headers = [c.value for c in next(ws_torres.iter_rows(min_row=1, max_row=1))]
         for row in ws_torres.iter_rows(min_row=2, values_only=True):
             if not row[0]:
@@ -725,8 +754,10 @@ def upload_conjunto(request):
                 skipped_count += 1
                 return
             password = _random_password()
-            torre_nombre = str(row_data.get('torre', '') or '').strip()
+            # Soporta columnas nuevas (agrupacion/unidad) y antiguas (torre/apartamento)
+            torre_nombre = str(row_data.get('agrupacion', '') or row_data.get('torre', '') or '').strip()
             torre_obj = torres_map.get(torre_nombre)
+            apartamento = str(row_data.get('unidad', '') or row_data.get('apartamento', '') or '').strip()
             usuario = Usuario.objects.create_user(
                 cedula=cedula,
                 nombre=nombre,
@@ -736,7 +767,7 @@ def upload_conjunto(request):
                 user_type=user_type,
                 phone_number=str(row_data.get('telefono', '') or ''),
                 torre=torre_obj,
-                apartamento=str(row_data.get('apartamento', '') or ''),
+                apartamento=apartamento,
                 must_change_password=True,
             )
             created_count += 1

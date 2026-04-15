@@ -174,16 +174,18 @@
                     <span class="filter-icon"><i class="fas fa-search"></i></span>
                     <input class="filter-input" type="text" name="q" value="{{ search }}" placeholder="Nombre, cédula o apto…">
                 </div>
-                <!-- Torre -->
+                <!-- Agrupación (Torre/Interior/Bloque/Manzana) -->
+                {% if conjunto.tiene_agrupacion %}
                 <div class="filter-group">
                     <span class="filter-icon"><i class="fas fa-building"></i></span>
                     <select class="filter-select" name="torre">
-                        <option value="">Todas las torres</option>
+                        <option value="">Todos los {{ conjunto.etiqueta_agrupacion|lower }}s</option>
                         {% for t in torres %}
                         <option value="{{ t.id }}" {% if torre_id == t.id|stringformat:"s" %}selected{% endif %}>{{ t.nombre }}</option>
                         {% endfor %}
                     </select>
                 </div>
+                {% endif %}
                 <!-- Tipo -->
                 <div class="filter-group">
                     <span class="filter-icon"><i class="fas fa-user-tag"></i></span>
@@ -226,8 +228,10 @@
                     </div>
                     <div class="u-meta">
                         <span class="u-cedula"><i class="fas fa-id-card"></i> {{ u.cedula }}</span>
-                        {% if u.torre %}
-                        <span class="u-loc"><i class="fas fa-map-marker-alt"></i> {{ u.torre.nombre }} — Apto {{ u.apartamento|default:"–" }}</span>
+                        {% if conjunto.tiene_agrupacion and u.torre %}
+                        <span class="u-loc"><i class="fas fa-map-marker-alt"></i> {{ conjunto.etiqueta_agrupacion }} {{ u.torre.nombre }}{% if u.apartamento %} — {{ conjunto.etiqueta_unidad }} {{ u.apartamento }}{% endif %}</span>
+                        {% elif u.apartamento %}
+                        <span class="u-loc"><i class="fas fa-map-marker-alt"></i> {{ conjunto.etiqueta_unidad }} {{ u.apartamento }}</span>
                         {% endif %}
                         {% if u.phone_number %}
                         <span class="u-loc"><i class="fas fa-phone"></i> {{ u.phone_number }}</span>
@@ -271,17 +275,21 @@
         </div>
         <div class="modal-body">
             <input type="hidden" id="editUserId">
+            {% if conjunto.tiene_agrupacion %}
             <div class="form-row">
-                <label class="form-label">Torre</label>
+                <label class="form-label">{{ conjunto.etiqueta_agrupacion }}</label>
                 <select class="form-control" id="editTorre">
-                    <option value="">Sin torre</option>
+                    <option value="">Sin {{ conjunto.etiqueta_agrupacion|lower }}</option>
                     {% for t in torres %}
                     <option value="{{ t.id }}">{{ t.nombre }}</option>
                     {% endfor %}
                 </select>
             </div>
+            {% else %}
+            <input type="hidden" id="editTorre" value="">
+            {% endif %}
             <div class="form-row">
-                <label class="form-label">Apartamento</label>
+                <label class="form-label">{{ conjunto.etiqueta_unidad }}</label>
                 <input type="text" class="form-control" id="editApto" placeholder="Ej: 0101" maxlength="10">
             </div>
             <div class="form-row">

@@ -100,6 +100,15 @@ class Command(BaseCommand):
 
         from accounts.models import ConjuntoResidencial, Torre, Usuario
 
+        tipo_dist = str(data.get('tipo_distribucion', '') or 'torre_apto').strip()
+        valid_tipos = [c[0] for c in ConjuntoResidencial.DISTRIBUCION_CHOICES]
+        if tipo_dist not in valid_tipos:
+            self.stdout.write(self.style.WARNING(
+                f'  tipo_distribucion "{tipo_dist}" no válido — usando "torre_apto". '
+                f'Opciones: {", ".join(valid_tipos)}'
+            ))
+            tipo_dist = 'torre_apto'
+
         conjunto, created = ConjuntoResidencial.objects.get_or_create(
             nit=str(data['nit']).strip(),
             defaults={
@@ -108,13 +117,20 @@ class Command(BaseCommand):
                 'telefono': str(data.get('telefono', '') or ''),
                 'email_contacto': str(data.get('email_contacto', '') or '') or None,
                 'link_pago': str(data.get('link_pago', '') or '') or None,
+                'tipo_distribucion': tipo_dist,
             },
         )
-        action = 'Creado' if created else 'Ya existía'
-        self.stdout.write(f'[Conjunto] {action}: {conjunto.nombre} (NIT {conjunto.nit})')
+        if not created and tipo_dist:
+            conjunto.tipo_distribucion = tipo_dist
+            conjunto.save(update_fields=['tipo_distribucion'])
 
-        # ── 2. TORRES ────────────────────────────────────────────────────────
-        ws_torres = wb['Torres']
+        action = 'Creado' if created else 'Ya existía'
+        self.stdout.write(f'[Conjunto] {action}: {conjunto.nombre} — distribución: {tipo_dist}')
+
+        # ── 2. AGRUPACIONES (Torres/Interiores/Bloques/Manzanas) ─────────────
+        # Soporta tanto la hoja antigua "Torres" como la nueva "Agrupaciones"
+        sheet_name = 'Agrupaciones' if 'Agrupaciones' in wb.sheetnames else 'Torres'
+        ws_torres = wb[sheet_name]
         torres_map = {}  # nombre_torre → Torre instance
         headers = [c.value for c in next(ws_torres.iter_rows(min_row=1, max_row=1))]
 
@@ -158,9 +174,10 @@ class Command(BaseCommand):
                 return
 
             password = _random_password()
-            torre_nombre = str(row_data.get('torre', '') or '').strip()
+            # Soporta columnas antiguas (torre/apartamento) y nuevas (agrupacion/unidad)
+            torre_nombre = str(row_data.get('agrupacion', '') or row_data.get('torre', '') or '').strip()
             torre = torres_map.get(torre_nombre)
-            apartamento = str(row_data.get('apartamento', '') or '').strip()
+            apartamento = str(row_data.get('unidad', '') or row_data.get('apartamento', '') or '').strip()
 
             usuario = Usuario.objects.create_user(
                 cedula=cedula,

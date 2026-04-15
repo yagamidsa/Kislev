@@ -146,6 +146,20 @@
             </div>
 
             <div class="form-group">
+                <label>Tipo de distribución del conjunto</label>
+                <select name="tipo_distribucion" style="width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:10px;color:#e2e8f0;font-family:'Poppins',sans-serif;font-size:.85rem;padding:10px 14px;outline:none;">
+                    <option value="torre_apto">Torre / Apartamento</option>
+                    <option value="interior_apto">Interior / Apartamento</option>
+                    <option value="bloque_apto">Bloque / Apartamento</option>
+                    <option value="manzana_casa">Manzana / Casa</option>
+                    <option value="solo_apto">Solo apartamento (sin agrupación)</option>
+                    <option value="solo_casa">Solo casa (sin agrupación)</option>
+                </select>
+                <div style="font-size:.72rem;color:rgba(255,255,255,.3);margin-top:6px;">
+                    Este campo también puede venir en la hoja "Conjunto" del Excel.
+                </div>
+            </div>
+            <div class="form-group">
                 <label class="checkbox-row">
                     <input type="checkbox" name="send_emails">
                     <span>Enviar email de bienvenida con credenciales a cada usuario</span>
