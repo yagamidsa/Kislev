@@ -129,6 +129,8 @@ class Usuario(AbstractBaseUser):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
+    is_saas_owner = models.BooleanField(default=False, help_text='Propietario del SaaS — accede a todos los conjuntos')
+    must_change_password = models.BooleanField(default=False, help_text='Fuerza cambio de contraseña en el próximo login')
     fecha_registro = models.DateTimeField(auto_now_add=True)
 
     objects = UsuarioManager()

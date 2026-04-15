@@ -11,7 +11,11 @@ from .views import (
     VisorAdminView,
     ControlPorteriaView,
     ControlpropietarioView,
-    SelectConjuntoView
+    SelectConjuntoView,
+    ForcePasswordChangeView,
+    saas_dashboard,
+    download_template,
+    upload_conjunto,
 )
 
 app_name = 'accounts'  # Namespace para las URLs de accounts
@@ -53,4 +57,12 @@ urlpatterns = [
     path('visor_admin/', VisorAdminView.as_view(), name='visor_admin'),
     path('visor_propietario/', ControlpropietarioView.as_view(), name='visor_propietario'),
     path('control_porteria/', ControlPorteriaView.as_view(), name='control_porteria'),
+
+    # Primer login — cambio obligatorio de contraseña
+    path('force-password-change/', ForcePasswordChangeView.as_view(), name='force_password_change'),
+
+    # SaaS owner panel
+    path('saas/', saas_dashboard, name='saas_dashboard'),
+    path('saas/download-template/', download_template, name='download_template'),
+    path('saas/upload-conjunto/', upload_conjunto, name='upload_conjunto'),
 ]

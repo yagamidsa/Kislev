@@ -19,3 +19,4 @@ pytest-django>=4.5
 pypng>=0.20220715.0
 colorama>=0.4
 requests>=2.31
+openpyxl>=3.1

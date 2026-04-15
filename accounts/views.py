@@ -207,6 +207,8 @@ class LoginView(View):
 
     def _redirect_by_user_type(self, user):
         """Helper method para manejar las redirecciones según el tipo de usuario"""
+        if user.is_saas_owner:
+            return redirect('accounts:saas_dashboard')
         redirects = {
             'propietario': 'accounts:visor_propietario',
             'administrador': 'accounts:visor_admin',
@@ -295,6 +297,8 @@ class SelectConjuntoView(View):
 
     def _redirect_by_user_type(self, user):
         """Helper method para manejar las redirecciones según el tipo de usuario"""
+        if user.is_saas_owner:
+            return redirect('accounts:saas_dashboard')
         redirects = {
             'propietario': 'accounts:visor_propietario',
             'administrador': 'accounts:visor_admin',
@@ -446,3 +450,318 @@ class RecuperarPasswordView(View):
 
 class PasswordResetDoneView(TemplateView):
     template_name = 'accounts/password_reset_done.html'
+
+
+# ── Force password change ────────────────────────────────────────────────────
+
+class ForcePasswordChangeView(LoginRequiredMixin, View):
+    """Intercept login when must_change_password=True."""
+    login_url = '/accounts/login/'
+
+    def get(self, request):
+        form = CustomSetPasswordForm(user=request.user)
+        return render(request, 'accounts/force_password_change.html', {'form': form})
+
+    def post(self, request):
+        form = CustomSetPasswordForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            form.save()
+            update_session_auth_hash(request, request.user)
+            request.user.must_change_password = False
+            request.user.save(update_fields=['must_change_password'])
+            messages.success(request, 'Contraseña actualizada. Bienvenido.')
+            redirects = {
+                'propietario': 'accounts:visor_propietario',
+                'administrador': 'accounts:visor_admin',
+                'porteria': 'accounts:control_porteria',
+            }
+            return redirect(redirects.get(request.user.user_type, 'accounts:login'))
+        return render(request, 'accounts/force_password_change.html', {'form': form})
+
+
+# ── SaaS owner dashboard ─────────────────────────────────────────────────────
+
+def saas_required(view_func):
+    """Decorator: only allows is_saas_owner users."""
+    from functools import wraps
+    from django.http import HttpResponseForbidden
+
+    @wraps(view_func)
+    def _wrapped(request, *args, **kwargs):
+        if not request.user.is_authenticated or not request.user.is_saas_owner:
+            return HttpResponseForbidden('Acceso restringido al propietario del SaaS.')
+        return view_func(request, *args, **kwargs)
+    return _wrapped
+
+
+@login_required
+@saas_required
+def saas_dashboard(request):
+    """Super-admin dashboard: list of all residential complexes."""
+    conjuntos = ConjuntoResidencial.objects.all().order_by('nombre')
+    stats = []
+    for c in conjuntos:
+        stats.append({
+            'conjunto': c,
+            'propietarios': Usuario.objects.filter(conjunto=c, user_type='propietario', is_active=True).count(),
+            'admins': Usuario.objects.filter(conjunto=c, user_type='administrador', is_active=True).count(),
+            'porteria': Usuario.objects.filter(conjunto=c, user_type='porteria', is_active=True).count(),
+        })
+    return render(request, 'accounts/saas_dashboard.html', {'stats': stats})
+
+
+# ── Excel template download ──────────────────────────────────────────────────
+
+@login_required
+@saas_required
+def download_template(request):
+    """Generate and return the Excel onboarding template."""
+    import io
+    try:
+        import openpyxl
+        from openpyxl.styles import Font, PatternFill, Alignment
+        from openpyxl.utils import get_column_letter
+    except ImportError:
+        from django.http import HttpResponse
+        return HttpResponse('openpyxl no instalado.', status=500)
+
+    from django.http import HttpResponse
+
+    wb = openpyxl.Workbook()
+
+    header_font = Font(bold=True, color='FFFFFF')
+    header_fill = PatternFill(fill_type='solid', fgColor='4F2984')
+    center = Alignment(horizontal='center', vertical='center')
+
+    def make_sheet(wb, title, headers, example_row=None, first=False):
+        ws = wb.active if first else wb.create_sheet(title=title)
+        if first:
+            ws.title = title
+        ws.row_dimensions[1].height = 22
+        for col_idx, header in enumerate(headers, start=1):
+            cell = ws.cell(row=1, column=col_idx, value=header)
+            cell.font = header_font
+            cell.fill = header_fill
+            cell.alignment = center
+            ws.column_dimensions[get_column_letter(col_idx)].width = max(len(header) + 4, 18)
+        if example_row:
+            for col_idx, val in enumerate(example_row, start=1):
+                ws.cell(row=2, column=col_idx, value=val)
+        return ws
+
+    # Sheet 1: Conjunto
+    make_sheet(wb, 'Conjunto',
+               ['campo', 'valor'],
+               first=True)
+    ws_c = wb['Conjunto']
+    fields = [
+        ('nombre', 'Conjunto Residencial El Prado'),
+        ('nit', '900123456-7'),
+        ('direccion', 'Cra 15 # 80-20, Bogotá'),
+        ('telefono', '3001234567'),
+        ('email_contacto', 'admin@elprado.com'),
+        ('link_pago', 'https://pagos.ejemplo.com/elprado'),
+    ]
+    for i, (campo, ejemplo) in enumerate(fields, start=2):
+        ws_c.cell(row=i, column=1, value=campo)
+        ws_c.cell(row=i, column=2, value=ejemplo)
+
+    # Sheet 2: Torres
+    make_sheet(wb, 'Torres',
+               ['nombre', 'numero_pisos', 'aptos_por_piso'],
+               example_row=['Torre 1', 5, 4])
+
+    # Sheet 3: Administrador
+    make_sheet(wb, 'Administrador',
+               ['cedula', 'nombre', 'email', 'telefono'],
+               example_row=['1020304050', 'Carlos Gómez', 'carlos@elprado.com', '3109876543'])
+
+    # Sheet 4: Propietarios
+    make_sheet(wb, 'Propietarios',
+               ['cedula', 'nombre', 'email', 'telefono', 'torre', 'apartamento'],
+               example_row=['52987654', 'María López', 'maria@gmail.com', '3151234567', 'Torre 1', '0101'])
+
+    # Sheet 5: Portería
+    make_sheet(wb, 'Portería',
+               ['cedula', 'nombre', 'email', 'telefono'],
+               example_row=['80654321', 'Pedro Ramos', 'pedro@elprado.com', '3204567890'])
+
+    buffer = io.BytesIO()
+    wb.save(buffer)
+    buffer.seek(0)
+
+    response = HttpResponse(
+        buffer.getvalue(),
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    )
+    response['Content-Disposition'] = 'attachment; filename="plantilla_conjunto.xlsx"'
+    return response
+
+
+# ── Upload / import conjunto via web ────────────────────────────────────────
+
+@login_required
+@saas_required
+def upload_conjunto(request):
+    """Web UI to upload the Excel file and import a new conjunto."""
+    if request.method == 'GET':
+        return render(request, 'accounts/upload_conjunto.html')
+
+    excel_file = request.FILES.get('excel')
+    send_emails = request.POST.get('send_emails') == 'on'
+
+    if not excel_file:
+        messages.error(request, 'Debes adjuntar un archivo Excel.')
+        return render(request, 'accounts/upload_conjunto.html')
+
+    if not excel_file.name.endswith('.xlsx'):
+        messages.error(request, 'Solo se aceptan archivos .xlsx')
+        return render(request, 'accounts/upload_conjunto.html')
+
+    import io
+    import secrets
+    import string
+
+    try:
+        import openpyxl
+    except ImportError:
+        messages.error(request, 'openpyxl no está instalado en el servidor.')
+        return render(request, 'accounts/upload_conjunto.html')
+
+    from django.core.mail import EmailMultiAlternatives
+    from django.template.loader import render_to_string
+
+    def _random_password(length=12):
+        alphabet = string.ascii_letters + string.digits + '!@#$%'
+        return ''.join(secrets.choice(alphabet) for _ in range(length))
+
+    def _send_welcome(email, nombre, conjunto_nombre, cedula, password):
+        try:
+            context = {
+                'nombre': nombre,
+                'conjunto_nombre': conjunto_nombre,
+                'cedula': cedula,
+                'password': password,
+                'login_url': getattr(settings, 'SITE_URL', 'https://kislev.net.co') + '/accounts/login/',
+            }
+            html = render_to_string('emails/bienvenida_credenciales.html', context)
+            text = (
+                f"Hola {nombre},\n\nBienvenido a {conjunto_nombre} en KislevSmart.\n\n"
+                f"Usuario: {cedula}\nContraseña temporal: {password}\n\n"
+                f"Cámbiala en tu primer inicio de sesión.\n{context['login_url']}"
+            )
+            msg = EmailMultiAlternatives(
+                subject=f'Bienvenido a KislevSmart — {conjunto_nombre}',
+                body=text,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                to=[email],
+            )
+            msg.attach_alternative(html, 'text/html')
+            msg.send(fail_silently=False)
+            return True
+        except Exception as exc:
+            return str(exc)
+
+    try:
+        wb = openpyxl.load_workbook(io.BytesIO(excel_file.read()), data_only=True)
+    except Exception as exc:
+        messages.error(request, f'No se pudo leer el Excel: {exc}')
+        return render(request, 'accounts/upload_conjunto.html')
+
+    try:
+        ws_c = wb['Conjunto']
+        data = {row[0].value: row[1].value for row in ws_c.iter_rows(min_row=2) if row[0].value}
+
+        for field in ('nombre', 'nit', 'direccion'):
+            if not data.get(field):
+                raise ValueError(f'Hoja "Conjunto": falta el campo "{field}"')
+
+        conjunto, _ = ConjuntoResidencial.objects.get_or_create(
+            nit=str(data['nit']).strip(),
+            defaults={
+                'nombre': str(data['nombre']).strip(),
+                'direccion': str(data.get('direccion', '')).strip(),
+                'telefono': str(data.get('telefono', '') or ''),
+                'email_contacto': str(data.get('email_contacto', '') or '') or None,
+                'link_pago': str(data.get('link_pago', '') or '') or None,
+            },
+        )
+
+        # Torres
+        torres_map = {}
+        ws_torres = wb['Torres']
+        headers = [c.value for c in next(ws_torres.iter_rows(min_row=1, max_row=1))]
+        for row in ws_torres.iter_rows(min_row=2, values_only=True):
+            if not row[0]:
+                continue
+            rd = dict(zip(headers, row))
+            nombre_torre = str(rd.get('nombre', '')).strip()
+            if not nombre_torre:
+                continue
+            from accounts.models import Torre
+            torre, _ = Torre.objects.get_or_create(
+                conjunto=conjunto,
+                nombre=nombre_torre,
+                defaults={
+                    'numero_pisos': int(rd.get('numero_pisos') or 1),
+                    'aptos_por_piso': int(rd.get('aptos_por_piso') or 4),
+                },
+            )
+            torres_map[nombre_torre] = torre
+
+        created_count = 0
+        skipped_count = 0
+        email_errors = []
+
+        def create_user(row_data, user_type):
+            nonlocal created_count, skipped_count
+            cedula = str(row_data.get('cedula', '') or '').strip()
+            nombre = str(row_data.get('nombre', '') or '').strip()
+            email = str(row_data.get('email', '') or '').strip()
+            if not cedula or not nombre or not email:
+                skipped_count += 1
+                return
+            if Usuario.objects.filter(cedula=cedula, conjunto=conjunto).exists():
+                skipped_count += 1
+                return
+            password = _random_password()
+            torre_nombre = str(row_data.get('torre', '') or '').strip()
+            torre_obj = torres_map.get(torre_nombre)
+            usuario = Usuario.objects.create_user(
+                cedula=cedula,
+                nombre=nombre,
+                email=email,
+                password=password,
+                conjunto=conjunto,
+                user_type=user_type,
+                phone_number=str(row_data.get('telefono', '') or ''),
+                torre=torre_obj,
+                apartamento=str(row_data.get('apartamento', '') or ''),
+                must_change_password=True,
+            )
+            created_count += 1
+            if send_emails:
+                result = _send_welcome(email, nombre, conjunto.nombre, cedula, password)
+                if result is not True:
+                    email_errors.append(f'{email}: {result}')
+
+        for sheet, utype in [('Administrador', 'administrador'), ('Propietarios', 'propietario'), ('Portería', 'porteria')]:
+            ws_s = wb[sheet]
+            hdrs = [c.value for c in next(ws_s.iter_rows(min_row=1, max_row=1))]
+            for row in ws_s.iter_rows(min_row=2, values_only=True):
+                if not row[0]:
+                    continue
+                create_user(dict(zip(hdrs, row)), utype)
+
+    except ValueError as exc:
+        messages.error(request, str(exc))
+        return render(request, 'accounts/upload_conjunto.html')
+    except Exception as exc:
+        messages.error(request, f'Error durante la importación: {exc}')
+        return render(request, 'accounts/upload_conjunto.html')
+
+    success_msg = f'Conjunto "{conjunto.nombre}" importado: {created_count} usuarios creados, {skipped_count} omitidos.'
+    if email_errors:
+        success_msg += f' ({len(email_errors)} errores de email)'
+    messages.success(request, success_msg)
+    return redirect('accounts:saas_dashboard')

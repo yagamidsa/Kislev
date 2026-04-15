@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KislevSmart — Panel SaaS</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #07091A 0%, #1a0836 60%, #2d0a4e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+        }
+        /* ── Header ── */
+        .top-bar {
+            background: rgba(255,255,255,.05);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,.1);
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 62px;
+        }
+        .top-bar .brand { font-size: 18px; font-weight: 800; color: #fff; letter-spacing: .5px; }
+        .top-bar .brand span { color: #a855f7; }
+        .top-bar .actions { display: flex; gap: 10px; }
+        .btn {
+            padding: 9px 18px;
+            border-radius: 20px;
+            border: none;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-primary { background: linear-gradient(135deg,#4F2984,#e91e8c); color: #fff; }
+        .btn-outline { background: transparent; color: rgba(255,255,255,.75); border: 1px solid rgba(255,255,255,.2); }
+        .btn-outline:hover { background: rgba(255,255,255,.08); color: #fff; }
+        /* ── Content ── */
+        .content { max-width: 960px; margin: 0 auto; padding: 32px 20px; }
+        .page-title { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+        .page-sub { font-size: 14px; color: rgba(255,255,255,.5); margin-bottom: 28px; }
+        /* ── Messages ── */
+        .msg { padding: 12px 16px; border-radius: 10px; margin-bottom: 20px; font-size: 14px; }
+        .msg-success { background: rgba(34,197,94,.15); border: 1px solid rgba(34,197,94,.3); color: #86efac; }
+        .msg-error   { background: rgba(239,68,68,.15);  border: 1px solid rgba(239,68,68,.3);  color: #fca5a5; }
+        /* ── Grid ── */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+        .conj-card {
+            background: rgba(255,255,255,.06);
+            border: 1px solid rgba(255,255,255,.1);
+            border-radius: 14px;
+            padding: 20px;
+            transition: border-color .2s, transform .2s;
+        }
+        .conj-card:hover { border-color: rgba(168,85,247,.5); transform: translateY(-2px); }
+        .conj-name { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+        .conj-nit { font-size: 12px; color: rgba(255,255,255,.4); margin-bottom: 14px; }
+        .conj-stats { display: flex; gap: 10px; flex-wrap: wrap; }
+        .stat-pill {
+            background: rgba(255,255,255,.08);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 12px;
+            color: rgba(255,255,255,.7);
+        }
+        .stat-pill strong { color: #a855f7; }
+        .conj-status {
+            display: inline-block;
+            margin-top: 14px;
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+        .status-active   { background: rgba(34,197,94,.2);  color: #86efac; }
+        .status-inactive { background: rgba(239,68,68,.2);   color: #fca5a5; }
+        /* ── Empty ── */
+        .empty { text-align: center; padding: 60px 20px; color: rgba(255,255,255,.35); }
+        .empty-icon { font-size: 48px; margin-bottom: 14px; }
+        /* ── Upload section ── */
+        .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+        .section-title { font-size: 15px; font-weight: 700; color: rgba(255,255,255,.8); }
+        /* ── Logout ── */
+        .logout-link { color: rgba(255,255,255,.5); font-size: 13px; text-decoration: none; }
+        .logout-link:hover { color: #fff; }
+    </style>
+</head>
+<body>
+<div class="top-bar">
+    <div class="brand">Kislev<span>Smart</span> &nbsp;·&nbsp; Panel SaaS</div>
+    <div class="actions">
+        <a href="{% url 'accounts:download_template' %}" class="btn btn-outline">⬇ Plantilla Excel</a>
+        <a href="{% url 'accounts:upload_conjunto' %}" class="btn btn-primary">＋ Importar Conjunto</a>
+        <a href="{% url 'accounts:logout' %}" class="btn btn-outline logout-link">Salir</a>
+    </div>
+</div>
+
+<div class="content">
+    <div class="page-title">Conjuntos Residenciales</div>
+    <div class="page-sub">{{ stats|length }} conjunto{{ stats|length|pluralize }} registrado{{ stats|length|pluralize }}</div>
+
+    {% for message in messages %}
+        <div class="msg msg-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+
+    {% if stats %}
+    <div class="grid">
+        {% for item in stats %}
+        <div class="conj-card">
+            <div class="conj-name">{{ item.conjunto.nombre }}</div>
+            <div class="conj-nit">NIT {{ item.conjunto.nit }}</div>
+            <div class="conj-stats">
+                <span class="stat-pill"><strong>{{ item.propietarios }}</strong> propietarios</span>
+                <span class="stat-pill"><strong>{{ item.admins }}</strong> admin{{ item.admins|pluralize }}</span>
+                <span class="stat-pill"><strong>{{ item.porteria }}</strong> portería</span>
+            </div>
+            <span class="conj-status {% if item.conjunto.estado %}status-active{% else %}status-inactive{% endif %}">
+                {% if item.conjunto.estado %}Activo{% else %}Inactivo{% endif %}
+            </span>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty">
+        <div class="empty-icon">🏙️</div>
+        <p>No hay conjuntos registrados aún.</p>
+        <p style="margin-top:8px;">Descarga la plantilla Excel e importa el primero.</p>
+    </div>
+    {% endif %}
+</div>
+</body>
+</html>
