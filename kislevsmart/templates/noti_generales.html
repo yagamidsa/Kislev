@@ -1,536 +1,462 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enviar Notificación</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
+    <title>Notificaciones Generales — Kislev Smart</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/restricciones.css' %}">
     <link rel="stylesheet" href="{% static 'css/noti_generales.css' %}">
     <style>
-        /* Estilos para la lista de archivos */
-        .file-list {
-            margin-top: 10px;
-            max-height: 150px;
-            overflow-y: auto;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            padding: 8px;
-            margin-bottom: 15px;
+        /* ── iOS scroll fix ── */
+        html, body { height: 100%; overflow: hidden; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        .scroll-root { height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: none; }
+
+        /* ── PAGE ── */
+        .ng-page {
+            position: relative; z-index: 2;
+            min-height: 100vh; padding: 28px 16px 40px;
+            display: flex; align-items: center; justify-content: center;
         }
 
-        .file-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: rgba(255, 255, 255, 0.15);
-            border-radius: 5px;
-            padding: 8px 12px;
-            margin-bottom: 5px;
-            font-size: 0.9rem;
-            color: white;
+        /* ── MAIN CARD ── */
+        .ng-wrap {
+            width: 100%; max-width: 660px;
+            background: rgba(12,4,28,.78);
+            border: 1px solid rgba(124,58,237,.22);
+            border-radius: 28px; overflow: hidden;
+            animation: ngSlideDown .52s cubic-bezier(.34,1.2,.64,1) both;
+            box-shadow: 0 40px 100px rgba(0,0,0,.65), 0 0 80px rgba(124,58,237,.08),
+                        inset 0 0 0 1px rgba(255,255,255,.04);
         }
+        @keyframes ngSlideDown { from{opacity:0;transform:translateY(-50px) scale(.95)} to{opacity:1;transform:translateY(0) scale(1)} }
+        @keyframes ngSlideUp   { from{opacity:1;transform:translateY(0) scale(1)} to{opacity:0;transform:translateY(-60px) scale(.95)} }
 
-        .file-item:last-child {
-            margin-bottom: 0;
+        /* ── HEADER ── */
+        .ng-header {
+            background: linear-gradient(135deg, #1a0336 0%, #2e0a5c 50%, #1a0336 100%);
+            padding: 28px 24px 24px;
+            display: flex; align-items: flex-start; justify-content: space-between;
+            position: relative;
         }
+        .ng-header::after { content:''; position:absolute; bottom:0; left:0; right:0; height:1px; background: linear-gradient(90deg,transparent,rgba(167,139,250,.4),transparent); }
+        .ng-header-row { display: flex; align-items: center; gap: 16px; }
+        .ng-icon { width: 52px; height: 52px; border-radius: 16px; background: linear-gradient(135deg,#7c3aed,#db2777); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; box-shadow: 0 8px 24px rgba(124,58,237,.5); }
+        .ng-brand { font-size: .7rem; font-weight: 700; color: rgba(167,139,250,.7); letter-spacing: .8px; text-transform: uppercase; margin-bottom: 3px; }
+        .ng-title { font-size: 1.18rem; font-weight: 800; color: #fff; line-height: 1.2; }
+        .ng-sub { font-size: .74rem; color: rgba(196,181,253,.6); margin-top: 3px; }
+        .ng-close { width: 38px; height: 38px; border-radius: 10px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); color: rgba(255,255,255,.65); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .2s; flex-shrink: 0; font-family: inherit; }
+        .ng-close:hover { background: rgba(248,113,113,.18); border-color: rgba(248,113,113,.4); color: #fca5a5; transform: scale(1.05); }
+        .ng-close svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2.5; }
 
-        .remove-file {
-            cursor: pointer;
-            color: #ff4d4d;
-            background: none;
-            border: none;
-            font-size: 1.2rem;
-            padding: 0 5px;
-            opacity: 0.7;
-            transition: opacity 0.2s;
+        /* ── BODY ── */
+        .ng-body { padding: 28px 24px 32px; }
+
+        /* ── SECTION LABELS ── */
+        .f-sec {
+            font-size: .68rem; font-weight: 700; letter-spacing: 1px;
+            text-transform: uppercase; color: rgba(167,139,250,.7);
+            margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
         }
+        .f-sec::after { content:''; flex: 1; height: 1px; background: rgba(167,139,250,.15); }
 
-        .remove-file:hover {
-            opacity: 1;
+        /* ── TEXTAREA ── */
+        .f-textarea {
+            width: 100%; min-height: 160px; padding: 16px;
+            background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.1);
+            border-radius: 14px; color: #fff; font-family: 'Poppins', sans-serif;
+            font-size: .9rem; line-height: 1.6; resize: none;
+            transition: border-color .2s, box-shadow .2s;
+            margin-bottom: 20px;
         }
+        .f-textarea::placeholder { color: rgba(255,255,255,.3); }
+        .f-textarea:focus { border-color: rgba(124,58,237,.5); box-shadow: 0 0 0 3px rgba(124,58,237,.1); }
 
-        .file-preview {
-            display: flex;
-            align-items: center;
-            flex-grow: 1;
+        /* ── FILE LIST ── */
+        .ng-file-list {
+            background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);
+            border-radius: 12px; padding: 10px; min-height: 52px;
+            max-height: 160px; overflow-y: auto; margin-bottom: 20px;
         }
-
-        .file-icon {
-            margin-right: 8px;
-            opacity: 0.7;
+        .no-files { color: rgba(255,255,255,.3); text-align: center; font-size: .82rem; padding: 10px 0; font-style: italic; }
+        .ng-file-item {
+            display: flex; align-items: center; gap: 10px;
+            background: rgba(255,255,255,.06); border-radius: 8px;
+            padding: 9px 12px; margin-bottom: 6px;
+            animation: fileIn .2s ease both;
         }
+        .ng-file-item:last-child { margin-bottom: 0; }
+        @keyframes fileIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+        .ng-file-icon { color: #a78bfa; flex-shrink: 0; }
+        .ng-file-icon svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; display: block; }
+        .ng-file-name { flex: 1; font-size: .82rem; color: rgba(255,255,255,.85); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ng-file-size { font-size: .72rem; color: rgba(255,255,255,.4); flex-shrink: 0; }
+        .ng-file-remove { background: none; border: none; color: rgba(248,113,113,.7); cursor: pointer; font-size: 1.1rem; line-height: 1; padding: 0 4px; transition: color .2s; flex-shrink: 0; }
+        .ng-file-remove:hover { color: #fca5a5; }
 
-        .file-name {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 200px;
+        /* ── ACTION BUTTONS ── */
+        .ng-actions { display: flex; gap: 12px; margin-top: 4px; }
+        .btn-attach {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 14px 20px;
+            background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12);
+            border-radius: 14px; color: rgba(255,255,255,.75);
+            font-family: 'Poppins', sans-serif; font-size: .88rem; font-weight: 600;
+            cursor: pointer; transition: all .22s;
         }
-
-        .file-size {
-            font-size: 0.75rem;
-            opacity: 0.7;
-            margin-left: 8px;
+        .btn-attach:hover { background: rgba(255,255,255,.1); color: #fff; border-color: rgba(255,255,255,.2); }
+        .btn-attach svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; }
+        .btn-send {
+            flex: 1; display: flex; align-items: center; justify-content: center; gap: 9px;
+            padding: 14px 24px;
+            background: linear-gradient(135deg,#7c3aed,#db2777);
+            border: none; border-radius: 14px; color: #fff;
+            font-family: 'Poppins', sans-serif; font-size: .92rem; font-weight: 700;
+            cursor: pointer; transition: all .22s;
+            box-shadow: 0 6px 24px rgba(124,58,237,.38);
         }
+        .btn-send:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(124,58,237,.5); }
+        .btn-send:active { transform: translateY(0); }
+        .btn-send svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; }
+        input[type="file"].ng-file-input { display: none; }
 
-        /* Estilos para cuando no hay archivos */
-        .no-files {
-            color: rgba(255, 255, 255, 0.7);
-            text-align: center;
-            padding: 10px;
-            font-style: italic;
+        /* ── CONFIRMATION MODAL ── */
+        .ng-modal-backdrop {
+            position: fixed; inset: 0; z-index: 500;
+            background: rgba(0,0,0,.6); backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: none; align-items: center; justify-content: center; padding: 20px;
         }
-
-        /* Animación para añadir archivos */
-        @keyframes fileAddedAnimation {
-            0% {
-                transform: translateY(10px);
-                opacity: 0;
-            }
-
-            100% {
-                transform: translateY(0);
-                opacity: 1;
-            }
+        .ng-modal-backdrop.active { display: flex; }
+        .ng-modal {
+            background: rgba(18,6,38,.95); border: 1px solid rgba(124,58,237,.3);
+            border-radius: 24px; padding: 32px 28px;
+            width: 100%; max-width: 360px; text-align: center;
+            animation: modalIn .3s cubic-bezier(.34,1.2,.64,1) both;
         }
-
-        .file-item {
-            animation: fileAddedAnimation 0.3s ease-out forwards;
+        @keyframes modalIn { from{opacity:0;transform:scale(.9)} to{opacity:1;transform:scale(1)} }
+        .ng-modal-icon { font-size: 2.2rem; margin-bottom: 14px; }
+        .ng-modal-title { font-size: 1.05rem; font-weight: 800; color: #fff; margin-bottom: 8px; }
+        .ng-modal-sub { font-size: .82rem; color: rgba(255,255,255,.5); margin-bottom: 24px; line-height: 1.5; }
+        .ng-modal-actions { display: flex; gap: 10px; }
+        .btn-modal-no {
+            flex: 1; padding: 13px;
+            background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12);
+            border-radius: 12px; color: rgba(255,255,255,.8);
+            font-family: 'Poppins', sans-serif; font-size: .88rem; font-weight: 600;
+            cursor: pointer; transition: background .2s;
         }
-
-        .files-section {
-            margin-top: 20px;
+        .btn-modal-no:hover { background: rgba(255,255,255,.13); }
+        .btn-modal-yes {
+            flex: 1.4; padding: 13px;
+            background: linear-gradient(135deg,#7c3aed,#db2777);
+            border: none; border-radius: 12px; color: #fff;
+            font-family: 'Poppins', sans-serif; font-size: .88rem; font-weight: 700;
+            cursor: pointer; transition: all .2s;
+            box-shadow: 0 4px 16px rgba(124,58,237,.4);
         }
+        .btn-modal-yes:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(124,58,237,.55); }
 
-        .files-section-title {
-            display: flex;
-            align-items: center;
-            font-size: 1rem;
-            font-weight: 500;
-            margin-bottom: 10px;
-            color: white;
+        /* ── LOADING OVERLAY ── */
+        .ng-loading {
+            position: fixed; inset: 0; z-index: 600;
+            background: rgba(7,9,26,.85); backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            display: none; align-items: center; justify-content: center; padding: 20px;
         }
-
-        .files-section-title svg {
-            width: 20px;
-            height: 20px;
-            margin-right: 8px;
+        .ng-loading.active { display: flex; }
+        .ng-loading-box {
+            background: rgba(18,6,38,.95); border: 1px solid rgba(124,58,237,.25);
+            border-radius: 24px; padding: 36px 32px; width: 100%; max-width: 340px;
+            text-align: center; animation: modalIn .3s cubic-bezier(.34,1.2,.64,1) both;
+            display: flex; flex-direction: column; align-items: center; gap: 12px;
         }
-    </style>
-    <!-- Botón de regreso al panel de notificaciones -->
-    <a href="{% url 'notificaciones' %}" class="back-button">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M15 18l-6-6 6-6" />
-        </svg>
-        Volver a Notificaciones
-    </a>
+        /* spinner */
+        .ng-spinner { width: 52px; height: 52px; border-radius: 50%; border: 3px solid rgba(124,58,237,.2); border-top-color: #7c3aed; animation: spin .8s linear infinite; }
+        @keyframes spin { to{transform:rotate(360deg)} }
+        .ng-loading-title { font-size: 1rem; font-weight: 700; color: #fff; }
+        .ng-loading-sub { font-size: .82rem; color: rgba(255,255,255,.55); }
 
-    <style>
-        .back-button {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background: rgba(126, 0, 255, 0.1);
-            color: #7c3aed;
-            padding: 10px 15px;
-            border-radius: 10px;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid rgba(126, 0, 255, 0.2);
-            transition: all 0.3s ease;
-            z-index: 1000;
-            font-size: 14px;
-            font-weight: 500;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+        /* success state */
+        .ng-result-icon { width: 64px; height: 64px; }
+        .ng-result-arc { fill:none; stroke:url(#ngGrad); stroke-width:4; stroke-linecap:round; stroke-dasharray:201; stroke-dashoffset:201; transform-origin:32px 32px; transform:rotate(-90deg); animation:drawArc .8s .1s cubic-bezier(.65,0,.35,1) forwards; }
+        .ng-result-tick { fill:none; stroke:#fff; stroke-width:4; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:50; stroke-dashoffset:50; animation:drawTick .35s .95s ease forwards; }
+        @keyframes drawArc { to{stroke-dashoffset:0} }
+        @keyframes drawTick { to{stroke-dashoffset:0} }
+
+        /* error state */
+        .ng-err-arc { fill:none; stroke:url(#ngErrGrad); stroke-width:4; stroke-linecap:round; stroke-dasharray:201; stroke-dashoffset:201; transform-origin:32px 32px; transform:rotate(-90deg); animation:drawArc .8s .1s cubic-bezier(.65,0,.35,1) forwards; }
+        .ng-err-x1,.ng-err-x2 { fill:none; stroke:#fff; stroke-width:4; stroke-linecap:round; stroke-dasharray:30; stroke-dashoffset:30; }
+        .ng-err-x1 { animation:drawTick .28s .95s ease forwards; }
+        .ng-err-x2 { animation:drawTick .28s 1.18s ease forwards; }
+
+        .btn-result {
+            padding: 13px 28px; border:none; border-radius: 12px; cursor: pointer;
+            font-family: 'Poppins', sans-serif; font-size: .88rem; font-weight: 700;
+            color: #fff; transition: all .2s; margin-top: 4px;
         }
+        .btn-result-ok { background: linear-gradient(135deg,#16a34a,#15803d); box-shadow: 0 4px 16px rgba(22,163,74,.4); }
+        .btn-result-ok:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(22,163,74,.55); }
+        .btn-result-err { background: linear-gradient(135deg,#dc2626,#b91c1c); box-shadow: 0 4px 16px rgba(220,38,38,.4); }
+        .btn-result-err:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(220,38,38,.55); }
 
-        .back-button:hover {
-            background: rgba(126, 0, 255, 0.2);
-            color: #db2777;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(126, 0, 255, 0.1);
+        /* ── RESPONSIVE ── */
+        @media(max-width:520px) {
+            .ng-page { padding: 16px 12px 32px; align-items: flex-start; }
+            .ng-header { padding: 22px 18px 20px; }
+            .ng-body { padding: 20px 18px 28px; }
+            .ng-actions { flex-direction: column; }
+            .btn-attach { width: 100%; }
         }
-
-        .back-button svg {
-            margin-right: 8px;
-            width: 20px;
-            height: 20px;
-            stroke: currentColor;
-        }
-
-        /* Responsive */
-        @media screen and (max-width: 768px) {
-            .back-button {
-                padding: 8px 12px;
-                font-size: 12px;
-            }
-
-            .back-button svg {
-                width: 16px;
-                height: 16px;
-            }
+        @media(max-width:360px) {
+            .ng-wrap { border-radius: 20px; }
+            .ng-modal { padding: 24px 18px; }
         }
     </style>
 </head>
-
 <body>
-    {% csrf_token %}
-    <div class="envelope-pattern">
-        <!-- Sobres animados -->
-        <div class="envelope">
-            <svg viewBox="0 0 24 24">
-                <rect x="2" y="4" width="20" height="16" rx="2" />
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-            </svg>
+
+<!-- Floating envelopes background -->
+<div class="envelope-pattern">
+    <div class="envelope"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div>
+    <div class="envelope"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div>
+    <div class="envelope"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div>
+    <div class="envelope"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div>
+    <div class="envelope"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div>
+</div>
+
+<div class="scroll-root">
+<div class="ng-page">
+  <div class="ng-wrap" id="mainCard">
+
+    <!-- Gradient header -->
+    <div class="ng-header">
+      <div class="ng-header-row">
+        <div class="ng-icon">📢</div>
+        <div>
+          <div class="ng-brand">Kislev Smart</div>
+          <div class="ng-title">Notificaciones Generales</div>
+          <div class="ng-sub">Envía un mensaje a todos los propietarios</div>
         </div>
-        <div class="envelope">
-            <svg viewBox="0 0 24 24">
-                <rect x="2" y="4" width="20" height="16" rx="2" />
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-            </svg>
-        </div>
-        <div class="envelope">
-            <svg viewBox="0 0 24 24">
-                <rect x="2" y="4" width="20" height="16" rx="2" />
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-            </svg>
-        </div>
-        <div class="envelope">
-            <svg viewBox="0 0 24 24">
-                <rect x="2" y="4" width="20" height="16" rx="2" />
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-            </svg>
-        </div>
-        <div class="envelope">
-            <svg viewBox="0 0 24 24">
-                <rect x="2" y="4" width="20" height="16" rx="2" />
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-            </svg>
-        </div>
+      </div>
+      <button class="ng-close" onclick="closePage()" title="Cerrar">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
 
+    <!-- Body -->
+    <div class="ng-body">
+      <form id="notificationForm">
+        {% csrf_token %}
 
-    <!-- Loading Screen -->
-    <div class="loading-backdrop" id="loadingScreen">
-        <div class="loading-container">
-            <div class="loading-spinner"></div>
-            <p class="loading-text">Enviando notificaciones...</p>
-            <p class="loading-subtext" id="loadingStatus">Preparando envío</p>
+        <div class="f-sec">Mensaje</div>
+        <textarea
+            id="message" name="message"
+            class="f-textarea"
+            placeholder="Escribe el mensaje que recibirán todos los propietarios..."
+            data-gramm="false" data-gramm_editor="false"
+            data-enable-grammarly="false" spellcheck="false"></textarea>
+
+        <div class="f-sec">Documentos Adjuntos</div>
+        <div id="fileList" class="ng-file-list">
+            <div class="no-files">Sin archivos adjuntos</div>
         </div>
-    </div>
 
-    <div class="container">
-        <h1>Notificaciones Generales</h1>
+        <input type="file" id="fileInput" name="files[]" class="ng-file-input" accept="*/*" multiple>
 
-        <form class="notification-form" id="notificationForm">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="message">Mensaje</label>
-                <textarea id="message" name="message" placeholder="Escribe tu mensaje aquí..." data-gramm="false"
-                    data-gramm_editor="false" data-enable-grammarly="false" spellcheck="false"></textarea>
-            </div>
-
-            <!-- Nueva sección para archivos adjuntos -->
-            <div class="files-section">
-                <div class="files-section-title">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path
-                            d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l8.57-8.57A4 4 0 1118 8.84l-8.59 8.57a2 2 0 01-2.83-2.83l8.49-8.48" />
-                    </svg>
-                    Documentos Adjuntos
-                </div>
-
-                <div id="fileList" class="file-list">
-                    <div class="no-files">No hay documentos adjuntos</div>
-                </div>
-            </div>
-
-            <div class="buttons-container">
-                <input type="file" id="fileInput" name="files[]" class="file-input" accept="*/*" multiple>
-                <label for="fileInput" class="btn btn-secondary file-label">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path
-                            d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l8.57-8.57A4 4 0 1118 8.84l-8.59 8.57a2 2 0 01-2.83-2.83l8.49-8.48" />
-                    </svg>
-                    Adjuntar Documentos
-                </label>
-
-                <button type="button" class="btn btn-primary" onclick="showConfirmation()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
-                    </svg>
-                    Enviar Mensaje
-                </button>
-            </div>
-        </form>
-    </div>
-
-    <!-- Modal de confirmación -->
-    <div class="modal-backdrop" id="confirmModal">
-        <div class="modal">
-            <div class="modal-content">
-                <h2 style="margin-bottom: 1rem;">¿Está seguro de enviar el mensaje?</h2>
-                <div class="modal-buttons">
-                    <button class="btn btn-secondary" onclick="hideConfirmation()">No</button>
-                    <button class="btn btn-primary" onclick="sendMessage()">Sí</button>
-                </div>
-            </div>
+        <div class="ng-actions">
+          <label for="fileInput" class="btn-attach">
+            <svg viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l8.57-8.57A4 4 0 1118 8.84l-8.59 8.57a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+            Adjuntar
+          </label>
+          <button type="button" class="btn-send" onclick="showConfirmation()">
+            <svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+            Enviar a todos
+          </button>
         </div>
+
+      </form>
     </div>
 
-    <script>
-        // Para almacenar los archivos seleccionados
-        let selectedFiles = [];
-        const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-        const MAX_FILES = 5; // Máximo 5 archivos
+  </div>
+</div>
+</div><!-- /scroll-root -->
 
-        // Elementos del DOM
-        const fileInput = document.getElementById('fileInput');
-        const fileList = document.getElementById('fileList');
-        const messageInput = document.getElementById('message');
-        const loadingScreen = document.getElementById('loadingScreen');
-        const loadingStatus = document.getElementById('loadingStatus');
+<!-- Confirmation modal -->
+<div class="ng-modal-backdrop" id="confirmModal">
+  <div class="ng-modal">
+    <div class="ng-modal-icon">📤</div>
+    <div class="ng-modal-title">¿Enviar a todos?</div>
+    <div class="ng-modal-sub">El mensaje llegará por correo a todos los propietarios registrados.</div>
+    <div class="ng-modal-actions">
+      <button class="btn-modal-no" onclick="hideConfirmation()">Cancelar</button>
+      <button class="btn-modal-yes" onclick="sendMessage()">Sí, enviar</button>
+    </div>
+  </div>
+</div>
 
-        // Función para formatear el tamaño del archivo
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+<!-- Loading / result overlay -->
+<div class="ng-loading" id="loadingScreen">
+  <div class="ng-loading-box" id="loadingBox">
+    <div class="ng-spinner"></div>
+    <div class="ng-loading-title">Enviando notificaciones...</div>
+    <div class="ng-loading-sub" id="loadingStatus">Preparando envío</div>
+  </div>
+</div>
+
+<script>
+    {% if user.user_type == 'administrador' %}
+    const PANEL_URL = "{% url 'accounts:visor_admin' %}";
+    {% elif user.user_type == 'propietario' %}
+    const PANEL_URL = "{% url 'accounts:visor_propietario' %}";
+    {% elif user.user_type == 'porteria' %}
+    const PANEL_URL = "{% url 'accounts:control_porteria' %}";
+    {% else %}
+    const PANEL_URL = "/";
+    {% endif %}
+
+    function closePage() {
+        const card = document.getElementById('mainCard');
+        if (card) card.style.animation = 'ngSlideUp .38s cubic-bezier(.4,0,.8,.3) forwards';
+        setTimeout(function() { window.location = PANEL_URL; }, 360);
+    }
+
+    // ── Files ──
+    let selectedFiles = [];
+    const MAX_FILE_SIZE = 10 * 1024 * 1024;
+    const MAX_FILES = 5;
+
+    const fileInput = document.getElementById('fileInput');
+    const fileList  = document.getElementById('fileList');
+    const messageInput = document.getElementById('message');
+
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 B';
+        const k = 1024, sizes = ['B','KB','MB','GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    }
+
+    fileInput.addEventListener('change', function(e) {
+        const files = Array.from(e.target.files);
+        if (selectedFiles.length + files.length > MAX_FILES) {
+            alert('Máximo ' + MAX_FILES + ' archivos.');
+            return;
         }
+        files.forEach(function(file) {
+            if (file.size > MAX_FILE_SIZE) { alert('"' + file.name + '" supera 10 MB.'); return; }
+            selectedFiles.push({ id: 'f_' + Date.now() + '_' + Math.random().toString(36).slice(2), file: file });
+        });
+        updateFileList();
+        fileInput.value = '';
+    });
 
-        // Función para obtener el ícono según el tipo de archivo
-        function getFileIcon(fileType) {
-            if (!fileType) {
-                return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>';
-            } else if (fileType.includes('pdf')) {
-                return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>';
-            } else if (fileType.includes('word') || fileType.includes('doc')) {
-                return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>';
-            } else if (fileType.includes('excel') || fileType.includes('sheet')) {
-                return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="12" x2="8" y2="12"></line><line x1="16" y1="16" x2="8" y2="16"></line><line x1="16" y1="8" x2="8" y2="8"></line></svg>';
-            } else if (fileType.includes('image') || fileType.includes('png') || fileType.includes('jpg') || fileType.includes('jpeg') || fileType.includes('gif')) {
-                return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>';
-            } else if (fileType.includes('video') || fileType.includes('mp4') || fileType.includes('avi') || fileType.includes('mov')) {
-                return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>';
-            } else if (fileType.includes('audio') || fileType.includes('mp3') || fileType.includes('wav')) {
-                return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>';
-            } else if (fileType.includes('zip') || fileType.includes('rar') || fileType.includes('tar') || fileType.includes('7z')) {
-                return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>';
-            } else if (fileType.includes('text') || fileType.includes('txt')) {
-                return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>';
+    function updateFileList() {
+        fileList.innerHTML = '';
+        if (selectedFiles.length === 0) {
+            fileList.innerHTML = '<div class="no-files">Sin archivos adjuntos</div>';
+            return;
+        }
+        selectedFiles.forEach(function(fo) {
+            const el = document.createElement('div');
+            el.className = 'ng-file-item';
+            el.innerHTML =
+                '<span class="ng-file-icon"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg></span>' +
+                '<span class="ng-file-name">' + fo.file.name + '</span>' +
+                '<span class="ng-file-size">' + formatFileSize(fo.file.size) + '</span>' +
+                '<button type="button" class="ng-file-remove" onclick="removeFile(\'' + fo.id + '\')">×</button>';
+            fileList.appendChild(el);
+        });
+    }
+
+    window.removeFile = function(id) {
+        selectedFiles = selectedFiles.filter(function(fo) { return fo.id !== id; });
+        updateFileList();
+    };
+
+    // ── Modal ──
+    function showConfirmation() {
+        if (!messageInput.value.trim()) { alert('Por favor, escribe un mensaje.'); return; }
+        document.getElementById('confirmModal').classList.add('active');
+    }
+    function hideConfirmation() {
+        document.getElementById('confirmModal').classList.remove('active');
+    }
+
+    // ── Send ──
+    async function sendMessage() {
+        hideConfirmation();
+        showLoading();
+
+        const formData = new FormData();
+        formData.append('message', messageInput.value);
+        selectedFiles.forEach(function(fo) { formData.append('fileInput', fo.file); });
+
+        const csrf = document.querySelector('[name=csrfmiddlewaretoken]');
+        try {
+            const response = await fetch('/notifications/send/', {
+                method: 'POST',
+                headers: { 'X-CSRFToken': csrf.value },
+                body: formData
+            });
+            if (!response.ok) throw new Error('Error en el servidor (' + response.status + ')');
+            const data = await response.json();
+            if (data.status === 'success') {
+                messageInput.value = '';
+                selectedFiles = [];
+                updateFileList();
+                showResultSuccess(data.enviados || 0, data.total || 0);
             } else {
-                return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>';
+                throw new Error(data.message || 'Error en el envío');
             }
+        } catch(err) {
+            showResultError(err.message || 'Error desconocido');
         }
+    }
 
-        // Manejador del input de archivo
-        fileInput.addEventListener('change', function (e) {
-            const files = Array.from(e.target.files);
+    function showLoading() {
+        document.getElementById('loadingScreen').classList.add('active');
+        document.getElementById('loadingBox').innerHTML =
+            '<div class="ng-spinner"></div>' +
+            '<div class="ng-loading-title">Enviando notificaciones...</div>' +
+            '<div class="ng-loading-sub">Preparando envío</div>';
+    }
 
-            if (selectedFiles.length + files.length > MAX_FILES) {
-                alert(`Solo puede adjuntar un máximo de ${MAX_FILES} archivos.`);
-                return;
-            }
+    function showResultSuccess(sent, total) {
+        document.getElementById('loadingBox').innerHTML =
+            '<svg class="ng-result-icon" viewBox="0 0 64 64">' +
+              '<defs><linearGradient id="ngGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#16a34a"/><stop offset="100%" stop-color="#15803d"/></linearGradient></defs>' +
+              '<circle cx="32" cy="32" r="30" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="4"/>' +
+              '<circle class="ng-result-arc" cx="32" cy="32" r="30"/>' +
+              '<polyline class="ng-result-tick" points="20,34 28,43 44,24"/>' +
+            '</svg>' +
+            '<div class="ng-loading-title">¡Enviado!</div>' +
+            '<div class="ng-loading-sub">' + sent + ' de ' + total + ' correos enviados</div>' +
+            '<button class="btn-result btn-result-ok" onclick="closeResult()">Aceptar</button>';
+    }
 
-            // Validar cada archivo
-            const validFiles = files.filter(file => {
-                // Validar solo el tamaño
-                if (file.size > MAX_FILE_SIZE) {
-                    alert(`El archivo "${file.name}" supera el límite de 10MB.`);
-                    return false;
-                }
+    function showResultError(msg) {
+        document.getElementById('loadingBox').innerHTML =
+            '<svg class="ng-result-icon" viewBox="0 0 64 64">' +
+              '<defs><linearGradient id="ngErrGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#dc2626"/><stop offset="100%" stop-color="#b91c1c"/></linearGradient></defs>' +
+              '<circle cx="32" cy="32" r="30" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="4"/>' +
+              '<circle class="ng-err-arc" cx="32" cy="32" r="30"/>' +
+              '<line class="ng-err-x1" x1="21" y1="21" x2="43" y2="43"/>' +
+              '<line class="ng-err-x2" x1="43" y1="21" x2="21" y2="43"/>' +
+            '</svg>' +
+            '<div class="ng-loading-title">Error al enviar</div>' +
+            '<div class="ng-loading-sub">' + msg + '</div>' +
+            '<button class="btn-result btn-result-err" onclick="closeResult()">Cerrar</button>';
+    }
 
-                return true;
-            });
+    function closeResult() {
+        document.getElementById('loadingScreen').classList.remove('active');
+    }
 
-            // Agregar los archivos válidos a la lista
-            validFiles.forEach(file => {
-                // Crear un objeto con ID único para cada archivo
-                const fileObj = {
-                    id: 'file_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9),
-                    file: file
-                };
-
-                selectedFiles.push(fileObj);
-            });
-
-            // Actualizar la UI
-            updateFileList();
-
-            // Limpiar el input para permitir seleccionar el mismo archivo
-            fileInput.value = '';
-        });
-
-        // Función para actualizar la lista de archivos en la UI
-        function updateFileList() {
-            // Limpiar la lista
-            fileList.innerHTML = '';
-
-            if (selectedFiles.length === 0) {
-                fileList.innerHTML = '<div class="no-files">No hay documentos adjuntos</div>';
-                return;
-            }
-
-            // Agregar cada archivo a la lista
-            selectedFiles.forEach(fileObj => {
-                const file = fileObj.file;
-                const fileItem = document.createElement('div');
-                fileItem.className = 'file-item';
-                fileItem.dataset.id = fileObj.id;
-                fileItem.innerHTML = `
-                    <div class="file-preview">
-                        <span class="file-icon">${getFileIcon(file.type)}</span>
-                        <span class="file-name">${file.name}</span>
-                        <span class="file-size">${formatFileSize(file.size)}</span>
-                    </div>
-                    <button type="button" class="remove-file" onclick="removeFile('${fileObj.id}')">×</button>
-                `;
-                fileList.appendChild(fileItem);
-            });
-        }
-
-        // Función para eliminar un archivo
-        window.removeFile = function (fileId) {
-            selectedFiles = selectedFiles.filter(fileObj => fileObj.id !== fileId);
-            updateFileList();
-        };
-
-        // Función principal de envío
-        async function sendMessage() {
-            if (!messageInput.value.trim()) {
-                alert("Por favor, escribe un mensaje");
-                return;
-            }
-
-            if (loadingScreen) loadingScreen.style.display = 'flex';
-            hideConfirmation();
-
-            // Actualizar todo el contenedor de loading
-            const loadingContainer = loadingScreen.querySelector('.loading-container');
-            if (loadingContainer) {
-                loadingContainer.innerHTML = `
-                    <div class="loading-spinner"></div>
-                    <p class="loading-text">Enviando notificaciones...</p>
-                    <p class="loading-subtext">Preparando envío</p>
-                `;
-            }
-
-            const formData = new FormData();
-            formData.append('message', messageInput.value);
-
-            // Agregar todos los archivos seleccionados
-            // Usamos el mismo nombre de campo para todos los archivos
-            // El backend debe usar request.FILES.getlist('fileInput')
-            selectedFiles.forEach((fileObj) => {
-                formData.append('fileInput', fileObj.file);
-            });
-
-            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
-            if (!csrfToken) {
-                alert("Error: No se encontró el token CSRF");
-                return;
-            }
-
-            try {
-                const response = await fetch('/notifications/send/', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': csrfToken.value
-                    },
-                    body: formData
-                });
-
-                if (!response.ok) {
-                    throw new Error('Error en la respuesta del servidor');
-                }
-
-                const data = await response.json();
-
-                if (data.status === 'success' && loadingContainer) {
-                    loadingContainer.innerHTML = `
-                        <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
-                            <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
-                            <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
-                        </svg>
-                        <div class="loading-text">¡Envío completado!</div>
-                        <div class="loading-subtext success-text">
-                            ${data.enviados || 0} de ${data.total || 0} correos enviados exitosamente
-                        </div>
-                        <button onclick="closeSuccessMessage()" class="btn btn-primary" style="margin-top: 20px;">
-                            Cerrar
-                        </button>
-                    `;
-
-                    // Limpiar el formulario
-                    messageInput.value = '';
-                    selectedFiles = [];
-                    updateFileList();
-                } else {
-                    throw new Error(data.message || 'Error en el envío');
-                }
-            } catch (error) {
-                if (loadingContainer) {
-                    loadingContainer.innerHTML = `
-                        <svg class="error-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                            <circle cx="12" cy="12" r="11" fill="none"/>
-                            <path d="M15 9l-6 6M9 9l6 6"/>
-                        </svg>
-                        <div class="loading-text">Error en el envío</div>
-                        <div class="loading-subtext error-text">
-                            ${error.message || 'Error desconocido'}
-                        </div>
-                        <button onclick="closeSuccessMessage()" class="btn btn-primary" style="margin-top: 20px;">
-                            Cerrar
-                        </button>
-                    `;
-                }
-            }
-        }
-
-        // Función para cerrar el mensaje
-        function closeSuccessMessage() {
-            if (loadingScreen) {
-                loadingScreen.style.display = 'none';
-            }
-        }
-
-        // Funciones de modal
-        function showConfirmation() {
-            if (!messageInput.value.trim()) {
-                alert("Por favor, escribe un mensaje");
-                return;
-            }
-
-            const confirmModal = document.getElementById('confirmModal');
-            if (confirmModal) {
-                confirmModal.style.display = 'flex';
-            }
-        }
-
-        function hideConfirmation() {
-            const confirmModal = document.getElementById('confirmModal');
-            if (confirmModal) {
-                confirmModal.style.display = 'none';
-            }
-        }
-
-        // Inicialización
-        document.addEventListener('DOMContentLoaded', () => {
-            if (loadingScreen) {
-                loadingScreen.style.display = 'none';
-            }
-            updateFileList();
-        });
-    </script>
+    document.addEventListener('DOMContentLoaded', function() {
+        updateFileList();
+    });
+</script>
 </body>
-
 </html>

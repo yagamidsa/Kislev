@@ -259,10 +259,19 @@
         window.CSRF_TOKEN = "{{ csrf_token }}";
 
         // ── Cerrar con animación slide-up ──
+        {% if user.user_type == 'administrador' %}
+        const PANEL_URL = "{% url 'accounts:visor_admin' %}";
+        {% elif user.user_type == 'propietario' %}
+        const PANEL_URL = "{% url 'accounts:visor_propietario' %}";
+        {% elif user.user_type == 'porteria' %}
+        const PANEL_URL = "{% url 'accounts:control_porteria' %}";
+        {% else %}
+        const PANEL_URL = "/";
+        {% endif %}
         function closePage() {
             const card = document.getElementById('mainCard');
             if (card) card.style.animation = 'formSlideUp .38s cubic-bezier(.4,0,.8,.3) forwards';
-            setTimeout(function() { window.location = "{% url 'notificaciones' %}"; }, 360);
+            setTimeout(function() { window.location = PANEL_URL; }, 360);
         }
 
         // Variables globales
