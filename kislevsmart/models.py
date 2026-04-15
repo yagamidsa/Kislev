@@ -156,6 +156,37 @@ class VisitanteVehicular(models.Model):
         return True
 
 
+class VisitanteGuardado(models.Model):
+    """Contactos frecuentes de un propietario para generar QR rápidamente."""
+    email_propietario = models.EmailField(db_index=True)
+    conjunto = models.ForeignKey(
+        'accounts.ConjuntoResidencial',
+        on_delete=models.CASCADE,
+        null=True, blank=True
+    )
+    nombre      = models.CharField(max_length=100)
+    email       = models.EmailField()
+    celular     = models.CharField(max_length=15)
+    cedula      = models.CharField(max_length=20)
+    motivo      = models.CharField(max_length=255, blank=True)
+    numper      = models.CharField(max_length=20, default='1')
+    tipo        = models.CharField(max_length=20, choices=[
+        ('peatonal',  'Peatonal'),
+        ('vehicular', 'Vehicular'),
+    ], default='peatonal')
+    tipo_vehiculo = models.CharField(max_length=20, blank=True)
+    placa         = models.CharField(max_length=10, blank=True)
+    creado        = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-creado']
+        verbose_name = 'Visitante Guardado'
+        verbose_name_plural = 'Visitantes Guardados'
+
+    def __str__(self):
+        return f"{self.nombre} ({self.tipo}) — {self.email_propietario}"
+
+
 
 
 

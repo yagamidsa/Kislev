@@ -339,6 +339,114 @@
     .btn-generar:disabled { opacity: .6; cursor: not-allowed; transform: none; }
     .btn-generar svg { width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:2; }
 
+    /* ─ Frecuentes ─ */
+    .frec-wrap {
+      width: 100%; max-width: 480px;
+      margin-bottom: 28px;
+    }
+    .frec-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 12px; padding: 0 2px;
+    }
+    .frec-label {
+      font-size: 10px; font-weight: 800; letter-spacing: 1.1px;
+      text-transform: uppercase; color: rgba(167,139,250,.7);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .frec-label svg { width:12px; height:12px; stroke:currentColor; fill:none; stroke-width:2.5; }
+    .frec-count {
+      font-size: 11px; color: rgba(255,255,255,.3); font-weight: 500;
+    }
+    .frec-track {
+      display: flex; gap: 10px;
+      overflow-x: auto; padding-bottom: 6px;
+      scrollbar-width: none; -ms-overflow-style: none;
+    }
+    .frec-track::-webkit-scrollbar { display: none; }
+
+    /* card de visitante guardado */
+    .frec-card {
+      flex-shrink: 0; width: 88px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 18px; padding: 14px 10px 12px;
+      display: flex; flex-direction: column; align-items: center; gap: 7px;
+      cursor: pointer; position: relative;
+      transition: background .22s, border-color .22s, transform .22s;
+    }
+    .frec-card:hover { background: rgba(124,58,237,.14); border-color: rgba(124,58,237,.35); transform: translateY(-3px); }
+    .frec-card:active { transform: translateY(-1px); }
+
+    /* avatar */
+    .frec-avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; font-weight: 800; letter-spacing: -.5px;
+      flex-shrink: 0;
+    }
+    .frec-avatar.peat {
+      background: linear-gradient(135deg, rgba(124,58,237,.3), rgba(167,139,250,.2));
+      border: 2px solid rgba(124,58,237,.4); color: #a78bfa;
+    }
+    .frec-avatar.veh {
+      background: linear-gradient(135deg, rgba(190,24,93,.3), rgba(249,168,212,.2));
+      border: 2px solid rgba(190,24,93,.4); color: #f9a8d4;
+    }
+
+    /* nombre */
+    .frec-name {
+      font-size: 11px; font-weight: 700; color: #fff;
+      text-align: center; max-width: 80px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      line-height: 1.2;
+    }
+
+    /* tipo badge */
+    .frec-tipo {
+      font-size: 9.5px; font-weight: 700; letter-spacing: .4px;
+      padding: 3px 8px; border-radius: 20px;
+    }
+    .frec-tipo.peat { background: rgba(124,58,237,.2); color: #a78bfa; }
+    .frec-tipo.veh  { background: rgba(190,24,93,.2);  color: #f9a8d4; }
+
+    /* botón delete */
+    .frec-del {
+      position: absolute; top: 6px; right: 6px;
+      width: 20px; height: 20px; border-radius: 50%;
+      background: rgba(248,113,113,.15); border: 1px solid rgba(248,113,113,.25);
+      color: rgba(248,113,113,.7); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .2s, color .2s; padding: 0;
+    }
+    .frec-del:hover { background: rgba(248,113,113,.35); color: #fca5a5; }
+    .frec-del svg { width: 10px; height: 10px; stroke: currentColor; fill: none; stroke-width: 3; }
+
+    /* card "nuevo" */
+    .frec-new {
+      flex-shrink: 0; width: 88px;
+      background: rgba(255,255,255,.03);
+      border: 1.5px dashed rgba(255,255,255,.18);
+      border-radius: 18px; padding: 14px 10px 12px;
+      display: flex; flex-direction: column; align-items: center; gap: 7px;
+      cursor: pointer;
+      transition: background .22s, border-color .22s;
+    }
+    .frec-new:hover { background: rgba(190,24,93,.1); border-color: rgba(190,24,93,.4); }
+    .frec-new-icon {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: rgba(255,255,255,.06); border: 1.5px dashed rgba(255,255,255,.2);
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,.4);
+    }
+    .frec-new-icon svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2.5; }
+    .frec-new-lbl { font-size: 10.5px; font-weight: 700; color: rgba(255,255,255,.4); text-align: center; }
+
+    /* empty state */
+    .frec-empty {
+      font-size: 12px; color: rgba(255,255,255,.3); font-style: italic;
+      padding: 8px 0;
+    }
+
     /* ─ Toast ─ */
     .toast {
       position: fixed; bottom: 28px; left: 50%;
@@ -394,6 +502,22 @@
     <span class="hero-name">{{ user.nombre }}</span>
   </h1>
   <p class="hero-sub">Genera un código QR de acceso para tu visitante</p>
+
+  <!-- Visitantes frecuentes (solo propietario) -->
+  {% if user.user_type == 'propietario' %}
+  <div class="frec-wrap" id="frecWrap">
+    <div class="frec-header">
+      <div class="frec-label">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+        Frecuentes
+      </div>
+      <span class="frec-count" id="frecCount"></span>
+    </div>
+    <div class="frec-track" id="frecTrack">
+      <div class="frec-empty">Cargando...</div>
+    </div>
+  </div>
+  {% endif %}
 
   <div class="tipo-row" id="tipoRow">
     <button type="button" class="tipo-pill active" data-tipo="peatonal" onclick="setTipo('peatonal',this)">
@@ -667,6 +791,114 @@ document.getElementById('qrForm').addEventListener('submit', async function(e) {
     txt.textContent = 'Generar QR';
   }
 });
+
+// ── Visitantes Frecuentes ──
+{% if user.user_type == 'propietario' %}
+const FREC_URL = "{% url 'visitantes_guardados_api' %}";
+const CSRF     = document.querySelector('[name=csrfmiddlewaretoken]').value;
+let frecuentes = [];
+
+function initials(nombre) {
+  return nombre.trim().split(/\s+/).slice(0,2).map(w=>w[0].toUpperCase()).join('');
+}
+
+function renderFrecuentes() {
+  const track = document.getElementById('frecTrack');
+  const count = document.getElementById('frecCount');
+  if (!track) return;
+  count.textContent = frecuentes.length ? frecuentes.length + (frecuentes.length===1?' guardado':' guardados') : '';
+
+  const newCard = `
+    <div class="frec-new" onclick="openModal()">
+      <div class="frec-new-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+      <div class="frec-new-lbl">Nuevo</div>
+    </div>`;
+
+  if (frecuentes.length === 0) {
+    track.innerHTML = newCard + '<div class="frec-empty" style="align-self:center;padding-left:12px">Sin frecuentes aún</div>';
+    return;
+  }
+
+  track.innerHTML = newCard + frecuentes.map(v => {
+    const ini   = initials(v.nombre);
+    const isPeat = v.tipo === 'peatonal';
+    const cls   = isPeat ? 'peat' : 'veh';
+    const tipLbl = isPeat ? 'Peatonal' : 'Vehicular';
+    const dataAttr = encodeURIComponent(JSON.stringify(v));
+    return `
+      <div class="frec-card" onclick="selectFrecuente('${dataAttr}')">
+        <button class="frec-del" onclick="deleteFrecuente(event,${v.id})" title="Eliminar">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+        <div class="frec-avatar ${cls}">${ini}</div>
+        <div class="frec-name">${v.nombre.split(' ')[0]}</div>
+        <div class="frec-tipo ${cls}">${tipLbl}</div>
+      </div>`;
+  }).join('');
+}
+
+async function loadFrecuentes() {
+  try {
+    const res  = await fetch(FREC_URL, { credentials: 'same-origin' });
+    const data = await res.json();
+    frecuentes = data.visitantes || [];
+    renderFrecuentes();
+  } catch(e) {
+    const track = document.getElementById('frecTrack');
+    if (track) track.innerHTML = '<div class="frec-empty" style="align-self:center">Error al cargar</div>';
+  }
+}
+
+function selectFrecuente(encoded) {
+  const v = JSON.parse(decodeURIComponent(encoded));
+
+  // Tipo
+  const tipBtn = document.querySelector(`[data-tipo="${v.tipo}"]`);
+  if (tipBtn) setTipo(v.tipo, tipBtn);
+
+  // Campos comunes
+  ['nombre','email','celular','cedula','numper'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.value = v[id] || ''; el.dispatchEvent(new Event('input')); }
+  });
+
+  // Motivo
+  const motEl = document.getElementById('motivo');
+  if (motEl && v.motivo) motEl.value = v.motivo;
+
+  // Vehículo
+  if (v.tipo === 'vehicular') {
+    const placaEl = document.getElementById('placa');
+    const tvEl    = document.getElementById('tipo_vehiculo');
+    if (placaEl) { placaEl.value = v.placa || ''; placaEl.dispatchEvent(new Event('input')); }
+    if (tvEl && v.tipo_vehiculo) tvEl.value = v.tipo_vehiculo;
+  }
+
+  openModal();
+}
+
+async function deleteFrecuente(event, id) {
+  event.stopPropagation();
+  try {
+    const res = await fetch(FREC_URL, {
+      method: 'DELETE',
+      credentials: 'same-origin',
+      headers: { 'X-CSRFToken': CSRF, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id })
+    });
+    if (res.ok) {
+      frecuentes = frecuentes.filter(v => v.id !== id);
+      renderFrecuentes();
+    } else {
+      showToast('No se pudo eliminar');
+    }
+  } catch(e) {
+    showToast('Error de conexión');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', loadFrecuentes);
+{% endif %}
 
 // ── QR partículas ──
 (function() {

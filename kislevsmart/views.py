@@ -30,7 +30,7 @@ from django.contrib import messages
 from django.db import DatabaseError, transaction, models
 from django.http import HttpResponse
 from django.views.decorators.vary import vary_on_headers
-from .models import VisitanteVehicular
+from .models import VisitanteVehicular, VisitanteGuardado
 from .models import ParqueaderoCarro, ParqueaderoMoto, Cuota, Pago, Novedad, ArchivoNovedad, ComentarioNovedad, LikeNovedad, NovedadVista, ConfigParqueadero
 from django.core.mail import EmailMultiAlternatives
 
@@ -1146,6 +1146,24 @@ def bienvenida(request):
                 log_audit(request, 'visitante_creado',
                           f"Tipo: {tipo_visitante} | Nombre: {visitante.nombre} | ID: {visitante.id}")
 
+                # Auto-guardar contacto frecuente para propietarios
+                if request.user.user_type == 'propietario':
+                    VisitanteGuardado.objects.update_or_create(
+                        email_propietario=request.user.email,
+                        cedula=datos_visitante['cedula'],
+                        tipo=tipo_visitante,
+                        defaults={
+                            'nombre':       datos_visitante['nombre'],
+                            'email':        datos_visitante['email'],
+                            'celular':      datos_visitante['celular'],
+                            'motivo':       datos_visitante.get('motivo', ''),
+                            'numper':       datos_visitante['numper'],
+                            'conjunto':     request.user.conjunto,
+                            'tipo_vehiculo': sanitize_text(request.POST.get('tipo_vehiculo', '')) if tipo_visitante == 'vehicular' else '',
+                            'placa':        sanitize_text(request.POST.get('placa', '')).upper() if tipo_visitante == 'vehicular' else '',
+                        }
+                    )
+
                 # Generar y enviar QR
                 raw_token = f"Kislev_{tipo_visitante}_{uuid_token}"  # Incluimos el tipo en el token
                 encrypted_token = cipher.encrypt(raw_token.encode()).decode()
@@ -1237,6 +1255,31 @@ def bienvenida(request):
 
     conjunto = request.user.conjunto if request.user.is_authenticated else None
     return render(request, 'bienvenida.html', {'conjunto': conjunto})
+
+
+@login_required
+@role_required(['propietario'])
+def visitantes_guardados_api(request):
+    """GET: lista de contactos frecuentes | DELETE: eliminar uno."""
+    if request.method == 'GET':
+        visitantes = list(
+            VisitanteGuardado.objects.filter(email_propietario=request.user.email)
+            .values('id', 'nombre', 'email', 'celular', 'cedula',
+                    'motivo', 'numper', 'tipo', 'tipo_vehiculo', 'placa')
+        )
+        return JsonResponse({'visitantes': visitantes})
+
+    elif request.method == 'DELETE':
+        data = json.loads(request.body)
+        vid = data.get('id')
+        try:
+            vg = VisitanteGuardado.objects.get(id=vid, email_propietario=request.user.email)
+            vg.delete()
+            return JsonResponse({'status': 'ok'})
+        except VisitanteGuardado.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'No encontrado'}, status=404)
+
+    return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=405)
 
 
 
