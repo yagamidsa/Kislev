@@ -16,7 +16,10 @@
 
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Poppins', sans-serif; background: #020c1a; min-height: 100vh; overflow-x: hidden; color: #e2e8f0; }
+        html { background: #020c1a; }
+        html, body { height: 100%; overflow: hidden; margin: 0; padding: 0; }
+        body { font-family: 'Poppins', sans-serif; background: #020c1a; color: #e2e8f0; }
+        .scroll-root { height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: none; }
 
         #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 
@@ -352,6 +355,7 @@
 <div style="position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse at 15% 40%, rgba(6,182,212,.1) 0%, transparent 50%), radial-gradient(ellipse at 85% 20%, rgba(37,99,235,.1) 0%, transparent 50%), #020c1a;"></div>
 <canvas id="particles"></canvas>
 
+<div class="scroll-root">
 <div class="page">
 
     <!-- TOPBAR -->
@@ -456,6 +460,7 @@
 
     </div>
 </div><!-- /page -->
+</div><!-- /scroll-root -->
 
 
 <!-- ════════════════════ PANELS ════════════════════ -->

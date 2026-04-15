@@ -9,17 +9,20 @@
   <link rel="stylesheet" href="{% static 'css/restricciones.css' %}">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { background: #07091A; overscroll-behavior: none; }
+    html { background: #07091A; }
+    html, body {
+      height: 100%; overflow: hidden; margin: 0; padding: 0;
+    }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
-      min-height: 100vh;
       background: #07091A;
-      overscroll-behavior: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
       color: #fff;
+    }
+    .scroll-root {
+      height: 100%; overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: none;
+      display: flex; align-items: center; justify-content: center;
     }
 
     /* ── Fondo animado ── */
@@ -212,6 +215,7 @@
 <div class="bg"></div>
 <div id="particles"></div>
 
+<div class="scroll-root">
 <div class="wrap">
   <div class="card">
 
@@ -271,7 +275,8 @@
     </div>
 
   </div>
-</div>
+</div><!-- /wrap -->
+</div><!-- /scroll-root -->
 
 <script>
 (function() {

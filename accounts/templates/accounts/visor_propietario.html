@@ -12,8 +12,10 @@
     <script src="{% static 'js/visor_admin.js' %}"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { background: #09000f; overscroll-behavior: none; }
-        body { font-family: 'Poppins', sans-serif; background: #09000f; min-height: 100vh; overflow-x: hidden; overscroll-behavior: none; color: #e2e8f0; }
+        html { background: #09000f; }
+        html, body { height: 100%; overflow: hidden; margin: 0; padding: 0; }
+        body { font-family: 'Poppins', sans-serif; background: #09000f; color: #e2e8f0; }
+        .scroll-root { height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: none; }
         #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
         .page { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; }
 
@@ -110,6 +112,7 @@
 </head>
 <body>
 <canvas id="particles"></canvas>
+<div class="scroll-root">
 <div class="page">
 
     <div class="topbar">
@@ -224,7 +227,8 @@
         </div>
 
     </div>
-</div>
+</div><!-- /page -->
+</div><!-- /scroll-root -->
 
 <script>
 function pad(n){ return String(n).padStart(2,'0'); }
