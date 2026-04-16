@@ -558,9 +558,8 @@ def saas_dashboard(request):
 @saas_required
 def gestionar_conjunto(request, conjunto_id):
     """Panel hub por conjunto para el SaaS owner."""
-    from kislevsmart.models import LogEnvio, ConfigGlobal, Paquete
     from django.utils import timezone
-    from django.db.models import Count
+    from django.db.models import Count, Max
     import datetime
 
     conjunto = get_object_or_404(ConjuntoResidencial, pk=conjunto_id)
@@ -578,48 +577,64 @@ def gestionar_conjunto(request, conjunto_id):
     except ValueError:
         fecha_hasta = hoy
 
-    qs_envios = LogEnvio.objects.filter(
-        conjunto=conjunto,
-        fecha__date__gte=fecha_desde,
-        fecha__date__lte=fecha_hasta,
-    )
-    emails_periodo  = qs_envios.filter(tipo='email').count()
-    wa_periodo      = qs_envios.filter(tipo='whatsapp').count()
+    # ── Métricas de envíos (requiere migración 0019) ──────────────────────────
+    emails_periodo = 0
+    wa_periodo     = 0
+    pct_email      = 0
+    pct_wa         = 0
+    historico      = []
+    ultimos_envios = []
+    limite_emails  = 1000
+    limite_wa      = 500
+    try:
+        from kislevsmart.models import LogEnvio, ConfigGlobal
+        qs_envios = LogEnvio.objects.filter(
+            conjunto=conjunto,
+            fecha__date__gte=fecha_desde,
+            fecha__date__lte=fecha_hasta,
+        )
+        emails_periodo = qs_envios.filter(tipo='email').count()
+        wa_periodo     = qs_envios.filter(tipo='whatsapp').count()
 
-    cfg = ConfigGlobal.get()
-    pct_email = min(round(emails_periodo * 100 / cfg.limite_emails_mes) if cfg.limite_emails_mes else 0, 100)
-    pct_wa    = min(round(wa_periodo    * 100 / cfg.limite_whatsapp_mes) if cfg.limite_whatsapp_mes else 0, 100)
+        cfg = ConfigGlobal.get()
+        limite_emails = cfg.limite_emails_mes
+        limite_wa     = cfg.limite_whatsapp_mes
+        pct_email = min(round(emails_periodo * 100 / limite_emails) if limite_emails else 0, 100)
+        pct_wa    = min(round(wa_periodo    * 100 / limite_wa)     if limite_wa     else 0, 100)
 
-    # Histórico últimos 6 meses
-    historico = []
-    for i in range(5, -1, -1):
-        d = (hoy.replace(day=1) - datetime.timedelta(days=i * 28)).replace(day=1)
-        fin = (d.replace(month=d.month % 12 + 1, day=1) - datetime.timedelta(days=1)) if d.month < 12 else d.replace(month=12, day=31)
-        historico.append({
-            'label':     d.strftime('%b %Y'),
-            'emails':    LogEnvio.objects.filter(conjunto=conjunto, tipo='email',    fecha__date__gte=d, fecha__date__lte=fin).count(),
-            'whatsapp':  LogEnvio.objects.filter(conjunto=conjunto, tipo='whatsapp', fecha__date__gte=d, fecha__date__lte=fin).count(),
-        })
+        for i in range(5, -1, -1):
+            d = (hoy.replace(day=1) - datetime.timedelta(days=i * 28)).replace(day=1)
+            if d.month < 12:
+                fin = d.replace(month=d.month + 1, day=1) - datetime.timedelta(days=1)
+            else:
+                fin = d.replace(month=12, day=31)
+            historico.append({
+                'label':    d.strftime('%b %Y'),
+                'emails':   LogEnvio.objects.filter(conjunto=conjunto, tipo='email',    fecha__date__gte=d, fecha__date__lte=fin).count(),
+                'whatsapp': LogEnvio.objects.filter(conjunto=conjunto, tipo='whatsapp', fecha__date__gte=d, fecha__date__lte=fin).count(),
+            })
 
-    # Últimos 20 envíos para auditoría
-    ultimos_envios = LogEnvio.objects.filter(conjunto=conjunto).order_by('-fecha')[:20]
+        ultimos_envios = list(LogEnvio.objects.filter(conjunto=conjunto).order_by('-fecha')[:20])
+    except Exception:
+        pass
 
-    # Residentes
+    # ── Residentes ────────────────────────────────────────────────────────────
     total_res   = Usuario.objects.filter(conjunto=conjunto).count()
     activos_res = Usuario.objects.filter(conjunto=conjunto, is_active=True).count()
 
-    # Actividad general
-    from kislevsmart.models import Visitante, Paquete
-    from django.db.models import Max
+    # ── Actividad general ─────────────────────────────────────────────────────
     visitantes_mes = 0
     paq_pendientes = 0
     try:
+        from kislevsmart.models import Visitante
         visitantes_mes = Visitante.objects.filter(
-            conjunto=conjunto, fecha_visita__date__gte=hoy.replace(day=1)
+            conjunto=conjunto,
+            fecha_generacion__date__gte=hoy.replace(day=1),
         ).count()
     except Exception:
         pass
     try:
+        from kislevsmart.models import Paquete
         paq_pendientes = Paquete.objects.filter(conjunto=conjunto, estado='pendiente').count()
     except Exception:
         pass
