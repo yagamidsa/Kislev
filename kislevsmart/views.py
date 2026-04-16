@@ -13,7 +13,7 @@ from django.utils import timezone
 from cryptography.fernet import InvalidToken
 from django.core.mail import EmailMessage
 from .models import Visitante
-from .utils import role_required, log_audit, calcular_cobro_parqueadero
+from .utils import role_required, log_audit, calcular_cobro_parqueadero, log_envio
 from django.db.models import Count, F
 from django.db.models.functions import ExtractMonth, ExtractWeekDay, ExtractHour
 import json
@@ -602,6 +602,8 @@ Recibió este email porque está registrado como propietario.
             # 7. Enviar lote
             try:
                 email.send(fail_silently=False)
+                for _ in batch:
+                    log_envio('email', conjunto=request.user.conjunto, detalle='Notificación masiva')
                 total_enviados += len(batch)
                 logger.info(f"Lote {batch_num}/{total_lotes} enviado: {len(batch)} destinatarios. Total: {total_enviados}/{total_propietarios}")
             except Exception as e:
@@ -796,6 +798,7 @@ def enviar_notificacion_individual(request):
                 
                 # Enviar correo
                 msg.send(fail_silently=False)
+                log_envio('email', conjunto=request.user.conjunto, detalle='Notificación individual')
                 enviados += 1
                 logger.info(f"Notificación individual enviada a {propietario.email}")
                 
@@ -964,6 +967,7 @@ Horario: Lunes a Viernes de 8:00 AM a 6:00 PM
                     msg.attach_alternative(html_content, "text/html")
                     
                     msg.send(fail_silently=False)
+                    log_envio('email', conjunto=request.user.conjunto, detalle='Factura servicio')
                     batch_successful += 1
                     successful_sends += 1
                     logger.debug(f"Email enviado exitosamente a {email}")
@@ -1433,6 +1437,7 @@ def validar_qr(request, encrypted_token):
                     headers={'X-Priority': '1'}
                 )
                 email.send(fail_silently=False)
+                log_envio('email', conjunto=request.user.conjunto, detalle='QR visitante')
                 logger.info(f"Notificación enviada a {visitante.email_creador}")
             except Exception as e:
                 logger.error(f"Error enviando notificación por email: {str(e)}")
@@ -1881,6 +1886,7 @@ def validar_qr_vehicular(request, encrypted_token):
                     headers={'X-Priority': '1'}
                 )
                 email.send(fail_silently=False)
+                log_envio('email', conjunto=request.user.conjunto, detalle='QR visitante')
                 logger.info(f"Notificación enviada a {visitante.email_creador}")
             except Exception as e:
                 logger.error(f"Error enviando notificación por email: {str(e)}")
@@ -2544,6 +2550,7 @@ def _enviar_email_novedad(novedad, request):
             msg = EmailMultiAlternatives(subject, plain, settings.DEFAULT_FROM_EMAIL, [email])
             msg.attach_alternative(html, 'text/html')
             msg.send(fail_silently=True)
+            log_envio('email', conjunto=novedad.conjunto, detalle=f'Novedad: {novedad.titulo[:80]}')
     except Exception as e:
         logger.error(f'Error enviando emails novedad: {e}')
 
@@ -2689,7 +2696,7 @@ def registrar_paquete(request):
                     hora=now.strftime('%H:%M'),
                     codigo=codigo,
                 )
-                wa_enviado = send_whatsapp(destinatario_telefono, msg)
+                wa_enviado = send_whatsapp(destinatario_telefono, msg, conjunto=conjunto, detalle='Paquete registrado')
                 paquete.whatsapp_enviado = wa_enviado
                 paquete.save(update_fields=['whatsapp_enviado'])
 
@@ -2807,7 +2814,7 @@ def editar_paquete(request):
                 hora=now.strftime('%I:%M %p'),
                 codigo=paquete.codigo,
             )
-            wa_ok = send_whatsapp(residente.phone_number, msg)
+            wa_ok = send_whatsapp(residente.phone_number, msg, conjunto=paquete.conjunto, detalle='Paquete corregido')
             if wa_ok:
                 paquete.whatsapp_enviado = True
                 paquete.save(update_fields=['whatsapp_enviado'])

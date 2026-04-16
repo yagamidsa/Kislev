@@ -18,7 +18,7 @@ def _normalizar_telefono(phone):
     return digits  # devuelve lo que tenga, Meta lo rechazará si es inválido
 
 
-def send_whatsapp(phone: str, message: str) -> bool:
+def send_whatsapp(phone: str, message: str, conjunto=None, detalle: str = 'WhatsApp') -> bool:
     """
     Envía un mensaje de WhatsApp usando Twilio.
     Retorna True si se envió, False en caso de error.
@@ -42,6 +42,7 @@ def send_whatsapp(phone: str, message: str) -> bool:
             timeout=10,
         )
         if resp.status_code == 201:
+            log_envio('whatsapp', conjunto=conjunto, detalle=detalle)
             return True
         logger.error('Twilio API error %s: %s', resp.status_code, resp.text[:300])
         return False
@@ -66,6 +67,15 @@ def mensaje_paquete(nombre, conjunto, torre, apartamento, empresa, fecha, hora, 
         f"Preséntalo en portería al momento de recoger tu pedido.\n\n"
         f"_Este mensaje es automático · {conjunto}_"
     )
+
+
+def log_envio(tipo: str, conjunto=None, detalle: str = '') -> None:
+    """Registra un email o WhatsApp enviado en LogEnvio. Falla silenciosamente."""
+    try:
+        from kislevsmart.models import LogEnvio
+        LogEnvio.objects.create(tipo=tipo, conjunto=conjunto, detalle=detalle[:200])
+    except Exception:
+        pass
 
 
 def log_audit(request, accion, detalle=''):

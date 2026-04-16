@@ -497,7 +497,12 @@ def saas_required(view_func):
 @login_required
 @saas_required
 def saas_dashboard(request):
-    """Super-admin dashboard: list of all residential complexes."""
+    """Super-admin dashboard: list of all residential complexes + global send metrics."""
+    from kislevsmart.models import LogEnvio, ConfigGlobal
+    from django.utils import timezone
+    from django.db.models import Count
+    import datetime
+
     conjuntos = ConjuntoResidencial.objects.all().order_by('nombre')
     stats = []
     for c in conjuntos:
@@ -507,7 +512,156 @@ def saas_dashboard(request):
             'admins': Usuario.objects.filter(conjunto=c, user_type='administrador', is_active=True).count(),
             'porteria': Usuario.objects.filter(conjunto=c, user_type='porteria', is_active=True).count(),
         })
-    return render(request, 'accounts/saas_dashboard.html', {'stats': stats})
+
+    # ── Métricas globales del mes actual ──────────────────────────────────────
+    hoy = timezone.localdate()
+    mes_inicio = hoy.replace(day=1)
+    cfg = ConfigGlobal.get()
+
+    emails_mes   = LogEnvio.objects.filter(tipo='email',     fecha__date__gte=mes_inicio).count()
+    wa_mes       = LogEnvio.objects.filter(tipo='whatsapp',  fecha__date__gte=mes_inicio).count()
+
+    # Ranking top 5 conjuntos por emails y por whatsapp este mes
+    top_email = (
+        LogEnvio.objects
+        .filter(tipo='email', fecha__date__gte=mes_inicio, conjunto__isnull=False)
+        .values('conjunto__nombre')
+        .annotate(total=Count('id'))
+        .order_by('-total')[:5]
+    )
+    top_wa = (
+        LogEnvio.objects
+        .filter(tipo='whatsapp', fecha__date__gte=mes_inicio, conjunto__isnull=False)
+        .values('conjunto__nombre')
+        .annotate(total=Count('id'))
+        .order_by('-total')[:5]
+    )
+
+    pct_email = min(round(emails_mes * 100 / cfg.limite_emails_mes) if cfg.limite_emails_mes else 0, 100)
+    pct_wa    = min(round(wa_mes    * 100 / cfg.limite_whatsapp_mes) if cfg.limite_whatsapp_mes else 0, 100)
+
+    return render(request, 'accounts/saas_dashboard.html', {
+        'stats':           stats,
+        'emails_mes':      emails_mes,
+        'wa_mes':          wa_mes,
+        'limite_emails':   cfg.limite_emails_mes,
+        'limite_wa':       cfg.limite_whatsapp_mes,
+        'pct_email':       pct_email,
+        'pct_wa':          pct_wa,
+        'top_email':       list(top_email),
+        'top_wa':          list(top_wa),
+        'mes_label':       hoy.strftime('%B %Y'),
+    })
+
+
+@login_required
+@saas_required
+def gestionar_conjunto(request, conjunto_id):
+    """Panel hub por conjunto para el SaaS owner."""
+    from kislevsmart.models import LogEnvio, ConfigGlobal, Paquete
+    from django.utils import timezone
+    from django.db.models import Count
+    import datetime
+
+    conjunto = get_object_or_404(ConjuntoResidencial, pk=conjunto_id)
+
+    # ── Filtro de fechas ──────────────────────────────────────────────────────
+    hoy = timezone.localdate()
+    fecha_desde_str = request.GET.get('desde', '')
+    fecha_hasta_str = request.GET.get('hasta', '')
+    try:
+        fecha_desde = datetime.date.fromisoformat(fecha_desde_str)
+    except ValueError:
+        fecha_desde = hoy.replace(day=1)
+    try:
+        fecha_hasta = datetime.date.fromisoformat(fecha_hasta_str)
+    except ValueError:
+        fecha_hasta = hoy
+
+    qs_envios = LogEnvio.objects.filter(
+        conjunto=conjunto,
+        fecha__date__gte=fecha_desde,
+        fecha__date__lte=fecha_hasta,
+    )
+    emails_periodo  = qs_envios.filter(tipo='email').count()
+    wa_periodo      = qs_envios.filter(tipo='whatsapp').count()
+
+    cfg = ConfigGlobal.get()
+    pct_email = min(round(emails_periodo * 100 / cfg.limite_emails_mes) if cfg.limite_emails_mes else 0, 100)
+    pct_wa    = min(round(wa_periodo    * 100 / cfg.limite_whatsapp_mes) if cfg.limite_whatsapp_mes else 0, 100)
+
+    # Histórico últimos 6 meses
+    historico = []
+    for i in range(5, -1, -1):
+        d = (hoy.replace(day=1) - datetime.timedelta(days=i * 28)).replace(day=1)
+        fin = (d.replace(month=d.month % 12 + 1, day=1) - datetime.timedelta(days=1)) if d.month < 12 else d.replace(month=12, day=31)
+        historico.append({
+            'label':     d.strftime('%b %Y'),
+            'emails':    LogEnvio.objects.filter(conjunto=conjunto, tipo='email',    fecha__date__gte=d, fecha__date__lte=fin).count(),
+            'whatsapp':  LogEnvio.objects.filter(conjunto=conjunto, tipo='whatsapp', fecha__date__gte=d, fecha__date__lte=fin).count(),
+        })
+
+    # Últimos 20 envíos para auditoría
+    ultimos_envios = LogEnvio.objects.filter(conjunto=conjunto).order_by('-fecha')[:20]
+
+    # Residentes
+    total_res   = Usuario.objects.filter(conjunto=conjunto).count()
+    activos_res = Usuario.objects.filter(conjunto=conjunto, is_active=True).count()
+
+    # Actividad general
+    from kislevsmart.models import Visitante, Paquete
+    from django.db.models import Max
+    visitantes_mes = 0
+    paq_pendientes = 0
+    try:
+        visitantes_mes = Visitante.objects.filter(
+            conjunto=conjunto, fecha_visita__date__gte=hoy.replace(day=1)
+        ).count()
+    except Exception:
+        pass
+    try:
+        paq_pendientes = Paquete.objects.filter(conjunto=conjunto, estado='pendiente').count()
+    except Exception:
+        pass
+    ultimo_login = Usuario.objects.filter(conjunto=conjunto, last_login__isnull=False).aggregate(
+        ult=Max('last_login')
+    )['ult']
+
+    return render(request, 'accounts/gestionar_conjunto.html', {
+        'conjunto':        conjunto,
+        'fecha_desde':     fecha_desde.isoformat(),
+        'fecha_hasta':     fecha_hasta.isoformat(),
+        'emails_periodo':  emails_periodo,
+        'wa_periodo':      wa_periodo,
+        'limite_emails':   cfg.limite_emails_mes,
+        'limite_wa':       cfg.limite_whatsapp_mes,
+        'pct_email':       pct_email,
+        'pct_wa':          pct_wa,
+        'historico':       historico,
+        'ultimos_envios':  ultimos_envios,
+        'total_res':       total_res,
+        'activos_res':     activos_res,
+        'visitantes_mes':  visitantes_mes,
+        'paq_pendientes':  paq_pendientes,
+        'ultimo_login':    ultimo_login,
+    })
+
+
+@login_required
+@saas_required
+def update_config_global(request):
+    """AJAX — actualiza los límites globales de SES/Twilio."""
+    if request.method != 'POST':
+        return JsonResponse({'ok': False}, status=405)
+    from kislevsmart.models import ConfigGlobal
+    cfg = ConfigGlobal.get()
+    try:
+        cfg.limite_emails_mes   = int(request.POST.get('limite_emails_mes', cfg.limite_emails_mes))
+        cfg.limite_whatsapp_mes = int(request.POST.get('limite_whatsapp_mes', cfg.limite_whatsapp_mes))
+        cfg.save()
+        return JsonResponse({'ok': True})
+    except (ValueError, TypeError) as exc:
+        return JsonResponse({'ok': False, 'error': str(exc)}, status=400)
 
 
 # ── Excel template download ──────────────────────────────────────────────────
@@ -679,6 +833,13 @@ def upload_conjunto(request):
             )
             msg.attach_alternative(html, 'text/html')
             msg.send(fail_silently=False)
+            try:
+                from kislevsmart.utils import log_envio as _log_envio
+                from accounts.models import ConjuntoResidencial as _CR
+                _conj = _CR.objects.filter(nombre=conjunto_nombre).first()
+                _log_envio('email', conjunto=_conj, detalle=f'Bienvenida: {nombre}')
+            except Exception:
+                pass
             return True
         except Exception as exc:
             return str(exc)

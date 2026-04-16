@@ -20,6 +20,8 @@ from .views import (
     toggle_usuario_activo,
     editar_usuario,
     exportar_usuarios_excel,
+    gestionar_conjunto,
+    update_config_global,
 )
 
 app_name = 'accounts'  # Namespace para las URLs de accounts
@@ -69,6 +71,8 @@ urlpatterns = [
     path('saas/', saas_dashboard, name='saas_dashboard'),
     path('saas/download-template/', download_template, name='download_template'),
     path('saas/upload-conjunto/', upload_conjunto, name='upload_conjunto'),
+    path('saas/conjunto/<int:conjunto_id>/', gestionar_conjunto, name='gestionar_conjunto'),
+    path('saas/config/', update_config_global, name='update_config_global'),
 
     # Gestión de usuarios
     path('residentes/', gestion_usuarios, name='gestion_usuarios'),

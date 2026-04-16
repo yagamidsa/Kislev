@@ -649,4 +649,47 @@ class ConfigParqueadero(models.Model):
         return f"{self.conjunto.nombre} - {self.get_tipo_vehiculo_display()}"
 
 
-        
+class LogEnvio(models.Model):
+    """Registro de cada email o WhatsApp enviado por el sistema, por conjunto."""
+    TIPO_CHOICES = [
+        ('email',     'Email'),
+        ('whatsapp',  'WhatsApp'),
+    ]
+    conjunto = models.ForeignKey(
+        'accounts.ConjuntoResidencial',
+        on_delete=models.CASCADE,
+        related_name='log_envios',
+        null=True, blank=True,
+    )
+    tipo     = models.CharField(max_length=10, choices=TIPO_CHOICES)
+    fecha    = models.DateTimeField(auto_now_add=True, db_index=True)
+    detalle  = models.CharField(max_length=200, blank=True)
+
+    class Meta:
+        db_table  = 'log_envio'
+        ordering  = ['-fecha']
+        verbose_name        = 'Log de Envío'
+        verbose_name_plural = 'Logs de Envíos'
+
+    def __str__(self):
+        conj = self.conjunto.nombre if self.conjunto_id else '—'
+        return f"[{self.tipo}] {conj} — {self.fecha:%Y-%m-%d %H:%M}"
+
+
+class ConfigGlobal(models.Model):
+    """Configuración global del SaaS — singleton (siempre pk=1)."""
+    limite_emails_mes     = models.PositiveIntegerField(default=1000, help_text='Límite mensual de emails (AWS SES)')
+    limite_whatsapp_mes   = models.PositiveIntegerField(default=500,  help_text='Límite mensual de WhatsApp (Twilio)')
+
+    class Meta:
+        db_table  = 'config_global'
+        verbose_name        = 'Configuración Global'
+        verbose_name_plural = 'Configuración Global'
+
+    @classmethod
+    def get(cls):
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj
+
+    def __str__(self):
+        return f'Config Global — emails: {self.limite_emails_mes} / WA: {self.limite_whatsapp_mes}'
