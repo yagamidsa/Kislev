@@ -238,8 +238,9 @@ RESEND_API_KEY = os.environ.get('RESEND_API_KEY', '')
 if RESEND_API_KEY:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     EMAIL_HOST = 'smtp.resend.com'
-    EMAIL_PORT = 465
-    EMAIL_USE_SSL = True
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_USE_SSL = False
     EMAIL_HOST_USER = 'resend'
     EMAIL_HOST_PASSWORD = RESEND_API_KEY
 else:
@@ -253,7 +254,7 @@ DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@kislev.net.co
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
 # Configuración adicional de email
-EMAIL_TIMEOUT = 30
+EMAIL_TIMEOUT = 10
 EMAIL_USE_LOCALTIME = False
 
 # URL de login
