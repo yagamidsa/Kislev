@@ -406,6 +406,7 @@ function openEditModal(id, nombre, torreId, apto, phone, tipo, isActive, email){
     document.getElementById('editTipo').value = tipo;
     document.getElementById('editActivo').checked = (isActive === true || isActive === 'true');
     document.getElementById('editModal').classList.add('open');
+    setTimeout(() => { const f = document.getElementById('editApto'); if(f) f.focus(); }, 50);
 }
 function closeModal(){
     document.getElementById('editModal').classList.remove('open');
@@ -500,9 +501,7 @@ function guardarEdicion(){
 }
 
 
-function getCsrf(){
-    return document.cookie.split(';').map(c=>c.trim()).find(c=>c.startsWith('csrftoken='))?.split('=')[1] || '';
-}
+function getCsrf(){ return '{{ csrf_token }}'; }
 
 /* ── Partículas ── */
 (function(){
