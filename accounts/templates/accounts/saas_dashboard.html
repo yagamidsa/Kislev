@@ -160,7 +160,7 @@
                     <span style="font-size:.7rem;color:#64748b">este mes</span>
                 </div>
                 <div class="metric-big" style="color:#c4b5fd">{{ emails_mes }}</div>
-                <div class="metric-sub">de {{ limite_emails }} permitidos</div>
+                <div class="metric-sub">de <span id="lbl-limite-emails">{{ limite_emails }}</span> permitidos</div>
                 {% with pct=pct_email %}
                 <div class="{% if pct >= 90 %}g-crit{% elif pct >= 70 %}g-warn{% else %}g-ok{% endif %}">
                     <div class="gauge-row">
@@ -191,7 +191,7 @@
                     <span style="font-size:.7rem;color:#64748b">este mes</span>
                 </div>
                 <div class="metric-big" style="color:#86efac">{{ wa_mes }}</div>
-                <div class="metric-sub">de {{ limite_wa }} permitidos</div>
+                <div class="metric-sub">de <span id="lbl-limite-wa">{{ limite_wa }}</span> permitidos</div>
                 {% with pct=pct_wa %}
                 <div class="{% if pct >= 90 %}g-crit{% elif pct >= 70 %}g-warn{% else %}g-ok{% endif %}">
                     <div class="gauge-row">
@@ -352,8 +352,12 @@ function saveConfig() {
     })
     .then(r => r.json())
     .then(d => {
-        if (d.ok) { closeConfigModal(); showToast('✅ Límites actualizados'); }
-        else showToast('❌ ' + (d.error || 'Error'));
+        if (d.ok) {
+            closeConfigModal();
+            document.getElementById('lbl-limite-emails').textContent = emails;
+            document.getElementById('lbl-limite-wa').textContent = wa;
+            showToast('✅ Límites actualizados');
+        } else showToast('❌ ' + (d.error || 'Error'));
     })
     .catch(() => showToast('❌ Error de conexión'));
 }
