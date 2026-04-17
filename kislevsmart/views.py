@@ -2965,6 +2965,7 @@ def regenerar_qr_visitante(request, visitante_id):
         )
         email_message.attach(f'qr_{nuevo.id}.png', qr_buffer.getvalue(), 'image/png')
         email_message.send()
+        log_envio('email', conjunto=request.user.conjunto, detalle='QR regenerado')
     except Exception as e:
         logger.error(f"Error enviando email QR regenerado: {e}")
 
