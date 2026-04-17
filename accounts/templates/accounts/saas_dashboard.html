@@ -93,6 +93,25 @@
         .empty{text-align:center;padding:60px 20px;color:#64748b}
         .empty i{font-size:3rem;margin-bottom:14px;display:block;color:#4c1d95}
 
+        /* ── MODAL ── */
+        .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+        .modal-overlay.open{display:flex}
+        .modal-box{background:#130820;border:1px solid rgba(168,85,247,.3);border-radius:20px;padding:32px;max-width:460px;width:100%}
+        .modal-title{font-size:1.1rem;font-weight:700;margin-bottom:8px;background:linear-gradient(135deg,#c4b5fd,#f9a8d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .modal-sub{font-size:.8rem;color:#94a3b8;margin-bottom:20px}
+        .form-group{margin-bottom:16px}
+        .form-group label{display:block;font-size:.78rem;color:#94a3b8;font-weight:600;margin-bottom:6px}
+        .form-group input{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:10px;color:#e2e8f0;font-family:'Poppins',sans-serif;font-size:.9rem;padding:10px 14px;outline:none}
+        .form-group input:focus{border-color:rgba(168,85,247,.5)}
+        .modal-btns{display:flex;gap:10px;margin-top:20px}
+        .btn-save{flex:1;background:linear-gradient(135deg,#7c3aed,#db2777);border:none;border-radius:10px;color:#fff;font-family:'Poppins',sans-serif;font-size:.88rem;font-weight:700;padding:11px;cursor:pointer;transition:opacity .2s}
+        .btn-save:hover{opacity:.88}
+        .btn-cancel-modal{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:10px;color:#e2e8f0;font-family:'Poppins',sans-serif;font-size:.88rem;padding:11px 20px;cursor:pointer}
+
+        /* ── TOAST ── */
+        .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1e1030;border:1px solid rgba(168,85,247,.4);border-radius:12px;color:#e2e8f0;font-size:.85rem;padding:12px 24px;z-index:999;transition:transform .3s,opacity .3s;opacity:0;pointer-events:none}
+        .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
         /* ── PARTICLES ── */
         #particles{position:fixed;inset:0;z-index:0;pointer-events:none}
         .scroll-root>*{position:relative;z-index:1}
@@ -117,6 +136,7 @@
         <div class="topbar-actions">
             <a href="{% url 'accounts:download_template' %}" class="btn btn-ghost"><i class="fas fa-download"></i><span>Plantilla</span></a>
             <a href="{% url 'accounts:upload_conjunto' %}" class="btn btn-primary"><i class="fas fa-plus"></i><span>Importar</span></a>
+            <button type="button" class="btn btn-ghost" onclick="openConfigModal()"><i class="fas fa-sliders-h"></i><span>Límites</span></button>
             <a href="{% url 'accounts:logout' %}" class="btn btn-ghost"><i class="fas fa-sign-out-alt"></i></a>
         </div>
     </div>
@@ -234,6 +254,28 @@
     </div>
 </div><!-- /scroll-root -->
 
+<!-- MODAL LÍMITES GLOBALES -->
+<div class="modal-overlay" id="configModal">
+    <div class="modal-box">
+        <p class="modal-title"><i class="fas fa-sliders-h" style="margin-right:8px"></i>Límites Globales</p>
+        <p class="modal-sub">Aplican a <strong style="color:#c4b5fd">todos los conjuntos</strong>. Actualízalos cuando cambies de plan en AWS SES o Twilio.</p>
+        <div class="form-group">
+            <label><i class="fas fa-envelope" style="margin-right:5px"></i>Límite mensual de emails (SES)</label>
+            <input type="number" id="inp-emails" value="{{ limite_emails }}" min="1" max="9999999">
+        </div>
+        <div class="form-group">
+            <label><i class="fab fa-whatsapp" style="margin-right:5px"></i>Límite mensual de WhatsApp (Twilio)</label>
+            <input type="number" id="inp-wa" value="{{ limite_wa }}" min="1" max="999999">
+        </div>
+        <div class="modal-btns">
+            <button type="button" class="btn-cancel-modal" onclick="closeConfigModal()">Cancelar</button>
+            <button type="button" class="btn-save" onclick="saveConfig()"><i class="fas fa-save" style="margin-right:6px"></i>Guardar</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
 (function() {
     const c = document.getElementById('particles'), ctx = c.getContext('2d');
@@ -260,6 +302,30 @@
     }
     draw();
 })();
+
+function openConfigModal()  { document.getElementById('configModal').classList.add('open'); }
+function closeConfigModal() { document.getElementById('configModal').classList.remove('open'); }
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+}
+function saveConfig() {
+    const emails = document.getElementById('inp-emails').value;
+    const wa     = document.getElementById('inp-wa').value;
+    fetch('{% url "accounts:update_config_global" %}', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': '{{ csrf_token }}' },
+        body: `limite_emails_mes=${emails}&limite_whatsapp_mes=${wa}`
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.ok) { closeConfigModal(); showToast('✅ Límites actualizados'); }
+        else showToast('❌ ' + (d.error || 'Error'));
+    })
+    .catch(() => showToast('❌ Error de conexión'));
+}
 </script>
 </body>
 </html>

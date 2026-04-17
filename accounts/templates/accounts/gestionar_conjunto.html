@@ -93,24 +93,6 @@
         .action-card:hover{transform:translateY(-3px);border-color:rgba(168,85,247,.4);box-shadow:0 8px 28px rgba(124,58,237,.2);color:#e2e8f0}
         .action-icon{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.15rem;color:#fff}
 
-        /* ── CONFIG MODAL ── */
-        .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
-        .modal-overlay.open{display:flex}
-        .modal-box{background:#130820;border:1px solid rgba(168,85,247,.3);border-radius:20px;padding:32px;max-width:460px;width:100%}
-        .modal-title{font-size:1.2rem;font-weight:700;margin-bottom:20px;background:linear-gradient(135deg,#c4b5fd,#f9a8d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-        .form-group{margin-bottom:16px}
-        .form-group label{display:block;font-size:.8rem;color:#94a3b8;font-weight:600;margin-bottom:6px}
-        .form-group input{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:10px;color:#e2e8f0;font-family:'Poppins',sans-serif;font-size:.9rem;padding:10px 14px;outline:none}
-        .form-group input:focus{border-color:rgba(168,85,247,.5)}
-        .modal-btns{display:flex;gap:10px;margin-top:20px}
-        .btn-save{flex:1;background:linear-gradient(135deg,#7c3aed,#db2777);border:none;border-radius:10px;color:#fff;font-family:'Poppins',sans-serif;font-size:.88rem;font-weight:700;padding:11px;cursor:pointer;transition:opacity .2s}
-        .btn-save:hover{opacity:.88}
-        .btn-cancel{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:10px;color:#e2e8f0;font-family:'Poppins',sans-serif;font-size:.88rem;padding:11px 20px;cursor:pointer}
-
-        /* ── TOAST ── */
-        .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1e1030;border:1px solid rgba(168,85,247,.4);border-radius:12px;color:#e2e8f0;font-size:.85rem;padding:12px 24px;z-index:999;transition:transform .3s,opacity .3s;opacity:0;pointer-events:none}
-        .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
-
         /* ── SECTION TITLE ── */
         .section-title{font-size:.95rem;font-weight:700;color:#e2e8f0;margin-bottom:14px;display:flex;align-items:center;gap:8px}
         .section-title i{color:#a855f7}
@@ -165,11 +147,11 @@
                 <span>Residentes</span>
                 <span style="font-size:.72rem;color:#94a3b8;font-weight:400">{{ activos_res }} activos / {{ total_res }} total</span>
             </a>
-            <div class="action-card" onclick="openConfigModal()">
+            <a href="{% url 'accounts:saas_dashboard' %}" class="action-card">
                 <div class="action-icon" style="background:linear-gradient(135deg,#0ea5e9,#06b6d4)"><i class="fas fa-sliders-h"></i></div>
                 <span>Límites globales</span>
-                <span style="font-size:.72rem;color:#94a3b8;font-weight:400">Emails &amp; WhatsApp</span>
-            </div>
+                <span style="font-size:.72rem;color:#94a3b8;font-weight:400">Gestionar en el panel SaaS</span>
+            </a>
             <a href="{% url 'accounts:saas_dashboard' %}" class="action-card">
                 <div class="action-icon" style="background:linear-gradient(135deg,#059669,#10b981)"><i class="fas fa-chart-bar"></i></div>
                 <span>Ver métricas globales</span>
@@ -280,30 +262,6 @@
     </div><!-- /container -->
 </div><!-- /scroll-root -->
 
-<!-- MODAL CONFIG GLOBAL -->
-<div class="modal-overlay" id="configModal">
-    <div class="modal-box">
-        <p class="modal-title"><i class="fas fa-sliders-h" style="margin-right:8px"></i>Límites Globales</p>
-        <p style="font-size:.82rem;color:#94a3b8;margin-bottom:20px">Estos límites aplican a <strong style="color:#c4b5fd">todos los conjuntos</strong>. Actualízalos cuando cambies de plan en AWS SES o Twilio.</p>
-        <form id="configForm">
-            <div class="form-group">
-                <label><i class="fas fa-envelope" style="margin-right:5px"></i>Límite mensual de emails (SES)</label>
-                <input type="number" id="inp-emails" value="{{ limite_emails }}" min="1" max="9999999">
-            </div>
-            <div class="form-group">
-                <label><i class="fab fa-whatsapp" style="margin-right:5px"></i>Límite mensual de WhatsApp (Twilio)</label>
-                <input type="number" id="inp-wa" value="{{ limite_wa }}" min="1" max="999999">
-            </div>
-            <div class="modal-btns">
-                <button type="button" class="btn-cancel" onclick="closeConfigModal()">Cancelar</button>
-                <button type="button" class="btn-save" onclick="saveConfig()"><i class="fas fa-save" style="margin-right:6px"></i>Guardar</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<div class="toast" id="toast"></div>
-
 <!-- HISTÓRICO DATA -->
 {{ historico|json_script:"historico-data" }}
 
@@ -342,35 +300,6 @@ function makeChart(id, data, color, label) {
 
 makeChart('chartEmail', hist.map(h => h.emails),    'rgba(168,85,247,1)',  'Emails');
 makeChart('chartWA',    hist.map(h => h.whatsapp), 'rgba(34,197,94,1)',   'WhatsApp');
-
-/* ── Config modal ── */
-function openConfigModal()  { document.getElementById('configModal').classList.add('open'); }
-function closeConfigModal() { document.getElementById('configModal').classList.remove('open'); }
-
-function showToast(msg, ok=true) {
-    const t = document.getElementById('toast');
-    t.textContent = (ok ? '✅ ' : '❌ ') + msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3000);
-}
-
-function getCsrf() { return '{{ csrf_token }}'; }
-
-function saveConfig() {
-    const emails = document.getElementById('inp-emails').value;
-    const wa     = document.getElementById('inp-wa').value;
-    fetch('{% url "accounts:update_config_global" %}', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': getCsrf() },
-        body: `limite_emails_mes=${emails}&limite_whatsapp_mes=${wa}`
-    })
-    .then(r => r.json())
-    .then(d => {
-        if (d.ok) { closeConfigModal(); showToast('Límites actualizados'); setTimeout(() => location.reload(), 1200); }
-        else showToast(d.error || 'Error', false);
-    })
-    .catch(() => showToast('Error de conexión', false));
-}
 
 /* ── Partículas ── */
 (function() {
