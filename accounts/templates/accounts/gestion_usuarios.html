@@ -113,15 +113,23 @@
         .empty{text-align:center;padding:60px 20px;color:rgba(255,255,255,.3);}
         .empty-icon{font-size:3rem;margin-bottom:14px;}
 
+        /* ── TOGGLE switch en modal ── */
+        .toggle-row{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 14px;}
+        .toggle-row label{font-size:.84rem;color:#e2e8f0;font-weight:500}
+        .switch{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0}
+        .switch input{opacity:0;width:0;height:0}
+        .slider{position:absolute;cursor:pointer;inset:0;background:rgba(255,255,255,.15);border-radius:24px;transition:.3s}
+        .slider:before{content:'';position:absolute;width:18px;height:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s}
+        input:checked+.slider{background:linear-gradient(135deg,#7c3aed,#db2777)}
+        input:checked+.slider:before{transform:translateX(20px)}
+
         /* ── RESPONSIVE ── */
         @media(max-width:768px){
             input,select{font-size:16px !important;}
             .content{padding:16px;}
             .topbar{padding:12px 16px;}
-            .user-card{grid-template-columns:38px 1fr;padding:12px 14px;}
-            .u-actions{display:none;}
-            .user-card{cursor:pointer;}
-            /* En móvil el tap abre el modal de edición */
+            .user-card{grid-template-columns:38px 1fr 72px;padding:12px 14px;}
+            .btn-icon{width:30px;height:30px;font-size:.75rem;}
         }
         @media(max-width:480px){
             .filters{gap:8px;}
@@ -244,7 +252,7 @@
                 <!-- Acciones -->
                 <div class="u-actions">
                     <button class="btn-icon btn-edit" title="Editar"
-                        onclick="openEditModal({{ u.id }}, '{{ u.nombre|escapejs }}', '{{ u.torre.id|default:'' }}', '{{ u.apartamento|escapejs }}', '{{ u.phone_number|default:''|escapejs }}', '{{ u.user_type }}')">
+                        onclick="openEditModal({{ u.id }}, '{{ u.nombre|escapejs }}', '{{ u.torre.id|default:'' }}', '{{ u.apartamento|escapejs }}', '{{ u.phone_number|default:''|escapejs }}', '{{ u.user_type }}', {{ u.is_active|yesno:'true,false' }})">
                         <i class="fas fa-pen"></i>
                     </button>
                     <button class="btn-icon btn-toggle {% if not u.is_active %}is-inactive{% endif %}" title="{% if u.is_active %}Desactivar{% else %}Activar{% endif %}"
@@ -304,6 +312,16 @@
                     <option value="porteria">Portería</option>
                 </select>
             </div>
+            <div class="form-row">
+                <label class="form-label">Estado</label>
+                <div class="toggle-row">
+                    <label for="editActivo">Usuario activo</label>
+                    <label class="switch">
+                        <input type="checkbox" id="editActivo">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
         </div>
         <div class="modal-footer">
             <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
@@ -329,43 +347,56 @@ function showToast(msg, type='success'){
     setTimeout(() => t.classList.remove('show'), 3200);
 }
 
-/* ── Toggle activo/inactivo ── */
+/* ── Toggle activo/inactivo (botón directo en desktop) ── */
+function _applyToggleUI(card, btn, isActive) {
+    if (isActive) {
+        btn.classList.remove('is-inactive');
+        btn.title = 'Desactivar';
+        btn.querySelector('i').className = 'fas fa-toggle-on';
+        card.classList.remove('inactive');
+        card.querySelector('.u-status').className = 'u-status on';
+        showToast('Usuario activado');
+    } else {
+        btn.classList.add('is-inactive');
+        btn.title = 'Activar';
+        btn.querySelector('i').className = 'fas fa-toggle-off';
+        card.classList.add('inactive');
+        card.querySelector('.u-status').className = 'u-status off';
+        showToast('Usuario desactivado', 'error');
+    }
+}
+
 function toggleActivo(userId, btn){
     const card = document.getElementById('card-' + userId);
+    btn.disabled = true;
     fetch('/accounts/usuarios/' + userId + '/toggle/', {
         method: 'POST',
         headers: {'X-CSRFToken': getCsrf()},
     })
-    .then(r => r.json())
-    .then(data => {
-        if(data.is_active){
-            btn.classList.remove('is-inactive');
-            btn.title = 'Desactivar';
-            btn.querySelector('i').className = 'fas fa-toggle-on';
-            card.classList.remove('inactive');
-            card.querySelector('.u-status').className = 'u-status on';
-            showToast('Usuario activado');
-        } else {
-            btn.classList.add('is-inactive');
-            btn.title = 'Activar';
-            btn.querySelector('i').className = 'fas fa-toggle-off';
-            card.classList.add('inactive');
-            card.querySelector('.u-status').className = 'u-status off';
-            showToast('Usuario desactivado', 'error');
-        }
+    .then(r => {
+        if (!r.ok) return r.json().then(e => { throw new Error(e.error || 'Error ' + r.status); });
+        return r.json();
     })
-    .catch(() => showToast('Error al cambiar estado', 'error'));
+    .then(data => {
+        _applyToggleUI(card, btn, data.is_active);
+        // sync checkbox in modal if open
+        const chk = document.getElementById('editActivo');
+        if (chk) chk.checked = data.is_active;
+    })
+    .catch(err => showToast(err.message || 'Error al cambiar estado', 'error'))
+    .finally(() => { btn.disabled = false; });
 }
 
 /* ── Modal editar ── */
 let _editingId = null;
-function openEditModal(id, nombre, torreId, apto, phone, tipo){
+function openEditModal(id, nombre, torreId, apto, phone, tipo, isActive){
     _editingId = id;
     document.getElementById('editUserId').value = id;
     document.getElementById('editTorre').value = torreId;
     document.getElementById('editApto').value = apto;
     document.getElementById('editPhone').value = phone;
     document.getElementById('editTipo').value = tipo;
+    document.getElementById('editActivo').checked = (isActive === true || isActive === 'true');
     document.getElementById('editModal').classList.add('open');
 }
 function closeModal(){
@@ -378,6 +409,11 @@ document.getElementById('editModal').addEventListener('click', function(e){
 
 function guardarEdicion(){
     if(!_editingId) return;
+    const wantActive = document.getElementById('editActivo').checked;
+    const card = document.getElementById('card-' + _editingId);
+    const currentlyActive = !card.classList.contains('inactive');
+    const needToggle = (wantActive !== currentlyActive);
+
     const payload = {
         torre_id: document.getElementById('editTorre').value,
         apartamento: document.getElementById('editApto').value,
@@ -389,11 +425,13 @@ function guardarEdicion(){
         headers: {'X-CSRFToken': getCsrf(), 'Content-Type': 'application/json'},
         body: JSON.stringify(payload),
     })
-    .then(r => r.json())
+    .then(r => {
+        if (!r.ok) return r.json().then(e => { throw new Error(e.error || 'Error ' + r.status); });
+        return r.json();
+    })
     .then(data => {
         if(data.ok){
             // Actualizar la card sin recargar
-            const card = document.getElementById('card-' + _editingId);
             const loc = card.querySelector('.u-loc');
             const torre = document.getElementById('editTorre').options[document.getElementById('editTorre').selectedIndex].text;
             const apto = data.apartamento;
@@ -407,24 +445,33 @@ function guardarEdicion(){
             badge.className = 'u-type-badge ' + clases[data.user_type];
             badge.textContent = tipos[data.user_type];
             closeModal();
-            showToast('Datos actualizados');
+            // Si cambió el estado activo, hacer el toggle en el servidor
+            if (needToggle) {
+                const btn = card.querySelector('.btn-toggle');
+                fetch('/accounts/usuarios/' + _editingId + '/toggle/', {
+                    method: 'POST',
+                    headers: {'X-CSRFToken': getCsrf()},
+                })
+                .then(r => r.ok ? r.json() : r.json().then(e => { throw new Error(e.error || 'Error'); }))
+                .then(td => {
+                    if (btn) _applyToggleUI(card, btn, td.is_active);
+                    else {
+                        card.classList.toggle('inactive', !td.is_active);
+                        card.querySelector('.u-status').className = 'u-status ' + (td.is_active ? 'on' : 'off');
+                    }
+                    showToast('Datos actualizados');
+                })
+                .catch(err => showToast(err.message || 'Error al cambiar estado', 'error'));
+            } else {
+                showToast('Datos actualizados');
+            }
         } else {
             showToast(data.error || 'Error al guardar', 'error');
         }
     })
-    .catch(() => showToast('Error de conexión', 'error'));
+    .catch(err => showToast(err.message || 'Error de conexión', 'error'));
 }
 
-/* ── Mobile tap → edit ── */
-document.querySelectorAll('.user-card').forEach(card => {
-    card.addEventListener('click', function(e){
-        if(window.innerWidth > 768) return; // en desktop usa botones
-        if(e.target.closest('button')) return;
-        const id = this.id.replace('card-','');
-        const btn = this.querySelector('.btn-edit');
-        if(btn) btn.click();
-    });
-});
 
 function getCsrf(){
     return document.cookie.split(';').map(c=>c.trim()).find(c=>c.startsWith('csrftoken='))?.split('=')[1] || '';

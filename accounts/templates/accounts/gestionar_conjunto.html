@@ -216,7 +216,7 @@
             </div>
             <div class="card">
                 <div class="card-title"><i class="fas fa-history"></i> Histórico 6 meses</div>
-                <canvas id="chartEmail" height="130"></canvas>
+                <div style="position:relative;height:130px"><canvas id="chartEmail"></canvas></div>
             </div>
         </div>
 
@@ -239,7 +239,7 @@
             </div>
             <div class="card">
                 <div class="card-title"><i class="fas fa-history"></i> Histórico 6 meses</div>
-                <canvas id="chartWA" height="130"></canvas>
+                <div style="position:relative;height:130px"><canvas id="chartWA"></canvas></div>
             </div>
         </div>
 
@@ -315,9 +315,6 @@ const labels = hist.map(h => h.label);
 function makeChart(id, data, color, label) {
     const ctx = document.getElementById(id);
     if (!ctx) return;
-    const grd = ctx.getContext('2d').createLinearGradient(0,0,0,130);
-    grd.addColorStop(0, color.replace('1)', '.25)'));
-    grd.addColorStop(1, color.replace('1)', '.02)'));
     new Chart(ctx, {
         type: 'bar',
         data: {
