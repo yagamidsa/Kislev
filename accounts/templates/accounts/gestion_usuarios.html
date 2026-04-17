@@ -282,7 +282,7 @@
     <div class="modal">
         <div class="modal-header">
             <h3><i class="fas fa-pen"></i> Editar residente</h3>
-            <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+            <button type="button" class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
         </div>
         <div class="modal-body">
             <input type="hidden" id="editUserId">
@@ -473,25 +473,15 @@ function guardarEdicion(){
                 emailSpan.remove();
             }
             closeModal();
-            // Si cambió el estado activo, hacer el toggle en el servidor
+            showToast('Datos actualizados');
+            // Si cambió el estado activo, reutilizar toggleActivo (mismo código que ya funciona)
             if (needToggle) {
                 const btn = card.querySelector('.btn-toggle');
-                fetch('/accounts/usuarios/' + _editingId + '/toggle/', {
-                    method: 'POST',
-                    headers: {'X-CSRFToken': getCsrf()},
-                })
-                .then(r => r.ok ? r.json() : r.json().then(e => { throw new Error(e.error || 'Error'); }))
-                .then(td => {
-                    if (btn) _applyToggleUI(card, btn, td.is_active);
-                    else {
-                        card.classList.toggle('inactive', !td.is_active);
-                        card.querySelector('.u-status').className = 'u-status ' + (td.is_active ? 'on' : 'off');
-                    }
-                    showToast('Datos actualizados');
-                })
-                .catch(err => showToast(err.message || 'Error al cambiar estado', 'error'));
-            } else {
-                showToast('Datos actualizados');
+                toggleActivo(_editingId, btn || {
+                    classList:{add:()=>{},remove:()=>{}},
+                    title:'',
+                    querySelector:()=>({className:''})
+                });
             }
         } else {
             showToast(data.error || 'Error al guardar', 'error');
