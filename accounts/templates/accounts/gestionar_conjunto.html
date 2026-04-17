@@ -7,7 +7,6 @@
     <title>Gestionar — {{ conjunto.nombre }}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
         html{background:#09000f}
@@ -179,52 +178,6 @@
         <p style="font-size:.78rem;color:#64748b;margin-bottom:24px"><i class="fas fa-clock" style="margin-right:5px"></i> Último acceso al sistema: {{ ultimo_login|date:"d/m/Y H:i" }}</p>
         {% endif %}
 
-        <!-- CONSUMO EMAIL -->
-        <p class="section-title"><i class="fas fa-envelope"></i> Consumo de Emails (AWS SES)</p>
-        <div class="grid-2" style="margin-bottom:28px">
-            <div class="card">
-                <div class="card-title"><i class="fas fa-paper-plane"></i> Emails en el periodo</div>
-                <div class="big-number" style="color:#c4b5fd">{{ emails_periodo }}</div>
-                <div class="sub-label">de {{ limite_emails }} permitidos / mes</div>
-                {% with pct=pct_email %}
-                <div class="gauge-wrap {% if pct >= 90 %}gauge-crit{% elif pct >= 70 %}gauge-warn{% else %}gauge-ok{% endif %}">
-                    <div class="gauge-row">
-                        <span class="gauge-label">Uso mensual</span>
-                        <span class="gauge-pct">{{ pct }}%</span>
-                    </div>
-                    <div class="gauge-bar"><div class="gauge-fill" style="width:{{ pct }}%"></div></div>
-                </div>
-                {% endwith %}
-            </div>
-            <div class="card">
-                <div class="card-title"><i class="fas fa-history"></i> Histórico 6 meses</div>
-                <div style="position:relative;height:130px"><canvas id="chartEmail"></canvas></div>
-            </div>
-        </div>
-
-        <!-- CONSUMO WHATSAPP -->
-        <p class="section-title"><i class="fab fa-whatsapp"></i> Consumo de WhatsApp (Twilio)</p>
-        <div class="grid-2" style="margin-bottom:28px">
-            <div class="card">
-                <div class="card-title"><i class="fas fa-comment-dots"></i> WhatsApps en el periodo</div>
-                <div class="big-number" style="color:#86efac">{{ wa_periodo }}</div>
-                <div class="sub-label">de {{ limite_wa }} permitidos / mes</div>
-                {% with pct=pct_wa %}
-                <div class="gauge-wrap {% if pct >= 90 %}gauge-crit{% elif pct >= 70 %}gauge-warn{% else %}gauge-ok{% endif %}">
-                    <div class="gauge-row">
-                        <span class="gauge-label">Uso mensual</span>
-                        <span class="gauge-pct">{{ pct }}%</span>
-                    </div>
-                    <div class="gauge-bar"><div class="gauge-fill" style="width:{{ pct }}%"></div></div>
-                </div>
-                {% endwith %}
-            </div>
-            <div class="card">
-                <div class="card-title"><i class="fas fa-history"></i> Histórico 6 meses</div>
-                <div style="position:relative;height:130px"><canvas id="chartWA"></canvas></div>
-            </div>
-        </div>
-
         <!-- LOG DE ENVÍOS -->
         <p class="section-title"><i class="fas fa-list-alt"></i> Últimos envíos</p>
         <div class="card" style="margin-bottom:28px;padding:0">
@@ -262,45 +215,7 @@
     </div><!-- /container -->
 </div><!-- /scroll-root -->
 
-<!-- HISTÓRICO DATA -->
-{{ historico|json_script:"historico-data" }}
-
 <script>
-/* ── Charts histórico ── */
-const hist = JSON.parse(document.getElementById('historico-data').textContent);
-const labels = hist.map(h => h.label);
-
-function makeChart(id, data, color, label) {
-    const ctx = document.getElementById(id);
-    if (!ctx) return;
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels,
-            datasets: [{
-                label,
-                data,
-                backgroundColor: color.replace('1)', '.4)'),
-                borderColor: color,
-                borderWidth: 2,
-                borderRadius: 5,
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                x: { ticks: { color: 'rgba(255,255,255,.6)', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,.05)' } },
-                y: { beginAtZero: true, ticks: { color: 'rgba(255,255,255,.6)', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,.05)' } }
-            }
-        }
-    });
-}
-
-makeChart('chartEmail', hist.map(h => h.emails),    'rgba(168,85,247,1)',  'Emails');
-makeChart('chartWA',    hist.map(h => h.whatsapp), 'rgba(34,197,94,1)',   'WhatsApp');
-
 /* ── Partículas ── */
 (function() {
     const c = document.getElementById('particles'), ctx = c.getContext('2d');

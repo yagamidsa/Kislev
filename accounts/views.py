@@ -1113,6 +1113,21 @@ def editar_usuario(request, usuario_id):
     })
 
 
+@require_POST
+@login_required
+def toggle_conjunto_activo(request, conjunto_id):
+    """AJAX: activa o desactiva un conjunto completo."""
+    if not request.user.is_saas_owner:
+        return JsonResponse({'error': 'Sin permiso'}, status=403)
+    try:
+        conjunto = ConjuntoResidencial.objects.get(pk=conjunto_id)
+    except ConjuntoResidencial.DoesNotExist:
+        return JsonResponse({'error': 'No encontrado'}, status=404)
+    conjunto.estado = not conjunto.estado
+    conjunto.save(update_fields=['estado'])
+    return JsonResponse({'estado': conjunto.estado})
+
+
 @login_required
 def exportar_usuarios_excel(request):
     """Descarga la lista de usuarios del conjunto en Excel."""

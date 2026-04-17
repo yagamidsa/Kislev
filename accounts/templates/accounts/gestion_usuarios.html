@@ -319,16 +319,6 @@
                     <option value="porteria">Portería</option>
                 </select>
             </div>
-            <div class="form-row">
-                <label class="form-label">Estado</label>
-                <div class="toggle-row">
-                    <label for="editActivo">Usuario activo</label>
-                    <label class="switch">
-                        <input type="checkbox" id="editActivo">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-            </div>
         </div>
         <div class="modal-footer">
             <button type="button" class="btn-cancel" onclick="closeModal()">Cancelar</button>
@@ -404,7 +394,6 @@ function openEditModal(id, nombre, torreId, apto, phone, tipo, isActive, email){
     document.getElementById('editPhone').value = phone;
     document.getElementById('editEmail').value = email || '';
     document.getElementById('editTipo').value = tipo;
-    document.getElementById('editActivo').checked = (isActive === true || isActive === 'true');
     document.getElementById('editModal').classList.add('open');
     setTimeout(() => { const f = document.getElementById('editApto'); if(f) f.focus(); }, 50);
 }
@@ -418,10 +407,7 @@ document.getElementById('editModal').addEventListener('click', function(e){
 
 function guardarEdicion(){
     if(!_editingId) return;
-    const wantActive = document.getElementById('editActivo').checked;
     const card = document.getElementById('card-' + _editingId);
-    const currentlyActive = !card.classList.contains('inactive');
-    const needToggle = (wantActive !== currentlyActive);
 
     const payload = {
         torre_id: document.getElementById('editTorre').value,
@@ -474,15 +460,6 @@ function guardarEdicion(){
             }
             closeModal();
             showToast('Datos actualizados');
-            // Si cambió el estado activo, reutilizar toggleActivo (mismo código que ya funciona)
-            if (needToggle) {
-                const btn = card.querySelector('.btn-toggle');
-                toggleActivo(_editingId, btn || {
-                    classList:{add:()=>{},remove:()=>{}},
-                    title:'',
-                    querySelector:()=>({className:''})
-                });
-            }
         } else {
             showToast(data.error || 'Error al guardar', 'error');
         }
