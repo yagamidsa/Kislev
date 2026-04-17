@@ -244,6 +244,9 @@
                         {% if u.phone_number %}
                         <span class="u-loc"><i class="fas fa-phone"></i> {{ u.phone_number }}</span>
                         {% endif %}
+                        {% if u.email %}
+                        <span class="u-loc"><i class="fas fa-envelope"></i> {{ u.email }}</span>
+                        {% endif %}
                         <span class="u-type-badge {% if u.user_type == 'administrador' %}badge-admin{% elif u.user_type == 'porteria' %}badge-port{% else %}badge-prop{% endif %}">
                             {{ u.get_user_type_display }}
                         </span>
@@ -251,11 +254,11 @@
                 </div>
                 <!-- Acciones -->
                 <div class="u-actions">
-                    <button class="btn-icon btn-edit" title="Editar"
-                        onclick="openEditModal({{ u.id }}, '{{ u.nombre|escapejs }}', '{{ u.torre.id|default:'' }}', '{{ u.apartamento|escapejs }}', '{{ u.phone_number|default:''|escapejs }}', '{{ u.user_type }}', {{ u.is_active|yesno:'true,false' }})">
+                    <button type="button" class="btn-icon btn-edit" title="Editar"
+                        onclick="openEditModal({{ u.id }}, '{{ u.nombre|escapejs }}', '{{ u.torre.id|default:'' }}', '{{ u.apartamento|escapejs }}', '{{ u.phone_number|default:''|escapejs }}', '{{ u.user_type }}', {{ u.is_active|yesno:'true,false' }}, '{{ u.email|escapejs }}')">
                         <i class="fas fa-pen"></i>
                     </button>
-                    <button class="btn-icon btn-toggle {% if not u.is_active %}is-inactive{% endif %}" title="{% if u.is_active %}Desactivar{% else %}Activar{% endif %}"
+                    <button type="button" class="btn-icon btn-toggle {% if not u.is_active %}is-inactive{% endif %}" title="{% if u.is_active %}Desactivar{% else %}Activar{% endif %}"
                         onclick="toggleActivo({{ u.id }}, this)">
                         <i class="fas fa-{% if u.is_active %}toggle-on{% else %}toggle-off{% endif %}"></i>
                     </button>
@@ -305,6 +308,10 @@
                 <input type="text" class="form-control" id="editPhone" placeholder="Ej: 3001234567" maxlength="15">
             </div>
             <div class="form-row">
+                <label class="form-label">Email</label>
+                <input type="text" class="form-control" id="editEmail" placeholder="correo@ejemplo.com" maxlength="254">
+            </div>
+            <div class="form-row">
                 <label class="form-label">Rol</label>
                 <select class="form-control" id="editTipo">
                     <option value="propietario">Propietario</option>
@@ -324,8 +331,8 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
-            <button class="btn-save" onclick="guardarEdicion()"><i class="fas fa-save"></i> Guardar</button>
+            <button type="button" class="btn-cancel" onclick="closeModal()">Cancelar</button>
+            <button type="button" class="btn-save" onclick="guardarEdicion()"><i class="fas fa-save"></i> Guardar</button>
         </div>
     </div>
 </div>
@@ -389,12 +396,13 @@ function toggleActivo(userId, btn){
 
 /* ── Modal editar ── */
 let _editingId = null;
-function openEditModal(id, nombre, torreId, apto, phone, tipo, isActive){
+function openEditModal(id, nombre, torreId, apto, phone, tipo, isActive, email){
     _editingId = id;
     document.getElementById('editUserId').value = id;
     document.getElementById('editTorre').value = torreId;
     document.getElementById('editApto').value = apto;
     document.getElementById('editPhone').value = phone;
+    document.getElementById('editEmail').value = email || '';
     document.getElementById('editTipo').value = tipo;
     document.getElementById('editActivo').checked = (isActive === true || isActive === 'true');
     document.getElementById('editModal').classList.add('open');
@@ -418,6 +426,7 @@ function guardarEdicion(){
         torre_id: document.getElementById('editTorre').value,
         apartamento: document.getElementById('editApto').value,
         phone_number: document.getElementById('editPhone').value,
+        email: document.getElementById('editEmail').value,
         user_type: document.getElementById('editTipo').value,
     };
     fetch('/accounts/usuarios/' + _editingId + '/editar/', {
@@ -444,6 +453,24 @@ function guardarEdicion(){
             const clases = {propietario:'badge-prop',administrador:'badge-admin',porteria:'badge-port'};
             badge.className = 'u-type-badge ' + clases[data.user_type];
             badge.textContent = tipos[data.user_type];
+            // Actualizar email en la card
+            const emailSpans = card.querySelectorAll('.u-loc');
+            let emailSpan = Array.from(emailSpans).find(el => el.querySelector('.fa-envelope'));
+            if (data.email) {
+                if (emailSpan) {
+                    emailSpan.innerHTML = `<i class="fas fa-envelope"></i> ${data.email}`;
+                } else {
+                    const meta = card.querySelector('.u-meta');
+                    if (meta) {
+                        const newSpan = document.createElement('span');
+                        newSpan.className = 'u-loc';
+                        newSpan.innerHTML = `<i class="fas fa-envelope"></i> ${data.email}`;
+                        meta.insertBefore(newSpan, badge);
+                    }
+                }
+            } else if (emailSpan) {
+                emailSpan.remove();
+            }
             closeModal();
             // Si cambió el estado activo, hacer el toggle en el servidor
             if (needToggle) {

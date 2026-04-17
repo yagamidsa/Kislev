@@ -1094,6 +1094,12 @@ def editar_usuario(request, usuario_id):
         target.user_type = data['user_type']
         fields_updated.append('user_type')
 
+    if 'email' in data:
+        email_val = str(data['email']).strip()[:254]
+        if email_val:
+            target.email = email_val
+            fields_updated.append('email')
+
     if fields_updated:
         target.save(update_fields=fields_updated)
 
@@ -1103,6 +1109,7 @@ def editar_usuario(request, usuario_id):
         'apartamento': target.apartamento,
         'phone_number': target.phone_number or '',
         'user_type': target.user_type,
+        'email': target.email or '',
     })
 
 
