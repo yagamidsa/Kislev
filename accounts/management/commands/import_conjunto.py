@@ -170,7 +170,7 @@ class Command(BaseCommand):
                 skipped_users += 1
                 return
 
-            password = _random_password()
+            password = 'kislev123'
             # Soporta columnas antiguas (torre/apartamento) y nuevas (agrupacion/unidad)
             torre_nombre = str(row_data.get('agrupacion', '') or row_data.get('torre', '') or '').strip()
             torre = torres_map.get(torre_nombre)

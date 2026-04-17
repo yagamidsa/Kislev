@@ -931,7 +931,7 @@ def upload_conjunto(request):
             if Usuario.objects.filter(cedula=cedula, conjunto=conjunto).exists():
                 skipped_count += 1
                 return
-            password = _random_password()
+            password = 'kislev123'
             # Soporta columnas nuevas (agrupacion/unidad) y antiguas (torre/apartamento)
             torre_nombre = str(row_data.get('agrupacion', '') or row_data.get('torre', '') or '').strip()
             torre_obj = torres_map.get(torre_nombre)

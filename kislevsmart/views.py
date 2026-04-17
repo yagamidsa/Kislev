@@ -1229,6 +1229,7 @@ def bienvenida(request):
                     logger.info(f"Enviando email QR a {email_limpio}...")
                     result = email_message.send()
                     logger.info(f"✓ QR enviado exitosamente a {email_limpio}. Resultado: {result}")
+                    log_envio('email', conjunto=request.user.conjunto, detalle='QR vehicular/visitante')
 
                 except Exception as e:
                     logger.error(f"ERROR ENVIANDO EMAIL QR: {type(e).__name__}: {e}")
