@@ -227,7 +227,7 @@
             {% for item in stats %}
             <div class="conj-card">
                 <div class="conj-name">{{ item.conjunto.nombre }}</div>
-                <div class="conj-nit">NIT {{ item.conjunto.nit }} &nbsp;·&nbsp; {{ item.conjunto.get_tipo_distribucion_display }}</div>
+                <div class="conj-nit">NIT {{ item.conjunto.nit }} &nbsp;·&nbsp; {% if item.conjunto.nombre_agrupacion %}{{ item.conjunto.nombre_agrupacion }} / {% endif %}{{ item.conjunto.nombre_unidad }}</div>
                 <div class="conj-stats">
                     <span class="stat-pill"><strong>{{ item.propietarios }}</strong> propietarios</span>
                     <span class="stat-pill"><strong>{{ item.admins }}</strong> admin{{ item.admins|pluralize }}</span>

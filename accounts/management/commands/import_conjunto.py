@@ -100,14 +100,8 @@ class Command(BaseCommand):
 
         from accounts.models import ConjuntoResidencial, Torre, Usuario
 
-        tipo_dist = str(data.get('tipo_distribucion', '') or 'torre_apto').strip()
-        valid_tipos = [c[0] for c in ConjuntoResidencial.DISTRIBUCION_CHOICES]
-        if tipo_dist not in valid_tipos:
-            self.stdout.write(self.style.WARNING(
-                f'  tipo_distribucion "{tipo_dist}" no válido — usando "torre_apto". '
-                f'Opciones: {", ".join(valid_tipos)}'
-            ))
-            tipo_dist = 'torre_apto'
+        nombre_agrupacion = str(data.get('nombre_agrupacion', '') or 'Torre').strip()
+        nombre_unidad = str(data.get('nombre_unidad', '') or 'Apto').strip() or 'Apto'
 
         conjunto, created = ConjuntoResidencial.objects.get_or_create(
             nit=str(data['nit']).strip(),
@@ -117,15 +111,18 @@ class Command(BaseCommand):
                 'telefono': str(data.get('telefono', '') or ''),
                 'email_contacto': str(data.get('email_contacto', '') or '') or None,
                 'link_pago': str(data.get('link_pago', '') or '') or None,
-                'tipo_distribucion': tipo_dist,
+                'nombre_agrupacion': nombre_agrupacion,
+                'nombre_unidad': nombre_unidad,
             },
         )
-        if not created and tipo_dist:
-            conjunto.tipo_distribucion = tipo_dist
-            conjunto.save(update_fields=['tipo_distribucion'])
+        if not created:
+            conjunto.nombre_agrupacion = nombre_agrupacion
+            conjunto.nombre_unidad = nombre_unidad
+            conjunto.save(update_fields=['nombre_agrupacion', 'nombre_unidad'])
 
+        dist_display = f'{nombre_agrupacion} / {nombre_unidad}' if nombre_agrupacion else nombre_unidad
         action = 'Creado' if created else 'Ya existía'
-        self.stdout.write(f'[Conjunto] {action}: {conjunto.nombre} — distribución: {tipo_dist}')
+        self.stdout.write(f'[Conjunto] {action}: {conjunto.nombre} — distribución: {dist_display}')
 
         # ── 2. AGRUPACIONES (Torres/Interiores/Bloques/Manzanas) ─────────────
         # Soporta tanto la hoja antigua "Torres" como la nueva "Agrupaciones"

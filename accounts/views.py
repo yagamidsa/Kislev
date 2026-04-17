@@ -730,8 +730,10 @@ def download_template(request):
         ('telefono',           '3001234567',                    ''),
         ('email_contacto',     'admin@elprado.com',             ''),
         ('link_pago',          'https://pagos.ejemplo.com/elprado', ''),
-        ('tipo_distribucion',  'torre_apto',
-         'torre_apto | interior_apto | bloque_apto | manzana_casa | solo_apto | solo_casa'),
+        ('nombre_agrupacion',  'Torre',
+         'Torre | Interior | Bloque | Manzana | (dejar vacío si no hay agrupación)'),
+        ('nombre_unidad',      'Apto',
+         'Apto | Casa | PH | (cualquier nombre libre)'),
     ]
     # Estilo especial para columna de opciones
     from openpyxl.styles import Font as _Font, PatternFill as _Fill, Alignment as _Align
@@ -752,7 +754,7 @@ def download_template(request):
     ws_ag = wb['Agrupaciones']
     ws_ag['A1'].comment = None
     note_row = ws_ag.cell(row=ws_ag.max_row + 2, column=1,
-                          value='💡 Usa el nombre que corresponda al tipo_distribucion: Torre 1, Interior A, Bloque 3, Manzana 5, etc.')
+                          value='💡 Pon el nombre exacto de cada agrupación (ej: Torre 1, Interior A, Bloque 3). Deja la hoja vacía si el conjunto no usa agrupaciones.')
     note_row.font = note_font
 
     # Sheet 3: Administrador
@@ -798,7 +800,8 @@ def upload_conjunto(request):
 
     excel_file = request.FILES.get('excel')
     send_emails = request.POST.get('send_emails') == 'on'
-    tipo_dist_form = request.POST.get('tipo_distribucion', 'torre_apto')
+    nombre_agrupacion_form = request.POST.get('nombre_agrupacion', 'Torre').strip()
+    nombre_unidad_form = request.POST.get('nombre_unidad', 'Apto').strip() or 'Apto'
 
     if not excel_file:
         messages.error(request, 'Debes adjuntar un archivo Excel.')
@@ -873,11 +876,9 @@ def upload_conjunto(request):
             if not data.get(field):
                 raise ValueError(f'Hoja "Conjunto": falta el campo "{field}"')
 
-        # tipo_distribucion: primero del Excel, luego del form web
-        tipo_dist = str(data.get('tipo_distribucion', '') or tipo_dist_form or 'torre_apto').strip()
-        valid_tipos = [c[0] for c in ConjuntoResidencial.DISTRIBUCION_CHOICES]
-        if tipo_dist not in valid_tipos:
-            tipo_dist = 'torre_apto'
+        # nombre_agrupacion / nombre_unidad: primero del Excel, luego del form web
+        nombre_agrupacion = str(data.get('nombre_agrupacion', '') or nombre_agrupacion_form).strip()
+        nombre_unidad = str(data.get('nombre_unidad', '') or nombre_unidad_form or 'Apto').strip()
 
         conjunto, _ = ConjuntoResidencial.objects.get_or_create(
             nit=str(data['nit']).strip(),
@@ -887,7 +888,8 @@ def upload_conjunto(request):
                 'telefono': str(data.get('telefono', '') or ''),
                 'email_contacto': str(data.get('email_contacto', '') or '') or None,
                 'link_pago': str(data.get('link_pago', '') or '') or None,
-                'tipo_distribucion': tipo_dist,
+                'nombre_agrupacion': nombre_agrupacion,
+                'nombre_unidad': nombre_unidad,
             },
         )
 

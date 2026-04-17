@@ -127,7 +127,7 @@
         <div class="page-header">
             <div class="conjunto-badge"><i class="fas fa-building"></i> Conjunto</div>
             <h1 class="page-title">{{ conjunto.nombre }}</h1>
-            <p class="page-sub">{{ conjunto.direccion }} &nbsp;·&nbsp; {{ conjunto.get_tipo_distribucion_display }}</p>
+            <p class="page-sub">{{ conjunto.direccion }} &nbsp;·&nbsp; {% if conjunto.nombre_agrupacion %}{{ conjunto.nombre_agrupacion }} / {% endif %}{{ conjunto.nombre_unidad }}</p>
         </div>
 
         <!-- FILTER BAR -->

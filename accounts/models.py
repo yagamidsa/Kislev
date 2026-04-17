@@ -3,15 +3,6 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
 
 class ConjuntoResidencial(models.Model):
-    DISTRIBUCION_CHOICES = [
-        ('torre_apto',     'Torre / Apartamento'),
-        ('interior_apto',  'Interior / Apartamento'),
-        ('bloque_apto',    'Bloque / Apartamento'),
-        ('manzana_casa',   'Manzana / Casa'),
-        ('solo_apto',      'Solo apartamento (sin agrupación)'),
-        ('solo_casa',      'Solo casa (sin agrupación)'),
-    ]
-
     nombre = models.CharField(max_length=200)
     direccion = models.CharField(max_length=255)
     nit = models.CharField(max_length=20, unique=True)
@@ -20,41 +11,32 @@ class ConjuntoResidencial(models.Model):
     estado = models.BooleanField(default=True)
     fecha_registro = models.DateTimeField(auto_now_add=True)
     link_pago = models.URLField(max_length=500, blank=True, null=True, help_text='Link del portal de pagos para este conjunto')
-    tipo_distribucion = models.CharField(
-        max_length=20,
-        choices=DISTRIBUCION_CHOICES,
-        default='torre_apto',
-        help_text='Cómo está distribuido físicamente el conjunto',
+    nombre_agrupacion = models.CharField(
+        max_length=50,
+        default='Torre',
+        blank=True,
+        help_text='Nombre del nivel de agrupación (ej: Torre, Bloque, Interior). Dejar vacío si no hay agrupación.',
+    )
+    nombre_unidad = models.CharField(
+        max_length=50,
+        default='Apto',
+        help_text='Nombre de la unidad mínima (ej: Apto, Casa, PH).',
     )
 
     @property
     def etiqueta_agrupacion(self):
-        """Nombre de la agrupación principal (Torre, Interior, Bloque, Manzana) o vacío."""
-        return {
-            'torre_apto':    'Torre',
-            'interior_apto': 'Interior',
-            'bloque_apto':   'Bloque',
-            'manzana_casa':  'Manzana',
-            'solo_apto':     '',
-            'solo_casa':     '',
-        }.get(self.tipo_distribucion, 'Torre')
+        """Nombre de la agrupación principal o vacío si no aplica."""
+        return self.nombre_agrupacion or ''
 
     @property
     def etiqueta_unidad(self):
-        """Nombre de la unidad mínima (Apto, Casa)."""
-        return {
-            'torre_apto':    'Apto',
-            'interior_apto': 'Apto',
-            'bloque_apto':   'Apto',
-            'manzana_casa':  'Casa',
-            'solo_apto':     'Apto',
-            'solo_casa':     'Casa',
-        }.get(self.tipo_distribucion, 'Apto')
+        """Nombre de la unidad mínima."""
+        return self.nombre_unidad or 'Apto'
 
     @property
     def tiene_agrupacion(self):
         """True si el conjunto usa agrupaciones (torres, bloques, etc.)."""
-        return self.tipo_distribucion not in ('solo_apto', 'solo_casa')
+        return bool(self.nombre_agrupacion)
 
     class Meta:
         verbose_name = 'Conjunto Residencial'

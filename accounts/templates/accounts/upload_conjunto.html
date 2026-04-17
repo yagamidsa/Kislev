@@ -97,6 +97,19 @@
             cursor: pointer;
         }
         .checkbox-row span { font-size: 14px; color: rgba(255,255,255,.75); }
+        .preset-btn {
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,.2);
+            background: rgba(255,255,255,.07);
+            color: rgba(255,255,255,.7);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all .15s;
+        }
+        .preset-btn:hover { border-color: rgba(168,85,247,.6); color: #fff; }
+        .preset-btn.active { background: rgba(168,85,247,.3); border-color: #a855f7; color: #e9d5ff; font-weight: 600; }
+        .preset-btn.preset-none.active { background: rgba(239,68,68,.2); border-color: #f87171; color: #fca5a5; }
         .btn-submit {
             width: 100%;
             padding: 14px;
@@ -146,17 +159,32 @@
             </div>
 
             <div class="form-group">
-                <label>Tipo de distribución del conjunto</label>
-                <select name="tipo_distribucion" style="width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:10px;color:#e2e8f0;font-family:'Poppins',sans-serif;font-size:.85rem;padding:10px 14px;outline:none;">
-                    <option value="torre_apto">Torre / Apartamento</option>
-                    <option value="interior_apto">Interior / Apartamento</option>
-                    <option value="bloque_apto">Bloque / Apartamento</option>
-                    <option value="manzana_casa">Manzana / Casa</option>
-                    <option value="solo_apto">Solo apartamento (sin agrupación)</option>
-                    <option value="solo_casa">Solo casa (sin agrupación)</option>
-                </select>
+                <label>Agrupación (nivel 1)</label>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;" id="btnsAgrup">
+                    <button type="button" class="preset-btn active" onclick="setPreset('agrup','Torre',this)">Torre</button>
+                    <button type="button" class="preset-btn" onclick="setPreset('agrup','Interior',this)">Interior</button>
+                    <button type="button" class="preset-btn" onclick="setPreset('agrup','Bloque',this)">Bloque</button>
+                    <button type="button" class="preset-btn" onclick="setPreset('agrup','Manzana',this)">Manzana</button>
+                    <button type="button" class="preset-btn preset-none" onclick="setPreset('agrup','',this)">Sin agrupación</button>
+                </div>
+                <input type="text" name="nombre_agrupacion" id="inputAgrup" value="Torre"
+                       placeholder="O escribe un nombre libre (ej: Edificio)"
+                       style="width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:10px;color:#e2e8f0;font-size:.85rem;padding:10px 14px;outline:none;">
+            </div>
+
+            <div class="form-group">
+                <label>Unidad (nivel 2)</label>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;" id="btnsUnidad">
+                    <button type="button" class="preset-btn active" onclick="setPreset('unidad','Apto',this)">Apto</button>
+                    <button type="button" class="preset-btn" onclick="setPreset('unidad','Casa',this)">Casa</button>
+                    <button type="button" class="preset-btn" onclick="setPreset('unidad','PH',this)">PH</button>
+                    <button type="button" class="preset-btn" onclick="setPreset('unidad','Local',this)">Local</button>
+                </div>
+                <input type="text" name="nombre_unidad" id="inputUnidad" value="Apto"
+                       placeholder="O escribe un nombre libre (ej: Estudio)"
+                       style="width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:10px;color:#e2e8f0;font-size:.85rem;padding:10px 14px;outline:none;">
                 <div style="font-size:.72rem;color:rgba(255,255,255,.3);margin-top:6px;">
-                    Este campo también puede venir en la hoja "Conjunto" del Excel.
+                    Estos valores también pueden venir en la hoja "Conjunto" del Excel.
                 </div>
             </div>
             <div class="form-group">
@@ -170,5 +198,27 @@
         </form>
     </div>
 </div>
+<script>
+function setPreset(field, value, btn) {
+    const inputId = field === 'agrup' ? 'inputAgrup' : 'inputUnidad';
+    const groupId = field === 'agrup' ? 'btnsAgrup' : 'btnsUnidad';
+    document.getElementById(inputId).value = value;
+    document.querySelectorAll('#' + groupId + ' .preset-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+}
+// Keep preset buttons in sync when user types manually
+document.getElementById('inputAgrup').addEventListener('input', function() {
+    const v = this.value.trim();
+    document.querySelectorAll('#btnsAgrup .preset-btn').forEach(b => {
+        b.classList.toggle('active', b.textContent.trim() === v || (b.classList.contains('preset-none') && v === ''));
+    });
+});
+document.getElementById('inputUnidad').addEventListener('input', function() {
+    const v = this.value.trim();
+    document.querySelectorAll('#btnsUnidad .preset-btn').forEach(b => {
+        b.classList.toggle('active', b.textContent.trim() === v);
+    });
+});
+</script>
 </body>
 </html>
