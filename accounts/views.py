@@ -400,53 +400,147 @@ class CustomPasswordChangeView(LoginRequiredMixin, View):
         return render(request, 'accounts/cambiar_password.html', {'form': form})
 
 
+def _mask_email(email):
+    """Enmascara el email para mostrarlo sin exponerlo: j***@gm***.com"""
+    local, _, domain = email.partition('@')
+    m_local = local[0] + '***' if len(local) > 1 else '***'
+    parts = domain.rsplit('.', 1)
+    if len(parts) == 2:
+        m_domain = (parts[0][:2] + '***') + '.' + parts[1]
+    else:
+        m_domain = domain[:2] + '***'
+    return f'{m_local}@{m_domain}'
+
+
+def _send_reset_email(usuario, reset_url):
+    """Envía el email con el link de restablecimiento de contraseña."""
+    from django.core.mail import EmailMultiAlternatives
+    subject = 'Restablecer contraseña — Kislev'
+    text = (
+        f'Hola {usuario.nombre},\n\n'
+        f'Recibimos una solicitud para restablecer la contraseña de tu cuenta en Kislev.\n\n'
+        f'Haz clic en el siguiente enlace (válido por 30 minutos):\n{reset_url}\n\n'
+        f'Si no solicitaste este cambio, ignora este mensaje. Tu contraseña no será modificada.\n\n'
+        f'— Equipo Kislev'
+    )
+    html = f"""<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body style="margin:0;padding:0;background:#f0f2f5;font-family:Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f2f5;padding:32px 16px">
+<tr><td align="center"><table width="100%" style="max-width:520px" cellpadding="0" cellspacing="0">
+<tr><td style="background:linear-gradient(135deg,#3b1a6e,#6d28d9,#be185d);border-radius:16px 16px 0 0;padding:32px;text-align:center">
+  <p style="margin:0;font-size:24px;font-weight:800;color:#fff">🔐 Kislev</p>
+  <p style="margin:6px 0 0;font-size:13px;color:rgba(255,255,255,.85)">Restablecer contraseña</p>
+</td></tr>
+<tr><td style="background:#fff;padding:32px;border-left:1px solid #e5e7eb;border-right:1px solid #e5e7eb">
+  <p style="margin:0 0 8px;font-size:18px;font-weight:700;color:#4c1d95">Hola, {usuario.nombre}</p>
+  <p style="margin:0 0 24px;font-size:14px;color:#4b5563;line-height:1.7">
+    Recibimos una solicitud para restablecer la contraseña de tu cuenta.<br>
+    Haz clic en el botón para crear una nueva (el enlace expira en <strong>30 minutos</strong>).
+  </p>
+  <table cellpadding="0" cellspacing="0" width="100%"><tr><td align="center">
+    <a href="{reset_url}" style="display:inline-block;background:linear-gradient(135deg,#4c1d95,#be185d);color:#ffffff!important;-webkit-text-fill-color:#ffffff;text-decoration:none;padding:14px 40px;border-radius:30px;font-size:15px;font-weight:700">
+      Cambiar contraseña &rarr;
+    </a>
+  </td></tr></table>
+  <p style="margin:24px 0 0;font-size:12px;color:#9ca3af;line-height:1.6">
+    Si no solicitaste este cambio, ignora este mensaje. Tu contraseña no será modificada.<br>
+    Si el botón no funciona, copia este enlace: <span style="color:#7c3ded">{reset_url}</span>
+  </p>
+</td></tr>
+<tr><td style="background:#f9fafb;padding:16px 32px;text-align:center;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 16px 16px">
+  <p style="margin:0;font-size:12px;color:#9ca3af">kislev.net.co — {usuario.conjunto.nombre}</p>
+</td></tr>
+</table></td></tr></table></body></html>"""
+    msg = EmailMultiAlternatives(
+        subject=subject,
+        body=text,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=[usuario.email],
+    )
+    msg.attach_alternative(html, 'text/html')
+    msg.send(fail_silently=False)
+
+
 class RecuperarPasswordView(View):
-    """Recuperar contraseña por cédula, sin necesidad de email."""
+    """Paso 1 — usuario ingresa cédula y recibe link por email."""
+
+    @method_decorator(ratelimit(key='ip', rate='6/h', method='POST', block=False))
+    def post(self, request):
+        if getattr(request, 'limited', False):
+            messages.error(request, 'Demasiados intentos. Espera un momento e inténtalo de nuevo.')
+            return render(request, 'accounts/recuperar_password.html', {'paso': 1})
+
+        cedula = request.POST.get('cedula', '').strip()
+        usuario = Usuario.objects.filter(cedula=cedula, is_active=True).first()
+
+        if usuario and usuario.email:
+            try:
+                token = signing.dumps(
+                    {'uid': usuario.pk, 'ph': usuario.password[-14:]},
+                    salt='kislev-pw-reset',
+                )
+                from django.urls import reverse
+                reset_url = request.build_absolute_uri(
+                    reverse('accounts:recuperar_confirmar', args=[token])
+                )
+                _send_reset_email(usuario, reset_url)
+            except Exception:
+                pass  # No revelar si hubo error — anti-enumeración
+
+        # Siempre mostrar el mismo mensaje (anti-enumeración)
+        email_parcial = _mask_email(usuario.email) if usuario and usuario.email else ''
+        return render(request, 'accounts/recuperar_password.html', {
+            'paso': 'enviado',
+            'email_parcial': email_parcial,
+        })
 
     def get(self, request):
-        paso = request.session.get('recuperar_paso', 1)
-        return render(request, 'accounts/recuperar_password.html', {'paso': paso})
+        return render(request, 'accounts/recuperar_password.html', {'paso': 1})
 
-    def post(self, request):
-        paso = request.session.get('recuperar_paso', 1)
 
-        if paso == 1:
-            cedula = request.POST.get('cedula', '').strip()
-            usuario = Usuario.objects.filter(cedula=cedula, is_active=True).first()
-            if not usuario:
-                messages.error(request, 'No existe un usuario con esa cédula.')
-                return render(request, 'accounts/recuperar_password.html', {'paso': 1})
-            request.session['recuperar_user_id'] = usuario.pk
-            request.session['recuperar_paso'] = 2
-            return render(request, 'accounts/recuperar_password.html', {'paso': 2, 'nombre': usuario.nombre})
+class RecuperarPasswordConfirmView(View):
+    """Paso 2 — valida el token y permite cambiar la contraseña."""
 
-        if paso == 2:
-            user_id = request.session.get('recuperar_user_id')
-            try:
-                usuario = Usuario.objects.get(pk=user_id)
-            except Usuario.DoesNotExist:
-                request.session.pop('recuperar_paso', None)
-                request.session.pop('recuperar_user_id', None)
-                messages.error(request, 'Sesión expirada. Intenta de nuevo.')
-                return redirect('accounts:recuperar_password')
+    def _get_usuario(self, token):
+        try:
+            data = signing.loads(token, salt='kislev-pw-reset', max_age=1800)
+            usuario = Usuario.objects.get(pk=data['uid'], is_active=True)
+            if usuario.password[-14:] != data['ph']:
+                return None  # Token ya usado (contraseña cambió)
+            return usuario
+        except (signing.BadSignature, signing.SignatureExpired,
+                Usuario.DoesNotExist, KeyError, TypeError):
+            return None
 
-            p1 = request.POST.get('password1', '')
-            p2 = request.POST.get('password2', '')
-            if len(p1) < 8:
-                messages.error(request, 'La contraseña debe tener al menos 8 caracteres.')
-                return render(request, 'accounts/recuperar_password.html', {'paso': 2, 'nombre': usuario.nombre})
-            if p1 != p2:
-                messages.error(request, 'Las contraseñas no coinciden.')
-                return render(request, 'accounts/recuperar_password.html', {'paso': 2, 'nombre': usuario.nombre})
+    def get(self, request, token):
+        usuario = self._get_usuario(token)
+        if not usuario:
+            return render(request, 'accounts/recuperar_confirmar.html', {'invalido': True})
+        return render(request, 'accounts/recuperar_confirmar.html', {
+            'token': token, 'nombre': usuario.nombre
+        })
 
-            usuario.set_password(p1)
-            usuario.save()
-            request.session.pop('recuperar_paso', None)
-            request.session.pop('recuperar_user_id', None)
-            messages.success(request, 'Contraseña actualizada. Ya puedes iniciar sesión.')
-            return redirect('accounts:login')
+    def post(self, request, token):
+        usuario = self._get_usuario(token)
+        if not usuario:
+            return render(request, 'accounts/recuperar_confirmar.html', {'invalido': True})
 
-        return redirect('accounts:recuperar_password')
+        p1 = request.POST.get('password1', '')
+        p2 = request.POST.get('password2', '')
+        if len(p1) < 8:
+            messages.error(request, 'La contraseña debe tener al menos 8 caracteres.')
+            return render(request, 'accounts/recuperar_confirmar.html', {
+                'token': token, 'nombre': usuario.nombre
+            })
+        if p1 != p2:
+            messages.error(request, 'Las contraseñas no coinciden.')
+            return render(request, 'accounts/recuperar_confirmar.html', {
+                'token': token, 'nombre': usuario.nombre
+            })
+
+        usuario.set_password(p1)
+        usuario.save()
+        messages.success(request, '¡Contraseña actualizada! Ya puedes iniciar sesión.')
+        return redirect('accounts:login')
 
 
 class PasswordResetDoneView(TemplateView):

@@ -7,6 +7,7 @@ from .views import (
     CustomPasswordResetView,
     CustomPasswordChangeView,
     RecuperarPasswordView,
+    RecuperarPasswordConfirmView,
     PasswordResetDoneView,
     VisorAdminView,
     ControlPorteriaView,
@@ -38,8 +39,9 @@ urlpatterns = [
     # Cambiar contraseña (usuario logueado)
     path('cambiar-password/', CustomPasswordChangeView.as_view(), name='cambiar_password'),
 
-    # Olvidé mi contraseña (por cédula, sin email)
+    # Olvidé mi contraseña — link firmado por email (seguro)
     path('recuperar-password/', RecuperarPasswordView.as_view(), name='recuperar_password'),
+    path('recuperar-password/confirmar/<str:token>/', RecuperarPasswordConfirmView.as_view(), name='recuperar_confirmar'),
 
     # Rutas de recuperación de contraseña por email (legacy)
     path('password_reset/', CustomPasswordResetView.as_view(

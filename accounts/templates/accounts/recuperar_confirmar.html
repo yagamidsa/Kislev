@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nueva contraseña — Kislev</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <style>
+        .recup-card { width: 100%; max-width: 440px; background: #fff; padding: 2rem; border-radius: 25px; box-shadow: 0 10px 25px rgba(0,0,0,.08); }
+        .recup-icon { width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg,#7c3aed,#db2777); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: #fff; margin: 0 auto 1.2rem; }
+        .recup-title { font-size: 1.35rem; font-weight: 700; text-align: center; color: #1a1a2e; margin-bottom: .4rem; }
+        .recup-sub { font-size: .85rem; color: #6b7280; text-align: center; margin-bottom: 1.6rem; line-height: 1.6; }
+        .recup-input { width: 100%; padding: 13px 16px; border-radius: 12px; border: 1.5px solid #e5e7eb; font-size: 1rem; transition: border-color .25s; box-sizing: border-box; }
+        .recup-input:focus { outline: none; border-color: #7c3aed; }
+        .recup-btn { width: 100%; padding: 14px; border: none; border-radius: 25px; background: linear-gradient(to right,#db2777,#7c3aed); color: #fff; font-size: 1rem; font-weight: 700; cursor: pointer; margin-top: 1.2rem; transition: opacity .2s; }
+        .recup-btn:hover { opacity: .9; }
+        .recup-btn:disabled { opacity: .6; cursor: not-allowed; }
+        .back-link { display: block; text-align: center; margin-top: 1.2rem; font-size: .85rem; color: #7c3aed; font-weight: 600; text-decoration: none; }
+        .back-link:hover { color: #db2777; }
+        .field-label { display: block; font-size: .82rem; font-weight: 700; color: #374151; margin-bottom: 6px; margin-top: .9rem; }
+        .field-label:first-of-type { margin-top: 0; }
+        .msg-error { background: #fef2f2; border: 1px solid #fca5a5; color: #991b1b; border-radius: 10px; padding: 10px 14px; font-size: .85rem; margin-bottom: 1rem; }
+        .expired-box { background: #fef2f2; border: 1.5px solid #fca5a5; border-radius: 14px; padding: 1.4rem; text-align: center; margin-bottom: 1.2rem; }
+        .expired-box .exp-icon { font-size: 2rem; margin-bottom: .5rem; }
+        .expired-box p { margin: 0; font-size: .88rem; color: #991b1b; line-height: 1.6; }
+        .strength-bar { height: 5px; border-radius: 999px; background: #f3f4f6; margin-top: 6px; overflow: hidden; }
+        .strength-fill { height: 100%; border-radius: 999px; transition: width .3s, background .3s; width: 0; }
+        .pwd-toggle { position: relative; }
+        .pwd-toggle input { padding-right: 44px; }
+        .pwd-eye { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #9ca3af; font-size: 1rem; padding: 0; }
+        .nombre-greeting { font-size: .92rem; color: #4c1d95; font-weight: 600; text-align: center; margin-bottom: 1.2rem; }
+    </style>
+</head>
+<body>
+<div class="container" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem">
+    <div class="recup-card">
+
+        {% if invalido %}
+        <div class="recup-icon">⏰</div>
+        <h1 class="recup-title">Enlace inválido</h1>
+        <div class="expired-box">
+            <div class="exp-icon">🔗</div>
+            <p>Este enlace de recuperación <strong>ha expirado o ya fue utilizado</strong>.<br><br>
+               Los enlaces son válidos por 30 minutos y de un solo uso.</p>
+        </div>
+        <a href="{% url 'accounts:recuperar_password' %}" class="recup-btn" style="display:block;text-align:center;text-decoration:none;box-sizing:border-box;line-height:1.5">
+            Solicitar nuevo enlace
+        </a>
+
+        {% else %}
+        <div class="recup-icon">🔒</div>
+        <h1 class="recup-title">Nueva contraseña</h1>
+        {% if nombre %}
+        <p class="nombre-greeting">Hola, {{ nombre }} 👋</p>
+        {% endif %}
+        <p class="recup-sub">Elige una contraseña segura (mínimo 8 caracteres).</p>
+
+        {% for message in messages %}
+        <div class="msg-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <label class="field-label" for="password1">Nueva contraseña</label>
+            <div class="pwd-toggle">
+                <input class="recup-input" type="password" name="password1" id="password1"
+                       autocomplete="new-password" required autofocus>
+                <button type="button" class="pwd-eye" onclick="togglePwd('password1',this)" aria-label="Mostrar/ocultar">👁</button>
+            </div>
+            <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+
+            <label class="field-label" for="password2">Confirmar contraseña</label>
+            <div class="pwd-toggle">
+                <input class="recup-input" type="password" name="password2" id="password2"
+                       autocomplete="new-password" required>
+                <button type="button" class="pwd-eye" onclick="togglePwd('password2',this)" aria-label="Mostrar/ocultar">👁</button>
+            </div>
+
+            <button class="recup-btn" type="submit" id="btn-guardar">Guardar nueva contraseña</button>
+        </form>
+        {% endif %}
+
+        <a href="{% url 'accounts:login' %}" class="back-link">← Volver al inicio de sesión</a>
+    </div>
+</div>
+
+<script>
+function togglePwd(id, btn) {
+    const inp = document.getElementById(id);
+    const isText = inp.type === 'text';
+    inp.type = isText ? 'password' : 'text';
+    btn.textContent = isText ? '👁' : '🙈';
+}
+
+/* Indicador de fortaleza */
+document.getElementById('password1')?.addEventListener('input', function() {
+    const v = this.value;
+    const fill = document.getElementById('strength-fill');
+    if (!fill) return;
+    let score = 0;
+    if (v.length >= 8)  score++;
+    if (v.length >= 12) score++;
+    if (/[A-Z]/.test(v)) score++;
+    if (/[0-9]/.test(v)) score++;
+    if (/[^A-Za-z0-9]/.test(v)) score++;
+    const widths  = ['0%','25%','50%','75%','100%'];
+    const colors  = ['#ef4444','#f97316','#eab308','#22c55e','#7c3aed'];
+    fill.style.width  = widths[score]  || '0%';
+    fill.style.background = colors[score] || '#ef4444';
+});
+
+document.querySelector('form')?.addEventListener('submit', function() {
+    const btn = document.getElementById('btn-guardar');
+    if (btn) { btn.disabled = true; btn.textContent = 'Guardando...'; }
+});
+</script>
+</body>
+</html>
