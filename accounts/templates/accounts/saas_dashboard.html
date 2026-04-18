@@ -10,9 +10,10 @@
     <style>
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
         html{background:#09000f}
+        html{height:-webkit-fill-available}
         html,body{height:100%;overflow:hidden}
         body{font-family:'Poppins',sans-serif;background:#09000f;color:#e2e8f0}
-        .scroll-root{height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch}
+        .scroll-root{height:100vh;height:100dvh;height:-webkit-fill-available;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain}
 
         /* ── TOPBAR ── */
         .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 28px;background:rgba(255,255,255,.03);border-bottom:1px solid rgba(255,255,255,.06);position:sticky;top:0;z-index:50;backdrop-filter:blur(12px)}

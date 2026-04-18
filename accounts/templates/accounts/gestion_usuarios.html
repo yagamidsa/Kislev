@@ -9,8 +9,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         *{margin:0;padding:0;box-sizing:border-box;}
+        html{height:-webkit-fill-available;}
         html,body{height:100%;overflow:hidden;font-family:'Poppins',sans-serif;background:#09000f;color:#e2e8f0;}
-        .scroll-root{height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+        .scroll-root{height:100vh;height:100dvh;height:-webkit-fill-available;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;}
         #particles{position:fixed;inset:0;z-index:0;pointer-events:none;}
         .page{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;}
 
