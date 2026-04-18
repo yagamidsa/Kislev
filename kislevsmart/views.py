@@ -1330,16 +1330,21 @@ def validar_qr(request, encrypted_token):
         tipo_visitante, original_token = parts
         
         # Obtener visitante con bloqueo según tipo
+        # SEGURIDAD: se filtra también por conjunto para que un QR de otro
+        # conjunto no sea válido en este.
+        scanner_conjunto_id = request.user.conjunto_id
         with transaction.atomic():
             if tipo_visitante == 'vehicular':
                 visitante = get_object_or_404(
                     VisitanteVehicular.objects.select_for_update(nowait=True),
-                    token=original_token
+                    token=original_token,
+                    conjunto_id=scanner_conjunto_id
                 )
             else:
                 visitante = get_object_or_404(
                     Visitante.objects.select_for_update(nowait=True),
-                    token=original_token
+                    token=original_token,
+                    conjunto_id=scanner_conjunto_id
                 )
             
             visitante.refresh_from_db()
@@ -1836,12 +1841,14 @@ def validar_qr_vehicular(request, encrypted_token):
         original_token = decrypted_token[len("Kislev_"):]
         
         # Obtener visitante con bloqueo
+        # SEGURIDAD: filtrar por conjunto para evitar que un QR de otro conjunto sea válido aquí
         with transaction.atomic():
             visitante = get_object_or_404(
                 VisitanteVehicular.objects.select_for_update(nowait=True),
-                token=original_token
+                token=original_token,
+                conjunto_id=request.user.conjunto_id
             )
-            
+
             # Verificar estado directamente en la base de datos
             visitante.refresh_from_db()
             
