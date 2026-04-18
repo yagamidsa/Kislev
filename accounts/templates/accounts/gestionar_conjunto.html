@@ -73,6 +73,41 @@
         .stat-mini .val{font-size:1.8rem;font-weight:800}
         .stat-mini .lbl{font-size:.72rem;color:#94a3b8;margin-top:2px}
 
+        /* ── COMPOSICIÓN TIPO ── */
+        .tipo-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+        .tipo-row:last-child{border-bottom:none}
+        .tipo-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+        .tipo-name{flex:1;font-size:.83rem;color:#cbd5e1}
+        .tipo-count{font-weight:700;font-size:.9rem}
+        .tipo-bar-wrap{width:80px;height:6px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden}
+        .tipo-bar-fill{height:100%;border-radius:999px}
+
+        /* ── MODULO RANK ── */
+        .mod-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+        .mod-row:last-child{border-bottom:none}
+        .mod-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.75rem;flex-shrink:0}
+        .mod-name{flex:1;font-size:.82rem;color:#cbd5e1}
+        .mod-pct{font-size:.75rem;color:#64748b;margin-right:4px}
+        .mod-count{font-weight:700;font-size:.88rem;color:#c4b5fd}
+        .mod-bar-wrap{width:70px;height:5px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;margin-top:3px}
+        .mod-bar-fill{height:100%;border-radius:999px;background:linear-gradient(to right,#7c3aed,#a855f7)}
+
+        /* ── SALA RANK ── */
+        .sala-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+        .sala-row:last-child{border-bottom:none}
+        .sala-num{width:24px;height:24px;border-radius:50%;background:rgba(124,58,237,.25);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:#c4b5fd;flex-shrink:0}
+        .sala-name{flex:1;font-size:.82rem;color:#cbd5e1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+        .sala-count{font-weight:700;color:#c4b5fd;font-size:.88rem}
+
+        /* ── RECAUDO ── */
+        .fin-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:.83rem}
+        .fin-row:last-child{border-bottom:none}
+        .fin-label{color:#94a3b8}
+        .fin-val{font-weight:700;color:#e2e8f0}
+        .fin-val.green{color:#86efac}
+        .fin-val.yellow{color:#fbbf24}
+        .fin-val.red{color:#f87171}
+
         /* ── TABLE ── */
         .log-table{width:100%;border-collapse:collapse;font-size:.8rem}
         .log-table th{color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.05em;font-size:.7rem;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.07);text-align:left}
@@ -105,7 +140,7 @@
     <div class="topbar">
         <div class="logo-mark">
             <div class="logo-icon"><i class="fas fa-chart-line"></i></div>
-            <span class="logo-text">Kislev Smart</span>
+            <span class="logo-text">Kislev</span>
         </div>
         <div class="topbar-right">
             <a href="{% url 'accounts:saas_dashboard' %}" class="btn-back">
@@ -133,22 +168,70 @@
             </a>
         </div>
 
-        <!-- KPIs RESIDENTES + ACTIVIDAD -->
-        <p class="section-title"><i class="fas fa-info-circle"></i> Actividad del conjunto</p>
-        <div class="grid-3" style="margin-bottom:28px">
-            <div class="card stat-mini">
-                <div class="val" style="color:#a855f7">{{ activos_res }}</div>
-                <div class="lbl">Residentes activos</div>
+        <!-- COMPOSICIÓN DEL CONJUNTO -->
+        <p class="section-title"><i class="fas fa-users"></i> Composición del conjunto</p>
+        {% with total_act=activos_res %}
+        <div class="grid-2" style="margin-bottom:28px">
+            <!-- Breakdown tipos -->
+            <div class="card">
+                <div class="card-title"><i class="fas fa-id-badge"></i> Usuarios activos por rol</div>
+                {% with tp=usuarios_por_tipo %}
+                <div class="tipo-row">
+                    <div class="tipo-dot" style="background:#a855f7"></div>
+                    <span class="tipo-name">Propietarios</span>
+                    <div class="tipo-bar-wrap"><div class="tipo-bar-fill" style="width:{% if total_act %}{% widthratio tp.propietario total_act 100 %}{% else %}0{% endif %}%;background:#a855f7"></div></div>
+                    <span class="tipo-count" style="color:#a855f7">{{ tp.propietario }}</span>
+                </div>
+                <div class="tipo-row">
+                    <div class="tipo-dot" style="background:#22d3ee"></div>
+                    <span class="tipo-name">Arrendatarios</span>
+                    <div class="tipo-bar-wrap"><div class="tipo-bar-fill" style="width:{% if total_act %}{% widthratio tp.arrendatario total_act 100 %}{% else %}0{% endif %}%;background:#22d3ee"></div></div>
+                    <span class="tipo-count" style="color:#22d3ee">{{ tp.arrendatario }}</span>
+                </div>
+                <div class="tipo-row">
+                    <div class="tipo-dot" style="background:#fb923c"></div>
+                    <span class="tipo-name">Administradores</span>
+                    <div class="tipo-bar-wrap"><div class="tipo-bar-fill" style="width:{% if total_act %}{% widthratio tp.administrador total_act 100 %}{% else %}0{% endif %}%;background:#fb923c"></div></div>
+                    <span class="tipo-count" style="color:#fb923c">{{ tp.administrador }}</span>
+                </div>
+                <div class="tipo-row">
+                    <div class="tipo-dot" style="background:#facc15"></div>
+                    <span class="tipo-name">Portería</span>
+                    <div class="tipo-bar-wrap"><div class="tipo-bar-fill" style="width:{% if total_act %}{% widthratio tp.porteria total_act 100 %}{% else %}0{% endif %}%;background:#facc15"></div></div>
+                    <span class="tipo-count" style="color:#facc15">{{ tp.porteria }}</span>
+                </div>
+                {% endwith %}
+                <div style="margin-top:14px;font-size:.75rem;color:#64748b">Total registrados: <strong style="color:#e2e8f0">{{ total_res }}</strong> · Activos: <strong style="color:#a855f7">{{ activos_res }}</strong></div>
             </div>
-            <div class="card stat-mini">
-                <div class="val" style="color:#db2777">{{ visitantes_mes }}</div>
-                <div class="lbl">Visitantes este mes</div>
-            </div>
-            <div class="card stat-mini">
-                <div class="val" style="color:#fbbf24">{{ paq_pendientes }}</div>
-                <div class="lbl">Paquetes pendientes</div>
+            <!-- Mini stats 6 -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <div class="card stat-mini" style="padding:12px 8px">
+                    <div class="val" style="color:#a855f7;font-size:1.6rem">{{ activos_res }}</div>
+                    <div class="lbl">Residentes activos</div>
+                </div>
+                <div class="card stat-mini" style="padding:12px 8px">
+                    <div class="val" style="color:#db2777;font-size:1.6rem">{{ visitantes_mes }}</div>
+                    <div class="lbl">Visitas peatonales</div>
+                </div>
+                <div class="card stat-mini" style="padding:12px 8px">
+                    <div class="val" style="color:#60a5fa;font-size:1.6rem">{{ visitantes_veh_mes }}</div>
+                    <div class="lbl">Visitas vehiculares</div>
+                </div>
+                <div class="card stat-mini" style="padding:12px 8px">
+                    <div class="val" style="color:#fbbf24;font-size:1.6rem">{{ paq_pendientes }}</div>
+                    <div class="lbl">Paquetes pendientes</div>
+                </div>
+                <div class="card stat-mini" style="padding:12px 8px">
+                    <div class="val" style="color:#34d399;font-size:1.6rem">{{ reservas_mes }}</div>
+                    <div class="lbl">Reservas salas</div>
+                </div>
+                <div class="card stat-mini" style="padding:12px 8px">
+                    <div class="val" style="color:#f472b6;font-size:1.6rem">{{ novedades_mes_count }}</div>
+                    <div class="lbl">Novedades publicadas</div>
+                </div>
             </div>
         </div>
+        {% endwith %}
         {% if ultimo_login %}
         <p style="font-size:.78rem;color:#64748b;margin-bottom:24px"><i class="fas fa-clock" style="margin-right:5px"></i> Último acceso al sistema: {{ ultimo_login|date:"d/m/Y H:i" }}</p>
         {% endif %}
@@ -199,6 +282,102 @@
             </div>
         </div>
 
+        <!-- EMAILS POR MÓDULO + SALAS TOP -->
+        <p class="section-title"><i class="fas fa-chart-pie"></i> Detalle de consumo</p>
+        <div class="grid-2" style="margin-bottom:28px">
+
+            <!-- Emails por módulo -->
+            <div class="card">
+                <div class="card-title"><i class="fas fa-layer-group"></i> Emails por módulo — {{ mes_label }}</div>
+                {% if emails_por_modulo %}
+                {% for mod, n in emails_por_modulo %}
+                <div class="mod-row">
+                    <div class="mod-icon"
+                         style="background:{% cycle 'rgba(124,58,237,.25)' 'rgba(219,39,119,.25)' 'rgba(96,165,250,.25)' 'rgba(52,211,153,.25)' 'rgba(251,191,36,.25)' 'rgba(244,114,182,.25)' %}">
+                        <i class="fas {% if 'QR' in mod %}fa-qrcode{% elif 'Novedad' in mod %}fa-newspaper{% elif 'Bienvenida' in mod %}fa-user-plus{% elif 'masivo' in mod or 'masiva' in mod %}fa-bullhorn{% elif 'individual' in mod %}fa-comment{% elif 'Factura' in mod %}fa-file-invoice{% else %}fa-envelope{% endif %}"
+                           style="color:{% cycle '#c4b5fd' '#f9a8d4' '#93c5fd' '#6ee7b7' '#fde68a' '#fbcfe8' %}"></i>
+                    </div>
+                    <div style="flex:1;min-width:0">
+                        <div style="display:flex;align-items:center;justify-content:space-between">
+                            <span class="mod-name">{{ mod }}</span>
+                            <span><span class="mod-pct">{% if emails_mes %}{% widthratio n emails_mes 100 %}%{% endif %}</span><span class="mod-count">{{ n }}</span></span>
+                        </div>
+                        <div class="mod-bar-wrap" style="width:100%;margin-top:5px">
+                            <div class="mod-bar-fill" style="width:{% if emails_mes %}{% widthratio n emails_mes 100 %}{% else %}0{% endif %}%"></div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div style="padding:24px 0;text-align:center;color:#64748b;font-size:.82rem">
+                    <i class="fas fa-inbox" style="font-size:1.5rem;margin-bottom:8px;display:block"></i>
+                    Sin emails registrados este mes
+                </div>
+                {% endif %}
+                <!-- mini doughnut -->
+                {% if emails_por_modulo %}
+                <div style="position:relative;height:120px;margin-top:14px"><canvas id="chartModulos"></canvas></div>
+                {% endif %}
+            </div>
+
+            <!-- Salas más reservadas + pagos -->
+            <div style="display:flex;flex-direction:column;gap:14px">
+                <div class="card" style="flex:1">
+                    <div class="card-title"><i class="fas fa-door-open"></i> Salas más reservadas — {{ mes_label }}</div>
+                    {% if salas_top %}
+                    {% for s in salas_top %}
+                    <div class="sala-row">
+                        <div class="sala-num">{{ forloop.counter }}</div>
+                        <span class="sala-name">{{ s.sala__nombre }}</span>
+                        <span class="sala-count">{{ s.total }} <span style="font-size:.7rem;font-weight:400;color:#64748b">reservas</span></span>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div style="padding:20px 0;text-align:center;color:#64748b;font-size:.82rem">Sin reservas este mes</div>
+                    {% endif %}
+                </div>
+                <div class="card" style="flex:0">
+                    <div class="card-title"><i class="fas fa-cash-register"></i> Pagos registrados — {{ mes_label }}</div>
+                    <div style="display:flex;gap:20px;align-items:center">
+                        <div>
+                            <div style="font-size:2rem;font-weight:800;color:#34d399;line-height:1">{{ pagos_mes_count }}</div>
+                            <div style="font-size:.72rem;color:#94a3b8;margin-top:2px">transacciones</div>
+                        </div>
+                        <div style="flex:1;border-left:1px solid rgba(255,255,255,.08);padding-left:20px">
+                            <div style="font-size:1.15rem;font-weight:700;color:#86efac">${{ pagos_mes_total|floatformat:0 }}</div>
+                            <div style="font-size:.72rem;color:#94a3b8;margin-top:2px">recaudado COP</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SALUD FINANCIERA -->
+        <p class="section-title"><i class="fas fa-heartbeat"></i> Salud financiera</p>
+        <div class="grid-3" style="margin-bottom:28px">
+            <div class="card stat-mini">
+                <div class="val" style="color:#60a5fa">{{ cuotas_activas }}</div>
+                <div class="lbl">Cuotas vigentes</div>
+            </div>
+            <div class="card">
+                <div class="card-title"><i class="fas fa-percent"></i> Recaudo última cuota</div>
+                {% if ultima_cuota_nombre %}
+                <div style="font-size:.75rem;color:#64748b;margin-bottom:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="{{ ultima_cuota_nombre }}">{{ ultima_cuota_nombre }}</div>
+                {% endif %}
+                <div class="big-number" style="color:{% if pct_recaudo >= 80 %}#34d399{% elif pct_recaudo >= 50 %}#fbbf24{% else %}#f87171{% endif %}">{{ pct_recaudo }}%</div>
+                <div class="gauge-wrap {% if pct_recaudo >= 80 %}gauge-ok{% elif pct_recaudo >= 50 %}gauge-warn{% else %}gauge-crit{% endif %}" style="margin-top:10px">
+                    <div class="gauge-bar"><div class="gauge-fill" style="width:{{ pct_recaudo }}%"></div></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title"><i class="fas fa-exclamation-triangle"></i> Deuda estimada</div>
+                <div class="big-number" style="color:{% if deuda_estimada == 0 %}#34d399{% elif deuda_estimada < 500000 %}#fbbf24{% else %}#f87171{% endif %}">
+                    ${{ deuda_estimada|floatformat:0 }}
+                </div>
+                <div class="sub-label">COP sin pagar (última cuota)</div>
+            </div>
+        </div>
+
         <!-- LOG DE ENVÍOS -->
         <p class="section-title"><i class="fas fa-list-alt"></i> Últimos envíos</p>
         <div class="card" style="margin-bottom:28px;padding:0">
@@ -237,11 +416,37 @@
 </div><!-- /scroll-root -->
 
 {{ historico|json_script:"historico-data" }}
+{{ emails_mod_json|json_script:"mod-data" }}
 
 <script>
 /* ── Charts histórico ── */
 const hist = JSON.parse(document.getElementById('historico-data').textContent);
 const labels = hist.map(h => h.label);
+
+/* ── Doughnut emails por módulo ── */
+(function(){
+    const el = document.getElementById('chartModulos');
+    if (!el) return;
+    const mods = JSON.parse(document.getElementById('mod-data').textContent);
+    const COLORS = ['rgba(168,85,247,.85)','rgba(219,39,119,.85)','rgba(96,165,250,.85)',
+                    'rgba(52,211,153,.85)','rgba(251,191,36,.85)','rgba(244,114,182,.85)'];
+    new Chart(el, {
+        type: 'doughnut',
+        data: {
+            labels: mods.map(m => m.mod),
+            datasets: [{ data: mods.map(m => m.n), backgroundColor: COLORS.slice(0, mods.length),
+                         borderWidth: 0, hoverOffset: 6 }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            cutout: '68%',
+            plugins: {
+                legend: { display: true, position: 'right',
+                    labels: { color: 'rgba(255,255,255,.7)', font: { size: 10 }, boxWidth: 10, padding: 8 } }
+            }
+        }
+    });
+})();
 
 function makeChart(id, data, color, label) {
     const ctx = document.getElementById(id);

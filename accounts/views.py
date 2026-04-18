@@ -631,14 +631,39 @@ def gestionar_conjunto(request, conjunto_id):
     total_res   = Usuario.objects.filter(conjunto=conjunto).count()
     activos_res = Usuario.objects.filter(conjunto=conjunto, is_active=True).count()
 
+    # ── Composición de usuarios ───────────────────────────────────────────────
+    usuarios_por_tipo = {'propietario': 0, 'arrendatario': 0, 'administrador': 0, 'porteria': 0}
+    try:
+        from django.db.models import Count as _Count
+        for row in Usuario.objects.filter(conjunto=conjunto, is_active=True).values('user_type').annotate(n=_Count('id')):
+            usuarios_por_tipo[row['user_type']] = row['n']
+        arrendatarios = Usuario.objects.filter(conjunto=conjunto, is_active=True, user_type='propietario', es_arrendatario=True).count()
+        usuarios_por_tipo['arrendatario'] = arrendatarios
+        usuarios_por_tipo['propietario']  = max(0, usuarios_por_tipo['propietario'] - arrendatarios)
+    except Exception:
+        pass
+
     # ── Actividad general ─────────────────────────────────────────────────────
-    visitantes_mes = 0
-    paq_pendientes = 0
+    visitantes_mes     = 0
+    visitantes_veh_mes = 0
+    paq_pendientes     = 0
+    reservas_mes       = 0
+    novedades_mes_count = 0
+    pagos_mes_count    = 0
+    pagos_mes_total    = 0
     try:
         from kislevsmart.models import Visitante
         visitantes_mes = Visitante.objects.filter(
             conjunto=conjunto,
-            fecha_generacion__date__gte=hoy.replace(day=1),
+            fecha_generacion__date__gte=mes_inicio,
+        ).count()
+    except Exception:
+        pass
+    try:
+        from kislevsmart.models import VisitanteVehicular
+        visitantes_veh_mes = VisitanteVehicular.objects.filter(
+            conjunto=conjunto,
+            fecha_generacion__date__gte=mes_inicio,
         ).count()
     except Exception:
         pass
@@ -647,26 +672,120 @@ def gestionar_conjunto(request, conjunto_id):
         paq_pendientes = Paquete.objects.filter(conjunto=conjunto, estado='pendiente').count()
     except Exception:
         pass
+    try:
+        from kislevsmart.models import Reserva
+        reservas_mes = Reserva.objects.filter(sala__conjunto=conjunto, created_at__date__gte=mes_inicio).count()
+    except Exception:
+        pass
+    try:
+        from kislevsmart.models import Novedad
+        novedades_mes_count = Novedad.objects.filter(conjunto=conjunto, created_at__date__gte=mes_inicio, activa=True).count()
+    except Exception:
+        pass
+    try:
+        from kislevsmart.models import Pago
+        from django.db.models import Sum as _Sum
+        pagos_qs = Pago.objects.filter(cuota__conjunto=conjunto, fecha_pago__gte=mes_inicio)
+        pagos_mes_count = pagos_qs.count()
+        pagos_mes_total = pagos_qs.aggregate(t=_Sum('monto_pagado'))['t'] or 0
+    except Exception:
+        pass
+
     ultimo_login = Usuario.objects.filter(conjunto=conjunto, last_login__isnull=False).aggregate(
         ult=Max('last_login')
     )['ult']
 
+    # ── Emails por módulo ─────────────────────────────────────────────────────
+    emails_por_modulo = []
+    try:
+        from kislevsmart.models import LogEnvio as _LogEnvio
+        detalles = list(_LogEnvio.objects.filter(
+            conjunto=conjunto, tipo='email', fecha__date__gte=mes_inicio
+        ).values_list('detalle', flat=True))
+        module_counts = {}
+        for d in detalles:
+            if d.startswith('Bienvenida'):
+                mod = 'Bienvenida'
+            elif 'QR' in d:
+                mod = 'QR Acceso'
+            elif d.startswith('Novedad'):
+                mod = 'Novedades'
+            elif 'masiva' in d.lower():
+                mod = 'Comunicados masivos'
+            elif 'individual' in d.lower():
+                mod = 'Comunicados individuales'
+            elif 'Factura' in d:
+                mod = 'Facturas'
+            else:
+                mod = 'Otros'
+            module_counts[mod] = module_counts.get(mod, 0) + 1
+        emails_por_modulo = sorted(module_counts.items(), key=lambda x: x[1], reverse=True)
+    except Exception:
+        pass
+
+    # ── Salas más reservadas ──────────────────────────────────────────────────
+    salas_top = []
+    try:
+        from kislevsmart.models import Reserva
+        from django.db.models import Count as _Count2
+        salas_top = list(
+            Reserva.objects.filter(sala__conjunto=conjunto, created_at__date__gte=mes_inicio)
+            .values('sala__nombre')
+            .annotate(total=_Count2('id'))
+            .order_by('-total')[:4]
+        )
+    except Exception:
+        pass
+
+    # ── Salud financiera ──────────────────────────────────────────────────────
+    cuotas_activas  = 0
+    pct_recaudo     = 0
+    deuda_estimada  = 0
+    ultima_cuota_nombre = ''
+    try:
+        from kislevsmart.models import Cuota, Pago
+        cuotas_activas = Cuota.objects.filter(conjunto=conjunto, fecha_vencimiento__gte=hoy).count()
+        ultima_cuota = Cuota.objects.filter(conjunto=conjunto).order_by('-fecha_vencimiento').first()
+        if ultima_cuota:
+            ultima_cuota_nombre = ultima_cuota.nombre
+            total_prop = Usuario.objects.filter(conjunto=conjunto, user_type='propietario', is_active=True).count()
+            if total_prop:
+                pagaron = Pago.objects.filter(cuota=ultima_cuota).values('propietario').distinct().count()
+                pct_recaudo = min(round(pagaron * 100 / total_prop), 100)
+                deuda_estimada = max(0, total_prop - pagaron) * ultima_cuota.monto
+    except Exception:
+        pass
+
+    import json as _json
     return render(request, 'accounts/gestionar_conjunto.html', {
-        'conjunto':       conjunto,
-        'mes_label':      hoy.strftime('%B %Y'),
-        'emails_mes':     emails_mes,
-        'wa_mes':         wa_mes,
-        'limite_emails':  limite_emails,
-        'limite_wa':      limite_wa,
-        'pct_email':      pct_email,
-        'pct_wa':         pct_wa,
-        'historico':      historico,
-        'ultimos_envios': ultimos_envios,
-        'total_res':      total_res,
-        'activos_res':    activos_res,
-        'visitantes_mes': visitantes_mes,
-        'paq_pendientes': paq_pendientes,
-        'ultimo_login':   ultimo_login,
+        'conjunto':            conjunto,
+        'mes_label':           hoy.strftime('%B %Y'),
+        'emails_mes':          emails_mes,
+        'wa_mes':              wa_mes,
+        'limite_emails':       limite_emails,
+        'limite_wa':           limite_wa,
+        'pct_email':           pct_email,
+        'pct_wa':              pct_wa,
+        'historico':           historico,
+        'ultimos_envios':      ultimos_envios,
+        'total_res':           total_res,
+        'activos_res':         activos_res,
+        'visitantes_mes':      visitantes_mes,
+        'visitantes_veh_mes':  visitantes_veh_mes,
+        'paq_pendientes':      paq_pendientes,
+        'reservas_mes':        reservas_mes,
+        'novedades_mes_count': novedades_mes_count,
+        'pagos_mes_count':     pagos_mes_count,
+        'pagos_mes_total':     pagos_mes_total,
+        'ultimo_login':        ultimo_login,
+        'usuarios_por_tipo':   usuarios_por_tipo,
+        'emails_por_modulo':   emails_por_modulo,
+        'emails_mod_json':     _json.dumps([{'mod': m, 'n': n} for m, n in emails_por_modulo]),
+        'salas_top':           salas_top,
+        'cuotas_activas':      cuotas_activas,
+        'pct_recaudo':         pct_recaudo,
+        'deuda_estimada':      deuda_estimada,
+        'ultima_cuota_nombre': ultima_cuota_nombre,
     })
 
 

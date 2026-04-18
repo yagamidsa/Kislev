@@ -242,6 +242,213 @@ Unificar en un solo modelo con campo `tipo` ('peatonal', 'vehicular') y campos v
 
 ---
 
+### 🏦 BLOQUE 7 — Facturación electrónica (parqueadero)
+
+#### [FE-1] Módulo pago parqueadero + factura electrónica DIAN
+
+**Estado:** ⏳ Pendiente (implementar después de terminar features actuales)  
+**Complejidad:** Alta — requiere onboarding DIAN por conjunto + integración API
+
+---
+
+##### Proveedor elegido: MATIAS API (Casa de Software)
+
+| Plan | Precio | Facturas/mes | Multi-NIT |
+|------|--------|-------------|-----------|
+| Emprendedor | ~$180K COP/mes | 150 | No |
+| **Casa de Software** | **~$920K COP/año** | ilimitadas | **Sí (client_company_id)** |
+| Empresarial | ~$4.5M COP/año | ilimitadas | Sí |
+
+**Por qué MATIAS API:**
+- Soporte multi-NIT nativo (clave para SaaS con N conjuntos en el mismo plan)
+- Python SDK disponible
+- Certificado digital gestionado por MATIAS (no por nosotros)
+- CUFE + PDF + XML + envío DIAN automático
+- Contingencia T3/T4: hasta 5 días hábiles si DIAN cae
+
+**Alternativas descartadas:**
+- Siigo API: $200K+/mes por empresa, no multi-NIT en plan base
+- Alegra API: similar precio, orientado a PYME individual
+- Facturación directa DIAN: certificado propio ~$2.5M/año por NIT, sin SDK
+
+---
+
+##### Flujo de cobro en portería (portero escanea QR de salida)
+
+```
+1. Portero escanea QR vehicular de salida
+   → Sistema ya tiene: cédula del visitante, placa, hora entrada
+
+2. Sistema calcula tarifa (horas × valor_hora del conjunto)
+
+3. Portero ve pantalla de cobro:
+   ┌─────────────────────────────────────────┐
+   │  Placa: ABC123  |  Tiempo: 2h 35min     │
+   │  Total: $8.500 COP                      │
+   │                                         │
+   │  ¿Usar cédula 10234567 para factura?    │
+   │  [Sí, usar esta cédula] [Ingresar otra] │
+   └─────────────────────────────────────────┘
+
+4. Si "Sí": usar cédula del QR → autocomplete nombre/email desde DIAN (API RUE)
+   Si "Ingresar otra": campo manual de cédula/NIT
+
+5. Selección medio de pago:
+   [💳 QR Digital (Brebis)]  [💵 Efectivo]
+   
+   → La mayoría de conjuntos usarán Brebis QR
+   → Brebis genera QR con valor exacto para Nequi/Bancolombia/Daviplata
+
+6. ⚠️ REGLA CRÍTICA: la barrera sube INMEDIATAMENTE al confirmar pago
+   → La factura se genera en background (celery task o threading)
+   → NUNCA bloquear la barrera esperando respuesta DIAN
+
+7. Background task:
+   → POST a MATIAS API con datos del pago
+   → DIAN emite CUFE + XML
+   → Enviar factura PDF al email del visitante (si tiene)
+   → Guardar en DB: cufe, xml_path, estado_dian
+```
+
+---
+
+##### Snippet Python — Escenario A (consumidor final, sin RUT)
+
+```python
+import requests
+
+def emitir_factura_parqueadero(conjunto, pago_data):
+    """
+    conjunto: instancia de ConjuntoResidencial (debe tener nit, api_key MATIAS)
+    pago_data: dict con cedula, nombre, email, valor, minutos
+    """
+    payload = {
+        "client_company_id": conjunto.matias_company_id,  # multi-NIT
+        "document_type": "01",                             # factura de venta
+        "customer": {
+            "identification_type": "13",                   # cédula
+            "identification": pago_data.get("cedula", "222222222222"),  # consumidor final si no hay
+            "name": pago_data.get("nombre", "Consumidor Final"),
+            "email": pago_data.get("email", ""),
+        },
+        "items": [{
+            "description": f"Parqueadero {pago_data['minutos']} min",
+            "quantity": 1,
+            "unit_price": pago_data["valor"],
+            "tax_rate": 0,                                 # parqueadero: IVA 0% en Colombia
+        }],
+        "payment_method": "10" if pago_data["medio"] == "efectivo" else "42",
+    }
+    
+    resp = requests.post(
+        "https://api.matiasapi.com/v1/invoices",
+        json=payload,
+        headers={"Authorization": f"Bearer {conjunto.matias_api_key}"},
+        timeout=15
+    )
+    return resp.json()  # contiene cufe, pdf_url, xml_url
+```
+
+##### Snippet Python — Escenario B (empresa/persona con NIT registrado)
+
+```python
+# Mismo payload pero con NIT de empresa:
+"customer": {
+    "identification_type": "31",    # NIT
+    "identification": "9001234567",  # NIT sin dígito verificación
+    "dv": "8",
+    "name": "Empresa S.A.S",
+    "email": "contabilidad@empresa.com",
+}
+```
+
+---
+
+##### Modelo DB requerido (futuro)
+
+```python
+class PagoParqueadero(models.Model):
+    conjunto = ForeignKey(ConjuntoResidencial, on_delete=CASCADE)
+    visitante_vehicular = ForeignKey(VisitanteVehicular, on_delete=SET_NULL, null=True)
+    cedula_factura = CharField(max_length=20)    # puede ser "222222222222" (consumidor final)
+    nombre_factura = CharField(max_length=100)
+    email_factura = EmailField(blank=True)
+    valor = DecimalField(max_digits=10, decimal_places=2)
+    minutos = PositiveIntegerField()
+    medio_pago = CharField(choices=[('efectivo','Efectivo'),('qr_brebis','QR Brebis'),
+                                     ('nequi','Nequi'),('bancolombia','Bancolombia')])
+    # Factura DIAN
+    cufe = CharField(max_length=200, blank=True)
+    estado_dian = CharField(choices=[('pendiente','Pendiente'),('emitida','Emitida'),
+                                      ('contingencia','Contingencia'),('error','Error')],
+                             default='pendiente')
+    xml_dian = TextField(blank=True)
+    pdf_url = URLField(blank=True)
+    factura_emitida_en = DateTimeField(null=True, blank=True)
+    created_at = DateTimeField(auto_now_add=True)
+```
+
+---
+
+##### Campos nuevos en ConjuntoResidencial (futuro)
+
+```python
+matias_company_id = CharField(max_length=50, blank=True, help_text='ID empresa en MATIAS API')
+matias_api_key = CharField(max_length=200, blank=True, help_text='API key de MATIAS para este conjunto')
+valor_hora_parqueadero_carro = DecimalField(max_digits=8, decimal_places=2, default=3000)
+valor_hora_parqueadero_moto = DecimalField(max_digits=8, decimal_places=2, default=1500)
+facturacion_electronica = BooleanField(default=False, help_text='Activar facturación electrónica DIAN')
+```
+
+---
+
+##### 6 Riesgos documentados
+
+| # | Riesgo | Mitigación |
+|---|--------|-----------|
+| 1 | DIAN caída | Contingencia T3/T4: guardar en `estado_dian='contingencia'`, reintentar con celery beat |
+| 2 | IVA incorrecto | Parqueadero residencial: IVA 0%. Parqueadero comercial: IVA 19%. Validar con cada conjunto |
+| 3 | Onboarding DIAN lento | Resolución de numeración + cert digital: 2–6 semanas. Avisar al admin al activar |
+| 4 | Certificado digital vence | Vence cada 1–3 años. MATIAS lo gestiona en plan Casa de Software |
+| 5 | Vendor lock-in MATIAS | Guardar siempre CUFE + XML propio. Migración posible con XML DIAN estándar |
+| 6 | Privacidad cédulas | Encriptar cedula_factura con Fernet (ya existe en settings). Nunca logs de cédula |
+
+---
+
+##### Onboarding requerido por conjunto (antes de activar FE)
+
+1. RUT del conjunto (ya deberían tenerlo)
+2. Verificar IVA responsable (régimen común o simplificado)
+3. Solicitar resolución de numeración ante DIAN (tramite en línea, 1–3 semanas)
+4. MATIAS gestiona certificado digital firma electrónica (incluido en plan)
+5. Registrar `matias_company_id` y `matias_api_key` en el panel SaaS del conjunto
+6. Activar `facturacion_electronica = True` → se habilita el flujo en portería
+
+---
+
+##### Integración con Brebis (QR de cobro)
+
+- Brebis es el agregador de pagos más usado en conjuntos colombianos (soporte Nequi + Bancolombia + Daviplata)
+- API genera QR con valor fijo → portero muestra en pantalla o imprime
+- Webhook de confirmación → actualizar `estado_pago` antes de subir barrera
+- **Si Brebis no confirma en 30s → fallback a efectivo sin bloquear barrera**
+
+---
+
+##### Orden de implementación sugerido (sesión futura dedicada)
+
+```
+1. Agregar campos a ConjuntoResidencial (migration)
+2. Crear modelo PagoParqueadero (migration)
+3. Vista portería: pantalla de cobro (POST, no render completo)
+4. Integración Brebis QR (webhook)
+5. Background task emitir_factura_parqueadero (threading simple o celery)
+6. Panel admin: historial pagos parqueadero + reenviar factura
+7. Panel SaaS: activar facturación electrónica por conjunto
+```
+
+---
+
 ## Notas técnicas importantes
 
 ### Módulo Novedades
