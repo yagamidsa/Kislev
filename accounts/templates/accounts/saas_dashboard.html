@@ -90,6 +90,29 @@
         .status-off:hover{background:rgba(34,197,94,.2);color:#86efac}
         .btn-gestionar{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#7c3aed,#db2777);border:none;border-radius:8px;color:#fff;font-family:'Poppins',sans-serif;font-size:.75rem;font-weight:700;padding:7px 14px;cursor:pointer;text-decoration:none;transition:opacity .2s}
         .btn-gestionar:hover{opacity:.85}
+        .btn-eliminar{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);border-radius:8px;color:#f87171;cursor:pointer;transition:all .2s;flex-shrink:0}
+        .btn-eliminar:hover{background:rgba(239,68,68,.25);border-color:#ef4444;color:#fca5a5;transform:scale(1.08)}
+
+        /* ── MODAL ELIMINAR ── */
+        .modal-danger-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:999;opacity:0;pointer-events:none;transition:opacity .25s}
+        .modal-danger-overlay.open{opacity:1;pointer-events:all}
+        .modal-danger-box{background:#0f0a1e;border:1px solid rgba(239,68,68,.4);border-radius:20px;padding:32px 28px;width:100%;max-width:420px;margin:16px;transform:translateY(20px) scale(.97);transition:transform .25s;box-shadow:0 0 60px rgba(239,68,68,.15)}
+        .modal-danger-overlay.open .modal-danger-box{transform:translateY(0) scale(1)}
+        .danger-icon{width:56px;height:56px;border-radius:50%;background:rgba(239,68,68,.15);border:2px solid rgba(239,68,68,.4);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:#ef4444;margin:0 auto 18px}
+        .danger-title{text-align:center;font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:6px}
+        .danger-sub{text-align:center;font-size:.82rem;color:#94a3b8;margin-bottom:18px;line-height:1.6}
+        .danger-nombre{text-align:center;font-size:.95rem;font-weight:700;color:#fca5a5;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);border-radius:10px;padding:10px 16px;margin-bottom:18px}
+        .danger-warning{display:flex;align-items:flex-start;gap:10px;background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.25);border-radius:10px;padding:12px 14px;margin-bottom:22px;font-size:.78rem;color:#fcd34d;line-height:1.6}
+        .danger-warning i{margin-top:2px;flex-shrink:0}
+        .danger-check-row{display:flex;align-items:center;gap:10px;margin-bottom:24px;cursor:pointer}
+        .danger-check-row input{width:18px;height:18px;accent-color:#ef4444;cursor:pointer;flex-shrink:0}
+        .danger-check-row span{font-size:.82rem;color:rgba(255,255,255,.7)}
+        .danger-btns{display:flex;gap:10px}
+        .btn-cancel-danger{flex:1;padding:11px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:10px;color:#e2e8f0;font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;transition:background .2s}
+        .btn-cancel-danger:hover{background:rgba(255,255,255,.12)}
+        .btn-confirm-delete{flex:1;padding:11px;background:linear-gradient(135deg,#dc2626,#991b1b);border:none;border-radius:10px;color:#fff;font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;transition:opacity .2s;display:flex;align-items:center;justify-content:center;gap:7px}
+        .btn-confirm-delete:disabled{opacity:.35;cursor:not-allowed}
+        .btn-confirm-delete:not(:disabled):hover{opacity:.85}
 
         /* ── EMPTY ── */
         .empty{text-align:center;padding:60px 20px;color:#64748b}
@@ -243,6 +266,9 @@
                     <a href="{% url 'accounts:gestionar_conjunto' item.conjunto.id %}" class="btn-gestionar">
                         <i class="fas fa-cog"></i> Gestionar
                     </a>
+                    <button type="button" class="btn-eliminar" onclick="confirmarEliminar({{ item.conjunto.id }}, '{{ item.conjunto.nombre|escapejs }}')" title="Eliminar conjunto">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
                 </div>
             </div>
             {% endfor %}
@@ -275,6 +301,30 @@
         <div class="modal-btns">
             <button type="button" class="btn-cancel-modal" onclick="closeConfigModal()">Cancelar</button>
             <button type="button" class="btn-save" onclick="saveConfig()"><i class="fas fa-save" style="margin-right:6px"></i>Guardar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL ELIMINAR CONJUNTO -->
+<div class="modal-danger-overlay" id="deleteModal">
+    <div class="modal-danger-box">
+        <div class="danger-icon"><i class="fas fa-trash-alt"></i></div>
+        <p class="danger-title">Eliminar conjunto</p>
+        <p class="danger-sub">Estás a punto de eliminar permanentemente el conjunto:</p>
+        <div class="danger-nombre" id="deleteNombre"></div>
+        <div class="danger-warning">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>Esta acción eliminará <strong>todos los usuarios, torres, visitantes, paquetes, novedades y registros</strong> asociados a este conjunto. No se puede deshacer.</span>
+        </div>
+        <label class="danger-check-row">
+            <input type="checkbox" id="deleteCheck" onchange="toggleDeleteBtn()">
+            <span>Entiendo que esta acción es irreversible y acepto eliminar todo el conjunto.</span>
+        </label>
+        <div class="danger-btns">
+            <button type="button" class="btn-cancel-danger" onclick="cerrarDeleteModal()">Cancelar</button>
+            <button type="button" class="btn-confirm-delete" id="btnConfirmDelete" disabled onclick="ejecutarEliminar()">
+                <i class="fas fa-trash-alt"></i> Eliminar todo
+            </button>
         </div>
     </div>
 </div>
@@ -342,6 +392,49 @@ function showToast(msg) {
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 3000);
 }
+let _deleteId = null;
+function confirmarEliminar(id, nombre) {
+    _deleteId = id;
+    document.getElementById('deleteNombre').textContent = nombre;
+    document.getElementById('deleteCheck').checked = false;
+    document.getElementById('btnConfirmDelete').disabled = true;
+    document.getElementById('deleteModal').classList.add('open');
+}
+function cerrarDeleteModal() {
+    document.getElementById('deleteModal').classList.remove('open');
+    _deleteId = null;
+}
+function toggleDeleteBtn() {
+    document.getElementById('btnConfirmDelete').disabled = !document.getElementById('deleteCheck').checked;
+}
+function ejecutarEliminar() {
+    if (!_deleteId) return;
+    const btn = document.getElementById('btnConfirmDelete');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Eliminando...';
+    fetch('/accounts/saas/conjunto/' + _deleteId + '/eliminar/', {
+        method: 'POST',
+        headers: {'X-CSRFToken': '{{ csrf_token }}'},
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.ok) {
+            cerrarDeleteModal();
+            showToast('🗑️ Conjunto "' + d.nombre + '" eliminado');
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            showToast('❌ ' + (d.error || 'Error'));
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-trash-alt"></i> Eliminar todo';
+        }
+    })
+    .catch(() => {
+        showToast('❌ Error de conexión');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-trash-alt"></i> Eliminar todo';
+    });
+}
+
 function saveConfig() {
     const emails = document.getElementById('inp-emails').value;
     const wa     = document.getElementById('inp-wa').value;

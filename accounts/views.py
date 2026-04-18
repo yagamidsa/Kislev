@@ -868,99 +868,100 @@ def upload_conjunto(request):
         messages.error(request, f'No se pudo leer el Excel: {exc}')
         return render(request, 'accounts/upload_conjunto.html')
 
+    from django.db import transaction as _tx
+    created_count = 0
+    skipped_count = 0
+    email_errors = []
+    conjunto = None
+
     try:
-        ws_c = wb['Conjunto']
-        data = {row[0].value: row[1].value for row in ws_c.iter_rows(min_row=2) if row[0].value}
+        with _tx.atomic():
+            ws_c = wb['Conjunto']
+            data = {row[0].value: row[1].value for row in ws_c.iter_rows(min_row=2) if row[0].value}
 
-        for field in ('nombre', 'nit', 'direccion'):
-            if not data.get(field):
-                raise ValueError(f'Hoja "Conjunto": falta el campo "{field}"')
+            for field in ('nombre', 'nit', 'direccion'):
+                if not data.get(field):
+                    raise ValueError(f'Hoja "Conjunto": falta el campo "{field}"')
 
-        # nombre_agrupacion / nombre_unidad: primero del Excel, luego del form web
-        nombre_agrupacion = str(data.get('nombre_agrupacion', '') or nombre_agrupacion_form).strip()
-        nombre_unidad = str(data.get('nombre_unidad', '') or nombre_unidad_form or 'Apto').strip()
+            nombre_agrupacion = str(data.get('nombre_agrupacion', '') or nombre_agrupacion_form).strip()
+            nombre_unidad = str(data.get('nombre_unidad', '') or nombre_unidad_form or 'Apto').strip()
 
-        conjunto, _ = ConjuntoResidencial.objects.get_or_create(
-            nit=str(data['nit']).strip(),
-            defaults={
-                'nombre': str(data['nombre']).strip(),
-                'direccion': str(data.get('direccion', '')).strip(),
-                'telefono': str(data.get('telefono', '') or ''),
-                'email_contacto': str(data.get('email_contacto', '') or '') or None,
-                'link_pago': str(data.get('link_pago', '') or '') or None,
-                'nombre_agrupacion': nombre_agrupacion,
-                'nombre_unidad': nombre_unidad,
-            },
-        )
-
-        # Agrupaciones — soporta hoja "Agrupaciones" (nueva) y "Torres" (antigua)
-        torres_map = {}
-        sheet_name = 'Agrupaciones' if 'Agrupaciones' in wb.sheetnames else 'Torres'
-        ws_torres = wb[sheet_name]
-        headers = [c.value for c in next(ws_torres.iter_rows(min_row=1, max_row=1))]
-        for row in ws_torres.iter_rows(min_row=2, values_only=True):
-            if not row[0]:
-                continue
-            rd = dict(zip(headers, row))
-            nombre_torre = str(rd.get('nombre', '')).strip()
-            if not nombre_torre:
-                continue
-            from accounts.models import Torre
-            torre, _ = Torre.objects.get_or_create(
-                conjunto=conjunto,
-                nombre=nombre_torre,
+            conjunto, _ = ConjuntoResidencial.objects.get_or_create(
+                nit=str(data['nit']).strip(),
                 defaults={
-                    'numero_pisos': int(rd.get('numero_pisos') or 1),
-                    'aptos_por_piso': int(rd.get('aptos_por_piso') or 4),
+                    'nombre': str(data['nombre']).strip(),
+                    'direccion': str(data.get('direccion', '')).strip(),
+                    'telefono': str(data.get('telefono', '') or ''),
+                    'email_contacto': str(data.get('email_contacto', '') or '') or None,
+                    'link_pago': str(data.get('link_pago', '') or '') or None,
+                    'nombre_agrupacion': nombre_agrupacion,
+                    'nombre_unidad': nombre_unidad,
                 },
             )
-            torres_map[nombre_torre] = torre
 
-        created_count = 0
-        skipped_count = 0
-        email_errors = []
-
-        def create_user(row_data, user_type):
-            nonlocal created_count, skipped_count
-            cedula = str(row_data.get('cedula', '') or '').strip()
-            nombre = str(row_data.get('nombre', '') or '').strip()
-            email = str(row_data.get('email', '') or '').strip()
-            if not cedula or not nombre or not email:
-                skipped_count += 1
-                return
-            if Usuario.objects.filter(cedula=cedula, conjunto=conjunto).exists():
-                skipped_count += 1
-                return
-            password = 'kislev123'
-            # Soporta columnas nuevas (agrupacion/unidad) y antiguas (torre/apartamento)
-            torre_nombre = str(row_data.get('agrupacion', '') or row_data.get('torre', '') or '').strip()
-            torre_obj = torres_map.get(torre_nombre)
-            apartamento = str(row_data.get('unidad', '') or row_data.get('apartamento', '') or '').strip()
-            usuario = Usuario.objects.create_user(
-                cedula=cedula,
-                nombre=nombre,
-                email=email,
-                password=password,
-                conjunto=conjunto,
-                user_type=user_type,
-                phone_number=str(row_data.get('telefono', '') or ''),
-                torre=torre_obj,
-                apartamento=apartamento,
-                must_change_password=True,
-            )
-            created_count += 1
-            if send_emails:
-                result = _send_welcome(email, nombre, conjunto.nombre, cedula, password)
-                if result is not True:
-                    email_errors.append(f'{email}: {result}')
-
-        for sheet, utype in [('Administrador', 'administrador'), ('Propietarios', 'propietario'), ('Portería', 'porteria')]:
-            ws_s = wb[sheet]
-            hdrs = [c.value for c in next(ws_s.iter_rows(min_row=1, max_row=1))]
-            for row in ws_s.iter_rows(min_row=2, values_only=True):
+            # Agrupaciones — soporta hoja "Agrupaciones" (nueva) y "Torres" (antigua)
+            torres_map = {}
+            sheet_name = 'Agrupaciones' if 'Agrupaciones' in wb.sheetnames else 'Torres'
+            ws_torres = wb[sheet_name]
+            headers = [c.value for c in next(ws_torres.iter_rows(min_row=1, max_row=1))]
+            for row in ws_torres.iter_rows(min_row=2, values_only=True):
                 if not row[0]:
                     continue
-                create_user(dict(zip(hdrs, row)), utype)
+                rd = dict(zip(headers, row))
+                nombre_torre = str(rd.get('nombre', '')).strip()
+                if not nombre_torre:
+                    continue
+                from accounts.models import Torre
+                torre, _ = Torre.objects.get_or_create(
+                    conjunto=conjunto,
+                    nombre=nombre_torre,
+                    defaults={
+                        'numero_pisos': int(rd.get('numero_pisos') or 1),
+                        'aptos_por_piso': int(rd.get('aptos_por_piso') or 4),
+                    },
+                )
+                torres_map[nombre_torre] = torre
+
+            def create_user(row_data, user_type):
+                nonlocal created_count, skipped_count
+                cedula = str(row_data.get('cedula', '') or '').strip()
+                nombre = str(row_data.get('nombre', '') or '').strip()
+                email = str(row_data.get('email', '') or '').strip()
+                if not cedula or not nombre or not email:
+                    skipped_count += 1
+                    return
+                if Usuario.objects.filter(cedula=cedula, conjunto=conjunto).exists():
+                    skipped_count += 1
+                    return
+                password = 'kislev123'
+                torre_nombre = str(row_data.get('agrupacion', '') or row_data.get('torre', '') or '').strip()
+                torre_obj = torres_map.get(torre_nombre)
+                apartamento = str(row_data.get('unidad', '') or row_data.get('apartamento', '') or '').strip()
+                Usuario.objects.create_user(
+                    cedula=cedula,
+                    nombre=nombre,
+                    email=email,
+                    password=password,
+                    conjunto=conjunto,
+                    user_type=user_type,
+                    phone_number=str(row_data.get('telefono', '') or ''),
+                    torre=torre_obj,
+                    apartamento=apartamento,
+                    must_change_password=True,
+                )
+                created_count += 1
+                if send_emails:
+                    result = _send_welcome(email, nombre, conjunto.nombre, cedula, password)
+                    if result is not True:
+                        email_errors.append(f'{email}: {result}')
+
+            for sheet, utype in [('Administrador', 'administrador'), ('Propietarios', 'propietario'), ('Portería', 'porteria')]:
+                ws_s = wb[sheet]
+                hdrs = [c.value for c in next(ws_s.iter_rows(min_row=1, max_row=1))]
+                for row in ws_s.iter_rows(min_row=2, values_only=True):
+                    if not row[0]:
+                        continue
+                    create_user(dict(zip(hdrs, row)), utype)
 
     except ValueError as exc:
         messages.error(request, str(exc))
@@ -1128,6 +1129,21 @@ def toggle_conjunto_activo(request, conjunto_id):
     conjunto.estado = not conjunto.estado
     conjunto.save(update_fields=['estado'])
     return JsonResponse({'estado': conjunto.estado})
+
+
+@require_POST
+@login_required
+def eliminar_conjunto(request, conjunto_id):
+    """AJAX: elimina un conjunto y toda su data (CASCADE). Solo saas_owner."""
+    if not request.user.is_saas_owner:
+        return JsonResponse({'error': 'Sin permiso'}, status=403)
+    try:
+        conjunto = ConjuntoResidencial.objects.get(pk=conjunto_id)
+    except ConjuntoResidencial.DoesNotExist:
+        return JsonResponse({'error': 'Conjunto no encontrado'}, status=404)
+    nombre = conjunto.nombre
+    conjunto.delete()
+    return JsonResponse({'ok': True, 'nombre': nombre})
 
 
 @login_required

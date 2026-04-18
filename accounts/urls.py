@@ -23,6 +23,7 @@ from .views import (
     gestionar_conjunto,
     update_config_global,
     toggle_conjunto_activo,
+    eliminar_conjunto,
 )
 
 app_name = 'accounts'  # Namespace para las URLs de accounts
@@ -75,6 +76,7 @@ urlpatterns = [
     path('saas/conjunto/<int:conjunto_id>/', gestionar_conjunto, name='gestionar_conjunto'),
     path('saas/config/', update_config_global, name='update_config_global'),
     path('saas/conjunto/<int:conjunto_id>/toggle/', toggle_conjunto_activo, name='toggle_conjunto_activo'),
+    path('saas/conjunto/<int:conjunto_id>/eliminar/', eliminar_conjunto, name='eliminar_conjunto'),
 
     # Gestión de usuarios
     path('residentes/', gestion_usuarios, name='gestion_usuarios'),
