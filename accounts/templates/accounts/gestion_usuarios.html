@@ -345,7 +345,7 @@
             <form id="createForm" onsubmit="return false;">
                 <div class="form-row">
                     <label class="form-label">Tipo de usuario *</label>
-                    <select class="form-control" id="cTipo">
+                    <select class="form-control" id="cTipo" onchange="toggleUbicacion()">
                         <option value="propietario">Propietario</option>
                         <option value="arrendatario">Arrendatario</option>
                         <option value="porteria">Portería</option>
@@ -368,6 +368,7 @@
                     <label class="form-label">Teléfono</label>
                     <input type="text" class="form-control" id="cTelefono" placeholder="Ej: 3001234567" maxlength="15">
                 </div>
+                <div id="rowUbicacion">
                 {% if conjunto.tiene_agrupacion %}
                 <div class="form-row">
                     <label class="form-label">{{ conjunto.etiqueta_agrupacion }}</label>
@@ -384,6 +385,7 @@
                 <div class="form-row">
                     <label class="form-label">{{ conjunto.etiqueta_unidad }}</label>
                     <input type="text" class="form-control" id="cApto" placeholder="Ej: 0101" maxlength="10">
+                </div>
                 </div>
                 <p style="font-size:.75rem;color:rgba(255,255,255,.35);margin-top:4px;">
                     <i class="fas fa-info-circle"></i> La contraseña inicial será <strong style="color:#a78bfa">kislev123</strong>. El usuario deberá cambiarla al primer ingreso.
@@ -543,8 +545,14 @@ function guardarEdicion(){
 function getCsrf(){ return '{{ csrf_token }}'; }
 
 /* ── Modal Crear ── */
+function toggleUbicacion(){
+    const tipo = document.getElementById('cTipo').value;
+    const row = document.getElementById('rowUbicacion');
+    if(row) row.style.display = (tipo === 'porteria' || tipo === 'administrador') ? 'none' : '';
+}
 function openCreateModal(){
     document.getElementById('createModal').classList.add('open');
+    toggleUbicacion();
     setTimeout(() => document.getElementById('cNombre').focus(), 50);
 }
 function closeCreateModal(){
