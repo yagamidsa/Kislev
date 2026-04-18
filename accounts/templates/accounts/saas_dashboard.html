@@ -173,14 +173,25 @@
         <div class="msg msg-{{ message.tags }}">{{ message }}</div>
         {% endfor %}
 
+        <!-- SELECTOR MES -->
+        <form method="get" style="margin-bottom:20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <label style="font-size:.78rem;color:#94a3b8;font-weight:600;white-space:nowrap"><i class="fas fa-calendar-alt" style="margin-right:6px;color:#a855f7"></i>Ver mes:</label>
+            <select name="mes" onchange="this.form.submit()"
+                style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#e2e8f0;font-family:'Poppins',sans-serif;font-size:.82rem;padding:7px 12px;outline:none;cursor:pointer">
+                {% for m in meses_opciones %}
+                <option value="{{ m.valor }}" {% if m.selected %}selected{% endif %}>{{ m.label }}</option>
+                {% endfor %}
+            </select>
+        </form>
+
         <!-- GLOBAL SEND METRICS -->
-        <p class="section-title"><i class="fas fa-satellite-dish"></i> Métricas globales de envíos — {{ mes_label }}</p>
+        <p class="section-title"><i class="fas fa-satellite-dish"></i> Métricas globales — {{ mes_label }}</p>
         <div class="metrics-grid">
 
             <!-- EMAIL -->
             <div class="metric-card">
                 <div class="metric-header">
-                    <span class="metric-label"><i class="fas fa-envelope"></i> Email (AWS SES)</span>
+                    <span class="metric-label"><i class="fas fa-envelope"></i> Email (Resend)</span>
                     <span style="font-size:.7rem;color:#64748b">este mes</span>
                 </div>
                 <div class="metric-big" style="color:#c4b5fd">{{ emails_mes }}</div>
@@ -211,7 +222,7 @@
             <!-- WHATSAPP -->
             <div class="metric-card">
                 <div class="metric-header">
-                    <span class="metric-label"><i class="fab fa-whatsapp"></i> WhatsApp (Twilio)</span>
+                    <span class="metric-label"><i class="fab fa-whatsapp"></i> WhatsApp</span>
                     <span style="font-size:.7rem;color:#64748b">este mes</span>
                 </div>
                 <div class="metric-big" style="color:#86efac">{{ wa_mes }}</div>

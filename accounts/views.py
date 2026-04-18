@@ -514,25 +514,46 @@ def saas_dashboard(request):
             'porteria': Usuario.objects.filter(conjunto=c, user_type='porteria', is_active=True).count(),
         })
 
-    # ── Métricas globales del mes actual ──────────────────────────────────────
     hoy = timezone.localdate()
-    mes_inicio = hoy.replace(day=1)
     cfg = ConfigGlobal.get()
 
-    emails_mes   = LogEnvio.objects.filter(tipo='email',     fecha__date__gte=mes_inicio).count()
-    wa_mes       = LogEnvio.objects.filter(tipo='whatsapp',  fecha__date__gte=mes_inicio).count()
+    # ── Selector de mes: recibe ?mes=YYYY-MM, por defecto mes actual ──────────
+    mes_param = request.GET.get('mes', '')
+    try:
+        año, mes_num = int(mes_param[:4]), int(mes_param[5:7])
+        mes_inicio = datetime.date(año, mes_num, 1)
+    except Exception:
+        mes_inicio = hoy.replace(day=1)
 
-    # Ranking top 5 conjuntos por emails y por whatsapp este mes
+    if mes_inicio.month == 12:
+        mes_fin = datetime.date(mes_inicio.year + 1, 1, 1) - datetime.timedelta(days=1)
+    else:
+        mes_fin = datetime.date(mes_inicio.year, mes_inicio.month + 1, 1) - datetime.timedelta(days=1)
+
+    # Últimos 12 meses para el select
+    meses_opciones = []
+    for i in range(11, -1, -1):
+        d = (hoy.replace(day=1) - datetime.timedelta(days=i * 28)).replace(day=1)
+        meses_opciones.append({
+            'valor': d.strftime('%Y-%m'),
+            'label': d.strftime('%B %Y'),
+            'selected': d.year == mes_inicio.year and d.month == mes_inicio.month,
+        })
+
+    # ── Métricas del mes seleccionado ─────────────────────────────────────────
+    emails_mes = LogEnvio.objects.filter(tipo='email',    fecha__date__gte=mes_inicio, fecha__date__lte=mes_fin).count()
+    wa_mes     = LogEnvio.objects.filter(tipo='whatsapp', fecha__date__gte=mes_inicio, fecha__date__lte=mes_fin).count()
+
     top_email = (
         LogEnvio.objects
-        .filter(tipo='email', fecha__date__gte=mes_inicio, conjunto__isnull=False)
+        .filter(tipo='email', fecha__date__gte=mes_inicio, fecha__date__lte=mes_fin, conjunto__isnull=False)
         .values('conjunto__nombre')
         .annotate(total=Count('id'))
         .order_by('-total')[:5]
     )
     top_wa = (
         LogEnvio.objects
-        .filter(tipo='whatsapp', fecha__date__gte=mes_inicio, conjunto__isnull=False)
+        .filter(tipo='whatsapp', fecha__date__gte=mes_inicio, fecha__date__lte=mes_fin, conjunto__isnull=False)
         .values('conjunto__nombre')
         .annotate(total=Count('id'))
         .order_by('-total')[:5]
@@ -551,7 +572,8 @@ def saas_dashboard(request):
         'pct_wa':          pct_wa,
         'top_email':       list(top_email),
         'top_wa':          list(top_wa),
-        'mes_label':       hoy.strftime('%B %Y'),
+        'mes_label':       mes_inicio.strftime('%B %Y'),
+        'meses_opciones':  meses_opciones,
     })
 
 
