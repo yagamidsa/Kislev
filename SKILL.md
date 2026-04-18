@@ -26,13 +26,29 @@ accounts/             ← auth, ConjuntoResidencial, Torre, Usuario
   utils.py            ← role_required (fuente canónica)
 ```
 
-**Stack:** Django 5.1 + Python 3.13 · PostgreSQL 18 (puerto 5433) · Railway (deploy) · Redis (cache/sesiones) · AWS SES (email boto3) · Whitenoise · django-ratelimit
+**Stack:** Django 5.1 + Python 3.13 · PostgreSQL 18 (puerto 5433) · Railway (deploy) · Redis (cache/sesiones) · **Resend vía django-anymail** (email HTTP API — Railway bloquea SMTP) · Whitenoise · django-ratelimit
 
 **Dominio:** kislev.net.co · **Moneda:** COP (pesos colombianos) · **TZ:** America/Bogota
 
 **PC actual:** Lenovo / usuario Windows: Lenovo (antes era AlipioD — rutas antiguas inválidas)
 
+**Nombre de la app:** Solo **Kislev** — nunca escribir "KislevSmart" en ningún template, vista, email ni texto visible al usuario.
+
 **⚠️ REGLA CRÍTICA — RESPONSIVE SIEMPRE:** Los usuarios (porteros, propietarios) usan principalmente celular. Toda vista nueva o modificada DEBE tener `@media(max-width:600px)` con breakpoints para topbar, container, cards, tablas y formularios.
+
+**⚠️ REGLA CRÍTICA — SCROLL EN iOS SIEMPRE:** Cualquier pantalla que use el patrón `html,body { overflow:hidden }` + `.scroll-root` DEBE tener exactamente:
+```css
+html { height: -webkit-fill-available; }
+.scroll-root {
+  height: 100vh;
+  height: 100dvh;                    /* dvh = dynamic — se actualiza con URL bar de Safari */
+  height: -webkit-fill-available;    /* fallback iOS < 15.4 */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+```
+Sin `dvh`, en iOS el scroll queda corto porque Safari calcula `100vh` con la URL bar visible y al ocultarse al hacer scroll el contenedor no se actualiza.
 
 ---
 
@@ -121,10 +137,12 @@ Reglas:
 ```
 Eres un agente de infraestructura para Kislev en Railway.
 Contexto:
-- Deploy: Railway (bloquea puertos SMTP estándar)
-- Email: AWS SES API via boto3 (NO usar SMTP)
-- Variables de entorno en Railway: DATABASE_URL, AWS_ACCESS_KEY_ID,
-  AWS_SECRET_ACCESS_KEY, AWS_SES_REGION, DJANGO_SECRET_KEY, REDIS_URL, FERNET_KEY
+- Deploy: Railway (bloquea puertos SMTP 465 y 587 — NUNCA usar SMTP)
+- Email: Resend vía django-anymail HTTP API (variable RESEND_API_KEY en Railway)
+  → EMAIL_BACKEND = 'anymail.backends.resend.EmailBackend'
+  → Plan gratuito: 3,000/mes · 100/día | Plan Pro ($20 USD): 50,000/mes
+- Variables de entorno en Railway: DATABASE_URL, RESEND_API_KEY,
+  DEFAULT_FROM_EMAIL, DJANGO_SECRET_KEY, REDIS_URL, FERNET_KEY
 - Estáticos: Whitenoise + CompressedManifestStaticFilesStorage
 - Rate limiting: RATELIMIT_ENABLED=not DEBUG (requiere Redis en prod)
 
@@ -135,11 +153,13 @@ Reglas:
 - Usa os.environ.get() con default seguro
 - Si cambias settings.py, verifica que no rompa DEBUG=False
 - Para Redis: django-redis con CACHE_BACKEND url
+- Email en dev (DEBUG=True sin RESEND_API_KEY): console backend
+- Email en prod sin RESEND_API_KEY: dummy backend (no lanza error)
 ```
 
 ---
 
-## BACKLOG — Estado actualizado al 2026-04-03
+## BACKLOG — Estado actualizado al 2026-04-18
 
 ### ✅ COMPLETADO sesiones anteriores
 
@@ -172,7 +192,7 @@ Reglas:
 | F9 | Tests pytest-django — 20/20 (auth, visitantes, reservas, finanzas) |
 | "Recuérdame" | Checkbox en login con session.set_expiry(30 días) |
 
-### ✅ COMPLETADO sesión 2026-04-03 (migración PC nuevo + features)
+### ✅ COMPLETADO sesiones 2026-04-03 a 2026-04-18
 
 | Item | Descripción |
 |------|-------------|
@@ -191,6 +211,15 @@ Reglas:
 | NOV-LIKE | Botón ❤️ con animación `heartPop` + `burst` CSS, toggle via fetch POST |
 | NOV-RESP | Todos los templates de novedades responsive con `@media(max-width:600px)` |
 | MENU-NOV | Menú admin/propietario/porteria actualizado con links a Novedades |
+| TIPO-DIST | `tipo_distribucion` enum eliminado → `nombre_agrupacion` (blank=True) + `nombre_unidad` CharField libres. Propiedades: `etiqueta_agrupacion`, `etiqueta_unidad`, `tiene_agrupacion` |
+| SAAS-PANEL | Panel SaaS owner en `/accounts/saas/` con métricas globales, lista de conjuntos, toggle activo/inactivo, gestión de usuarios |
+| SAAS-UPLOAD | Upload Excel de conjunto con `transaction.atomic()` — todo o nada. Password por defecto: `kislev123`. Errores de email se muestran con detalle |
+| SAAS-DELETE | Eliminar conjunto con modal de confirmación + checkbox obligatorio. Endpoint POST `/saas/conjunto/<id>/eliminar/`. CASCADE borra todo |
+| QR-SECURITY | Fix seguridad QR: `validar_qr` y `validar_qr_vehicular` filtran por `conjunto_id=request.user.conjunto_id` — QR de un conjunto no válido en otro |
+| EMAIL-RESEND | Migrado de AWS SES (denegado producción) a Resend vía django-anymail. Railway bloquea SMTP → solo HTTP API funciona |
+| EMAIL-BIENVENIDA | Template `bienvenida_credenciales.html` rediseñado: compatible dark/light mode, estructura 100% tablas, VML para Outlook, `@media prefers-color-scheme` + `[data-ogsc]` |
+| SCROLL-IOS | Fix scroll pegado en iOS: `.scroll-root` usa `height:100dvh` + `-webkit-fill-available` + `overscroll-behavior-y:contain`. Aplica en saas_dashboard, gestionar_conjunto, gestion_usuarios |
+| NOMBRE-APP | Renombrado "KislevSmart" → "Kislev" en toda la aplicación (templates, views, emails, management commands) |
 
 ---
 
@@ -206,7 +235,7 @@ Unificar en un solo modelo con campo `tipo` ('peatonal', 'vehicular') y campos v
 
 | # | Feature | Estado | Complejidad |
 |---|---------|--------|-------------|
-| F3 | Solicitar SES producción AWS | ⏳ Trámite externo | Baja (gestión) |
+| F3 | ~~Solicitar SES producción AWS~~ → Resend ya activo | ✅ Completado | — |
 | F4 | Notificaciones push PWA | ⏳ Pendiente | Media |
 | F6 | API REST con DRF para app móvil | ⏳ Pendiente | Alta |
 | F10 | Predicción morosidad con Claude API | ⏳ Pendiente | Alta |
@@ -507,7 +536,7 @@ TODA vista nueva DEBE tener @media(max-width:600px) con:
 - Views: siempre @login_required + @role_required([...])
 - APIs JSON: retornar {'status': 'ok'|'error', 'message': str}
 - Inputs: sanitizar con sanitize_text() de kislevsmart/utils.py
-- Email: EmailMultiAlternatives con fail_silently=True (SES no activo en dev)
+- Email: EmailMultiAlternatives con fail_silently=False. Backend: Resend vía anymail en prod (RESEND_API_KEY), console en dev. Railway bloquea SMTP — NUNCA usar SMTP
 - Fechas: siempre timezone-aware (America/Bogota)
 - Moneda: COP, formatear con f"${valor:,.0f}"
 - QR: siempre en memoria (BytesIO), nunca guardar en disco
@@ -516,7 +545,7 @@ TODA vista nueva DEBE tener @media(max-width:600px) con:
 
 ## NO hacer
 - No guardar passwords en sesión → usar signing.dumps()
-- No usar SMTP → Railway lo bloquea, usar AWS SES API
+- No usar SMTP → Railway bloquea puertos 465 y 587. Usar Resend vía django-anymail (HTTP)
 - No modificar migrations manualmente
 - No hardcodear nombres de conjuntos en código nuevo
 - No usar print() → usar logger.debug/info/error
@@ -527,4 +556,17 @@ TODA vista nueva DEBE tener @media(max-width:600px) con:
 
 ## Bugs conocidos pendientes
 - T1: Visitante + VisitanteVehicular duplicados — pendiente unificar
+
+## Reglas de scroll iOS (crítico)
+- Siempre usar `height:100dvh` en `.scroll-root`, nunca solo `height:100%`
+- Agregar `height:-webkit-fill-available` como fallback en html y .scroll-root
+- Agregar `overscroll-behavior-y:contain` para evitar que iOS confunda límites
+- Sin esto: scroll se pega al fondo o arriba en iPhone/Safari
+
+## Email templates
+- Estructura 100% tablas (no divs) para compatibilidad Outlook/Gmail
+- Dark mode: `@media (prefers-color-scheme: dark)` + `[data-ogsc]` para Outlook
+- Header con gradiente oscuro fijo — no se invierte en dark mode
+- Botón CTA: fallback VML para Outlook Windows
+- Nunca escribir "KislevSmart" — solo "Kislev"
 ```
