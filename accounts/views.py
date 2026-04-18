@@ -840,12 +840,12 @@ def upload_conjunto(request):
             }
             html = render_to_string('emails/bienvenida_credenciales.html', context)
             text = (
-                f"Hola {nombre},\n\nBienvenido a {conjunto_nombre} en KislevSmart.\n\n"
+                f"Hola {nombre},\n\nBienvenido a {conjunto_nombre} en Kislev.\n\n"
                 f"Usuario: {cedula}\nContraseña temporal: {password}\n\n"
                 f"Cámbiala en tu primer inicio de sesión.\n{context['login_url']}"
             )
             msg = EmailMultiAlternatives(
-                subject=f'Bienvenido a KislevSmart — {conjunto_nombre}',
+                subject=f'Bienvenido a Kislev — {conjunto_nombre}',
                 body=text,
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 to=[email],

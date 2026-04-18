@@ -43,7 +43,7 @@ def _send_welcome_email(email, nombre, conjunto_nombre, cedula, password):
         html = render_to_string('emails/bienvenida_credenciales.html', context)
         text = (
             f"Hola {nombre},\n\n"
-            f"Bienvenido a {conjunto_nombre} en KislevSmart.\n\n"
+            f"Bienvenido a {conjunto_nombre} en Kislev.\n\n"
             f"Tus credenciales de acceso:\n"
             f"  Usuario (cédula): {cedula}\n"
             f"  Contraseña temporal: {password}\n\n"
@@ -51,7 +51,7 @@ def _send_welcome_email(email, nombre, conjunto_nombre, cedula, password):
             f"Ingresa en: {context['login_url']}"
         )
         msg = EmailMultiAlternatives(
-            subject=f'Bienvenido a KislevSmart — {conjunto_nombre}',
+            subject=f'Bienvenido a Kislev — {conjunto_nombre}',
             body=text,
             from_email=settings.DEFAULT_FROM_EMAIL,
             to=[email],
