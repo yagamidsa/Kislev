@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Términos y Condiciones — Kislev</title>
+    {% load static %}
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'Segoe UI',Arial,sans-serif;background:#f8f9fb;color:#1a1a2e;line-height:1.75}
+        a{color:#7c3aed;text-decoration:none}
+        a:hover{text-decoration:underline}
+
+        .topbar{background:#fff;border-bottom:1px solid #e5e7eb;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 1px 6px rgba(0,0,0,.06)}
+        .logo{font-size:1.1rem;font-weight:800;background:linear-gradient(135deg,#7c3aed,#db2777);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .back-btn{font-size:.83rem;color:#7c3aed;font-weight:600;display:flex;align-items:center;gap:6px}
+
+        .hero{background:linear-gradient(135deg,#3b1a6e,#6d28d9,#be185d);padding:48px 24px 40px;text-align:center;color:#fff}
+        .hero h1{font-size:clamp(1.6rem,4vw,2.4rem);font-weight:800;margin-bottom:8px}
+        .hero p{font-size:.92rem;opacity:.85}
+
+        .page-wrap{max-width:780px;margin:0 auto;padding:48px 24px 80px}
+        .last-update{font-size:.8rem;color:#9ca3af;margin-bottom:36px;display:flex;align-items:center;gap:6px}
+        .last-update::before{content:'📅'}
+
+        .section{margin-bottom:40px}
+        .section h2{font-size:1.1rem;font-weight:700;color:#4c1d95;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid #ede9fe}
+        .section h3{font-size:.95rem;font-weight:700;color:#374151;margin:16px 0 8px}
+        .section p{font-size:.9rem;color:#374151;margin-bottom:10px}
+        .section ul,
+        .section ol{padding-left:20px;margin-bottom:10px}
+        .section li{font-size:.9rem;color:#374151;margin-bottom:5px}
+        .highlight-box{background:#f5f3ff;border-left:4px solid #7c3aed;border-radius:0 10px 10px 0;padding:14px 18px;margin:14px 0}
+        .highlight-box p{margin:0;font-size:.88rem;color:#4c1d95}
+        .warn-box{background:#fffbeb;border-left:4px solid #f59e0b;border-radius:0 10px 10px 0;padding:14px 18px;margin:14px 0}
+        .warn-box p{margin:0;font-size:.88rem;color:#92400e}
+        .law-ref{display:inline-block;background:#ede9fe;color:#5b21b6;font-size:.75rem;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:6px;vertical-align:middle}
+        .contact-box{background:#fff;border:1.5px solid #e5e7eb;border-radius:14px;padding:20px 24px;margin-top:14px}
+        .contact-box p{margin:0 0 6px;font-size:.88rem;color:#374151}
+        .contact-box p:last-child{margin:0}
+        .contact-box strong{color:#1a1a2e}
+        .role-table{width:100%;border-collapse:collapse;font-size:.85rem;margin:10px 0}
+        .role-table th{background:#f5f3ff;color:#4c1d95;font-weight:700;padding:8px 12px;text-align:left;border:1px solid #e5e7eb}
+        .role-table td{padding:8px 12px;border:1px solid #e5e7eb;color:#374151;vertical-align:top}
+
+        @media(max-width:600px){
+            .hero{padding:36px 16px 32px}
+            .page-wrap{padding:32px 16px 60px}
+            .role-table{font-size:.78rem}
+            .role-table th,.role-table td{padding:6px 8px}
+        }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <span class="logo">🏠 Kislev</span>
+    <a href="{% url 'accounts:login' %}" class="back-btn">← Volver al inicio</a>
+</div>
+
+<div class="hero">
+    <h1>Términos y Condiciones</h1>
+    <p>Condiciones de uso de la plataforma Kislev</p>
+</div>
+
+<div class="page-wrap">
+    <p class="last-update">Última actualización: abril de 2026 &nbsp;·&nbsp; Versión 1.0</p>
+
+    <!-- 1 -->
+    <div class="section">
+        <h2>1. Objeto y Aceptación</h2>
+        <p><strong>Kislev</strong> es una plataforma tecnológica de gestión para conjuntos residenciales que permite administrar accesos, visitantes, zonas comunes, novedades y cuotas de administración.</p>
+        <p>El acceso y uso de la plataforma implica la aceptación plena e incondicional de los presentes Términos y Condiciones, así como de la <a href="{% url 'accounts:politica_privacidad' %}">Política de Privacidad</a>. Si no está de acuerdo con alguna disposición, deberá abstenerse de usar el servicio.</p>
+        <div class="highlight-box">
+            <p>📋 Estos términos se rigen por la legislación de la <strong>República de Colombia</strong>, en especial la Ley 527 de 1999 (Comercio Electrónico) y la Ley 1480 de 2011 (Estatuto del Consumidor).</p>
+        </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="section">
+        <h2>2. Definiciones</h2>
+        <ul>
+            <li><strong>Plataforma:</strong> El sistema web Kislev accesible en kislev.net.co y sus subdominios.</li>
+            <li><strong>Conjunto:</strong> El conjunto residencial o agrupación de unidades habitacionales que contrata el servicio.</li>
+            <li><strong>Administrador:</strong> Persona natural o jurídica responsable de gestionar el conjunto dentro de la plataforma.</li>
+            <li><strong>Propietario / Residente:</strong> Persona con unidad habitacional en el conjunto, registrada en la plataforma.</li>
+            <li><strong>Portería:</strong> Personal de vigilancia o control de acceso del conjunto.</li>
+            <li><strong>Visitante:</strong> Persona autorizada temporalmente a ingresar al conjunto mediante QR.</li>
+        </ul>
+    </div>
+
+    <!-- 3 -->
+    <div class="section">
+        <h2>3. Roles y Accesos</h2>
+        <p>La plataforma gestiona cuatro niveles de acceso con funcionalidades diferenciadas:</p>
+        <table class="role-table">
+            <thead>
+                <tr><th>Rol</th><th>Funcionalidades principales</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Administrador</strong></td>
+                    <td>Gestión completa del conjunto: residentes, cuotas, reservas, novedades, reportes y configuración</td>
+                </tr>
+                <tr>
+                    <td><strong>Propietario / Residente</strong></td>
+                    <td>Generar QR de visitantes, ver historial, reservar zonas comunes, consultar estado de cuenta</td>
+                </tr>
+                <tr>
+                    <td><strong>Portería</strong></td>
+                    <td>Validar QR de acceso peatonal y vehicular, registrar paquetes, control de parqueadero</td>
+                </tr>
+                <tr>
+                    <td><strong>SaaS Owner</strong></td>
+                    <td>Gestión de todos los conjuntos, métricas globales, configuración del sistema</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 4 -->
+    <div class="section">
+        <h2>4. Obligaciones del Usuario</h2>
+        <p>Al usar la plataforma, el usuario se compromete a:</p>
+        <ol>
+            <li>Proporcionar información veraz, completa y actualizada en el registro</li>
+            <li>Mantener la confidencialidad de sus credenciales de acceso (usuario y contraseña)</li>
+            <li>No compartir su cuenta con terceros no autorizados</li>
+            <li>No intentar acceder a cuentas, datos o módulos para los que no tiene autorización</li>
+            <li>No utilizar la plataforma para actividades ilícitas, fraudulentas o que afecten la convivencia del conjunto</li>
+            <li>Notificar de inmediato al administrador o a Kislev si detecta uso no autorizado de su cuenta</li>
+            <li>Cumplir con las normas del reglamento interno del conjunto residencial</li>
+        </ol>
+    </div>
+
+    <!-- 5 -->
+    <div class="section">
+        <h2>5. Uso del Sistema de QR</h2>
+        <p>Los códigos QR generados a través de la plataforma son:</p>
+        <ul>
+            <li>De uso personal e intransferible del propietario o residente que los genera</li>
+            <li>Válidos únicamente para el conjunto para el que fueron generados</li>
+            <li>Válidos durante el tiempo configurado por el administrador del conjunto</li>
+        </ul>
+        <div class="warn-box">
+            <p>⚠️ El propietario o residente es <strong>responsable del uso</strong> de los QR que genera. La autorización de un visitante implica responsabilidad sobre su comportamiento dentro del conjunto, conforme al reglamento de propiedad horizontal.</p>
+        </div>
+    </div>
+
+    <!-- 6 -->
+    <div class="section">
+        <h2>6. Propiedad Intelectual</h2>
+        <p>Todos los elementos de la plataforma Kislev —incluyendo código fuente, diseño, logotipos, textos y funcionalidades— son propiedad exclusiva de Kislev y están protegidos por las leyes de propiedad intelectual colombianas (Ley 23 de 1982, Decisión Andina 351 de 1993).</p>
+        <p>Queda prohibida la reproducción, distribución, modificación o uso comercial de cualquier elemento de la plataforma sin autorización previa y por escrito.</p>
+    </div>
+
+    <!-- 7 -->
+    <div class="section">
+        <h2>7. Disponibilidad del Servicio</h2>
+        <p>Kislev realizará los mejores esfuerzos para mantener la plataforma disponible de forma continua. Sin embargo, no garantiza una disponibilidad del 100% y se reserva el derecho de:</p>
+        <ul>
+            <li>Realizar mantenimientos programados, notificando con anticipación razonable</li>
+            <li>Interrumpir temporalmente el servicio por razones técnicas de fuerza mayor</li>
+            <li>Actualizar, mejorar o modificar funcionalidades sin previo aviso</li>
+        </ul>
+    </div>
+
+    <!-- 8 -->
+    <div class="section">
+        <h2>8. Limitación de Responsabilidad</h2>
+        <p>Kislev no será responsable por:</p>
+        <ul>
+            <li>Daños derivados del uso indebido de las credenciales por parte del usuario</li>
+            <li>Incidentes de seguridad causados por negligencia del usuario (contraseñas débiles, compartir accesos)</li>
+            <li>Conflictos entre residentes derivados del uso del sistema de visitantes o reservas</li>
+            <li>Decisiones administrativas del conjunto tomadas con base en la información de la plataforma</li>
+            <li>Interrupciones del servicio causadas por fuerza mayor, fallas de terceros proveedores o ataques informáticos externos</li>
+        </ul>
+        <p>La responsabilidad máxima de Kislev, en cualquier caso, se limita al valor pagado por el servicio en los últimos tres (3) meses.</p>
+    </div>
+
+    <!-- 9 -->
+    <div class="section">
+        <h2>9. Suspensión y Cancelación</h2>
+        <h3>9.1 Por parte de Kislev</h3>
+        <p>Kislev podrá suspender o cancelar el acceso de un usuario o conjunto cuando:</p>
+        <ul>
+            <li>Se incumplan los presentes Términos y Condiciones</li>
+            <li>Se detecte actividad fraudulenta o uso malintencionado de la plataforma</li>
+            <li>Exista mora en el pago del servicio (para conjuntos contratantes)</li>
+        </ul>
+
+        <h3>9.2 Por parte del usuario</h3>
+        <p>El administrador del conjunto puede solicitar la cancelación del servicio con un mínimo de 30 días de anticipación, escribiendo a <a href="mailto:privacidad@kislev.net.co">privacidad@kislev.net.co</a>. Tras la cancelación, los datos serán eliminados conforme a la Política de Privacidad.</p>
+    </div>
+
+    <!-- 10 -->
+    <div class="section">
+        <h2>10. Modificación de los Términos</h2>
+        <p>Kislev se reserva el derecho de modificar estos Términos y Condiciones en cualquier momento. Los cambios sustanciales serán notificados por correo electrónico a los administradores registrados con al menos <strong>15 días de anticipación</strong>. El uso continuado del servicio después de esa fecha constituye aceptación de los nuevos términos.</p>
+    </div>
+
+    <!-- 11 -->
+    <div class="section">
+        <h2>11. Ley Aplicable y Resolución de Disputas</h2>
+        <p>Estos Términos y Condiciones se rigen por las leyes de la <strong>República de Colombia</strong>. Cualquier controversia derivada del uso de la plataforma se intentará resolver en primera instancia mediante negociación directa entre las partes.</p>
+        <p>En caso de no llegar a un acuerdo, las partes se someterán a la jurisdicción de los <strong>jueces competentes de la República de Colombia</strong>, renunciando a cualquier otro fuero que pudiera corresponderles.</p>
+        <p>Para conflictos de consumo, el usuario podrá acudir a la <strong>Superintendencia de Industria y Comercio (SIC)</strong> conforme a la Ley 1480 de 2011.</p>
+    </div>
+
+    <!-- 12 -->
+    <div class="section">
+        <h2>12. Contacto</h2>
+        <div class="contact-box">
+            <p><strong>Plataforma:</strong> Kislev — Sistema de Gestión Residencial</p>
+            <p><strong>Sitio web:</strong> <a href="https://kislev.net.co">kislev.net.co</a></p>
+            <p><strong>Email:</strong> <a href="mailto:privacidad@kislev.net.co">privacidad@kislev.net.co</a></p>
+            <p><strong>País:</strong> República de Colombia</p>
+        </div>
+    </div>
+
+    <div style="text-align:center;margin-top:40px;padding-top:24px;border-top:1px solid #e5e7eb">
+        <p style="font-size:.82rem;color:#9ca3af">© 2026 Kislev · Todos los derechos reservados · República de Colombia</p>
+        <div style="margin-top:12px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+            <a href="{% url 'accounts:politica_privacidad' %}" style="font-size:.82rem;color:#7c3aed">Política de Privacidad</a>
+            <a href="{% url 'accounts:login' %}" style="font-size:.82rem;color:#7c3aed">Iniciar Sesión</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

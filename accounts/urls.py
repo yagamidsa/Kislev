@@ -1,6 +1,7 @@
 # accounts/urls.py
 from django.urls import path
 from django.contrib.auth import views as auth_views
+from django.views.generic import TemplateView
 from .views import (
     LoginView,
     LogoutView,
@@ -80,6 +81,10 @@ urlpatterns = [
     path('saas/config/', update_config_global, name='update_config_global'),
     path('saas/conjunto/<int:conjunto_id>/toggle/', toggle_conjunto_activo, name='toggle_conjunto_activo'),
     path('saas/conjunto/<int:conjunto_id>/eliminar/', eliminar_conjunto, name='eliminar_conjunto'),
+
+    # Páginas legales (públicas)
+    path('politica-privacidad/', TemplateView.as_view(template_name='accounts/politica_privacidad.html'), name='politica_privacidad'),
+    path('terminos-condiciones/', TemplateView.as_view(template_name='accounts/terminos_condiciones.html'), name='terminos_condiciones'),
 
     # Gestión de usuarios
     path('residentes/', gestion_usuarios, name='gestion_usuarios'),

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Política de Privacidad — Kislev</title>
+    {% load static %}
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'Segoe UI',Arial,sans-serif;background:#f8f9fb;color:#1a1a2e;line-height:1.75}
+        a{color:#7c3aed;text-decoration:none}
+        a:hover{text-decoration:underline}
+
+        /* TOPBAR */
+        .topbar{background:#fff;border-bottom:1px solid #e5e7eb;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:0 1px 6px rgba(0,0,0,.06)}
+        .logo{font-size:1.1rem;font-weight:800;background:linear-gradient(135deg,#7c3aed,#db2777);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .back-btn{font-size:.83rem;color:#7c3aed;font-weight:600;display:flex;align-items:center;gap:6px}
+
+        /* HERO */
+        .hero{background:linear-gradient(135deg,#3b1a6e,#6d28d9,#be185d);padding:48px 24px 40px;text-align:center;color:#fff}
+        .hero h1{font-size:clamp(1.6rem,4vw,2.4rem);font-weight:800;margin-bottom:8px}
+        .hero p{font-size:.92rem;opacity:.85}
+
+        /* CONTENT */
+        .page-wrap{max-width:780px;margin:0 auto;padding:48px 24px 80px}
+        .last-update{font-size:.8rem;color:#9ca3af;margin-bottom:36px;display:flex;align-items:center;gap:6px}
+        .last-update::before{content:'📅'}
+
+        .section{margin-bottom:40px}
+        .section h2{font-size:1.1rem;font-weight:700;color:#4c1d95;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid #ede9fe}
+        .section h3{font-size:.95rem;font-weight:700;color:#374151;margin:16px 0 8px}
+        .section p{font-size:.9rem;color:#374151;margin-bottom:10px}
+        .section ul,
+        .section ol{padding-left:20px;margin-bottom:10px}
+        .section li{font-size:.9rem;color:#374151;margin-bottom:5px}
+        .highlight-box{background:#f5f3ff;border-left:4px solid #7c3aed;border-radius:0 10px 10px 0;padding:14px 18px;margin:14px 0}
+        .highlight-box p{margin:0;font-size:.88rem;color:#4c1d95}
+        .law-ref{display:inline-block;background:#ede9fe;color:#5b21b6;font-size:.75rem;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:6px;vertical-align:middle}
+        .contact-box{background:#fff;border:1.5px solid #e5e7eb;border-radius:14px;padding:20px 24px;margin-top:14px}
+        .contact-box p{margin:0 0 6px;font-size:.88rem;color:#374151}
+        .contact-box p:last-child{margin:0}
+        .contact-box strong{color:#1a1a2e}
+
+        @media(max-width:600px){
+            .hero{padding:36px 16px 32px}
+            .page-wrap{padding:32px 16px 60px}
+        }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <span class="logo">🏠 Kislev</span>
+    <a href="{% url 'accounts:login' %}" class="back-btn">← Volver al inicio</a>
+</div>
+
+<div class="hero">
+    <h1>Política de Privacidad</h1>
+    <p>Tratamiento de datos personales conforme a la legislación colombiana</p>
+</div>
+
+<div class="page-wrap">
+    <p class="last-update">Última actualización: abril de 2026 &nbsp;·&nbsp; Versión 1.0</p>
+
+    <!-- 1 -->
+    <div class="section">
+        <h2>1. Responsable del Tratamiento</h2>
+        <p><strong>Kislev</strong> es la plataforma tecnológica responsable del tratamiento de los datos personales recopilados a través de este servicio. Opera bajo las disposiciones de la <strong>Ley 1581 de 2012</strong> <span class="law-ref">Ley de Habeas Data</span> y el <strong>Decreto 1377 de 2013</strong>.</p>
+        <div class="contact-box">
+            <p><strong>Plataforma:</strong> Kislev — Sistema de Gestión Residencial</p>
+            <p><strong>Sitio web:</strong> <a href="https://kislev.net.co">kislev.net.co</a></p>
+            <p><strong>Email de contacto:</strong> <a href="mailto:privacidad@kislev.net.co">privacidad@kislev.net.co</a></p>
+            <p><strong>País:</strong> República de Colombia</p>
+        </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="section">
+        <h2>2. Marco Legal</h2>
+        <p>Esta política se rige por las siguientes normas de la República de Colombia:</p>
+        <ul>
+            <li><strong>Ley 1581 de 2012</strong> — Protección de Datos Personales</li>
+            <li><strong>Decreto 1377 de 2013</strong> — Reglamentación de la Ley 1581</li>
+            <li><strong>Ley 1266 de 2008</strong> — Habeas Data Financiero</li>
+            <li><strong>Ley 527 de 1999</strong> — Comercio Electrónico</li>
+            <li><strong>Ley 1480 de 2011</strong> — Estatuto del Consumidor</li>
+            <li><strong>Circular Externa 002 de 2015</strong> — Superintendencia de Industria y Comercio (SIC)</li>
+        </ul>
+    </div>
+
+    <!-- 3 -->
+    <div class="section">
+        <h2>3. Datos Personales que Recopilamos</h2>
+        <p>Para la prestación del servicio, Kislev recopila y trata los siguientes datos:</p>
+
+        <h3>3.1 Datos de identificación</h3>
+        <ul>
+            <li>Número de cédula de ciudadanía o documento de identidad</li>
+            <li>Nombres y apellidos completos</li>
+            <li>Número de teléfono o celular</li>
+            <li>Dirección de correo electrónico</li>
+        </ul>
+
+        <h3>3.2 Datos de ubicación residencial</h3>
+        <ul>
+            <li>Conjunto residencial, torre/bloque y número de unidad (apartamento, casa o parqueadero)</li>
+        </ul>
+
+        <h3>3.3 Datos de uso del servicio</h3>
+        <ul>
+            <li>Registros de acceso e inicio de sesión (fecha, hora, IP)</li>
+            <li>Historial de visitantes autorizados</li>
+            <li>Reservas de zonas comunes</li>
+            <li>Información de pagos de cuotas de administración (referencia, método de pago)</li>
+            <li>Novedades y comunicaciones del conjunto</li>
+        </ul>
+
+        <h3>3.4 Datos de visitantes</h3>
+        <ul>
+            <li>Nombre, cédula y datos de contacto de personas autorizadas a ingresar al conjunto</li>
+            <li>Datos vehiculares: placa y tipo de vehículo (cuando aplique)</li>
+        </ul>
+
+        <div class="highlight-box">
+            <p>⚠️ <strong>No recopilamos</strong> datos sensibles como origen racial, creencias religiosas, datos biométricos, información de salud ni datos de menores de edad, salvo autorización expresa del representante legal.</p>
+        </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="section">
+        <h2>4. Finalidad del Tratamiento</h2>
+        <p>Sus datos personales son tratados exclusivamente para:</p>
+        <ol>
+            <li>Gestionar el acceso y la seguridad del conjunto residencial</li>
+            <li>Administrar usuarios, residentes y visitantes de la plataforma</li>
+            <li>Enviar notificaciones relacionadas con el conjunto (novedades, paquetes, QR de acceso)</li>
+            <li>Registrar y gestionar reservas de zonas comunes</li>
+            <li>Administrar el cobro y seguimiento de cuotas de administración</li>
+            <li>Cumplir obligaciones legales y requerimientos de autoridades competentes</li>
+            <li>Mejorar la funcionalidad y calidad del servicio</li>
+        </ol>
+        <p>Sus datos <strong>no serán vendidos, cedidos ni compartidos</strong> con terceros para fines comerciales o publicitarios.</p>
+    </div>
+
+    <!-- 5 -->
+    <div class="section">
+        <h2>5. Derechos del Titular</h2>
+        <p>Conforme al artículo 8 de la Ley 1581 de 2012, usted como titular tiene derecho a:</p>
+        <ul>
+            <li><strong>Conocer</strong> los datos personales que tenemos sobre usted</li>
+            <li><strong>Actualizar y rectificar</strong> datos inexactos o incompletos</li>
+            <li><strong>Solicitar prueba</strong> de la autorización otorgada para el tratamiento</li>
+            <li><strong>Ser informado</strong> sobre el uso que se ha dado a sus datos personales</li>
+            <li><strong>Presentar quejas</strong> ante la Superintendencia de Industria y Comercio (SIC) por violaciones a la Ley</li>
+            <li><strong>Revocar la autorización</strong> y/o solicitar la supresión de sus datos, salvo que exista obligación legal de conservarlos</li>
+            <li><strong>Acceder gratuitamente</strong> a sus datos personales que hayan sido objeto de tratamiento</li>
+        </ul>
+        <p>Para ejercer cualquiera de estos derechos, escriba a: <a href="mailto:privacidad@kislev.net.co">privacidad@kislev.net.co</a></p>
+    </div>
+
+    <!-- 6 -->
+    <div class="section">
+        <h2>6. Autorización para el Tratamiento</h2>
+        <p>Al registrarse en la plataforma Kislev y utilizar sus servicios, el usuario otorga su consentimiento libre, previo, expreso e informado para el tratamiento de sus datos personales conforme a esta política, según lo establece el artículo 9 de la Ley 1581 de 2012.</p>
+        <p>La autorización se entiende otorgada al momento del registro por parte del administrador del conjunto residencial o del propio usuario.</p>
+    </div>
+
+    <!-- 7 -->
+    <div class="section">
+        <h2>7. Seguridad de la Información</h2>
+        <p>Kislev adopta medidas técnicas, humanas y administrativas necesarias para garantizar la seguridad de los datos personales, incluyendo:</p>
+        <ul>
+            <li>Almacenamiento en servidores con cifrado en tránsito (HTTPS/TLS)</li>
+            <li>Contraseñas almacenadas con algoritmos de hash seguros (nunca en texto plano)</li>
+            <li>Acceso restringido por roles (propietario, administrador, portería)</li>
+            <li>Tokens de sesión con expiración configurable</li>
+            <li>Registro de auditoría de acciones críticas</li>
+            <li>Recuperación de contraseña mediante enlace firmado con expiración de 30 minutos</li>
+        </ul>
+    </div>
+
+    <!-- 8 -->
+    <div class="section">
+        <h2>8. Transferencia y Transmisión de Datos</h2>
+        <p>Los datos personales podrán ser transmitidos a:</p>
+        <ul>
+            <li><strong>Proveedores de infraestructura tecnológica</strong> (servidores en la nube) bajo acuerdos de confidencialidad</li>
+            <li><strong>Servicios de envío de correo electrónico</strong> para notificaciones del sistema</li>
+            <li><strong>Autoridades competentes</strong> cuando sea requerido por orden judicial o legal</li>
+        </ul>
+        <p>En ningún caso se realizarán transferencias internacionales de datos sin cumplir los requisitos del artículo 26 de la Ley 1581 de 2012.</p>
+    </div>
+
+    <!-- 9 -->
+    <div class="section">
+        <h2>9. Conservación de Datos</h2>
+        <p>Los datos personales se conservarán durante el tiempo que el usuario mantenga su cuenta activa en la plataforma y por el tiempo adicional que exijan obligaciones legales o contractuales. Una vez cumplida la finalidad del tratamiento y vencidos los plazos legales, los datos serán eliminados o anonimizados de forma segura.</p>
+    </div>
+
+    <!-- 10 -->
+    <div class="section">
+        <h2>10. Cookies y Tecnologías de Seguimiento</h2>
+        <p>Kislev utiliza cookies de sesión estrictamente necesarias para el funcionamiento de la plataforma (autenticación). No utilizamos cookies de seguimiento publicitario ni compartimos información de navegación con terceros para fines de marketing.</p>
+    </div>
+
+    <!-- 11 -->
+    <div class="section">
+        <h2>11. Cambios en la Política</h2>
+        <p>Kislev se reserva el derecho de actualizar esta Política de Privacidad. Los cambios sustanciales serán notificados a los usuarios registrados por correo electrónico con al menos 10 días de anticipación. El uso continuado del servicio después de la notificación implica la aceptación de los cambios.</p>
+    </div>
+
+    <!-- 12 -->
+    <div class="section">
+        <h2>12. Contacto y Reclamaciones</h2>
+        <p>Para ejercer sus derechos, presentar consultas o reclamaciones sobre el tratamiento de sus datos personales:</p>
+        <div class="contact-box">
+            <p><strong>Email:</strong> <a href="mailto:privacidad@kislev.net.co">privacidad@kislev.net.co</a></p>
+            <p><strong>Tiempo de respuesta:</strong> Máximo 15 días hábiles para consultas y 15 días hábiles para reclamos (Ley 1581 de 2012, Art. 14)</p>
+            <p><strong>Entidad de control:</strong> Superintendencia de Industria y Comercio (SIC) — <a href="https://www.sic.gov.co" target="_blank" rel="noopener">www.sic.gov.co</a></p>
+        </div>
+    </div>
+
+    <div style="text-align:center;margin-top:40px;padding-top:24px;border-top:1px solid #e5e7eb">
+        <p style="font-size:.82rem;color:#9ca3af">© 2026 Kislev · Todos los derechos reservados · República de Colombia</p>
+        <div style="margin-top:12px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+            <a href="{% url 'accounts:terminos_condiciones' %}" style="font-size:.82rem;color:#7c3aed">Términos y Condiciones</a>
+            <a href="{% url 'accounts:login' %}" style="font-size:.82rem;color:#7c3aed">Iniciar Sesión</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
