@@ -458,6 +458,12 @@ def _send_reset_email(usuario, reset_url):
     )
     msg.attach_alternative(html, 'text/html')
     msg.send(fail_silently=False)
+    # Registrar en métricas SaaS solo si el envío fue exitoso
+    try:
+        from kislevsmart.utils import log_envio
+        log_envio('email', conjunto=usuario.conjunto, detalle='Reset contraseña')
+    except Exception:
+        pass
 
 
 class RecuperarPasswordView(View):
