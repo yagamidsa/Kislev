@@ -127,20 +127,22 @@ label {
   color: #ccc;
 }
 
-/* Opciones del formulario */
+/* Fila Recuérdame */
 .form-options {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.5rem;
-  gap: 8px;
+  margin-bottom: 10px;
 }
 
-.form-options a {
-  white-space: nowrap;
+/* Fila separada — Olvidé mi contraseña */
+.forgot-row {
+  text-align: right;
+  margin-bottom: 1.5rem;
+}
+
+.forgot-row a {
   color: #7c3aed;
   font-size: 0.82em;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 /* Checkbox "Recuérdame" */
