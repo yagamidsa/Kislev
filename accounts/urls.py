@@ -20,6 +20,7 @@ from .views import (
     toggle_usuario_activo,
     editar_usuario,
     exportar_usuarios_excel,
+    crear_usuario,
     gestionar_conjunto,
     update_config_global,
     toggle_conjunto_activo,
@@ -80,6 +81,7 @@ urlpatterns = [
 
     # Gestión de usuarios
     path('residentes/', gestion_usuarios, name='gestion_usuarios'),
+    path('residentes/crear/', crear_usuario, name='crear_usuario'),
     path('usuarios/<int:usuario_id>/toggle/', toggle_usuario_activo, name='toggle_usuario_activo'),
     path('usuarios/<int:usuario_id>/editar/', editar_usuario, name='editar_usuario'),
     path('residentes/exportar/', exportar_usuarios_excel, name='exportar_usuarios_excel'),

@@ -69,6 +69,7 @@
         .u-loc i{font-size:.65rem;color:#a78bfa;}
         .u-type-badge{font-size:.68rem;font-weight:600;padding:2px 8px;border-radius:10px;}
         .badge-prop{background:rgba(124,58,237,.2);color:#a78bfa;}
+        .badge-arr{background:rgba(6,182,212,.2);color:#67e8f9;}
         .badge-admin{background:rgba(219,39,119,.2);color:#f472b6;}
         .badge-port{background:rgba(245,158,11,.2);color:#fcd34d;}
 
@@ -147,12 +148,15 @@
     <div class="topbar">
         <div class="topbar-left">
             <div class="logo-icon"><i class="fas fa-building"></i></div>
-            <span class="logo-text">Kislev Smart</span>
+            <span class="logo-text">Kislev</span>
             <span class="page-title-bar">Residentes</span>
         </div>
         <div class="topbar-right">
+            <button type="button" class="btn-sm" style="background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;border:none;" onclick="openCreateModal()">
+                <i class="fas fa-user-plus"></i> Agregar
+            </button>
             <a href="{% url 'accounts:exportar_usuarios_excel' %}{% if is_saas_owner and request.GET.conjunto %}?conjunto={{ request.GET.conjunto }}{% endif %}" class="btn-sm btn-export">
-                <i class="fas fa-file-excel"></i> Exportar Excel
+                <i class="fas fa-file-excel"></i> Excel
             </a>
             <a href="{% if is_saas_owner %}{% url 'accounts:saas_dashboard' %}{% else %}{% url 'accounts:visor_admin' %}{% endif %}" class="btn-sm btn-back">
                 <i class="fas fa-arrow-left"></i> Volver
@@ -201,6 +205,7 @@
                     <select class="filter-select" name="tipo">
                         <option value="">Todos los roles</option>
                         <option value="propietario" {% if user_type_filter == 'propietario' %}selected{% endif %}>Propietario</option>
+                        <option value="arrendatario" {% if user_type_filter == 'arrendatario' %}selected{% endif %}>Arrendatario</option>
                         <option value="administrador" {% if user_type_filter == 'administrador' %}selected{% endif %}>Administrador</option>
                         <option value="porteria" {% if user_type_filter == 'porteria' %}selected{% endif %}>Portería</option>
                     </select>
@@ -248,15 +253,15 @@
                         {% if u.email %}
                         <span class="u-loc"><i class="fas fa-envelope"></i> {{ u.email }}</span>
                         {% endif %}
-                        <span class="u-type-badge {% if u.user_type == 'administrador' %}badge-admin{% elif u.user_type == 'porteria' %}badge-port{% else %}badge-prop{% endif %}">
-                            {{ u.get_user_type_display }}
+                        <span class="u-type-badge {% if u.user_type == 'administrador' %}badge-admin{% elif u.user_type == 'porteria' %}badge-port{% elif u.es_arrendatario %}badge-arr{% else %}badge-prop{% endif %}">
+                            {% if u.es_arrendatario %}Arrendatario{% else %}{{ u.get_user_type_display }}{% endif %}
                         </span>
                     </div>
                 </div>
                 <!-- Acciones -->
                 <div class="u-actions">
                     <button type="button" class="btn-icon btn-edit" title="Editar"
-                        onclick="openEditModal({{ u.id }}, '{{ u.nombre|escapejs }}', '{{ u.torre.id|default:'' }}', '{{ u.apartamento|escapejs }}', '{{ u.phone_number|default:''|escapejs }}', '{{ u.user_type }}', {{ u.is_active|yesno:'true,false' }}, '{{ u.email|escapejs }}')">
+                        onclick="openEditModal({{ u.id }}, '{{ u.nombre|escapejs }}', '{{ u.torre.id|default:'' }}', '{{ u.apartamento|escapejs }}', '{{ u.phone_number|default:''|escapejs }}', '{% if u.es_arrendatario %}arrendatario{% else %}{{ u.user_type }}{% endif %}', {{ u.is_active|yesno:'true,false' }}, '{{ u.email|escapejs }}')">
                         <i class="fas fa-pen"></i>
                     </button>
                     <button type="button" class="btn-icon btn-toggle {% if not u.is_active %}is-inactive{% endif %}" title="{% if u.is_active %}Desactivar{% else %}Activar{% endif %}"
@@ -316,6 +321,7 @@
                 <label class="form-label">Rol</label>
                 <select class="form-control" id="editTipo">
                     <option value="propietario">Propietario</option>
+                    <option value="arrendatario">Arrendatario</option>
                     <option value="administrador">Administrador</option>
                     <option value="porteria">Portería</option>
                 </select>
@@ -324,6 +330,71 @@
         <div class="modal-footer">
             <button type="button" class="btn-cancel" onclick="closeModal()">Cancelar</button>
             <button type="button" class="btn-save" onclick="guardarEdicion()"><i class="fas fa-save"></i> Guardar</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── MODAL CREAR ── -->
+<div class="modal-overlay" id="createModal">
+    <div class="modal">
+        <div class="modal-header" style="background:linear-gradient(135deg,#1d4ed8,#7c3aed);">
+            <h3><i class="fas fa-user-plus"></i> Agregar residente</h3>
+            <button type="button" class="modal-close" onclick="closeCreateModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <form id="createForm" onsubmit="return false;">
+                <div class="form-row">
+                    <label class="form-label">Tipo de usuario *</label>
+                    <select class="form-control" id="cTipo">
+                        <option value="propietario">Propietario</option>
+                        <option value="arrendatario">Arrendatario</option>
+                        <option value="porteria">Portería</option>
+                        <option value="administrador">Administrador</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Nombre completo *</label>
+                    <input type="text" class="form-control" id="cNombre" placeholder="Ej: Juan Pérez" maxlength="150">
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Cédula *</label>
+                    <input type="text" class="form-control" id="cCedula" placeholder="Número de cédula" maxlength="20">
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Email *</label>
+                    <input type="email" class="form-control" id="cEmail" placeholder="correo@ejemplo.com" maxlength="254">
+                </div>
+                <div class="form-row">
+                    <label class="form-label">Teléfono</label>
+                    <input type="text" class="form-control" id="cTelefono" placeholder="Ej: 3001234567" maxlength="15">
+                </div>
+                {% if conjunto.tiene_agrupacion %}
+                <div class="form-row">
+                    <label class="form-label">{{ conjunto.etiqueta_agrupacion }}</label>
+                    <select class="form-control" id="cTorre">
+                        <option value="">Sin {{ conjunto.etiqueta_agrupacion|lower }}</option>
+                        {% for t in torres %}
+                        <option value="{{ t.id }}">{{ t.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% else %}
+                <input type="hidden" id="cTorre" value="">
+                {% endif %}
+                <div class="form-row">
+                    <label class="form-label">{{ conjunto.etiqueta_unidad }}</label>
+                    <input type="text" class="form-control" id="cApto" placeholder="Ej: 0101" maxlength="10">
+                </div>
+                <p style="font-size:.75rem;color:rgba(255,255,255,.35);margin-top:4px;">
+                    <i class="fas fa-info-circle"></i> La contraseña inicial será <strong style="color:#a78bfa">kislev123</strong>. El usuario deberá cambiarla al primer ingreso.
+                </p>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-cancel" onclick="closeCreateModal()">Cancelar</button>
+            <button type="button" class="btn-save" id="btnCrear" onclick="crearUsuario()">
+                <i class="fas fa-user-plus"></i> Crear
+            </button>
         </div>
     </div>
 </div>
@@ -437,10 +508,10 @@ function guardarEdicion(){
             }
             // Actualizar badge de tipo
             const badge = card.querySelector('.u-type-badge');
-            const tipos = {propietario:'Propietario',administrador:'Administrador',porteria:'Portería'};
-            const clases = {propietario:'badge-prop',administrador:'badge-admin',porteria:'badge-port'};
-            badge.className = 'u-type-badge ' + clases[data.user_type];
-            badge.textContent = tipos[data.user_type];
+            const tipos = {propietario:'Propietario',arrendatario:'Arrendatario',administrador:'Administrador',porteria:'Portería'};
+            const clases = {propietario:'badge-prop',arrendatario:'badge-arr',administrador:'badge-admin',porteria:'badge-port'};
+            badge.className = 'u-type-badge ' + (clases[data.user_type] || 'badge-prop');
+            badge.textContent = tipos[data.user_type] || data.user_type;
             // Actualizar email en la card
             const emailSpans = card.querySelectorAll('.u-loc');
             let emailSpan = Array.from(emailSpans).find(el => el.querySelector('.fa-envelope'));
@@ -470,6 +541,63 @@ function guardarEdicion(){
 
 
 function getCsrf(){ return '{{ csrf_token }}'; }
+
+/* ── Modal Crear ── */
+function openCreateModal(){
+    document.getElementById('createModal').classList.add('open');
+    setTimeout(() => document.getElementById('cNombre').focus(), 50);
+}
+function closeCreateModal(){
+    document.getElementById('createModal').classList.remove('open');
+    document.getElementById('createForm').reset();
+}
+document.addEventListener('DOMContentLoaded', function(){
+    const cm = document.getElementById('createModal');
+    if(cm) cm.addEventListener('click', function(e){ if(e.target===this) closeCreateModal(); });
+    document.getElementById('editModal').addEventListener('click', function(e){ if(e.target===this) closeModal(); });
+});
+
+function crearUsuario(){
+    const btn = document.getElementById('btnCrear');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+    const payload = {
+        conjunto_id: {{ conjunto_id }},
+        nombre:      document.getElementById('cNombre').value.trim(),
+        cedula:      document.getElementById('cCedula').value.trim(),
+        email:       document.getElementById('cEmail').value.trim(),
+        telefono:    document.getElementById('cTelefono').value.trim(),
+        tipo:        document.getElementById('cTipo').value,
+        torre_id:    document.getElementById('cTorre').value,
+        apartamento: document.getElementById('cApto').value.trim(),
+    };
+    if(!payload.nombre || !payload.cedula || !payload.email){
+        showToast('Nombre, cédula y email son obligatorios', 'error');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-user-plus"></i> Crear';
+        return;
+    }
+    fetch('/accounts/residentes/crear/', {
+        method: 'POST',
+        headers: {'X-CSRFToken': getCsrf(), 'Content-Type': 'application/json'},
+        body: JSON.stringify(payload),
+    })
+    .then(r => r.json())
+    .then(d => {
+        if(d.ok){
+            closeCreateModal();
+            showToast('✅ ' + d.nombre + ' creado correctamente');
+            setTimeout(() => location.reload(), 1200);
+        } else {
+            showToast(d.error || 'Error al crear usuario', 'error');
+        }
+    })
+    .catch(() => showToast('Error de conexión', 'error'))
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-user-plus"></i> Crear';
+    });
+}
 
 /* ── Partículas ── */
 (function(){

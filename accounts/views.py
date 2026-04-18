@@ -1023,8 +1023,10 @@ def gestion_usuarios(request):
 
     if torre_id:
         usuarios_qs = usuarios_qs.filter(torre_id=torre_id)
-    if user_type_filter:
-        usuarios_qs = usuarios_qs.filter(user_type=user_type_filter)
+    if user_type_filter == 'arrendatario':
+        usuarios_qs = usuarios_qs.filter(user_type='propietario', es_arrendatario=True)
+    elif user_type_filter:
+        usuarios_qs = usuarios_qs.filter(user_type=user_type_filter, es_arrendatario=False)
     if search:
         from django.db.models import Q
         usuarios_qs = usuarios_qs.filter(Q(nombre__icontains=search) | Q(cedula__icontains=search) | Q(apartamento__icontains=search))
@@ -1044,6 +1046,7 @@ def gestion_usuarios(request):
         'total': usuarios_qs.count(),
         'is_saas_owner': user.is_saas_owner,
         'all_conjuntos': ConjuntoResidencial.objects.all() if user.is_saas_owner else None,
+        'conjunto_id': conjunto.pk,
     }
     return render(request, 'accounts/gestion_usuarios.html', context)
 
@@ -1105,9 +1108,16 @@ def editar_usuario(request, usuario_id):
         target.phone_number = str(data['phone_number']).strip()[:15]
         fields_updated.append('phone_number')
 
-    if 'user_type' in data and data['user_type'] in ('propietario', 'administrador', 'porteria'):
-        target.user_type = data['user_type']
-        fields_updated.append('user_type')
+    if 'user_type' in data:
+        tipo = data['user_type']
+        if tipo == 'arrendatario':
+            target.user_type = 'propietario'
+            target.es_arrendatario = True
+            fields_updated += ['user_type', 'es_arrendatario']
+        elif tipo in ('propietario', 'administrador', 'porteria'):
+            target.user_type = tipo
+            target.es_arrendatario = False
+            fields_updated += ['user_type', 'es_arrendatario']
 
     if 'email' in data:
         email_val = str(data['email']).strip()[:254]
@@ -1118,13 +1128,92 @@ def editar_usuario(request, usuario_id):
     if fields_updated:
         target.save(update_fields=fields_updated)
 
+    tipo_display = 'arrendatario' if target.es_arrendatario else target.user_type
     return JsonResponse({
         'ok': True,
         'torre': target.torre.nombre if target.torre else '',
         'apartamento': target.apartamento,
         'phone_number': target.phone_number or '',
-        'user_type': target.user_type,
+        'user_type': tipo_display,
         'email': target.email or '',
+    })
+
+
+@require_POST
+@login_required
+def crear_usuario(request):
+    """AJAX: crea un usuario en el conjunto del administrador (o el indicado para saas_owner)."""
+    user = request.user
+    if user.user_type not in ('administrador',) and not user.is_saas_owner:
+        return JsonResponse({'error': 'Sin permiso'}, status=403)
+
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'JSON inválido'}, status=400)
+
+    # Determinar conjunto
+    if user.is_saas_owner and data.get('conjunto_id'):
+        try:
+            conjunto = ConjuntoResidencial.objects.get(pk=data['conjunto_id'])
+        except ConjuntoResidencial.DoesNotExist:
+            return JsonResponse({'error': 'Conjunto no encontrado'}, status=404)
+    else:
+        conjunto = user.conjunto
+
+    cedula   = str(data.get('cedula', '')).strip()
+    nombre   = str(data.get('nombre', '')).strip()
+    email    = str(data.get('email', '')).strip()
+    telefono = str(data.get('telefono', '')).strip()[:15]
+    tipo     = data.get('tipo', 'propietario')
+    torre_id = data.get('torre_id')
+    apartamento = str(data.get('apartamento', '')).strip()[:10]
+
+    if not cedula or not nombre or not email:
+        return JsonResponse({'error': 'Cédula, nombre y email son obligatorios'}, status=400)
+
+    if Usuario.objects.filter(cedula=cedula, conjunto=conjunto).exists():
+        return JsonResponse({'error': f'Ya existe un usuario con cédula {cedula} en este conjunto'}, status=400)
+
+    from accounts.models import Torre
+    torre_obj = None
+    if torre_id:
+        try:
+            torre_obj = Torre.objects.get(pk=torre_id, conjunto=conjunto)
+        except Torre.DoesNotExist:
+            pass
+
+    es_arrendatario = tipo == 'arrendatario'
+    user_type = 'propietario' if tipo in ('propietario', 'arrendatario') else tipo
+
+    if user_type not in ('propietario', 'administrador', 'porteria'):
+        return JsonResponse({'error': 'Tipo de usuario no válido'}, status=400)
+
+    nuevo = Usuario.objects.create_user(
+        cedula=cedula,
+        nombre=nombre,
+        email=email,
+        password='kislev123',
+        conjunto=conjunto,
+        user_type=user_type,
+        es_arrendatario=es_arrendatario,
+        phone_number=telefono or None,
+        torre=torre_obj,
+        apartamento=apartamento,
+        must_change_password=True,
+    )
+
+    tipo_display = 'arrendatario' if es_arrendatario else user_type
+    return JsonResponse({
+        'ok': True,
+        'id': nuevo.pk,
+        'nombre': nuevo.nombre,
+        'cedula': nuevo.cedula,
+        'email': nuevo.email,
+        'user_type': tipo_display,
+        'torre': torre_obj.nombre if torre_obj else '',
+        'apartamento': apartamento,
+        'is_active': True,
     })
 
 

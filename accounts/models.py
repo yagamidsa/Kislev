@@ -152,6 +152,10 @@ class Usuario(AbstractBaseUser):
         default='',
         help_text="Número de apartamento"
     )
+    es_arrendatario = models.BooleanField(
+        default=False,
+        help_text='Si es True, el usuario es arrendatario (user_type=propietario pero no dueño del inmueble)'
+    )
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
