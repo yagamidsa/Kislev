@@ -1334,18 +1334,21 @@ def validar_qr(request, encrypted_token):
         # conjunto no sea válido en este.
         scanner_conjunto_id = request.user.conjunto_id
         with transaction.atomic():
-            if tipo_visitante == 'vehicular':
-                visitante = get_object_or_404(
-                    VisitanteVehicular.objects.select_for_update(nowait=True),
-                    token=original_token,
-                    conjunto_id=scanner_conjunto_id
-                )
-            else:
-                visitante = get_object_or_404(
-                    Visitante.objects.select_for_update(nowait=True),
-                    token=original_token,
-                    conjunto_id=scanner_conjunto_id
-                )
+            try:
+                if tipo_visitante == 'vehicular':
+                    visitante = VisitanteVehicular.objects.select_for_update(nowait=True).get(
+                        token=original_token,
+                        conjunto_id=scanner_conjunto_id
+                    )
+                else:
+                    visitante = Visitante.objects.select_for_update(nowait=True).get(
+                        token=original_token,
+                        conjunto_id=scanner_conjunto_id
+                    )
+            except (Visitante.DoesNotExist, VisitanteVehicular.DoesNotExist):
+                return render(request, 'error_qr.html', {
+                    'mensaje': 'Este QR no es válido para este conjunto residencial.'
+                })
             
             visitante.refresh_from_db()
             
@@ -1843,11 +1846,15 @@ def validar_qr_vehicular(request, encrypted_token):
         # Obtener visitante con bloqueo
         # SEGURIDAD: filtrar por conjunto para evitar que un QR de otro conjunto sea válido aquí
         with transaction.atomic():
-            visitante = get_object_or_404(
-                VisitanteVehicular.objects.select_for_update(nowait=True),
-                token=original_token,
-                conjunto_id=request.user.conjunto_id
-            )
+            try:
+                visitante = VisitanteVehicular.objects.select_for_update(nowait=True).get(
+                    token=original_token,
+                    conjunto_id=request.user.conjunto_id
+                )
+            except VisitanteVehicular.DoesNotExist:
+                return render(request, 'error_qr.html', {
+                    'mensaje': 'Este QR no es válido para este conjunto residencial.'
+                })
 
             # Verificar estado directamente en la base de datos
             visitante.refresh_from_db()
