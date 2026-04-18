@@ -1203,6 +1203,38 @@ def crear_usuario(request):
         must_change_password=True,
     )
 
+    # ── Enviar email de bienvenida con credenciales ───────────────────────────
+    email_error = None
+    try:
+        from django.core.mail import EmailMultiAlternatives
+        from django.template.loader import render_to_string
+        from kislevsmart.utils import log_envio as _log_envio
+        login_url = getattr(settings, 'SITE_URL', 'https://kislev.net.co') + '/accounts/login/'
+        context = {
+            'nombre': nombre,
+            'conjunto_nombre': conjunto.nombre,
+            'cedula': cedula,
+            'password': 'kislev123',
+            'login_url': login_url,
+        }
+        html = render_to_string('emails/bienvenida_credenciales.html', context)
+        text = (
+            f"Hola {nombre},\n\nHas sido registrado en {conjunto.nombre} en Kislev.\n\n"
+            f"Usuario: {cedula}\nContraseña temporal: kislev123\n\n"
+            f"Cámbiala en tu primer inicio de sesión.\n{login_url}"
+        )
+        msg = EmailMultiAlternatives(
+            subject=f'Bienvenido a Kislev — {conjunto.nombre}',
+            body=text,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[email],
+        )
+        msg.attach_alternative(html, 'text/html')
+        msg.send(fail_silently=False)
+        _log_envio('email', conjunto=conjunto, detalle=f'Bienvenida: {nombre}')
+    except Exception as exc:
+        email_error = str(exc)
+
     tipo_display = 'arrendatario' if es_arrendatario else user_type
     return JsonResponse({
         'ok': True,
@@ -1210,6 +1242,8 @@ def crear_usuario(request):
         'nombre': nuevo.nombre,
         'cedula': nuevo.cedula,
         'email': nuevo.email,
+        'email_enviado': email_error is None,
+        'email_error': email_error,
         'user_type': tipo_display,
         'torre': torre_obj.nombre if torre_obj else '',
         'apartamento': apartamento,

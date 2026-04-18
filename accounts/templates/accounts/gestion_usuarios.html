@@ -594,8 +594,11 @@ function crearUsuario(){
     .then(d => {
         if(d.ok){
             closeCreateModal();
-            showToast('✅ ' + d.nombre + ' creado correctamente');
-            setTimeout(() => location.reload(), 1200);
+            const msg = d.email_enviado
+                ? '✅ ' + d.nombre + ' creado — credenciales enviadas por email'
+                : '✅ ' + d.nombre + ' creado — email no enviado: ' + (d.email_error || 'error');
+            showToast(msg, d.email_enviado ? 'success' : 'error');
+            setTimeout(() => location.reload(), 1800);
         } else {
             showToast(d.error || 'Error al crear usuario', 'error');
         }
