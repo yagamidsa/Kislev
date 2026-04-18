@@ -1,4 +1,5 @@
 # accounts/views.py
+from django.conf import settings
 from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
