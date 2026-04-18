@@ -565,22 +565,13 @@ def gestionar_conjunto(request, conjunto_id):
 
     conjunto = get_object_or_404(ConjuntoResidencial, pk=conjunto_id)
 
-    # ── Filtro de fechas ──────────────────────────────────────────────────────
+    # ── Siempre muestra el mes actual (sin filtro manual) ────────────────────
     hoy = timezone.localdate()
-    fecha_desde_str = request.GET.get('desde', '')
-    fecha_hasta_str = request.GET.get('hasta', '')
-    try:
-        fecha_desde = datetime.date.fromisoformat(fecha_desde_str)
-    except ValueError:
-        fecha_desde = hoy.replace(day=1)
-    try:
-        fecha_hasta = datetime.date.fromisoformat(fecha_hasta_str)
-    except ValueError:
-        fecha_hasta = hoy
+    mes_inicio = hoy.replace(day=1)
 
-    # ── Métricas de envíos (requiere migración 0019) ──────────────────────────
-    emails_periodo = 0
-    wa_periodo     = 0
+    # ── Métricas de envíos ────────────────────────────────────────────────────
+    emails_mes     = 0
+    wa_mes         = 0
     pct_email      = 0
     pct_wa         = 0
     historico      = []
@@ -589,19 +580,14 @@ def gestionar_conjunto(request, conjunto_id):
     limite_wa      = 500
     try:
         from kislevsmart.models import LogEnvio, ConfigGlobal
-        qs_envios = LogEnvio.objects.filter(
-            conjunto=conjunto,
-            fecha__date__gte=fecha_desde,
-            fecha__date__lte=fecha_hasta,
-        )
-        emails_periodo = qs_envios.filter(tipo='email').count()
-        wa_periodo     = qs_envios.filter(tipo='whatsapp').count()
+        emails_mes = LogEnvio.objects.filter(conjunto=conjunto, tipo='email',    fecha__date__gte=mes_inicio).count()
+        wa_mes     = LogEnvio.objects.filter(conjunto=conjunto, tipo='whatsapp', fecha__date__gte=mes_inicio).count()
 
         cfg = ConfigGlobal.get()
         limite_emails = cfg.limite_emails_mes
         limite_wa     = cfg.limite_whatsapp_mes
-        pct_email = min(round(emails_periodo * 100 / limite_emails) if limite_emails else 0, 100)
-        pct_wa    = min(round(wa_periodo    * 100 / limite_wa)     if limite_wa     else 0, 100)
+        pct_email = min(round(emails_mes * 100 / limite_emails) if limite_emails else 0, 100)
+        pct_wa    = min(round(wa_mes    * 100 / limite_wa)     if limite_wa     else 0, 100)
 
         for i in range(5, -1, -1):
             d = (hoy.replace(day=1) - datetime.timedelta(days=i * 28)).replace(day=1)
@@ -644,22 +630,21 @@ def gestionar_conjunto(request, conjunto_id):
     )['ult']
 
     return render(request, 'accounts/gestionar_conjunto.html', {
-        'conjunto':        conjunto,
-        'fecha_desde':     fecha_desde.isoformat(),
-        'fecha_hasta':     fecha_hasta.isoformat(),
-        'emails_periodo':  emails_periodo,
-        'wa_periodo':      wa_periodo,
-        'limite_emails':   cfg.limite_emails_mes,
-        'limite_wa':       cfg.limite_whatsapp_mes,
-        'pct_email':       pct_email,
-        'pct_wa':          pct_wa,
-        'historico':       historico,
-        'ultimos_envios':  ultimos_envios,
-        'total_res':       total_res,
-        'activos_res':     activos_res,
-        'visitantes_mes':  visitantes_mes,
-        'paq_pendientes':  paq_pendientes,
-        'ultimo_login':    ultimo_login,
+        'conjunto':       conjunto,
+        'mes_label':      hoy.strftime('%B %Y'),
+        'emails_mes':     emails_mes,
+        'wa_mes':         wa_mes,
+        'limite_emails':  limite_emails,
+        'limite_wa':      limite_wa,
+        'pct_email':      pct_email,
+        'pct_wa':         pct_wa,
+        'historico':      historico,
+        'ultimos_envios': ultimos_envios,
+        'total_res':      total_res,
+        'activos_res':    activos_res,
+        'visitantes_mes': visitantes_mes,
+        'paq_pendientes': paq_pendientes,
+        'ultimo_login':   ultimo_login,
     })
 
 
