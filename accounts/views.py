@@ -950,7 +950,7 @@ def upload_conjunto(request):
                     must_change_password=True,
                 )
                 created_count += 1
-                if send_emails:
+                if send_emails and email:
                     result = _send_welcome(email, nombre, conjunto.nombre, cedula, password)
                     if result is not True:
                         email_errors.append(f'{email}: {result}')
@@ -971,9 +971,13 @@ def upload_conjunto(request):
         return render(request, 'accounts/upload_conjunto.html')
 
     success_msg = f'Conjunto "{conjunto.nombre}" importado: {created_count} usuarios creados, {skipped_count} omitidos.'
-    if email_errors:
-        success_msg += f' ({len(email_errors)} errores de email)'
     messages.success(request, success_msg)
+    if email_errors:
+        # Mostrar hasta 5 errores en detalle para diagnóstico
+        detalle = ' | '.join(email_errors[:5])
+        if len(email_errors) > 5:
+            detalle += f' ... y {len(email_errors) - 5} más'
+        messages.warning(request, f'{len(email_errors)} correos no enviados: {detalle}')
     return redirect('accounts:saas_dashboard')
 
 
