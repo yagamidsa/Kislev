@@ -1,71 +1,208 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bienvenido a KislevSmart</title>
-    <style>
-        body, html { margin:0; padding:0; font-family: Arial, sans-serif; background:#f7f9fc; color:#333; }
-        .wrap { max-width:600px; margin:32px auto; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 4px 20px rgba(0,0,0,.1); }
-        .header { background:linear-gradient(135deg,#4F2984 0%,#7c3ded 60%,#e91e8c 100%); padding:36px 32px; text-align:center; }
-        .header h1 { margin:0 0 6px; color:#fff; font-size:26px; font-weight:700; letter-spacing:.5px; }
-        .header p { margin:0; color:rgba(255,255,255,.85); font-size:14px; }
-        .body { padding:32px; }
-        .greeting { font-size:18px; font-weight:600; color:#4F2984; margin-bottom:8px; }
-        .intro { font-size:14px; color:#555; margin-bottom:24px; line-height:1.7; }
-        .cred-box { background:#f3eeff; border-left:4px solid #7c3ded; border-radius:8px; padding:20px 24px; margin-bottom:24px; }
-        .cred-row { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
-        .cred-row:last-child { margin-bottom:0; }
-        .cred-label { font-size:12px; color:#888; font-weight:600; text-transform:uppercase; letter-spacing:.5px; width:120px; flex-shrink:0; }
-        .cred-value { font-size:15px; color:#2d2d2d; font-weight:700; font-family:monospace; background:#fff; padding:6px 12px; border-radius:6px; border:1px solid #ddd; word-break:break-all; }
-        .warning { background:#fff8e1; border:1px solid #ffd54f; border-radius:8px; padding:14px 18px; font-size:13px; color:#795548; margin-bottom:24px; display:flex; gap:10px; align-items:flex-start; }
-        .warning-icon { font-size:20px; flex-shrink:0; }
-        .btn-wrap { text-align:center; margin:28px 0 8px; }
-        .btn { display:inline-block; background:linear-gradient(135deg,#4F2984,#e91e8c); color:#fff !important; text-decoration:none; padding:14px 36px; border-radius:30px; font-size:15px; font-weight:700; letter-spacing:.5px; }
-        .footer { background:#f7f9fc; padding:20px 32px; text-align:center; font-size:12px; color:#aaa; border-top:1px solid #eee; }
-        .footer a { color:#7c3ded; text-decoration:none; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
+<title>Bienvenido a KislevSmart</title>
+<!--[if mso]>
+<noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript>
+<![endif]-->
+<style>
+  /* ── Reset ── */
+  body, table, td, a { -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
+  table, td { mso-table-lspace:0pt; mso-table-rspace:0pt; }
+  img { -ms-interpolation-mode:bicubic; border:0; display:block; }
+  body { margin:0; padding:0; background-color:#f0f2f5; }
+
+  /* ── Dark mode via media query ── */
+  @media (prefers-color-scheme: dark) {
+    body, .email-bg          { background-color:#0f0f13 !important; }
+    .card                    { background-color:#1a1a24 !important; }
+    .card-body               { background-color:#1a1a24 !important; }
+    .greeting                { color:#c4b5fd !important; }
+    .intro-text              { color:#b0b8cc !important; }
+    .cred-box                { background-color:#252535 !important; border-color:#7c3ded !important; }
+    .cred-label              { color:#9ca3c4 !important; }
+    .cred-value-cell         { background-color:#0f0f18 !important; border-color:#3d3d5c !important; }
+    .cred-value-text         { color:#e2d9ff !important; }
+    .warn-box                { background-color:#2a2210 !important; border-color:#f59e0b !important; }
+    .warn-text               { color:#fcd34d !important; }
+    .footer-bg               { background-color:#111118 !important; }
+    .footer-text             { color:#6b7280 !important; }
+    .footer-link             { color:#a78bfa !important; }
+  }
+
+  /* ── Outlook dark mode class (aplicado por clientes compatibles) ── */
+  [data-ogsc] body, [data-ogsc] .email-bg { background-color:#0f0f13 !important; }
+  [data-ogsc] .card                        { background-color:#1a1a24 !important; }
+  [data-ogsc] .cred-box                    { background-color:#252535 !important; }
+  [data-ogsc] .cred-value-cell             { background-color:#0f0f18 !important; }
+  [data-ogsc] .footer-bg                   { background-color:#111118 !important; }
+</style>
 </head>
-<body>
-<div class="wrap">
-    <div class="header">
-        <h1>🏠 KislevSmart</h1>
-        <p>Tu conjunto residencial, siempre conectado</p>
-    </div>
-    <div class="body">
-        <p class="greeting">¡Hola, {{ nombre }}!</p>
-        <p class="intro">
-            Has sido registrado en <strong>{{ conjunto_nombre }}</strong> dentro de la plataforma
-            <strong>KislevSmart</strong>. A continuación encontrarás tus credenciales de acceso.
+<body class="email-bg" style="margin:0;padding:0;background-color:#f0f2f5;">
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="email-bg" style="background-color:#f0f2f5;">
+<tr><td align="center" style="padding:32px 16px;">
+
+  <!-- Card -->
+  <table role="presentation" width="100%" style="max-width:600px;" cellpadding="0" cellspacing="0" border="0">
+
+    <!-- Header con gradiente — siempre oscuro, nunca se invierte -->
+    <tr>
+      <td class="card" style="background:linear-gradient(135deg,#3b1a6e 0%,#6d28d9 55%,#be185d 100%);border-radius:16px 16px 0 0;padding:40px 36px;text-align:center;">
+        <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:28px;font-weight:800;color:#ffffff;letter-spacing:0.5px;">
+          🏠 KislevSmart
+        </p>
+        <p style="margin:0;font-family:Arial,sans-serif;font-size:14px;color:rgba(255,255,255,0.80);">
+          Tu conjunto residencial, siempre conectado
+        </p>
+      </td>
+    </tr>
+
+    <!-- Body -->
+    <tr>
+      <td class="card card-body" style="background-color:#ffffff;padding:36px 36px 28px;border-left:1px solid #e5e7eb;border-right:1px solid #e5e7eb;">
+
+        <!-- Saludo -->
+        <p class="greeting" style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:20px;font-weight:700;color:#4c1d95;">
+          ¡Hola, {{ nombre }}!
+        </p>
+        <p class="intro-text" style="margin:0 0 28px;font-family:Arial,sans-serif;font-size:14px;color:#4b5563;line-height:1.75;">
+          Has sido registrado en <strong style="color:#6d28d9;">{{ conjunto_nombre }}</strong>
+          dentro de la plataforma <strong style="color:#6d28d9;">KislevSmart</strong>.
+          A continuación encontrarás tus credenciales de acceso.
         </p>
 
-        <div class="cred-box">
-            <div class="cred-row">
-                <span class="cred-label">Usuario</span>
-                <span class="cred-value">{{ cedula }}</span>
-            </div>
-            <div class="cred-row">
-                <span class="cred-label">Contraseña</span>
-                <span class="cred-value">{{ password }}</span>
-            </div>
-        </div>
+        <!-- Caja de credenciales -->
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+               class="cred-box"
+               style="background-color:#f5f0ff;border-left:4px solid #7c3ded;border-radius:10px;margin-bottom:24px;">
+          <tr>
+            <td style="padding:22px 24px;">
 
-        <div class="warning">
-            <span class="warning-icon">⚠️</span>
-            <span>
-                Esta es una <strong>contraseña temporal</strong>. Al ingresar por primera vez
-                el sistema te pedirá que la cambies por una de tu elección.
-            </span>
-        </div>
+              <!-- Fila usuario -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:14px;">
+                <tr>
+                  <td style="width:110px;vertical-align:middle;">
+                    <p class="cred-label" style="margin:0;font-family:Arial,sans-serif;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.8px;">
+                      Usuario
+                    </p>
+                  </td>
+                  <td style="vertical-align:middle;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td class="cred-value-cell"
+                            style="background-color:#ffffff;border:1px solid #e0d5ff;border-radius:7px;padding:8px 14px;">
+                          <p class="cred-value-text"
+                             style="margin:0;font-family:'Courier New',monospace;font-size:15px;font-weight:700;color:#1f1235;letter-spacing:0.5px;">
+                            {{ cedula }}
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
 
-        <div class="btn-wrap">
-            <a href="{{ login_url }}" class="btn">Ingresar ahora →</a>
-        </div>
-    </div>
-    <div class="footer">
-        Si tienes dudas, comunícate con la administración de {{ conjunto_nombre }}.<br>
-        <a href="https://kislev.net.co">kislev.net.co</a>
-    </div>
-</div>
+              <!-- Fila contraseña -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="width:110px;vertical-align:middle;">
+                    <p class="cred-label" style="margin:0;font-family:Arial,sans-serif;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.8px;">
+                      Contraseña
+                    </p>
+                  </td>
+                  <td style="vertical-align:middle;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td class="cred-value-cell"
+                            style="background-color:#ffffff;border:1px solid #e0d5ff;border-radius:7px;padding:8px 14px;">
+                          <p class="cred-value-text"
+                             style="margin:0;font-family:'Courier New',monospace;font-size:15px;font-weight:700;color:#1f1235;letter-spacing:1px;">
+                            {{ password }}
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+            </td>
+          </tr>
+        </table>
+
+        <!-- Advertencia -->
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+               class="warn-box"
+               style="background-color:#fffbeb;border:1px solid #fcd34d;border-radius:10px;margin-bottom:30px;">
+          <tr>
+            <td style="padding:16px 20px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="width:28px;vertical-align:top;padding-top:1px;">
+                    <p style="margin:0;font-size:18px;">⚠️</p>
+                  </td>
+                  <td style="vertical-align:top;padding-left:10px;">
+                    <p class="warn-text" style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#78350f;line-height:1.6;">
+                      Esta es una <strong>contraseña temporal</strong>. Al ingresar por primera vez
+                      el sistema te pedirá que la cambies por una de tu elección.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Botón CTA -->
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+          <tr>
+            <td align="center" style="padding-bottom:8px;">
+              <!-- Botón con VML para Outlook -->
+              <!--[if mso]>
+              <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word"
+                href="{{ login_url }}" style="height:50px;v-text-anchor:middle;width:220px;" arcsize="50%"
+                stroke="f" fillcolor="#6d28d9">
+                <w:anchorlock/>
+                <center style="color:#ffffff;font-family:Arial,sans-serif;font-size:15px;font-weight:bold;">
+                  Ingresar ahora →
+                </center>
+              </v:roundrect>
+              <![endif]-->
+              <!--[if !mso]><!-->
+              <a href="{{ login_url }}"
+                 style="display:inline-block;background:linear-gradient(135deg,#4c1d95,#be185d);color:#ffffff;text-decoration:none;padding:15px 44px;border-radius:30px;font-family:Arial,sans-serif;font-size:15px;font-weight:700;letter-spacing:0.5px;mso-hide:all;">
+                Ingresar ahora &rarr;
+              </a>
+              <!--<![endif]-->
+            </td>
+          </tr>
+        </table>
+
+      </td>
+    </tr>
+
+    <!-- Footer -->
+    <tr>
+      <td class="footer-bg"
+          style="background-color:#f9fafb;padding:20px 36px;text-align:center;border-top:1px solid #e5e7eb;border-radius:0 0 16px 16px;border-left:1px solid #e5e7eb;border-right:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb;">
+        <p class="footer-text" style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:12px;color:#9ca3af;line-height:1.6;">
+          Si tienes dudas, comunícate con la administración de {{ conjunto_nombre }}.
+        </p>
+        <a href="https://kislev.net.co" class="footer-link"
+           style="font-family:Arial,sans-serif;font-size:12px;color:#7c3ded;text-decoration:none;font-weight:600;">
+          kislev.net.co
+        </a>
+      </td>
+    </tr>
+
+  </table>
+</td></tr>
+</table>
+
 </body>
 </html>
