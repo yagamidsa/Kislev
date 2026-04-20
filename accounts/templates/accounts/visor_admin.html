@@ -26,6 +26,7 @@
             background: rgba(255,255,255,0.03);
             backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(255,255,255,0.06);
+            position: relative; z-index: 100;
         }
         .logo-mark { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
         .logo-icon { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg,#7c3aed,#db2777); display: flex; align-items: center; justify-content: center; font-size: 1rem; color: #fff; flex-shrink: 0; }
@@ -430,93 +431,86 @@
 <!-- Info Conjunto -->
 <div id="panel-conjunto" class="panel">
     <div class="panel-glow" style="background:radial-gradient(ellipse at 50% 25%, rgba(109,40,217,.18) 0%, transparent 60%);"></div>
-    <button class="panel-close" onclick="closePanel('conjunto')"><i class="fas fa-times"></i></button>
-    <div class="panel-body" style="padding-bottom:32px;">
+    <button class="panel-close" onclick="closePanelConjunto()"><i class="fas fa-times"></i></button>
+
+    <!-- ── PASO 1: Info ── -->
+    <div id="cj-info" class="panel-body">
         <div class="panel-icon-wrap" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);">
             <i class="fas fa-building"></i>
         </div>
         <h2 class="panel-title" style="background:linear-gradient(135deg,#c4b5fd,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
             Info Conjunto
         </h2>
-        <p class="panel-desc">Actualiza los datos de contacto, horario de atención y configuración general del conjunto.</p>
+        <p class="panel-desc">Gestiona los datos de contacto, horario de atención y nomenclatura del conjunto. Esta información se muestra a residentes y se usa en las notificaciones por correo.</p>
+        <button onclick="showConjuntoForm()" class="panel-btn"
+                style="background:linear-gradient(135deg,#7c3aed,#6d28d9);box-shadow:0 6px 28px rgba(109,40,217,.45);">
+            <i class="fas fa-pen"></i> Editar configuración
+        </button>
+    </div>
 
-        <form id="miConjuntoForm" onsubmit="guardarMiConjunto(event)"
-              style="text-align:left;width:100%;max-width:420px;margin:0 auto;">
+    <!-- ── PASO 2: Formulario ── -->
+    <div id="cj-form" style="display:none;width:100%;max-width:480px;padding:0 0 40px;">
+
+        <!-- Encabezado con botón volver -->
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:28px;">
+            <button onclick="showConjuntoInfo()"
+                    style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+                           border-radius:10px;padding:8px 14px;color:#c4b5fd;font-size:.8rem;
+                           cursor:pointer;font-family:'Poppins',sans-serif;display:flex;align-items:center;gap:6px;">
+                <i class="fas fa-arrow-left"></i> Volver
+            </button>
+            <h3 style="margin:0;font-size:1.05rem;font-weight:700;color:#fff;">Configuración del conjunto</h3>
+        </div>
+
+        <form id="miConjuntoForm" onsubmit="guardarMiConjunto(event)" style="text-align:left;">
             {% csrf_token %}
 
             <div style="margin-bottom:16px;">
-                <label style="display:block;font-size:.7rem;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;">
-                    📞 Teléfono
-                </label>
+                <label style="display:block;font-size:.7rem;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;">📞 Teléfono</label>
                 <input name="telefono" type="text" value="{{ user.conjunto.telefono|default:'' }}"
-                       style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(139,92,246,.3);
-                              border-radius:10px;padding:10px 14px;color:#e2e8f0;font-size:.88rem;outline:none;
-                              font-family:'Poppins',sans-serif;"
+                       style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(139,92,246,.3);border-radius:10px;padding:10px 14px;color:#e2e8f0;font-size:.88rem;outline:none;font-family:'Poppins',sans-serif;box-sizing:border-box;"
                        placeholder="Ej: 601 234 5678">
             </div>
 
             <div style="margin-bottom:16px;">
-                <label style="display:block;font-size:.7rem;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;">
-                    ✉️ Email de contacto
-                </label>
+                <label style="display:block;font-size:.7rem;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;">✉️ Email de contacto</label>
                 <input name="email_contacto" type="email" value="{{ user.conjunto.email_contacto|default:'' }}"
-                       style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(139,92,246,.3);
-                              border-radius:10px;padding:10px 14px;color:#e2e8f0;font-size:.88rem;outline:none;
-                              font-family:'Poppins',sans-serif;"
+                       style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(139,92,246,.3);border-radius:10px;padding:10px 14px;color:#e2e8f0;font-size:.88rem;outline:none;font-family:'Poppins',sans-serif;box-sizing:border-box;"
                        placeholder="admin@miconjunto.com">
             </div>
 
             <div style="margin-bottom:16px;">
-                <label style="display:block;font-size:.7rem;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;">
-                    🕐 Horario de atención
-                </label>
+                <label style="display:block;font-size:.7rem;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;">🕐 Horario de atención</label>
                 <textarea name="horario_atencion" rows="5"
-                          style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(139,92,246,.5);
-                                 border-radius:10px;padding:10px 14px;color:#e2e8f0;font-size:.85rem;outline:none;
-                                 resize:vertical;line-height:1.7;font-family:'Poppins',sans-serif;">{{ user.conjunto.horario_atencion|default:'' }}</textarea>
+                          style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(139,92,246,.5);border-radius:10px;padding:10px 14px;color:#e2e8f0;font-size:.85rem;outline:none;resize:vertical;line-height:1.7;font-family:'Poppins',sans-serif;box-sizing:border-box;">{{ user.conjunto.horario_atencion|default:'' }}</textarea>
                 <p style="margin:4px 0 0;font-size:.7rem;color:#6b7280;">Una línea por día o rango. Se muestra a residentes y en correos.</p>
             </div>
 
             <div style="margin-bottom:16px;">
-                <label style="display:block;font-size:.7rem;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;">
-                    💳 Link de pago
-                </label>
+                <label style="display:block;font-size:.7rem;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;">💳 Link de pago</label>
                 <input name="link_pago" type="url" value="{{ user.conjunto.link_pago|default:'' }}"
-                       style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(139,92,246,.3);
-                              border-radius:10px;padding:10px 14px;color:#e2e8f0;font-size:.88rem;outline:none;
-                              font-family:'Poppins',sans-serif;"
+                       style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(139,92,246,.3);border-radius:10px;padding:10px 14px;color:#e2e8f0;font-size:.88rem;outline:none;font-family:'Poppins',sans-serif;box-sizing:border-box;"
                        placeholder="https://pagos.ejemplo.com/...">
             </div>
 
-            <div style="display:flex;gap:12px;margin-bottom:4px;">
+            <div style="display:flex;gap:12px;margin-bottom:16px;">
                 <div style="flex:1;">
-                    <label style="display:block;font-size:.7rem;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;">
-                        🏢 Nombre agrupación
-                    </label>
+                    <label style="display:block;font-size:.7rem;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;">🏢 Nombre agrupación</label>
                     <input name="nombre_agrupacion" type="text" value="{{ user.conjunto.nombre_agrupacion|default:'' }}"
-                           style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(139,92,246,.3);
-                                  border-radius:10px;padding:10px 14px;color:#e2e8f0;font-size:.88rem;outline:none;
-                                  font-family:'Poppins',sans-serif;"
+                           style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(139,92,246,.3);border-radius:10px;padding:10px 14px;color:#e2e8f0;font-size:.88rem;outline:none;font-family:'Poppins',sans-serif;box-sizing:border-box;"
                            placeholder="Torre / Bloque…">
                 </div>
                 <div style="flex:1;">
-                    <label style="display:block;font-size:.7rem;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;">
-                        🚪 Nombre unidad
-                    </label>
+                    <label style="display:block;font-size:.7rem;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;">🚪 Nombre unidad</label>
                     <input name="nombre_unidad" type="text" value="{{ user.conjunto.nombre_unidad|default:'' }}"
-                           style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(139,92,246,.3);
-                                  border-radius:10px;padding:10px 14px;color:#e2e8f0;font-size:.88rem;outline:none;
-                                  font-family:'Poppins',sans-serif;"
+                           style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(139,92,246,.3);border-radius:10px;padding:10px 14px;color:#e2e8f0;font-size:.88rem;outline:none;font-family:'Poppins',sans-serif;box-sizing:border-box;"
                            placeholder="Apto / Casa…">
                 </div>
             </div>
 
-            <div style="margin-top:20px;display:flex;align-items:center;gap:14px;">
+            <div style="display:flex;align-items:center;gap:14px;">
                 <button type="submit"
-                        style="flex:1;background:linear-gradient(135deg,#7c3aed,#6d28d9);border:none;
-                               border-radius:12px;padding:13px;color:#fff;font-size:.88rem;font-weight:700;
-                               cursor:pointer;font-family:'Poppins',sans-serif;
-                               box-shadow:0 4px 18px rgba(109,40,217,.4);transition:opacity .2s;">
+                        style="flex:1;background:linear-gradient(135deg,#7c3aed,#6d28d9);border:none;border-radius:12px;padding:13px;color:#fff;font-size:.88rem;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;box-shadow:0 4px 18px rgba(109,40,217,.4);transition:opacity .2s;">
                     <i class="fas fa-save"></i> Guardar cambios
                 </button>
                 <span id="conjuntoMsg" style="display:none;font-size:.82rem;font-weight:600;"></span>
@@ -609,6 +603,29 @@ document.addEventListener('keydown', function(e){
     }
     draw();
 })();
+
+/* ── Panel Info Conjunto — pasos ── */
+function showConjuntoForm() {
+    document.getElementById('cj-info').style.display = 'none';
+    document.getElementById('cj-form').style.display  = 'block';
+    const p = document.getElementById('panel-conjunto');
+    p.style.alignItems     = 'flex-start';
+    p.style.justifyContent = 'flex-start';
+    p.style.paddingTop     = '72px';
+    p.scrollTop = 0;
+}
+function showConjuntoInfo() {
+    document.getElementById('cj-form').style.display  = 'none';
+    document.getElementById('cj-info').style.display  = 'block';
+    const p = document.getElementById('panel-conjunto');
+    p.style.alignItems     = '';
+    p.style.justifyContent = '';
+    p.style.paddingTop     = '';
+}
+function closePanelConjunto() {
+    showConjuntoInfo();   // resetear a paso 1 al cerrar
+    closePanel('conjunto');
+}
 
 /* ── Info Conjunto — guardar AJAX ── */
 async function guardarMiConjunto(e) {
