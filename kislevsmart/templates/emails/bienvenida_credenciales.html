@@ -19,6 +19,7 @@
   /* ── Dark mode via media query ── */
   @media (prefers-color-scheme: dark) {
     body, .email-bg          { background-color:#0f0f13 !important; }
+    .hdr                     { background: linear-gradient(135deg,#3b1a6e 0%,#6d28d9 55%,#be185d 100%) !important; }
     .card                    { background-color:#1a1a24 !important; }
     .card-body               { background-color:#1a1a24 !important; }
     .greeting                { color:#c4b5fd !important; }
@@ -36,6 +37,8 @@
 
   /* ── Outlook dark mode class (aplicado por clientes compatibles) ── */
   [data-ogsc] body, [data-ogsc] .email-bg { background-color:#0f0f13 !important; }
+  /* Restaurar gradiente que Hotmail elimina en dark mode */
+  [data-ogsc] .hdr                         { background: linear-gradient(135deg,#3b1a6e 0%,#6d28d9 55%,#be185d 100%) !important; }
   [data-ogsc] .card                        { background-color:#1a1a24 !important; }
   [data-ogsc] .cred-box                    { background-color:#252535 !important; }
   [data-ogsc] .cred-value-cell             { background-color:#0f0f18 !important; }
@@ -50,9 +53,9 @@
   <!-- Card -->
   <table role="presentation" width="100%" style="max-width:600px;" cellpadding="0" cellspacing="0" border="0">
 
-    <!-- Header con gradiente — siempre oscuro, nunca se invierte -->
+    <!-- Header con gradiente — class="hdr card" restaura el gradiente en dark mode -->
     <tr>
-      <td class="card" style="background:linear-gradient(135deg,#3b1a6e 0%,#6d28d9 55%,#be185d 100%);border-radius:16px 16px 0 0;padding:40px 36px;text-align:center;">
+      <td class="hdr card" style="background:linear-gradient(135deg,#3b1a6e 0%,#6d28d9 55%,#be185d 100%);border-radius:16px 16px 0 0;padding:40px 36px;text-align:center;">
         <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:28px;font-weight:800;color:#ffffff;letter-spacing:0.5px;">
           🏠 Kislev
         </p>

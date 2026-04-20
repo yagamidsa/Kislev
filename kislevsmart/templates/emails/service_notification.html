@@ -17,8 +17,9 @@
 
   @media (prefers-color-scheme: dark) {
     body, .email-bg   { background-color:#0f0f13 !important; }
-    .card-body        { background-color:#1a1a24 !important;
-                        border-color:#2d2d3d !important; }
+    /* Restaurar el gradiente — Apple Mail y clientes @media lo eliminan sin esto */
+    .hdr              { background: linear-gradient(135deg,#3b1a6e 0%,#6d28d9 55%,#be185d 100%) !important; }
+    .card-body        { background-color:#1a1a24 !important; border-color:#2d2d3d !important; }
 
     .t-greeting       { color:#c4b5fd !important; }
     .t-body           { color:#b0b8cc !important; }
@@ -30,19 +31,22 @@
     .t-sig            { color:#9ca3af !important; }
     .t-sig-name       { color:#e2d9ff !important; }
 
-    .svc-box          { background-color:#252535 !important;
-                        border-left-color:#7c3aed !important; }
-    .warn-box         { background-color:#2a2210 !important;
-                        border-color:#f59e0b !important; }
+    .svc-box          { background-color:#252535 !important; border-left-color:#7c3aed !important; }
+    .warn-box         { background-color:#2a2210 !important; border-color:#f59e0b !important; }
 
-    .footer-bg        { background-color:#111118 !important;
-                        border-color:#2d2d3d !important; }
+    .footer-bg        { background-color:#111118 !important; border-color:#2d2d3d !important; }
     .t-footer         { color:#6b7280 !important; }
     .t-footer-link    { color:#a78bfa !important; }
   }
 
+  /*
+   * [data-ogsc] — Hotmail/Outlook.com agrega este atributo al <body> en dark mode.
+   * .hdr debe restaurar el gradiente explícitamente, de lo contrario Hotmail
+   * reemplaza todo el background con su propio color plano oscuro.
+   */
   [data-ogsc] body,
   [data-ogsc] .email-bg  { background-color:#0f0f13 !important; }
+  [data-ogsc] .hdr       { background: linear-gradient(135deg,#3b1a6e 0%,#6d28d9 55%,#be185d 100%) !important; }
   [data-ogsc] .card-body { background-color:#1a1a24 !important; }
   [data-ogsc] .t-greeting    { color:#c4b5fd !important; }
   [data-ogsc] .t-body        { color:#b0b8cc !important; }
@@ -69,9 +73,10 @@
   <table role="presentation" width="100%" style="max-width:600px;"
          cellpadding="0" cellspacing="0" border="0">
 
-    <!-- ═══ HEADER ═══ -->
+    <!-- ═══ HEADER — class="hdr" permite restaurar el gradiente en dark mode ═══ -->
     <tr>
-      <td style="background:linear-gradient(135deg,#3b1a6e 0%,#6d28d9 55%,#be185d 100%);
+      <td class="hdr"
+          style="background:linear-gradient(135deg,#3b1a6e 0%,#6d28d9 55%,#be185d 100%);
                  border-radius:16px 16px 0 0;padding:40px 36px;text-align:center;">
         <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:28px;
                   font-weight:800;color:#ffffff;letter-spacing:0.5px;">
@@ -117,16 +122,14 @@
               <p class="t-svc-type"
                  style="margin:0 0 12px;font-family:Arial,sans-serif;font-size:17px;
                         font-weight:700;color:#4c1d95;">
-                {% if service_type == 'Luz' %}💡
-                {% elif service_type == 'Agua' %}💧
-                {% elif service_type == 'Gas' %}🔥
-                {% else %}📄{% endif %}
+                {% if service_type == 'Luz' %}💡{% elif service_type == 'Agua' %}💧{% elif service_type == 'Gas' %}🔥{% else %}📄{% endif %}
                 {{ service_type }}
               </p>
               <p class="t-svc-msg"
                  style="margin:0;font-family:Arial,sans-serif;font-size:14px;
                         color:#374151;line-height:1.7;">
-                Tu factura de <strong class="t-svc-type" style="color:#4c1d95;">{{ service_type }}</strong>
+                Tu factura de
+                <strong class="t-svc-type" style="color:#4c1d95;">{{ service_type }}</strong>
                 está disponible para retiro en portería.
                 Por favor, pasa a retirarla en el horario de atención.
               </p>
@@ -135,6 +138,10 @@
         </table>
 
         <!-- Aviso portería -->
+        <!--
+          NOTA: No usamos patrones "HH:MM AM/PM" aquí porque Hotmail los convierte
+          automáticamente en links de calendario (SafeLink). Se usa texto natural.
+        -->
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
                class="warn-box"
                style="background-color:#fffbeb;border:1px solid #fcd34d;
@@ -143,15 +150,16 @@
             <td style="padding:16px 20px;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
-                  <td style="width:28px;vertical-align:top;padding-top:1px;">
-                    <p style="margin:0;font-size:18px;">📋</p>
+                  <td style="width:28px;vertical-align:top;padding-top:1px;
+                             font-family:Arial,sans-serif;font-size:18px;">
+                    📋
                   </td>
                   <td style="vertical-align:top;padding-left:10px;">
                     <p class="t-warn"
                        style="margin:0;font-family:Arial,sans-serif;font-size:13px;
                               color:#78350f;line-height:1.6;">
-                      Pasa por la <strong>oficina de administración</strong> a retirar tu factura.
-                      Horario: Lunes–Viernes 8:00 AM – 6:00 PM · Sábados 9:00 AM – 1:00 PM.
+                      Pasa por la <strong>oficina de administración</strong> a retirar tu factura.<br>
+                      Horario de atención: lunes a viernes de 8 a 18 hs, sábados de 9 a 13 hs.
                     </p>
                   </td>
                 </tr>

@@ -17,6 +17,7 @@
 
   @media (prefers-color-scheme: dark) {
     body, .email-bg   { background-color:#0f0f13 !important; }
+    .hdr              { background: linear-gradient(135deg,#3b1a6e 0%,#6d28d9 55%,#be185d 100%) !important; }
     .card-body        { background-color:#1a1a24 !important;
                         border-color:#2d2d3d !important; }
 
@@ -58,6 +59,7 @@
 
   [data-ogsc] body,
   [data-ogsc] .email-bg  { background-color:#0f0f13 !important; }
+  [data-ogsc] .hdr       { background: linear-gradient(135deg,#3b1a6e 0%,#6d28d9 55%,#be185d 100%) !important; }
   [data-ogsc] .card-body { background-color:#1a1a24 !important; }
   [data-ogsc] .t-greeting    { color:#c4b5fd !important; }
   [data-ogsc] .t-body        { color:#b0b8cc !important; }
@@ -88,9 +90,10 @@
   <table role="presentation" width="100%" style="max-width:600px;"
          cellpadding="0" cellspacing="0" border="0">
 
-    <!-- ═══ HEADER ═══ -->
+    <!-- ═══ HEADER — class="hdr" permite restaurar el gradiente en dark mode ═══ -->
     <tr>
-      <td style="background:linear-gradient(135deg,#3b1a6e 0%,#6d28d9 55%,#be185d 100%);
+      <td class="hdr"
+          style="background:linear-gradient(135deg,#3b1a6e 0%,#6d28d9 55%,#be185d 100%);
                  border-radius:16px 16px 0 0;padding:40px 36px;text-align:center;">
         <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:28px;
                   font-weight:800;color:#ffffff;letter-spacing:0.5px;">
