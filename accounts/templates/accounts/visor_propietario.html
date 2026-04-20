@@ -197,6 +197,22 @@
             </a>
         </div>
 
+        <!-- Horario de atención -->
+        {% if user.conjunto.horario_atencion %}
+        <div style="background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.25);border-radius:16px;padding:18px 22px;margin:0 0 22px;text-align:left;">
+            <p style="margin:0 0 10px;font-size:.72rem;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:.08em;">
+                🕐 Horario de atención — Administración
+            </p>
+            <div style="font-size:.85rem;color:#c4b5fd;line-height:1.9;white-space:pre-line;">{{ user.conjunto.horario_atencion }}</div>
+            {% if user.conjunto.telefono %}
+            <p style="margin:10px 0 0;font-size:.8rem;color:#9ca3af;">
+                📞 {{ user.conjunto.telefono }}
+                {% if user.conjunto.email_contacto %} &nbsp;·&nbsp; ✉️ {{ user.conjunto.email_contacto }}{% endif %}
+            </p>
+            {% endif %}
+        </div>
+        {% endif %}
+
         <!-- Vehículos visitantes activos -->
         <div class="vehicles-section">
             <h3><i class="fas fa-car" style="margin-right:6px;color:#7c3aed"></i>Mis vehículos visitantes activos</h3>

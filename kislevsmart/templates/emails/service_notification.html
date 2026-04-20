@@ -158,8 +158,8 @@
                     <p class="t-warn"
                        style="margin:0;font-family:Arial,sans-serif;font-size:13px;
                               color:#78350f;line-height:1.6;">
-                      Pasa por la <strong>oficina de administración</strong> a retirar tu factura.<br>
-                      Horario de atención: lunes a viernes de 8 a 18 hs, sábados de 9 a 13 hs.
+                      Pasa por la <strong>oficina de administración</strong> a retirar tu factura.{% if conjunto.horario_atencion %}<br>
+                      Horario de atención:<br>{{ conjunto.horario_atencion|linebreaksbr }}{% endif %}
                     </p>
                   </td>
                 </tr>

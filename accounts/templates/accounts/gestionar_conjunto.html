@@ -412,6 +412,77 @@
             {% endif %}
         </div>
 
+        <!-- CONFIGURACIÓN DEL CONJUNTO -->
+        <p class="section-title"><i class="fas fa-cog"></i> Configuración del conjunto</p>
+        <div class="card" style="margin-bottom:32px;">
+            <form id="conjuntoConfigForm" onsubmit="guardarConfigConjunto(event)">
+                {% csrf_token %}
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;">
+                    <div>
+                        <label style="display:block;font-size:.72rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">
+                            Teléfono
+                        </label>
+                        <input name="telefono" value="{{ conjunto.telefono|default:'' }}"
+                               style="width:100%;background:#0f172a;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#e2e8f0;font-size:.85rem;outline:none;"
+                               placeholder="(601) XXX-XXXX">
+                    </div>
+                    <div>
+                        <label style="display:block;font-size:.72rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">
+                            Email de contacto
+                        </label>
+                        <input name="email_contacto" type="email" value="{{ conjunto.email_contacto|default:'' }}"
+                               style="width:100%;background:#0f172a;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#e2e8f0;font-size:.85rem;outline:none;"
+                               placeholder="admin@conjunto.com">
+                    </div>
+                </div>
+
+                <div style="margin-bottom:18px;">
+                    <label style="display:block;font-size:.72rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">
+                        🕐 Horario de atención (se muestra a propietarios y en correos)
+                    </label>
+                    <textarea name="horario_atencion" rows="5"
+                              style="width:100%;background:#0f172a;border:1px solid rgba(168,85,247,.35);border-radius:8px;padding:12px 14px;color:#e2e8f0;font-size:.85rem;outline:none;resize:vertical;line-height:1.6;font-family:inherit;">{{ conjunto.horario_atencion }}</textarea>
+                    <p style="margin:4px 0 0;font-size:.72rem;color:#64748b;">Una línea por día o rango de días. Ej: "Lunes a viernes: 8:00 a.m. – 5:00 p.m."</p>
+                </div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;">
+                    <div>
+                        <label style="display:block;font-size:.72rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">
+                            Nombre agrupación (Torre / Bloque)
+                        </label>
+                        <input name="nombre_agrupacion" value="{{ conjunto.nombre_agrupacion|default:'' }}"
+                               style="width:100%;background:#0f172a;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#e2e8f0;font-size:.85rem;outline:none;"
+                               placeholder="Torre">
+                    </div>
+                    <div>
+                        <label style="display:block;font-size:.72rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">
+                            Nombre unidad (Apto / Casa)
+                        </label>
+                        <input name="nombre_unidad" value="{{ conjunto.nombre_unidad|default:'Apto' }}"
+                               style="width:100%;background:#0f172a;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#e2e8f0;font-size:.85rem;outline:none;"
+                               placeholder="Apto">
+                    </div>
+                </div>
+
+                <div style="margin-bottom:18px;">
+                    <label style="display:block;font-size:.72rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">
+                        Link de pago (portal pagos)
+                    </label>
+                    <input name="link_pago" type="url" value="{{ conjunto.link_pago|default:'' }}"
+                           style="width:100%;background:#0f172a;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#e2e8f0;font-size:.85rem;outline:none;"
+                           placeholder="https://pagos.ejemplo.com/...">
+                </div>
+
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <button type="submit"
+                            style="background:linear-gradient(135deg,#7c3aed,#be185d);border:none;color:#fff;padding:10px 24px;border-radius:8px;font-size:.85rem;font-weight:700;cursor:pointer;">
+                        <i class="fas fa-save" style="margin-right:6px;"></i>Guardar cambios
+                    </button>
+                    <span id="configMsg" style="font-size:.8rem;color:#34d399;display:none;">✓ Guardado</span>
+                </div>
+            </form>
+        </div>
+
     </div><!-- /container -->
 </div><!-- /scroll-root -->
 
@@ -496,6 +567,39 @@ makeChart('chartWA',    hist.map(h => h.whatsapp), 'rgba(34,197,94,1)',  'WhatsA
     }
     draw();
 })();
+
+/* ── Guardar configuración del conjunto ── */
+async function guardarConfigConjunto(e) {
+    e.preventDefault();
+    const form  = document.getElementById('conjuntoConfigForm');
+    const btn   = form.querySelector('button[type="submit"]');
+    const msg   = document.getElementById('configMsg');
+    const csrf  = form.querySelector('[name=csrfmiddlewaretoken]').value;
+    const body  = new FormData(form);
+    btn.disabled = true;
+    msg.style.display = 'none';
+    try {
+        const res  = await fetch('{% url "accounts:update_conjunto_config" conjunto.pk %}', {
+            method: 'POST',
+            headers: { 'X-CSRFToken': csrf },
+            body
+        });
+        const data = await res.json();
+        if (data.ok) {
+            msg.textContent = '✓ Guardado';
+            msg.style.color = '#34d399';
+        } else {
+            msg.textContent = '✗ Error al guardar';
+            msg.style.color = '#f87171';
+        }
+    } catch {
+        msg.textContent = '✗ Error de red';
+        msg.style.color = '#f87171';
+    }
+    msg.style.display = 'inline';
+    btn.disabled = false;
+    setTimeout(() => { msg.style.display = 'none'; }, 4000);
+}
 </script>
 </body>
 </html>

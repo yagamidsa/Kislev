@@ -22,6 +22,11 @@ class ConjuntoResidencial(models.Model):
         default='Apto',
         help_text='Nombre de la unidad mínima (ej: Apto, Casa, PH).',
     )
+    horario_atencion = models.TextField(
+        blank=True,
+        default='',
+        help_text='Horario de atención de la administración (texto libre, ej: Lunes a viernes 8–17 h).',
+    )
 
     @property
     def etiqueta_agrupacion(self):

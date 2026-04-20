@@ -906,6 +906,25 @@ def update_config_global(request):
         return JsonResponse({'ok': False, 'error': str(exc)}, status=400)
 
 
+@login_required
+@saas_required
+def update_conjunto_config(request, conjunto_id):
+    """AJAX — actualiza campos de configuración de un conjunto específico."""
+    if request.method != 'POST':
+        return JsonResponse({'ok': False}, status=405)
+    conjunto = get_object_or_404(ConjuntoResidencial, pk=conjunto_id)
+    allowed = {'horario_atencion', 'link_pago', 'nombre_agrupacion', 'nombre_unidad', 'telefono', 'email_contacto'}
+    updated = []
+    for field in allowed:
+        if field in request.POST:
+            value = request.POST[field].strip()
+            setattr(conjunto, field, value if value else '')
+            updated.append(field)
+    if updated:
+        conjunto.save(update_fields=updated)
+    return JsonResponse({'ok': True})
+
+
 # ── Excel template download ──────────────────────────────────────────────────
 
 @login_required
