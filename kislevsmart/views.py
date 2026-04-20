@@ -1414,40 +1414,47 @@ def validar_qr(request, encrypted_token):
 
             # Enviar notificación por email
             try:
-                email_subject = "Registro de visitante"
-                if tipo_visitante == 'vehicular':
-                    email_subject = f"Registro vehicular - {mensaje}"
-                
-                email_body = f"""
-                Hola,
-                
-                Tu visitante {visitante.nombre} {mensaje.lower()}.
-                Fecha y hora: {timezone.localtime(visitante.ultima_lectura).strftime('%Y-%m-%d %H:%M:%S')}
-                """
-
-                if tipo_visitante == 'vehicular':
-                    email_body += f"""
-                    Vehículo: {visitante.get_tipo_vehiculo_display()}
-                    Placa: {visitante.placa}
-                    """
-
-                email_body += f"""
-                Motivo de la visita: {visitante.motivo}
-                
-                Saludos,
-                Kislev
-                """
-                
-                email = EmailMessage(
-                    email_subject,
-                    email_body,
-                    settings.DEFAULT_FROM_EMAIL,
-                    [visitante.email_creador],
-                    headers={'X-Priority': '1'}
+                email_subject = (
+                    f"Registro vehicular — {mensaje}"
+                    if tipo_visitante == 'vehicular'
+                    else f"Registro de visitante — {visitante.nombre}"
                 )
-                email.send(fail_silently=False)
-                log_envio('email', conjunto=request.user.conjunto, detalle='QR visitante')
-                logger.info(f"Notificación enviada a {visitante.email_creador}")
+
+                fecha_hora_local = timezone.localtime(visitante.ultima_lectura).strftime('%d/%m/%Y %H:%M')
+
+                # Texto plano de respaldo
+                email_body = (
+                    f"Tu visitante {visitante.nombre} ha sido registrado.\n"
+                    f"Fecha y hora: {fecha_hora_local}\n"
+                )
+                if tipo_visitante == 'vehicular':
+                    email_body += (
+                        f"Vehículo: {visitante.get_tipo_vehiculo_display()}\n"
+                        f"Placa: {visitante.placa}\n"
+                    )
+                if visitante.motivo:
+                    email_body += f"Motivo: {visitante.motivo}\n"
+
+                # HTML con diseño Kislev
+                html_body = render_to_string('emails/visita_registrada.html', {
+                    'visitante':      visitante,
+                    'tipo_visitante': tipo_visitante,
+                    'mensaje':        mensaje,
+                    'fecha_hora':     fecha_hora_local,
+                    'conjunto':       request.user.conjunto,
+                })
+
+                email_msg = EmailMultiAlternatives(
+                    subject=email_subject,
+                    body=email_body,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    to=[visitante.email_creador],
+                    headers={'X-Priority': '1'},
+                )
+                email_msg.attach_alternative(html_body, 'text/html')
+                email_msg.send(fail_silently=False)
+                log_envio('email', conjunto=request.user.conjunto, detalle='Notif. visita registrada')
+                logger.info(f"Notificación de visita enviada a {visitante.email_creador}")
             except Exception as e:
                 logger.error(f"Error enviando notificación por email: {str(e)}")
 
