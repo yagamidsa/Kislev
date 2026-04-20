@@ -17,80 +17,128 @@
 
   @media (prefers-color-scheme: dark) {
     body, .email-bg   { background-color:#0f0f13 !important; }
-    .card             { background-color:#1a1a24 !important; }
-    .card-body        { background-color:#1a1a24 !important; }
-    .greeting         { color:#c4b5fd !important; }
-    .body-text        { color:#b0b8cc !important; }
-    .svc-box          { background-color:#252535 !important; border-color:#7c3aed !important; }
-    .svc-text         { color:#e2d9ff !important; }
-    .warn-box         { background-color:#2a2210 !important; border-color:#f59e0b !important; }
-    .warn-text        { color:#fcd34d !important; }
-    .footer-bg        { background-color:#111118 !important; }
-    .footer-text      { color:#6b7280 !important; }
-    .footer-link      { color:#a78bfa !important; }
+    .card-body        { background-color:#1a1a24 !important;
+                        border-color:#2d2d3d !important; }
+
+    .t-greeting       { color:#c4b5fd !important; }
+    .t-body           { color:#b0b8cc !important; }
+    .t-accent         { color:#a78bfa !important; }
+    .t-svc-label      { color:#9ca3af !important; }
+    .t-svc-type       { color:#c4b5fd !important; }
+    .t-svc-msg        { color:#e2d9ff !important; }
+    .t-warn           { color:#fcd34d !important; }
+    .t-sig            { color:#9ca3af !important; }
+    .t-sig-name       { color:#e2d9ff !important; }
+
+    .svc-box          { background-color:#252535 !important;
+                        border-left-color:#7c3aed !important; }
+    .warn-box         { background-color:#2a2210 !important;
+                        border-color:#f59e0b !important; }
+
+    .footer-bg        { background-color:#111118 !important;
+                        border-color:#2d2d3d !important; }
+    .t-footer         { color:#6b7280 !important; }
+    .t-footer-link    { color:#a78bfa !important; }
   }
 
-  [data-ogsc] body, [data-ogsc] .email-bg { background-color:#0f0f13 !important; }
-  [data-ogsc] .card                        { background-color:#1a1a24 !important; }
-  [data-ogsc] .svc-box                     { background-color:#252535 !important; }
-  [data-ogsc] .footer-bg                   { background-color:#111118 !important; }
+  [data-ogsc] body,
+  [data-ogsc] .email-bg  { background-color:#0f0f13 !important; }
+  [data-ogsc] .card-body { background-color:#1a1a24 !important; }
+  [data-ogsc] .t-greeting    { color:#c4b5fd !important; }
+  [data-ogsc] .t-body        { color:#b0b8cc !important; }
+  [data-ogsc] .t-accent      { color:#a78bfa !important; }
+  [data-ogsc] .t-svc-label   { color:#9ca3af !important; }
+  [data-ogsc] .t-svc-type    { color:#c4b5fd !important; }
+  [data-ogsc] .t-svc-msg     { color:#e2d9ff !important; }
+  [data-ogsc] .t-warn        { color:#fcd34d !important; }
+  [data-ogsc] .t-sig         { color:#9ca3af !important; }
+  [data-ogsc] .t-sig-name    { color:#e2d9ff !important; }
+  [data-ogsc] .svc-box       { background-color:#252535 !important; }
+  [data-ogsc] .warn-box      { background-color:#2a2210 !important; }
+  [data-ogsc] .footer-bg     { background-color:#111118 !important; }
+  [data-ogsc] .t-footer      { color:#6b7280 !important; }
+  [data-ogsc] .t-footer-link { color:#a78bfa !important; }
 </style>
 </head>
 <body class="email-bg" style="margin:0;padding:0;background-color:#f0f2f5;">
 
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="email-bg" style="background-color:#f0f2f5;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+       class="email-bg" style="background-color:#f0f2f5;">
 <tr><td align="center" style="padding:32px 16px;">
 
-  <table role="presentation" width="100%" style="max-width:600px;" cellpadding="0" cellspacing="0" border="0">
+  <table role="presentation" width="100%" style="max-width:600px;"
+         cellpadding="0" cellspacing="0" border="0">
 
-    <!-- Header -->
+    <!-- ═══ HEADER ═══ -->
     <tr>
-      <td class="card" style="background:linear-gradient(135deg,#3b1a6e 0%,#6d28d9 55%,#be185d 100%);border-radius:16px 16px 0 0;padding:40px 36px;text-align:center;">
-        <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:28px;font-weight:800;color:#ffffff;letter-spacing:0.5px;">
+      <td style="background:linear-gradient(135deg,#3b1a6e 0%,#6d28d9 55%,#be185d 100%);
+                 border-radius:16px 16px 0 0;padding:40px 36px;text-align:center;">
+        <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:28px;
+                  font-weight:800;color:#ffffff;letter-spacing:0.5px;">
           🏠 Kislev
         </p>
-        <p style="margin:0;font-family:Arial,sans-serif;font-size:14px;color:#ffffff;opacity:1;">
+        <p style="margin:0;font-family:Arial,sans-serif;font-size:14px;color:#e9d5ff;">
           Notificación de Servicio — {{ conjunto.nombre }}
         </p>
       </td>
     </tr>
 
-    <!-- Body -->
+    <!-- ═══ BODY ═══ -->
     <tr>
-      <td class="card card-body" style="background-color:#ffffff;padding:36px 36px 28px;border-left:1px solid #e5e7eb;border-right:1px solid #e5e7eb;">
+      <td class="card-body"
+          style="background-color:#ffffff;padding:36px 36px 28px;
+                 border-left:1px solid #e5e7eb;border-right:1px solid #e5e7eb;">
 
-        <p class="greeting" style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:20px;font-weight:700;color:#4c1d95;">
+        <p class="t-greeting"
+           style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:20px;
+                  font-weight:700;color:#4c1d95;">
           ¡Hola, {{ nombre }}!
         </p>
-        <p class="body-text" style="margin:0 0 24px;font-family:Arial,sans-serif;font-size:14px;color:#4b5563;line-height:1.75;">
-          Tienes una notificación de servicio de la administración de <strong style="color:#6d28d9;">{{ conjunto.nombre }}</strong>.
+        <p class="t-body"
+           style="margin:0 0 24px;font-family:Arial,sans-serif;font-size:14px;
+                  color:#4b5563;line-height:1.75;">
+          Tienes una notificación de servicio de
+          <strong class="t-accent" style="color:#6d28d9;">{{ conjunto.nombre }}</strong>.
         </p>
 
-        <!-- Caja de servicio -->
+        <!-- Caja del servicio -->
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
                class="svc-box"
-               style="background-color:#f5f0ff;border-left:4px solid #7c3aed;border-radius:10px;margin-bottom:24px;">
+               style="background-color:#f5f0ff;border-left:4px solid #7c3aed;
+                      border-radius:10px;margin-bottom:20px;">
           <tr>
             <td style="padding:22px 24px;">
-              <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.8px;">
+              <p class="t-svc-label"
+                 style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:11px;
+                        font-weight:700;color:#6b7280;text-transform:uppercase;
+                        letter-spacing:0.8px;">
                 Servicio
               </p>
-              <p class="svc-text" style="margin:0 0 14px;font-family:Arial,sans-serif;font-size:16px;font-weight:700;color:#4c1d95;">
-                {% if service_type == 'Luz' %}💡{% elif service_type == 'Agua' %}💧{% elif service_type == 'Gas' %}🔥{% else %}📄{% endif %}
+              <p class="t-svc-type"
+                 style="margin:0 0 12px;font-family:Arial,sans-serif;font-size:17px;
+                        font-weight:700;color:#4c1d95;">
+                {% if service_type == 'Luz' %}💡
+                {% elif service_type == 'Agua' %}💧
+                {% elif service_type == 'Gas' %}🔥
+                {% else %}📄{% endif %}
                 {{ service_type }}
               </p>
-              <p class="svc-text" style="margin:0;font-family:Arial,sans-serif;font-size:14px;color:#374151;line-height:1.7;">
-                Tu factura de <strong>{{ service_type }}</strong> está disponible para retiro en portería.
+              <p class="t-svc-msg"
+                 style="margin:0;font-family:Arial,sans-serif;font-size:14px;
+                        color:#374151;line-height:1.7;">
+                Tu factura de <strong class="t-svc-type" style="color:#4c1d95;">{{ service_type }}</strong>
+                está disponible para retiro en portería.
                 Por favor, pasa a retirarla en el horario de atención.
               </p>
             </td>
           </tr>
         </table>
 
-        <!-- Aviso retiro en portería -->
+        <!-- Aviso portería -->
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
                class="warn-box"
-               style="background-color:#fffbeb;border:1px solid #fcd34d;border-radius:10px;margin-bottom:28px;">
+               style="background-color:#fffbeb;border:1px solid #fcd34d;
+                      border-radius:10px;margin-bottom:28px;">
           <tr>
             <td style="padding:16px 20px;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -99,9 +147,11 @@
                     <p style="margin:0;font-size:18px;">📋</p>
                   </td>
                   <td style="vertical-align:top;padding-left:10px;">
-                    <p class="warn-text" style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#78350f;line-height:1.6;">
-                      Recuerda pasar a la <strong>oficina de administración</strong> a retirar tu factura.
-                      Horario: Lunes a Viernes 8:00 AM – 6:00 PM · Sábados 9:00 AM – 1:00 PM.
+                    <p class="t-warn"
+                       style="margin:0;font-family:Arial,sans-serif;font-size:13px;
+                              color:#78350f;line-height:1.6;">
+                      Pasa por la <strong>oficina de administración</strong> a retirar tu factura.
+                      Horario: Lunes–Viernes 8:00 AM – 6:00 PM · Sábados 9:00 AM – 1:00 PM.
                     </p>
                   </td>
                 </tr>
@@ -111,23 +161,33 @@
         </table>
 
         <!-- Firma -->
-        <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#6b7280;line-height:1.6;">
+        <p class="t-sig"
+           style="margin:0;font-family:Arial,sans-serif;font-size:13px;
+                  color:#6b7280;line-height:1.6;">
           Atentamente,<br>
-          <strong style="color:#374151;">Administración {{ conjunto.nombre }}</strong>
+          <strong class="t-sig-name" style="color:#374151;">
+            Administración {{ conjunto.nombre }}
+          </strong>
         </p>
 
       </td>
     </tr>
 
-    <!-- Footer -->
+    <!-- ═══ FOOTER ═══ -->
     <tr>
       <td class="footer-bg"
-          style="background-color:#f9fafb;padding:20px 36px;text-align:center;border-top:1px solid #e5e7eb;border-radius:0 0 16px 16px;border-left:1px solid #e5e7eb;border-right:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb;">
-        <p class="footer-text" style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:12px;color:#9ca3af;line-height:1.6;">
+          style="background-color:#f9fafb;padding:20px 36px;text-align:center;
+                 border-top:1px solid #e5e7eb;border-radius:0 0 16px 16px;
+                 border-left:1px solid #e5e7eb;border-right:1px solid #e5e7eb;
+                 border-bottom:1px solid #e5e7eb;">
+        <p class="t-footer"
+           style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:12px;
+                  color:#9ca3af;line-height:1.6;">
           Recibiste este mensaje porque estás registrado en {{ conjunto.nombre }}.
         </p>
-        <a href="https://kislev.net.co" class="footer-link"
-           style="font-family:Arial,sans-serif;font-size:12px;color:#7c3aed;text-decoration:none;font-weight:600;">
+        <a href="https://kislev.net.co" class="t-footer-link"
+           style="font-family:Arial,sans-serif;font-size:12px;color:#7c3aed;
+                  text-decoration:none;font-weight:600;">
           kislev.net.co
         </a>
       </td>

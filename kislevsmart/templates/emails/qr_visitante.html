@@ -16,114 +16,180 @@
   body { margin:0; padding:0; background-color:#f0f2f5; }
 
   @media (prefers-color-scheme: dark) {
-    body, .email-bg    { background-color:#0f0f13 !important; }
-    .card              { background-color:#1a1a24 !important; }
-    .card-body         { background-color:#1a1a24 !important; }
-    .greeting          { color:#c4b5fd !important; }
-    .body-text         { color:#b0b8cc !important; }
-    .info-box          { background-color:#252535 !important; border-color:#be185d !important; }
-    .info-lbl          { color:#f9a8d4 !important; }
-    .info-val          { color:#e2d9ff !important; }
-    .instr-box         { background-color:#1a0a30 !important; }
-    .instr-title       { color:#f9a8d4 !important; }
-    .step-text         { color:#c4b5fd !important; }
-    .addr-box          { background-color:#252535 !important; border-color:#5b21b6 !important; }
-    .addr-text         { color:#e2d9ff !important; }
-    .footer-bg         { background-color:#111118 !important; }
-    .footer-text       { color:#6b7280 !important; }
-    .footer-link       { color:#a78bfa !important; }
+    body, .email-bg   { background-color:#0f0f13 !important; }
+    .card-body        { background-color:#1a1a24 !important;
+                        border-color:#2d2d3d !important; }
+
+    .t-greeting       { color:#c4b5fd !important; }
+    .t-body           { color:#b0b8cc !important; }
+    .t-accent         { color:#a78bfa !important; }
+
+    /* Tabla de detalles de visita */
+    .info-box         { background-color:#252535 !important;
+                        border-left-color:#be185d !important; }
+    .t-info-lbl       { color:#f9a8d4 !important; }
+    .t-info-val       { color:#e2d9ff !important; }
+
+    /* Instrucciones */
+    .instr-box        { background-color:#1e1a2e !important; }
+    .t-instr-title    { color:#f9a8d4 !important; }
+    .t-step           { color:#c4b5fd !important; }
+
+    /* Ubicación */
+    .t-loc-title      { color:#c4b5fd !important; }
+    .t-loc-sub        { color:#9ca3af !important; }
+    .addr-box         { background-color:#252535 !important;
+                        border-color:#5b21b6 !important; }
+    .t-addr           { color:#e2d9ff !important; }
+
+    /* Firma */
+    .t-sig            { color:#9ca3af !important; }
+    .t-sig-name       { color:#e2d9ff !important; }
+
+    /* Divisor */
+    .divider-cell     { background-color:#2d2d3d !important; }
+
+    /* Footer */
+    .footer-bg        { background-color:#111118 !important;
+                        border-color:#2d2d3d !important; }
+    .t-footer         { color:#6b7280 !important; }
+    .t-footer-link    { color:#a78bfa !important; }
   }
 
-  [data-ogsc] body, [data-ogsc] .email-bg { background-color:#0f0f13 !important; }
-  [data-ogsc] .card                        { background-color:#1a1a24 !important; }
-  [data-ogsc] .info-box                    { background-color:#252535 !important; }
-  [data-ogsc] .footer-bg                   { background-color:#111118 !important; }
+  [data-ogsc] body,
+  [data-ogsc] .email-bg  { background-color:#0f0f13 !important; }
+  [data-ogsc] .card-body { background-color:#1a1a24 !important; }
+  [data-ogsc] .t-greeting    { color:#c4b5fd !important; }
+  [data-ogsc] .t-body        { color:#b0b8cc !important; }
+  [data-ogsc] .t-accent      { color:#a78bfa !important; }
+  [data-ogsc] .info-box      { background-color:#252535 !important; }
+  [data-ogsc] .t-info-lbl    { color:#f9a8d4 !important; }
+  [data-ogsc] .t-info-val    { color:#e2d9ff !important; }
+  [data-ogsc] .instr-box     { background-color:#1e1a2e !important; }
+  [data-ogsc] .t-instr-title { color:#f9a8d4 !important; }
+  [data-ogsc] .t-step        { color:#c4b5fd !important; }
+  [data-ogsc] .t-loc-title   { color:#c4b5fd !important; }
+  [data-ogsc] .t-loc-sub     { color:#9ca3af !important; }
+  [data-ogsc] .addr-box      { background-color:#252535 !important; }
+  [data-ogsc] .t-addr        { color:#e2d9ff !important; }
+  [data-ogsc] .t-sig         { color:#9ca3af !important; }
+  [data-ogsc] .t-sig-name    { color:#e2d9ff !important; }
+  [data-ogsc] .footer-bg     { background-color:#111118 !important; }
+  [data-ogsc] .t-footer      { color:#6b7280 !important; }
+  [data-ogsc] .t-footer-link { color:#a78bfa !important; }
 </style>
 </head>
 <body class="email-bg" style="margin:0;padding:0;background-color:#f0f2f5;">
 
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="email-bg" style="background-color:#f0f2f5;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+       class="email-bg" style="background-color:#f0f2f5;">
 <tr><td align="center" style="padding:32px 16px;">
 
-  <table role="presentation" width="100%" style="max-width:600px;" cellpadding="0" cellspacing="0" border="0">
+  <table role="presentation" width="100%" style="max-width:600px;"
+         cellpadding="0" cellspacing="0" border="0">
 
-    <!-- Header -->
+    <!-- ═══ HEADER ═══ -->
     <tr>
-      <td class="card" style="background:linear-gradient(135deg,#3b1a6e 0%,#6d28d9 55%,#be185d 100%);border-radius:16px 16px 0 0;padding:40px 36px;text-align:center;">
-        <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:28px;font-weight:800;color:#ffffff;letter-spacing:0.5px;">
+      <td style="background:linear-gradient(135deg,#3b1a6e 0%,#6d28d9 55%,#be185d 100%);
+                 border-radius:16px 16px 0 0;padding:40px 36px;text-align:center;">
+        <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:28px;
+                  font-weight:800;color:#ffffff;letter-spacing:0.5px;">
           🏠 Kislev
         </p>
-        <p style="margin:0;font-family:Arial,sans-serif;font-size:14px;color:#ffffff;opacity:1;">
+        <p style="margin:0;font-family:Arial,sans-serif;font-size:14px;color:#e9d5ff;">
           Código QR de Acceso — {{ conjunto.nombre }}
         </p>
       </td>
     </tr>
 
-    <!-- QR notice bar -->
+    <!-- ═══ BARRA QR — gradiente secundario, siempre oscuro ═══ -->
     <tr>
-      <td style="background:linear-gradient(135deg,#be185d,#7c3aed);padding:14px 24px;text-align:center;">
-        <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;font-weight:600;color:#ffffff;letter-spacing:0.3px;">
+      <td style="background:linear-gradient(135deg,#be185d,#7c3aed);
+                 padding:14px 24px;text-align:center;">
+        <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;
+                  font-weight:600;color:#ffffff;letter-spacing:0.3px;">
           📎 Tu código QR está adjunto a este correo — ábrelo y preséntalo en portería
         </p>
       </td>
     </tr>
 
-    <!-- Body -->
+    <!-- ═══ BODY ═══ -->
     <tr>
-      <td class="card card-body" style="background-color:#ffffff;padding:36px 36px 28px;border-left:1px solid #e5e7eb;border-right:1px solid #e5e7eb;">
+      <td class="card-body"
+          style="background-color:#ffffff;padding:36px 36px 28px;
+                 border-left:1px solid #e5e7eb;border-right:1px solid #e5e7eb;">
 
-        <p class="greeting" style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:20px;font-weight:700;color:#4c1d95;">
+        <p class="t-greeting"
+           style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:20px;
+                  font-weight:700;color:#4c1d95;">
           ¡Hola, {{ visitante.nombre }}!
         </p>
-        <p class="body-text" style="margin:0 0 28px;font-family:Arial,sans-serif;font-size:14px;color:#4b5563;line-height:1.75;">
+        <p class="t-body"
+           style="margin:0 0 28px;font-family:Arial,sans-serif;font-size:14px;
+                  color:#4b5563;line-height:1.75;">
           Has recibido este correo porque se generó un código QR para tu visita a
-          <strong style="color:#6d28d9;">{{ conjunto.nombre }}</strong>.
+          <strong class="t-accent" style="color:#6d28d9;">{{ conjunto.nombre }}</strong>.
           Presenta el archivo adjunto al llegar a portería.
         </p>
 
-        <!-- Detalles de la visita -->
+        <!-- ── Detalles de la visita ── -->
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
                class="info-box"
-               style="background-color:#f5f0ff;border-left:4px solid #be185d;border-radius:10px;margin-bottom:24px;">
+               style="background-color:#f5f0ff;border-left:4px solid #be185d;
+                      border-radius:10px;margin-bottom:24px;">
           <tr>
             <td style="padding:22px 24px;">
 
               <!-- Visitante -->
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:16px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                     style="margin-bottom:16px;">
                 <tr>
-                  <td style="width:36px;vertical-align:middle;">
-                    <p style="margin:0;font-size:22px;">👤</p>
-                  </td>
+                  <td style="width:36px;vertical-align:middle;font-size:22px;">👤</td>
                   <td style="vertical-align:middle;padding-left:12px;">
-                    <p class="info-lbl" style="margin:0 0 2px;font-family:Arial,sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:#be185d;">Visitante</p>
-                    <p class="info-val" style="margin:0;font-family:Arial,sans-serif;font-size:15px;font-weight:700;color:#1f1235;">{{ visitante.nombre }}</p>
+                    <p class="t-info-lbl"
+                       style="margin:0 0 2px;font-family:Arial,sans-serif;font-size:10px;
+                              font-weight:700;text-transform:uppercase;letter-spacing:0.8px;
+                              color:#be185d;">Visitante</p>
+                    <p class="t-info-val"
+                       style="margin:0;font-family:Arial,sans-serif;font-size:15px;
+                              font-weight:700;color:#1f1235;">{{ visitante.nombre }}</p>
                   </td>
                 </tr>
               </table>
 
               <!-- Tipo de visita -->
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:16px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                     style="margin-bottom:16px;">
                 <tr>
-                  <td style="width:36px;vertical-align:middle;">
-                    <p style="margin:0;font-size:22px;">{% if tipo_visitante == 'vehicular' %}🚗{% else %}🚶{% endif %}</p>
+                  <td style="width:36px;vertical-align:middle;font-size:22px;">
+                    {% if tipo_visitante == 'vehicular' %}🚗{% else %}🚶{% endif %}
                   </td>
                   <td style="vertical-align:middle;padding-left:12px;">
-                    <p class="info-lbl" style="margin:0 0 2px;font-family:Arial,sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:#be185d;">Tipo de visita</p>
-                    <p class="info-val" style="margin:0;font-family:Arial,sans-serif;font-size:15px;font-weight:700;color:#1f1235;">{{ tipo_visitante|capfirst }}</p>
+                    <p class="t-info-lbl"
+                       style="margin:0 0 2px;font-family:Arial,sans-serif;font-size:10px;
+                              font-weight:700;text-transform:uppercase;letter-spacing:0.8px;
+                              color:#be185d;">Tipo de visita</p>
+                    <p class="t-info-val"
+                       style="margin:0;font-family:Arial,sans-serif;font-size:15px;
+                              font-weight:700;color:#1f1235;">{{ tipo_visitante|capfirst }}</p>
                   </td>
                 </tr>
               </table>
 
               {% if tipo_visitante == 'vehicular' and visitante.placa %}
               <!-- Placa -->
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:16px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                     style="margin-bottom:16px;">
                 <tr>
-                  <td style="width:36px;vertical-align:middle;">
-                    <p style="margin:0;font-size:22px;">🔤</p>
-                  </td>
+                  <td style="width:36px;vertical-align:middle;font-size:22px;">🔤</td>
                   <td style="vertical-align:middle;padding-left:12px;">
-                    <p class="info-lbl" style="margin:0 0 2px;font-family:Arial,sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:#be185d;">Placa</p>
-                    <p class="info-val" style="margin:0;font-family:Arial,sans-serif;font-size:15px;font-weight:700;color:#1f1235;">{{ visitante.placa }}</p>
+                    <p class="t-info-lbl"
+                       style="margin:0 0 2px;font-family:Arial,sans-serif;font-size:10px;
+                              font-weight:700;text-transform:uppercase;letter-spacing:0.8px;
+                              color:#be185d;">Placa</p>
+                    <p class="t-info-val"
+                       style="margin:0;font-family:Arial,sans-serif;font-size:15px;
+                              font-weight:700;color:#1f1235;">{{ visitante.placa }}</p>
                   </td>
                 </tr>
               </table>
@@ -132,12 +198,15 @@
               <!-- Motivo -->
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
-                  <td style="width:36px;vertical-align:middle;">
-                    <p style="margin:0;font-size:22px;">📋</p>
-                  </td>
+                  <td style="width:36px;vertical-align:middle;font-size:22px;">📋</td>
                   <td style="vertical-align:middle;padding-left:12px;">
-                    <p class="info-lbl" style="margin:0 0 2px;font-family:Arial,sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:#be185d;">Motivo</p>
-                    <p class="info-val" style="margin:0;font-family:Arial,sans-serif;font-size:15px;font-weight:700;color:#1f1235;">{{ visitante.motivo }}</p>
+                    <p class="t-info-lbl"
+                       style="margin:0 0 2px;font-family:Arial,sans-serif;font-size:10px;
+                              font-weight:700;text-transform:uppercase;letter-spacing:0.8px;
+                              color:#be185d;">Motivo</p>
+                    <p class="t-info-val"
+                       style="margin:0;font-family:Arial,sans-serif;font-size:15px;
+                              font-weight:700;color:#1f1235;">{{ visitante.motivo }}</p>
                   </td>
                 </tr>
               </table>
@@ -146,24 +215,40 @@
           </tr>
         </table>
 
-        <!-- Instrucciones de uso -->
+        <!-- ── Instrucciones de uso ── -->
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
                class="instr-box"
                style="background-color:#f5f0ff;border-radius:12px;margin-bottom:28px;">
           <tr>
             <td style="padding:22px 24px;">
-              <p class="instr-title" style="margin:0 0 16px;font-family:Arial,sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6d28d9;">
+              <p class="t-instr-title"
+                 style="margin:0 0 16px;font-family:Arial,sans-serif;font-size:11px;
+                        font-weight:700;text-transform:uppercase;letter-spacing:1px;
+                        color:#6d28d9;">
                 📱 Instrucciones de uso
               </p>
 
+              {% with steps="1,2,3" %}
               <!-- Paso 1 -->
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:12px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                     style="margin-bottom:12px;">
                 <tr>
-                  <td style="width:28px;vertical-align:top;">
-                    <p style="margin:0;font-family:Arial,sans-serif;font-size:11px;font-weight:800;color:#ffffff;background-color:#be185d;border-radius:50%;width:22px;height:22px;text-align:center;line-height:22px;">1</p>
+                  <td style="width:26px;vertical-align:top;">
+                    <table cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td style="background-color:#be185d;border-radius:50%;
+                                   width:22px;height:22px;text-align:center;
+                                   font-family:Arial,sans-serif;font-size:11px;
+                                   font-weight:800;color:#ffffff;line-height:22px;">
+                          1
+                        </td>
+                      </tr>
+                    </table>
                   </td>
-                  <td style="vertical-align:top;padding-left:12px;">
-                    <p class="step-text" style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#374151;line-height:1.6;padding-top:3px;">
+                  <td style="vertical-align:top;padding-left:12px;padding-top:3px;">
+                    <p class="t-step"
+                       style="margin:0;font-family:Arial,sans-serif;font-size:13px;
+                              color:#374151;line-height:1.6;">
                       Abre el archivo QR adjunto a este correo en tu celular
                     </p>
                   </td>
@@ -171,27 +256,52 @@
               </table>
 
               <!-- Paso 2 -->
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:12px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                     style="margin-bottom:12px;">
                 <tr>
-                  <td style="width:28px;vertical-align:top;">
-                    <p style="margin:0;font-family:Arial,sans-serif;font-size:11px;font-weight:800;color:#ffffff;background-color:#be185d;border-radius:50%;width:22px;height:22px;text-align:center;line-height:22px;">2</p>
+                  <td style="width:26px;vertical-align:top;">
+                    <table cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td style="background-color:#be185d;border-radius:50%;
+                                   width:22px;height:22px;text-align:center;
+                                   font-family:Arial,sans-serif;font-size:11px;
+                                   font-weight:800;color:#ffffff;line-height:22px;">
+                          2
+                        </td>
+                      </tr>
+                    </table>
                   </td>
-                  <td style="vertical-align:top;padding-left:12px;">
-                    <p class="step-text" style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#374151;line-height:1.6;padding-top:3px;">
-                      Preséntalo en portería cuando llegues a <strong style="color:#6d28d9;">{{ conjunto.nombre }}</strong>
+                  <td style="vertical-align:top;padding-left:12px;padding-top:3px;">
+                    <p class="t-step"
+                       style="margin:0;font-family:Arial,sans-serif;font-size:13px;
+                              color:#374151;line-height:1.6;">
+                      Preséntalo en portería cuando llegues a
+                      <strong class="t-accent" style="color:#6d28d9;">{{ conjunto.nombre }}</strong>
                     </p>
                   </td>
                 </tr>
               </table>
 
               <!-- Paso 3 -->
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" {% if tipo_visitante == 'vehicular' %}style="margin-bottom:12px;"{% endif %}>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                     {% if tipo_visitante == 'vehicular' %}style="margin-bottom:12px;"{% endif %}>
                 <tr>
-                  <td style="width:28px;vertical-align:top;">
-                    <p style="margin:0;font-family:Arial,sans-serif;font-size:11px;font-weight:800;color:#ffffff;background-color:#be185d;border-radius:50%;width:22px;height:22px;text-align:center;line-height:22px;">3</p>
+                  <td style="width:26px;vertical-align:top;">
+                    <table cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td style="background-color:#be185d;border-radius:50%;
+                                   width:22px;height:22px;text-align:center;
+                                   font-family:Arial,sans-serif;font-size:11px;
+                                   font-weight:800;color:#ffffff;line-height:22px;">
+                          3
+                        </td>
+                      </tr>
+                    </table>
                   </td>
-                  <td style="vertical-align:top;padding-left:12px;">
-                    <p class="step-text" style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#374151;line-height:1.6;padding-top:3px;">
+                  <td style="vertical-align:top;padding-left:12px;padding-top:3px;">
+                    <p class="t-step"
+                       style="margin:0;font-family:Arial,sans-serif;font-size:13px;
+                              color:#374151;line-height:1.6;">
                       El portero escaneará el código para registrar tu ingreso
                     </p>
                   </td>
@@ -202,68 +312,100 @@
               <!-- Paso 4 -->
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
-                  <td style="width:28px;vertical-align:top;">
-                    <p style="margin:0;font-family:Arial,sans-serif;font-size:11px;font-weight:800;color:#ffffff;background-color:#be185d;border-radius:50%;width:22px;height:22px;text-align:center;line-height:22px;">4</p>
+                  <td style="width:26px;vertical-align:top;">
+                    <table cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td style="background-color:#be185d;border-radius:50%;
+                                   width:22px;height:22px;text-align:center;
+                                   font-family:Arial,sans-serif;font-size:11px;
+                                   font-weight:800;color:#ffffff;line-height:22px;">
+                          4
+                        </td>
+                      </tr>
+                    </table>
                   </td>
-                  <td style="vertical-align:top;padding-left:12px;">
-                    <p class="step-text" style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#374151;line-height:1.6;padding-top:3px;">
+                  <td style="vertical-align:top;padding-left:12px;padding-top:3px;">
+                    <p class="t-step"
+                       style="margin:0;font-family:Arial,sans-serif;font-size:13px;
+                              color:#374151;line-height:1.6;">
                       Para vehículos, el mismo QR registra tanto la entrada como la salida
                     </p>
                   </td>
                 </tr>
               </table>
               {% endif %}
+              {% endwith %}
 
             </td>
           </tr>
         </table>
 
-        <!-- Divider -->
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">
+        <!-- Divisor -->
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+               style="margin-bottom:24px;">
           <tr>
-            <td style="height:1px;background-color:#e5e7eb;font-size:0;line-height:0;">&nbsp;</td>
+            <td class="divider-cell"
+                style="height:1px;background-color:#e5e7eb;font-size:0;line-height:0;">
+              &nbsp;
+            </td>
           </tr>
         </table>
 
-        <!-- Ubicación / Cómo llegar -->
-        <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:16px;font-weight:800;color:#1f1235;">
+        <!-- ── Cómo llegar ── -->
+        <p class="t-loc-title"
+           style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:16px;
+                  font-weight:800;color:#1f1235;">
           📍 ¿Cómo llegar?
         </p>
-        <p class="body-text" style="margin:0 0 14px;font-family:Arial,sans-serif;font-size:13px;color:#9ca3af;line-height:1.5;">
+        <p class="t-loc-sub"
+           style="margin:0 0 14px;font-family:Arial,sans-serif;font-size:13px;
+                  color:#9ca3af;line-height:1.5;">
           Toca cualquiera de los botones para abrir la dirección en tu app de mapas:
         </p>
 
         <!-- Dirección -->
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
                class="addr-box"
-               style="background-color:#f5f0ff;border:1px solid #e0d9ff;border-radius:10px;margin-bottom:20px;">
+               style="background-color:#f5f0ff;border:1px solid #e0d9ff;
+                      border-radius:10px;margin-bottom:20px;">
           <tr>
             <td style="padding:14px 18px;">
-              <p class="addr-text" style="margin:0;font-family:Arial,sans-serif;font-size:14px;font-weight:600;color:#374151;line-height:1.5;">
+              <p class="t-addr"
+                 style="margin:0;font-family:Arial,sans-serif;font-size:14px;
+                        font-weight:600;color:#374151;line-height:1.5;">
                 📌 {{ conjunto.direccion }}
               </p>
             </td>
           </tr>
         </table>
 
-        <!-- Botones de mapa -->
+        <!-- Botones mapa — colores sólidos funcionan en dark y light -->
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
           <tr>
             <td style="padding-right:6px;" width="33%">
               <a href="{{ google_maps_url }}" target="_blank" rel="noopener"
-                 style="display:block;background-color:#4285f4;color:#ffffff;text-decoration:none;padding:13px 10px;border-radius:10px;font-family:Arial,sans-serif;font-size:12px;font-weight:700;text-align:center;line-height:1.4;">
+                 style="display:block;background-color:#4285f4;color:#ffffff;
+                        text-decoration:none;padding:13px 10px;border-radius:10px;
+                        font-family:Arial,sans-serif;font-size:12px;font-weight:700;
+                        text-align:center;line-height:1.4;">
                 🗺 Google Maps
               </a>
             </td>
             <td style="padding-right:6px;" width="33%">
               <a href="{{ waze_url }}" target="_blank" rel="noopener"
-                 style="display:block;background-color:#33ccff;color:#0a0a0a;text-decoration:none;padding:13px 10px;border-radius:10px;font-family:Arial,sans-serif;font-size:12px;font-weight:700;text-align:center;line-height:1.4;">
+                 style="display:block;background-color:#33ccff;color:#0a0a0a;
+                        text-decoration:none;padding:13px 10px;border-radius:10px;
+                        font-family:Arial,sans-serif;font-size:12px;font-weight:700;
+                        text-align:center;line-height:1.4;">
                 🔵 Waze
               </a>
             </td>
             <td width="34%">
               <a href="{{ apple_maps_url }}" target="_blank" rel="noopener"
-                 style="display:block;background-color:#1d1d1f;color:#ffffff;text-decoration:none;padding:13px 10px;border-radius:10px;font-family:Arial,sans-serif;font-size:12px;font-weight:700;text-align:center;line-height:1.4;">
+                 style="display:block;background-color:#1d1d1f;color:#ffffff;
+                        text-decoration:none;padding:13px 10px;border-radius:10px;
+                        font-family:Arial,sans-serif;font-size:12px;font-weight:700;
+                        text-align:center;line-height:1.4;">
                 🍎 Apple Maps
               </a>
             </td>
@@ -273,18 +415,26 @@
       </td>
     </tr>
 
-    <!-- Footer -->
+    <!-- ═══ FOOTER ═══ -->
     <tr>
       <td class="footer-bg"
-          style="background-color:#f9fafb;padding:20px 36px;text-align:center;border-top:1px solid #e5e7eb;border-radius:0 0 16px 16px;border-left:1px solid #e5e7eb;border-right:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb;">
-        <p class="footer-text" style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:12px;color:#9ca3af;line-height:1.6;">
+          style="background-color:#f9fafb;padding:20px 36px;text-align:center;
+                 border-top:1px solid #e5e7eb;border-radius:0 0 16px 16px;
+                 border-left:1px solid #e5e7eb;border-right:1px solid #e5e7eb;
+                 border-bottom:1px solid #e5e7eb;">
+        <p class="t-footer"
+           style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:12px;
+                  color:#9ca3af;line-height:1.6;">
           {{ conjunto.nombre }}{% if conjunto.telefono %} · 📞 {{ conjunto.telefono }}{% endif %}
         </p>
-        <p class="footer-text" style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:12px;color:#9ca3af;line-height:1.6;">
+        <p class="t-footer"
+           style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:12px;
+                  color:#9ca3af;line-height:1.6;">
           Mensaje generado automáticamente · No responder a este correo.
         </p>
-        <a href="https://kislev.net.co" class="footer-link"
-           style="font-family:Arial,sans-serif;font-size:12px;color:#7c3aed;text-decoration:none;font-weight:600;">
+        <a href="https://kislev.net.co" class="t-footer-link"
+           style="font-family:Arial,sans-serif;font-size:12px;color:#7c3aed;
+                  text-decoration:none;font-weight:600;">
           kislev.net.co
         </a>
       </td>

@@ -10,67 +10,119 @@
 <noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript>
 <![endif]-->
 <style>
+  /* ── Reset ── */
   body, table, td, a { -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
   table, td { mso-table-lspace:0pt; mso-table-rspace:0pt; }
   img { -ms-interpolation-mode:bicubic; border:0; display:block; }
   body { margin:0; padding:0; background-color:#f0f2f5; }
 
+  /*
+   * DARK MODE — @media funciona en: Hotmail/Outlook.com, Apple Mail,
+   * Samsung Mail, Thunderbird. Gmail usa auto-inversión propia (ignora <style>).
+   * Todos los elementos con texto tienen clase explícita para cobertura completa.
+   */
   @media (prefers-color-scheme: dark) {
     body, .email-bg   { background-color:#0f0f13 !important; }
-    .card             { background-color:#1a1a24 !important; }
-    .card-body        { background-color:#1a1a24 !important; }
-    .greeting         { color:#c4b5fd !important; }
-    .body-text        { color:#b0b8cc !important; }
-    .msg-box          { background-color:#252535 !important; border-color:#7c3aed !important; }
-    .msg-text         { color:#e2d9ff !important; }
-    .footer-bg        { background-color:#111118 !important; }
-    .footer-text      { color:#6b7280 !important; }
-    .footer-link      { color:#a78bfa !important; }
+    .card-body        { background-color:#1a1a24 !important;
+                        border-color:#2d2d3d !important; }
+    /* Header gradient NO se toca — ya es oscuro, se ve bien en ambos modos */
+
+    /* Textos del cuerpo */
+    .t-greeting       { color:#c4b5fd !important; }
+    .t-body           { color:#b0b8cc !important; }
+    .t-accent         { color:#a78bfa !important; }
+    .t-msg            { color:#e2d9ff !important; }
+    .t-sig            { color:#9ca3af !important; }
+    .t-sig-name       { color:#e2d9ff !important; }
+
+    /* Cajas */
+    .msg-box          { background-color:#252535 !important;
+                        border-left-color:#7c3aed !important; }
+
+    /* Footer */
+    .footer-bg        { background-color:#111118 !important;
+                        border-color:#2d2d3d !important; }
+    .t-footer         { color:#6b7280 !important; }
+    .t-footer-link    { color:#a78bfa !important; }
   }
 
-  [data-ogsc] body, [data-ogsc] .email-bg { background-color:#0f0f13 !important; }
-  [data-ogsc] .card                        { background-color:#1a1a24 !important; }
-  [data-ogsc] .msg-box                     { background-color:#252535 !important; }
-  [data-ogsc] .footer-bg                   { background-color:#111118 !important; }
+  /*
+   * [data-ogsc] — Outlook.com agrega este atributo al <body> en dark mode.
+   * Cubre las mismas reglas para garantizar soporte completo en Hotmail web.
+   */
+  [data-ogsc] body,
+  [data-ogsc] .email-bg  { background-color:#0f0f13 !important; }
+  [data-ogsc] .card-body { background-color:#1a1a24 !important;
+                            border-color:#2d2d3d !important; }
+  [data-ogsc] .t-greeting    { color:#c4b5fd !important; }
+  [data-ogsc] .t-body        { color:#b0b8cc !important; }
+  [data-ogsc] .t-accent      { color:#a78bfa !important; }
+  [data-ogsc] .t-msg         { color:#e2d9ff !important; }
+  [data-ogsc] .t-sig         { color:#9ca3af !important; }
+  [data-ogsc] .t-sig-name    { color:#e2d9ff !important; }
+  [data-ogsc] .msg-box       { background-color:#252535 !important;
+                                border-left-color:#7c3aed !important; }
+  [data-ogsc] .footer-bg     { background-color:#111118 !important;
+                                border-color:#2d2d3d !important; }
+  [data-ogsc] .t-footer      { color:#6b7280 !important; }
+  [data-ogsc] .t-footer-link { color:#a78bfa !important; }
 </style>
 </head>
 <body class="email-bg" style="margin:0;padding:0;background-color:#f0f2f5;">
 
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="email-bg" style="background-color:#f0f2f5;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+       class="email-bg" style="background-color:#f0f2f5;">
 <tr><td align="center" style="padding:32px 16px;">
 
-  <table role="presentation" width="100%" style="max-width:600px;" cellpadding="0" cellspacing="0" border="0">
+  <table role="presentation" width="100%" style="max-width:600px;"
+         cellpadding="0" cellspacing="0" border="0">
 
-    <!-- Header -->
+    <!-- ═══ HEADER — gradiente siempre oscuro, igual en light y dark ═══ -->
     <tr>
-      <td class="card" style="background:linear-gradient(135deg,#3b1a6e 0%,#6d28d9 55%,#be185d 100%);border-radius:16px 16px 0 0;padding:40px 36px;text-align:center;">
-        <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:28px;font-weight:800;color:#ffffff;letter-spacing:0.5px;">
+      <td style="background:linear-gradient(135deg,#3b1a6e 0%,#6d28d9 55%,#be185d 100%);
+                 border-radius:16px 16px 0 0;padding:40px 36px;text-align:center;">
+        <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:28px;
+                  font-weight:800;color:#ffffff;letter-spacing:0.5px;">
           🏠 Kislev
         </p>
-        <p style="margin:0;font-family:Arial,sans-serif;font-size:14px;color:#ffffff;opacity:1;">
+        <p style="margin:0;font-family:Arial,sans-serif;font-size:14px;color:#e9d5ff;">
           Notificación General — {{ conjunto.nombre }}
         </p>
       </td>
     </tr>
 
-    <!-- Body -->
+    <!-- ═══ BODY ═══ -->
     <tr>
-      <td class="card card-body" style="background-color:#ffffff;padding:36px 36px 28px;border-left:1px solid #e5e7eb;border-right:1px solid #e5e7eb;">
+      <td class="card-body"
+          style="background-color:#ffffff;padding:36px 36px 28px;
+                 border-left:1px solid #e5e7eb;border-right:1px solid #e5e7eb;">
 
-        <p class="greeting" style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:20px;font-weight:700;color:#4c1d95;">
+        <!-- Saludo -->
+        <p class="t-greeting"
+           style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:20px;
+                  font-weight:700;color:#4c1d95;">
           ¡Hola, {{ nombre }}!
         </p>
-        <p class="body-text" style="margin:0 0 24px;font-family:Arial,sans-serif;font-size:14px;color:#4b5563;line-height:1.75;">
-          La administración de <strong style="color:#6d28d9;">{{ conjunto.nombre }}</strong> te envía el siguiente mensaje:
+
+        <!-- Intro -->
+        <p class="t-body"
+           style="margin:0 0 24px;font-family:Arial,sans-serif;font-size:14px;
+                  color:#4b5563;line-height:1.75;">
+          La administración de
+          <strong class="t-accent" style="color:#6d28d9;">{{ conjunto.nombre }}</strong>
+          te envía el siguiente mensaje:
         </p>
 
         <!-- Caja de mensaje -->
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
                class="msg-box"
-               style="background-color:#f5f0ff;border-left:4px solid #7c3aed;border-radius:10px;margin-bottom:28px;">
+               style="background-color:#f5f0ff;border-left:4px solid #7c3aed;
+                      border-radius:10px;margin-bottom:28px;">
           <tr>
             <td style="padding:22px 24px;">
-              <p class="msg-text" style="margin:0;font-family:Arial,sans-serif;font-size:15px;color:#374151;line-height:1.75;">
+              <p class="t-msg"
+                 style="margin:0;font-family:Arial,sans-serif;font-size:15px;
+                        color:#374151;line-height:1.75;">
                 {{ mensaje|safe }}
               </p>
             </td>
@@ -78,23 +130,33 @@
         </table>
 
         <!-- Firma -->
-        <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#6b7280;line-height:1.6;">
+        <p class="t-sig"
+           style="margin:0;font-family:Arial,sans-serif;font-size:13px;
+                  color:#6b7280;line-height:1.6;">
           Atentamente,<br>
-          <strong style="color:#374151;">Administración {{ conjunto.nombre }}</strong>
+          <strong class="t-sig-name" style="color:#374151;">
+            Administración {{ conjunto.nombre }}
+          </strong>
         </p>
 
       </td>
     </tr>
 
-    <!-- Footer -->
+    <!-- ═══ FOOTER ═══ -->
     <tr>
       <td class="footer-bg"
-          style="background-color:#f9fafb;padding:20px 36px;text-align:center;border-top:1px solid #e5e7eb;border-radius:0 0 16px 16px;border-left:1px solid #e5e7eb;border-right:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb;">
-        <p class="footer-text" style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:12px;color:#9ca3af;line-height:1.6;">
+          style="background-color:#f9fafb;padding:20px 36px;text-align:center;
+                 border-top:1px solid #e5e7eb;border-radius:0 0 16px 16px;
+                 border-left:1px solid #e5e7eb;border-right:1px solid #e5e7eb;
+                 border-bottom:1px solid #e5e7eb;">
+        <p class="t-footer"
+           style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:12px;
+                  color:#9ca3af;line-height:1.6;">
           Recibiste este mensaje porque estás registrado en {{ conjunto.nombre }}.
         </p>
-        <a href="https://kislev.net.co" class="footer-link"
-           style="font-family:Arial,sans-serif;font-size:12px;color:#7c3aed;text-decoration:none;font-weight:600;">
+        <a href="https://kislev.net.co" class="t-footer-link"
+           style="font-family:Arial,sans-serif;font-size:12px;color:#7c3aed;
+                  text-decoration:none;font-weight:600;">
           kislev.net.co
         </a>
       </td>
