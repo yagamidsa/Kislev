@@ -197,22 +197,6 @@
             </a>
         </div>
 
-        <!-- Horario de atención -->
-        {% if user.conjunto.horario_atencion %}
-        <div style="background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.25);border-radius:16px;padding:18px 22px;margin:0 0 22px;text-align:left;">
-            <p style="margin:0 0 10px;font-size:.72rem;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:.08em;">
-                🕐 Horario de atención — Administración
-            </p>
-            <div style="font-size:.85rem;color:#c4b5fd;line-height:1.9;white-space:pre-line;">{{ user.conjunto.horario_atencion }}</div>
-            {% if user.conjunto.telefono %}
-            <p style="margin:10px 0 0;font-size:.8rem;color:#9ca3af;">
-                📞 {{ user.conjunto.telefono }}
-                {% if user.conjunto.email_contacto %} &nbsp;·&nbsp; ✉️ {{ user.conjunto.email_contacto }}{% endif %}
-            </p>
-            {% endif %}
-        </div>
-        {% endif %}
-
         <!-- Vehículos visitantes activos -->
         <div class="vehicles-section">
             <h3><i class="fas fa-car" style="margin-right:6px;color:#7c3aed"></i>Mis vehículos visitantes activos</h3>
@@ -294,6 +278,101 @@ document.addEventListener('click',function(e){
     }
     draw();
 })();
+
+/* ── Horario modal ── */
+{% if user.conjunto.horario_atencion %}
+(function(){
+    const btn = document.getElementById('btnHorario');
+    const overlay = document.getElementById('horarioOverlay');
+    if(!btn || !overlay) return;
+    btn.addEventListener('mouseenter', () => {
+        btn.style.transform = 'translateY(-3px) scale(1.04)';
+        btn.style.boxShadow = '0 8px 28px rgba(109,40,217,.7)';
+    });
+    btn.addEventListener('mouseleave', () => {
+        btn.style.transform = '';
+        btn.style.boxShadow = '0 4px 18px rgba(109,40,217,.5)';
+    });
+    window.openHorario = function(){
+        overlay.style.display = 'flex';
+        requestAnimationFrame(() => { overlay.style.opacity = '1'; });
+    };
+    window.closeHorario = function(){
+        overlay.style.opacity = '0';
+        setTimeout(() => { overlay.style.display = 'none'; }, 200);
+    };
+    document.addEventListener('keydown', e => { if(e.key === 'Escape') closeHorario(); });
+})();
+{% endif %}
 </script>
+
+{% if user.conjunto.horario_atencion %}
+<!-- Botón flotante horario -->
+<button id="btnHorario" onclick="openHorario()"
+        style="position:fixed;bottom:28px;right:28px;z-index:900;
+               display:flex;align-items:center;gap:8px;
+               background:linear-gradient(135deg,#6d28d9,#be185d);
+               border:none;border-radius:50px;padding:11px 20px;
+               color:#fff;font-size:.78rem;font-weight:700;cursor:pointer;
+               box-shadow:0 4px 18px rgba(109,40,217,.5);
+               transition:transform .2s ease,box-shadow .2s ease;
+               letter-spacing:.03em;">
+    <i class="fas fa-clock" style="font-size:.85rem;"></i> Horario
+</button>
+
+<!-- Modal horario -->
+<div id="horarioOverlay" onclick="closeHorario()"
+     style="display:none;opacity:0;position:fixed;inset:0;z-index:1000;
+            background:rgba(0,0,0,.55);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);
+            align-items:center;justify-content:center;
+            transition:opacity .2s ease;">
+    <div onclick="event.stopPropagation()"
+         style="background:linear-gradient(155deg,#1a0a35 0%,#1c0f3f 60%,#200a2a 100%);
+                border:1px solid rgba(139,92,246,.35);border-radius:22px;
+                padding:28px 30px;max-width:360px;width:88%;
+                box-shadow:0 24px 70px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.04);
+                animation:horarioSlide .25s cubic-bezier(.34,1.3,.64,1) both;">
+
+        <!-- Header del modal -->
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;">
+            <div>
+                <p style="margin:0 0 3px;font-size:.68rem;font-weight:700;color:#a78bfa;
+                          text-transform:uppercase;letter-spacing:.1em;">
+                    🕐 Horario de atención
+                </p>
+                <p style="margin:0;font-size:1.05rem;font-weight:800;color:#fff;">
+                    Administración
+                </p>
+            </div>
+            <button onclick="closeHorario()"
+                    style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+                           border-radius:50%;width:30px;height:30px;color:#c4b5fd;
+                           cursor:pointer;font-size:.85rem;flex-shrink:0;margin-left:12px;
+                           transition:background .15s;">✕</button>
+        </div>
+
+        <!-- Horario -->
+        <div style="background:rgba(124,58,237,.12);border-left:3px solid #7c3aed;
+                    border-radius:0 12px 12px 0;padding:16px 18px;margin-bottom:16px;">
+            <div style="font-size:.88rem;color:#ddd6fe;line-height:2;white-space:pre-line;">{{ user.conjunto.horario_atencion }}</div>
+        </div>
+
+        {% if user.conjunto.telefono %}
+        <p style="margin:0;font-size:.8rem;color:#9ca3af;line-height:1.6;">
+            📞 {{ user.conjunto.telefono }}
+            {% if user.conjunto.email_contacto %}&nbsp;·&nbsp;✉️ {{ user.conjunto.email_contacto }}{% endif %}
+        </p>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+@keyframes horarioSlide {
+    from { opacity:0; transform:translateY(16px) scale(.97); }
+    to   { opacity:1; transform:translateY(0)    scale(1); }
+}
+</style>
+{% endif %}
+
 </body>
 </html>
