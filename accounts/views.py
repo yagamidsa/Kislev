@@ -64,7 +64,18 @@ class ControlPorteriaView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         user = request.user
-        context = {'user': user}
+        vistas_ids = NovedadVista.objects.filter(
+            usuario=user
+        ).values_list('novedad_id', flat=True)
+        novedades_no_vistas = Novedad.objects.filter(
+            conjunto=user.conjunto,
+            activa=True,
+        ).exclude(id__in=vistas_ids).order_by('-created_at')
+        context = {
+            'user': user,
+            'novedades_no_vistas': novedades_no_vistas,
+            'novedades_count': novedades_no_vistas.count(),
+        }
         return self.render_to_response(context)
 
 
