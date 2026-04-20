@@ -26,6 +26,7 @@ from .views import (
     gestionar_conjunto,
     update_config_global,
     update_conjunto_config,
+    update_mi_conjunto,
     toggle_conjunto_activo,
     eliminar_conjunto,
 )
@@ -87,6 +88,9 @@ urlpatterns = [
     # Páginas legales (públicas)
     path('politica-privacidad/', TemplateView.as_view(template_name='accounts/politica_privacidad.html'), name='politica_privacidad'),
     path('terminos-condiciones/', TemplateView.as_view(template_name='accounts/terminos_condiciones.html'), name='terminos_condiciones'),
+
+    # Admin — editar info de su propio conjunto
+    path('mi-conjunto/config/', update_mi_conjunto, name='update_mi_conjunto'),
 
     # Gestión de usuarios
     path('residentes/', gestion_usuarios, name='gestion_usuarios'),

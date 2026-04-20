@@ -925,6 +925,28 @@ def update_conjunto_config(request, conjunto_id):
     return JsonResponse({'ok': True})
 
 
+@login_required
+def update_mi_conjunto(request):
+    """AJAX — el administrador del conjunto edita la info de su propio conjunto."""
+    if request.method != 'POST':
+        return JsonResponse({'ok': False}, status=405)
+    if request.user.user_type != 'administrador':
+        return JsonResponse({'ok': False, 'error': 'Sin permiso'}, status=403)
+    conjunto = request.user.conjunto
+    if not conjunto:
+        return JsonResponse({'ok': False, 'error': 'Sin conjunto asignado'}, status=400)
+    allowed = {'horario_atencion', 'link_pago', 'nombre_agrupacion', 'nombre_unidad', 'telefono', 'email_contacto'}
+    updated = []
+    for field in allowed:
+        if field in request.POST:
+            value = request.POST[field].strip()
+            setattr(conjunto, field, value if value else '')
+            updated.append(field)
+    if updated:
+        conjunto.save(update_fields=updated)
+    return JsonResponse({'ok': True})
+
+
 # ── Excel template download ──────────────────────────────────────────────────
 
 @login_required
@@ -980,6 +1002,9 @@ def download_template(request):
          'Torre | Interior | Bloque | Manzana | (dejar vacío si no hay agrupación)'),
         ('nombre_unidad',      'Apto',
          'Apto | Casa | PH | (cualquier nombre libre)'),
+        ('horario_atencion',
+         'Lunes a viernes: 8:00 a.m. – 5:00 p.m.\nSábados: 9:00 a.m. – 12:00 m.\nDomingos y festivos: Cerrado',
+         'Texto libre. Una línea por día o rango. Se muestra a residentes y en correos.'),
     ]
     # Estilo especial para columna de opciones
     from openpyxl.styles import Font as _Font, PatternFill as _Fill, Alignment as _Align
@@ -1142,6 +1167,7 @@ def upload_conjunto(request):
                     'link_pago': str(data.get('link_pago', '') or '') or None,
                     'nombre_agrupacion': nombre_agrupacion,
                     'nombre_unidad': nombre_unidad,
+                    'horario_atencion': str(data.get('horario_atencion', '') or '').strip(),
                 },
             )
 

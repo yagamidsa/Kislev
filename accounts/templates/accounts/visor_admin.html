@@ -324,6 +324,10 @@
                 <div class="sel-icon"><i class="fas fa-users-cog"></i></div>
                 <span class="sel-label">Residentes</span>
             </div>
+            <div class="sel-card" onclick="openPanel('conjunto')">
+                <div class="sel-icon"><i class="fas fa-building"></i></div>
+                <span class="sel-label">Info Conjunto</span>
+            </div>
         </div>
 
     </div><!-- /hero -->
@@ -423,6 +427,104 @@
     </div>
 </div>
 
+<!-- Info Conjunto -->
+<div id="panel-conjunto" class="panel">
+    <div class="panel-glow" style="background:radial-gradient(ellipse at 50% 25%, rgba(109,40,217,.18) 0%, transparent 60%);"></div>
+    <button class="panel-close" onclick="closePanel('conjunto')"><i class="fas fa-times"></i></button>
+    <div class="panel-body" style="padding-bottom:32px;">
+        <div class="panel-icon-wrap" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);">
+            <i class="fas fa-building"></i>
+        </div>
+        <h2 class="panel-title" style="background:linear-gradient(135deg,#c4b5fd,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
+            Info Conjunto
+        </h2>
+        <p class="panel-desc">Actualiza los datos de contacto, horario de atención y configuración general del conjunto.</p>
+
+        <form id="miConjuntoForm" onsubmit="guardarMiConjunto(event)"
+              style="text-align:left;width:100%;max-width:420px;margin:0 auto;">
+            {% csrf_token %}
+
+            <div style="margin-bottom:16px;">
+                <label style="display:block;font-size:.7rem;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;">
+                    📞 Teléfono
+                </label>
+                <input name="telefono" type="text" value="{{ user.conjunto.telefono|default:'' }}"
+                       style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(139,92,246,.3);
+                              border-radius:10px;padding:10px 14px;color:#e2e8f0;font-size:.88rem;outline:none;
+                              font-family:'Poppins',sans-serif;"
+                       placeholder="Ej: 601 234 5678">
+            </div>
+
+            <div style="margin-bottom:16px;">
+                <label style="display:block;font-size:.7rem;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;">
+                    ✉️ Email de contacto
+                </label>
+                <input name="email_contacto" type="email" value="{{ user.conjunto.email_contacto|default:'' }}"
+                       style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(139,92,246,.3);
+                              border-radius:10px;padding:10px 14px;color:#e2e8f0;font-size:.88rem;outline:none;
+                              font-family:'Poppins',sans-serif;"
+                       placeholder="admin@miconjunto.com">
+            </div>
+
+            <div style="margin-bottom:16px;">
+                <label style="display:block;font-size:.7rem;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;">
+                    🕐 Horario de atención
+                </label>
+                <textarea name="horario_atencion" rows="5"
+                          style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(139,92,246,.5);
+                                 border-radius:10px;padding:10px 14px;color:#e2e8f0;font-size:.85rem;outline:none;
+                                 resize:vertical;line-height:1.7;font-family:'Poppins',sans-serif;">{{ user.conjunto.horario_atencion|default:'' }}</textarea>
+                <p style="margin:4px 0 0;font-size:.7rem;color:#6b7280;">Una línea por día o rango. Se muestra a residentes y en correos.</p>
+            </div>
+
+            <div style="margin-bottom:16px;">
+                <label style="display:block;font-size:.7rem;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;">
+                    💳 Link de pago
+                </label>
+                <input name="link_pago" type="url" value="{{ user.conjunto.link_pago|default:'' }}"
+                       style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(139,92,246,.3);
+                              border-radius:10px;padding:10px 14px;color:#e2e8f0;font-size:.88rem;outline:none;
+                              font-family:'Poppins',sans-serif;"
+                       placeholder="https://pagos.ejemplo.com/...">
+            </div>
+
+            <div style="display:flex;gap:12px;margin-bottom:4px;">
+                <div style="flex:1;">
+                    <label style="display:block;font-size:.7rem;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;">
+                        🏢 Nombre agrupación
+                    </label>
+                    <input name="nombre_agrupacion" type="text" value="{{ user.conjunto.nombre_agrupacion|default:'' }}"
+                           style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(139,92,246,.3);
+                                  border-radius:10px;padding:10px 14px;color:#e2e8f0;font-size:.88rem;outline:none;
+                                  font-family:'Poppins',sans-serif;"
+                           placeholder="Torre / Bloque…">
+                </div>
+                <div style="flex:1;">
+                    <label style="display:block;font-size:.7rem;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;">
+                        🚪 Nombre unidad
+                    </label>
+                    <input name="nombre_unidad" type="text" value="{{ user.conjunto.nombre_unidad|default:'' }}"
+                           style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(139,92,246,.3);
+                                  border-radius:10px;padding:10px 14px;color:#e2e8f0;font-size:.88rem;outline:none;
+                                  font-family:'Poppins',sans-serif;"
+                           placeholder="Apto / Casa…">
+                </div>
+            </div>
+
+            <div style="margin-top:20px;display:flex;align-items:center;gap:14px;">
+                <button type="submit"
+                        style="flex:1;background:linear-gradient(135deg,#7c3aed,#6d28d9);border:none;
+                               border-radius:12px;padding:13px;color:#fff;font-size:.88rem;font-weight:700;
+                               cursor:pointer;font-family:'Poppins',sans-serif;
+                               box-shadow:0 4px 18px rgba(109,40,217,.4);transition:opacity .2s;">
+                    <i class="fas fa-save"></i> Guardar cambios
+                </button>
+                <span id="conjuntoMsg" style="display:none;font-size:.82rem;font-weight:600;"></span>
+            </div>
+        </form>
+    </div>
+</div>
+
 
 <script>
 /* ── Reloj ── */
@@ -507,6 +609,32 @@ document.addEventListener('keydown', function(e){
     }
     draw();
 })();
+
+/* ── Info Conjunto — guardar AJAX ── */
+async function guardarMiConjunto(e) {
+    e.preventDefault();
+    const form = document.getElementById('miConjuntoForm');
+    const btn  = form.querySelector('button[type="submit"]');
+    const msg  = document.getElementById('conjuntoMsg');
+    const csrf = form.querySelector('[name=csrfmiddlewaretoken]').value;
+    const body = new FormData(form);
+    btn.disabled = true; msg.style.display = 'none';
+    try {
+        const res  = await fetch('{% url "accounts:update_mi_conjunto" %}', {
+            method: 'POST', headers: { 'X-CSRFToken': csrf }, body
+        });
+        const data = await res.json();
+        msg.textContent = data.ok ? '✓ Guardado' : '✗ Error al guardar';
+        msg.style.color  = data.ok ? '#34d399' : '#f87171';
+        msg.style.display = 'inline';
+        setTimeout(() => { msg.style.display = 'none'; }, 4000);
+    } catch {
+        msg.textContent = '✗ Error de red';
+        msg.style.color  = '#f87171';
+        msg.style.display = 'inline';
+    }
+    btn.disabled = false;
+}
 
 /* ── Horario modal ── */
 {% if user.conjunto.horario_atencion %}
