@@ -1,228 +1,108 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Notificación General</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-        
-        /* Estilos base */
-        body, html {
-            margin: 0;
-            padding: 0;
-            font-family: 'Poppins', Arial, sans-serif;
-            background-color: #f7f9fc;
-            color: #333333;
-            line-height: 1.6;
-        }
-        
-        /* Contenedor principal */
-        .email-container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-        
-        /* Encabezado con gradiente */
-        .header {
-            background: linear-gradient(45deg, #6015ab, #ffaf19);
-            padding: 25px 30px;
-            text-align: center;
-        }
-        
-        .header h1 {
-            color: white;
-            margin: 0;
-            font-size: 26px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-        }
-        
-        /* Contenido principal */
-        .content {
-            padding: 30px;
-        }
-        
-        .greeting {
-            font-size: 18px;
-            font-weight: 500;
-            margin-bottom: 25px;
-            color: #333;
-        }
-        
-        .message-box {
-            background-color: #f8f9fd;
-            border-left: 4px solid #6015ab;
-            padding: 20px 25px;
-            margin: 25px 0;
-            border-radius: 4px;
-            font-size: 16px;
-            line-height: 1.6;
-        }
-        
-        /* Firma */
-        .signature {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #e9ecef;
-        }
-        
-        .signature p {
-            margin: 5px 0;
-        }
-        
-        .signature .sender {
-            font-weight: 600;
-            font-size: 17px;
-            color: #333;
-        }
-        
-        /* Información de contacto */
-        .contact-info {
-            background-color: #f8f9fd;
-            padding: 20px 30px;
-            border-top: 1px solid #e9ecef;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-        }
-        
-        .contact-block {
-            margin-bottom: 15px;
-            flex: 1;
-            min-width: 250px;
-        }
-        
-        .contact-block h3 {
-            font-size: 15px;
-            font-weight: 600;
-            color: #555;
-            margin: 0 0 10px 0;
-        }
-        
-        .contact-block p {
-            font-size: 14px;
-            color: #666;
-            margin: 5px 0;
-            display: flex;
-            align-items: center;
-        }
-        
-        .contact-block .icon {
-            margin-right: 8px;
-            width: 18px;
-            text-align: center;
-            font-size: 16px;
-        }
-        
-        /* Pie de página */
-        .footer {
-            background-color: #333;
-            color: #fff;
-            padding: 20px 30px;
-            text-align: center;
-        }
-        
-        .footer p {
-            margin: 5px 0;
-            font-size: 13px;
-            opacity: 0.9;
-        }
-        
-        .footer .legal {
-            margin-top: 10px;
-            font-size: 12px;
-            opacity: 0.7;
-        }
-        
-        /* Estilos responsivos */
-        @media (max-width: 600px) {
-            .content, .contact-info {
-                padding: 20px;
-            }
-            
-            .header h1 {
-                font-size: 22px;
-            }
-            
-            .greeting {
-                font-size: 16px;
-            }
-            
-            .message-box {
-                padding: 15px;
-                font-size: 15px;
-            }
-            
-            .contact-block {
-                flex: 100%;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
+<title>Notificación General — Kislev</title>
+<!--[if mso]>
+<noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript>
+<![endif]-->
+<style>
+  body, table, td, a { -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
+  table, td { mso-table-lspace:0pt; mso-table-rspace:0pt; }
+  img { -ms-interpolation-mode:bicubic; border:0; display:block; }
+  body { margin:0; padding:0; background-color:#f0f2f5; }
+
+  @media (prefers-color-scheme: dark) {
+    body, .email-bg   { background-color:#0f0f13 !important; }
+    .card             { background-color:#1a1a24 !important; }
+    .card-body        { background-color:#1a1a24 !important; }
+    .greeting         { color:#c4b5fd !important; }
+    .body-text        { color:#b0b8cc !important; }
+    .msg-box          { background-color:#252535 !important; border-color:#7c3aed !important; }
+    .msg-text         { color:#e2d9ff !important; }
+    .footer-bg        { background-color:#111118 !important; }
+    .footer-text      { color:#6b7280 !important; }
+    .footer-link      { color:#a78bfa !important; }
+  }
+
+  [data-ogsc] body, [data-ogsc] .email-bg { background-color:#0f0f13 !important; }
+  [data-ogsc] .card                        { background-color:#1a1a24 !important; }
+  [data-ogsc] .msg-box                     { background-color:#252535 !important; }
+  [data-ogsc] .footer-bg                   { background-color:#111118 !important; }
+</style>
 </head>
-<body>
-    <table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#f7f9fc">
-        <tr>
-            <td align="center" style="padding: 20px 0;">
-                <!-- Container -->
-                <div class="email-container">
-                    <!-- Header -->
-                    <div class="header">
-                        <h1>Notificación General</h1>
-                    </div>
-                    
-                    <!-- Content -->
-                    <div class="content">
-                        <div class="greeting">
-                            Estimado(a) <strong>{{ nombre }}</strong>,
-                        </div>
-                        
-                        <div class="message-box">
-                            {{ mensaje|safe }}
-                        </div>
-                        
-                        <div class="signature">
-                            <p>Atentamente,</p>
-                            <p class="sender">Administración {{ conjunto.nombre }}</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Contact Information -->
-                    <div class="contact-info">
-                        <div class="contact-block">
-                            <h3>Contacto</h3>
-                            <p><span class="icon">📞</span> {{ conjunto.telefono|default:"(601) XXX-XXXX" }}</p>
-                            <p><span class="icon">📧</span> {{ conjunto.email_contacto|default:"admin@conjunto.com" }}</p>
-                            <p><span class="icon">🏢</span> Oficina de Administración</p>
-                        </div>
-                        
-                        <div class="contact-block">
-                            <h3>Horario de Atención</h3>
-                            <p><span class="icon">🕘</span> Lunes a Viernes: 8:00 AM - 6:00 PM</p>
-                            <p><span class="icon">🕙</span> Sábados: 9:00 AM - 1:00 PM</p>
-                            <p><span class="icon">🔔</span> Emergencias: 24/7</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Footer -->
-                    <div class="footer">
-                        <p>© 2024 {{ conjunto.nombre }}</p>
-                        <p>Todos los derechos reservados</p>
-                        <p class="legal">
-                            Recibió este email porque está registrado como propietario en nuestro sistema.
-                            Para dejar de recibir estos mensajes, por favor contacte a la administración.
-                        </p>
-                    </div>
-                </div>
-                <!-- End Container -->
+<body class="email-bg" style="margin:0;padding:0;background-color:#f0f2f5;">
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="email-bg" style="background-color:#f0f2f5;">
+<tr><td align="center" style="padding:32px 16px;">
+
+  <table role="presentation" width="100%" style="max-width:600px;" cellpadding="0" cellspacing="0" border="0">
+
+    <!-- Header -->
+    <tr>
+      <td class="card" style="background:linear-gradient(135deg,#3b1a6e 0%,#6d28d9 55%,#be185d 100%);border-radius:16px 16px 0 0;padding:40px 36px;text-align:center;">
+        <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:28px;font-weight:800;color:#ffffff;letter-spacing:0.5px;">
+          🏠 Kislev
+        </p>
+        <p style="margin:0;font-family:Arial,sans-serif;font-size:14px;color:#ffffff;opacity:1;">
+          Notificación General — {{ conjunto.nombre }}
+        </p>
+      </td>
+    </tr>
+
+    <!-- Body -->
+    <tr>
+      <td class="card card-body" style="background-color:#ffffff;padding:36px 36px 28px;border-left:1px solid #e5e7eb;border-right:1px solid #e5e7eb;">
+
+        <p class="greeting" style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:20px;font-weight:700;color:#4c1d95;">
+          ¡Hola, {{ nombre }}!
+        </p>
+        <p class="body-text" style="margin:0 0 24px;font-family:Arial,sans-serif;font-size:14px;color:#4b5563;line-height:1.75;">
+          La administración de <strong style="color:#6d28d9;">{{ conjunto.nombre }}</strong> te envía el siguiente mensaje:
+        </p>
+
+        <!-- Caja de mensaje -->
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+               class="msg-box"
+               style="background-color:#f5f0ff;border-left:4px solid #7c3aed;border-radius:10px;margin-bottom:28px;">
+          <tr>
+            <td style="padding:22px 24px;">
+              <p class="msg-text" style="margin:0;font-family:Arial,sans-serif;font-size:15px;color:#374151;line-height:1.75;">
+                {{ mensaje|safe }}
+              </p>
             </td>
-        </tr>
-    </table>
+          </tr>
+        </table>
+
+        <!-- Firma -->
+        <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#6b7280;line-height:1.6;">
+          Atentamente,<br>
+          <strong style="color:#374151;">Administración {{ conjunto.nombre }}</strong>
+        </p>
+
+      </td>
+    </tr>
+
+    <!-- Footer -->
+    <tr>
+      <td class="footer-bg"
+          style="background-color:#f9fafb;padding:20px 36px;text-align:center;border-top:1px solid #e5e7eb;border-radius:0 0 16px 16px;border-left:1px solid #e5e7eb;border-right:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb;">
+        <p class="footer-text" style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:12px;color:#9ca3af;line-height:1.6;">
+          Recibiste este mensaje porque estás registrado en {{ conjunto.nombre }}.
+        </p>
+        <a href="https://kislev.net.co" class="footer-link"
+           style="font-family:Arial,sans-serif;font-size:12px;color:#7c3aed;text-decoration:none;font-weight:600;">
+          kislev.net.co
+        </a>
+      </td>
+    </tr>
+
+  </table>
+</td></tr>
+</table>
+
 </body>
 </html>

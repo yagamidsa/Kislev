@@ -427,7 +427,7 @@ def _send_reset_email(usuario, reset_url):
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f2f5;padding:32px 16px">
 <tr><td align="center"><table width="100%" style="max-width:520px" cellpadding="0" cellspacing="0">
 <tr><td style="background:linear-gradient(135deg,#3b1a6e,#6d28d9,#be185d);border-radius:16px 16px 0 0;padding:32px;text-align:center">
-  <p style="margin:0;font-size:24px;font-weight:800;color:#fff">🔐 Kislev</p>
+  <p style="margin:0;font-size:24px;font-weight:800;color:#fff">🏠 Kislev</p>
   <p style="margin:6px 0 0;font-size:13px;color:rgba(255,255,255,.85)">Restablecer contraseña</p>
 </td></tr>
 <tr><td style="background:#fff;padding:32px;border-left:1px solid #e5e7eb;border-right:1px solid #e5e7eb">

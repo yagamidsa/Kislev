@@ -1,333 +1,141 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Notificación de Servicio</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-        
-        /* Estilos base */
-        body, html {
-            margin: 0;
-            padding: 0;
-            font-family: 'Poppins', Arial, sans-serif;
-            background-color: #f7f9fc;
-            color: #333333;
-            line-height: 1.6;
-        }
-        
-        /* Contenedor principal */
-        .email-container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-        
-        /* Encabezado con gradiente */
-        .header {
-            background: linear-gradient(45deg, #6015ab, #ffaf19);
-            padding: 25px 30px;
-            text-align: center;
-        }
-        
-        .header h1 {
-            color: white;
-            margin: 0;
-            font-size: 26px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-        }
-        
-        /* Contenido principal */
-        .content {
-            padding: 30px;
-        }
-        
-        .greeting {
-            font-size: 18px;
-            font-weight: 500;
-            margin-bottom: 25px;
-            color: #333;
-        }
-        
-        .service-info {
-            background-color: #f8f9fd;
-            border-left: 4px solid #6015ab;
-            padding: 20px 25px;
-            margin: 25px 0;
-            border-radius: 4px;
-        }
-        
-        .service-label {
-            font-size: 17px;
-            font-weight: 600;
-            color: #444;
-            margin-bottom: 15px;
-        }
-        
-        .service-message {
-            font-size: 16px;
-            line-height: 1.6;
-            color: #555;
-            margin-bottom: 0;
-        }
-        
-        /* Iconos de servicios */
-        .service-icon {
-            width: 60px;
-            height: 60px;
-            margin: 0 auto 15px;
-            display: block;
-            background-color: #f1f3f9;
-            border-radius: 50%;
-            padding: 12px;
-            box-sizing: border-box;
-        }
-        
-        .service-icon.light {
-            border: 2px solid #ff9800;
-        }
-        
-        .service-icon.water {
-            border: 2px solid #2196f3;
-        }
-        
-        .service-icon.gas {
-            border: 2px solid #f44336;
-        }
-        
-        /* Firma */
-        .signature {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #e9ecef;
-        }
-        
-        .signature p {
-            margin: 5px 0;
-        }
-        
-        .signature .sender {
-            font-weight: 600;
-            font-size: 17px;
-            color: #333;
-        }
-        
-        /* Información de contacto */
-        .contact-info {
-            background-color: #f8f9fd;
-            padding: 20px 30px;
-            border-top: 1px solid #e9ecef;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-        }
-        
-        .contact-block {
-            margin-bottom: 15px;
-            flex: 1;
-            min-width: 250px;
-        }
-        
-        .contact-block h3 {
-            font-size: 15px;
-            font-weight: 600;
-            color: #555;
-            margin: 0 0 10px 0;
-        }
-        
-        .contact-block p {
-            font-size: 14px;
-            color: #666;
-            margin: 5px 0;
-            display: flex;
-            align-items: center;
-        }
-        
-        .contact-block .icon {
-            margin-right: 8px;
-            width: 18px;
-            text-align: center;
-            font-size: 16px;
-        }
-        
-        /* Botón de acción (modificado para ser sólo informativo) */
-        .info-button {
-            display: inline-block;
-            background: linear-gradient(45deg, #6015ab, #8a2be2);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 30px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 16px;
-            margin: 20px 0;
-            text-align: center;
-            box-shadow: 0 4px 10px rgba(96, 21, 171, 0.3);
-        }
-        
-        /* Pie de página */
-        .footer {
-            background-color: #333;
-            color: #fff;
-            padding: 20px 30px;
-            text-align: center;
-        }
-        
-        .footer p {
-            margin: 5px 0;
-            font-size: 13px;
-            opacity: 0.9;
-        }
-        
-        .footer .legal {
-            margin-top: 10px;
-            font-size: 12px;
-            opacity: 0.7;
-        }
-        
-        /* Estilos responsivos */
-        @media (max-width: 600px) {
-            .content, .contact-info {
-                padding: 20px;
-            }
-            
-            .header h1 {
-                font-size: 22px;
-            }
-            
-            .greeting {
-                font-size: 16px;
-            }
-            
-            .service-info {
-                padding: 15px;
-            }
-            
-            .service-label {
-                font-size: 16px;
-            }
-            
-            .service-message {
-                font-size: 15px;
-            }
-            
-            .contact-block {
-                flex: 100%;
-            }
-            
-            .info-button {
-                display: block;
-                text-align: center;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
+<title>Notificación de Servicio — Kislev</title>
+<!--[if mso]>
+<noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript>
+<![endif]-->
+<style>
+  body, table, td, a { -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
+  table, td { mso-table-lspace:0pt; mso-table-rspace:0pt; }
+  img { -ms-interpolation-mode:bicubic; border:0; display:block; }
+  body { margin:0; padding:0; background-color:#f0f2f5; }
+
+  @media (prefers-color-scheme: dark) {
+    body, .email-bg   { background-color:#0f0f13 !important; }
+    .card             { background-color:#1a1a24 !important; }
+    .card-body        { background-color:#1a1a24 !important; }
+    .greeting         { color:#c4b5fd !important; }
+    .body-text        { color:#b0b8cc !important; }
+    .svc-box          { background-color:#252535 !important; border-color:#7c3aed !important; }
+    .svc-text         { color:#e2d9ff !important; }
+    .warn-box         { background-color:#2a2210 !important; border-color:#f59e0b !important; }
+    .warn-text        { color:#fcd34d !important; }
+    .footer-bg        { background-color:#111118 !important; }
+    .footer-text      { color:#6b7280 !important; }
+    .footer-link      { color:#a78bfa !important; }
+  }
+
+  [data-ogsc] body, [data-ogsc] .email-bg { background-color:#0f0f13 !important; }
+  [data-ogsc] .card                        { background-color:#1a1a24 !important; }
+  [data-ogsc] .svc-box                     { background-color:#252535 !important; }
+  [data-ogsc] .footer-bg                   { background-color:#111118 !important; }
+</style>
 </head>
-<body>
-    <table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#f7f9fc">
-        <tr>
-            <td align="center" style="padding: 20px 0;">
-                <!-- Container -->
-                <div class="email-container">
-                    <!-- Header -->
-                    <div class="header">
-                        <h1>Notificación de Servicio</h1>
-                    </div>
-                    
-                    <!-- Content -->
-                    <div class="content">
-                        <div class="greeting">
-                            Estimado(a) <strong>{{ nombre }}</strong>,
-                        </div>
-                        
-                        <div style="text-align: center; margin: 20px 0;">
-                            {% if service_type == 'Luz' %}
-                            <div class="service-icon light">
-                                <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="#ff9800" stroke-width="2">
-                                    <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                                </svg>
-                            </div>
-                            {% elif service_type == 'Agua' %}
-                            <div class="service-icon water">
-                                <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="#2196f3" stroke-width="2">
-                                    <path d="M12 22c4.97 0 9-4.03 9-9s-9-13-9-13-9 8.03-9 13 4.03 9 9 9zm0-16c.64.64 6 5.37 6 7 0 3.31-2.69 6-6 6s-6-2.69-6-6c0-1.63 5.36-6.36 6-7z" />
-                                </svg>
-                            </div>
-                            {% elif service_type == 'Gas' %}
-                            <div class="service-icon gas">
-                                <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="#f44336" stroke-width="2">
-                                    <path d="M3 7v2c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V7m4 0v2c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V7" />
-                                    <path d="M3 7h18" />
-                                    <path d="M3 10v7a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-7" />
-                                    <path d="M15 10v7a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-7" />
-                                    <circle cx="7" cy="7" r="1" />
-                                    <circle cx="19" cy="7" r="1" />
-                                </svg>
-                            </div>
-                            {% else %}
-                            <div class="service-icon">
-                                <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="#6015ab" stroke-width="2">
-                                    <path d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-                                </svg>
-                            </div>
-                            {% endif %}
-                        </div>
-                        
-                        <div class="service-info">
-                            <p class="service-label">Servicio: {{ service_type }}</p>
-                            <p class="service-message">
-                                Su factura de {{ service_type }} está disponible para retiro en portería.
-                                Por favor, pase a retirarla en el horario de atención.
-                            </p>
-                        </div>
-                        
-                        <!-- Botón informativo sin enlace -->
-                        <div class="info-button">
-                            Retirar en Portería
-                        </div>
-                        
-                        <div class="signature">
-                            <p>Atentamente,</p>
-                            <p class="sender">Administración {{ conjunto.nombre }}</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Contact Information -->
-                    <div class="contact-info">
-                        <div class="contact-block">
-                            <h3>Contacto</h3>
-                            <p><span class="icon">📞</span> {{ conjunto.telefono|default:"(601) XXX-XXXX" }}</p>
-                            <p><span class="icon">📧</span> {{ conjunto.email_contacto|default:"admin@conjunto.com" }}</p>
-                            <p><span class="icon">🏢</span> Oficina de Administración</p>
-                        </div>
-                        
-                        <div class="contact-block">
-                            <h3>Horario de Atención</h3>
-                            <p><span class="icon">🕘</span> Lunes a Viernes: 8:00 AM - 6:00 PM</p>
-                            <p><span class="icon">🕙</span> Sábados: 9:00 AM - 1:00 PM</p>
-                            <p><span class="icon">🔔</span> Emergencias: 24/7</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Footer -->
-                    <div class="footer">
-                        <p>© 2024 {{ conjunto.nombre }}</p>
-                        <p>Todos los derechos reservados</p>
-                        <p class="legal">
-                            Recibió este email porque está registrado como propietario en nuestro sistema.
-                            Para dejar de recibir estos mensajes, por favor contacte a la administración.
-                        </p>
-                    </div>
-                </div>
-                <!-- End Container -->
+<body class="email-bg" style="margin:0;padding:0;background-color:#f0f2f5;">
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="email-bg" style="background-color:#f0f2f5;">
+<tr><td align="center" style="padding:32px 16px;">
+
+  <table role="presentation" width="100%" style="max-width:600px;" cellpadding="0" cellspacing="0" border="0">
+
+    <!-- Header -->
+    <tr>
+      <td class="card" style="background:linear-gradient(135deg,#3b1a6e 0%,#6d28d9 55%,#be185d 100%);border-radius:16px 16px 0 0;padding:40px 36px;text-align:center;">
+        <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:28px;font-weight:800;color:#ffffff;letter-spacing:0.5px;">
+          🏠 Kislev
+        </p>
+        <p style="margin:0;font-family:Arial,sans-serif;font-size:14px;color:#ffffff;opacity:1;">
+          Notificación de Servicio — {{ conjunto.nombre }}
+        </p>
+      </td>
+    </tr>
+
+    <!-- Body -->
+    <tr>
+      <td class="card card-body" style="background-color:#ffffff;padding:36px 36px 28px;border-left:1px solid #e5e7eb;border-right:1px solid #e5e7eb;">
+
+        <p class="greeting" style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:20px;font-weight:700;color:#4c1d95;">
+          ¡Hola, {{ nombre }}!
+        </p>
+        <p class="body-text" style="margin:0 0 24px;font-family:Arial,sans-serif;font-size:14px;color:#4b5563;line-height:1.75;">
+          Tienes una notificación de servicio de la administración de <strong style="color:#6d28d9;">{{ conjunto.nombre }}</strong>.
+        </p>
+
+        <!-- Caja de servicio -->
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+               class="svc-box"
+               style="background-color:#f5f0ff;border-left:4px solid #7c3aed;border-radius:10px;margin-bottom:24px;">
+          <tr>
+            <td style="padding:22px 24px;">
+              <p style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.8px;">
+                Servicio
+              </p>
+              <p class="svc-text" style="margin:0 0 14px;font-family:Arial,sans-serif;font-size:16px;font-weight:700;color:#4c1d95;">
+                {% if service_type == 'Luz' %}💡{% elif service_type == 'Agua' %}💧{% elif service_type == 'Gas' %}🔥{% else %}📄{% endif %}
+                {{ service_type }}
+              </p>
+              <p class="svc-text" style="margin:0;font-family:Arial,sans-serif;font-size:14px;color:#374151;line-height:1.7;">
+                Tu factura de <strong>{{ service_type }}</strong> está disponible para retiro en portería.
+                Por favor, pasa a retirarla en el horario de atención.
+              </p>
             </td>
-        </tr>
-    </table>
+          </tr>
+        </table>
+
+        <!-- Aviso retiro en portería -->
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+               class="warn-box"
+               style="background-color:#fffbeb;border:1px solid #fcd34d;border-radius:10px;margin-bottom:28px;">
+          <tr>
+            <td style="padding:16px 20px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="width:28px;vertical-align:top;padding-top:1px;">
+                    <p style="margin:0;font-size:18px;">📋</p>
+                  </td>
+                  <td style="vertical-align:top;padding-left:10px;">
+                    <p class="warn-text" style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#78350f;line-height:1.6;">
+                      Recuerda pasar a la <strong>oficina de administración</strong> a retirar tu factura.
+                      Horario: Lunes a Viernes 8:00 AM – 6:00 PM · Sábados 9:00 AM – 1:00 PM.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Firma -->
+        <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#6b7280;line-height:1.6;">
+          Atentamente,<br>
+          <strong style="color:#374151;">Administración {{ conjunto.nombre }}</strong>
+        </p>
+
+      </td>
+    </tr>
+
+    <!-- Footer -->
+    <tr>
+      <td class="footer-bg"
+          style="background-color:#f9fafb;padding:20px 36px;text-align:center;border-top:1px solid #e5e7eb;border-radius:0 0 16px 16px;border-left:1px solid #e5e7eb;border-right:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb;">
+        <p class="footer-text" style="margin:0 0 6px;font-family:Arial,sans-serif;font-size:12px;color:#9ca3af;line-height:1.6;">
+          Recibiste este mensaje porque estás registrado en {{ conjunto.nombre }}.
+        </p>
+        <a href="https://kislev.net.co" class="footer-link"
+           style="font-family:Arial,sans-serif;font-size:12px;color:#7c3aed;text-decoration:none;font-weight:600;">
+          kislev.net.co
+        </a>
+      </td>
+    </tr>
+
+  </table>
+</td></tr>
+</table>
+
 </body>
 </html>
