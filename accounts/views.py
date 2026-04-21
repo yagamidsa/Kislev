@@ -26,7 +26,7 @@ from .utils import role_required
 from .forms import LoginForm, SelectConjuntoForm
 from .models import Usuario, ConjuntoResidencial
 from kislevsmart.models import Novedad, NovedadVista, Visitante, VisitanteVehicular, ConfigParqueadero
-from kislevsmart.utils import calcular_cobro_parqueadero
+from kislevsmart.utils import calcular_cobro_parqueadero, send_email_async, log_envio as _log_envio_global
 from django.utils import timezone as tz
 
 
@@ -64,17 +64,15 @@ class ControlPorteriaView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         user = request.user
-        vistas_ids = NovedadVista.objects.filter(
-            usuario=user
-        ).values_list('novedad_id', flat=True)
         novedades_no_vistas = Novedad.objects.filter(
             conjunto=user.conjunto,
             activa=True,
-        ).exclude(id__in=vistas_ids).order_by('-created_at')
+        ).exclude(vistas__usuario=user).order_by('-created_at')
+        count = novedades_no_vistas.count()
         context = {
             'user': user,
             'novedades_no_vistas': novedades_no_vistas,
-            'novedades_count': novedades_no_vistas.count(),
+            'novedades_count': count,
         }
         return self.render_to_response(context)
 
@@ -85,13 +83,10 @@ class ControlpropietarioView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         user = request.user
-        vistas_ids = NovedadVista.objects.filter(
-            usuario=user
-        ).values_list('novedad_id', flat=True)
         novedades_no_vistas = Novedad.objects.filter(
             conjunto=user.conjunto,
             activa=True,
-        ).exclude(id__in=vistas_ids).order_by('-created_at')
+        ).exclude(vistas__usuario=user).order_by('-created_at')
 
         # Vehículos visitantes activos del propietario
         vehiculos_qs = VisitanteVehicular.objects.filter(
@@ -468,13 +463,8 @@ def _send_reset_email(usuario, reset_url):
         to=[usuario.email],
     )
     msg.attach_alternative(html, 'text/html')
-    msg.send(fail_silently=False)
-    # Registrar en métricas SaaS solo si el envío fue exitoso
-    try:
-        from kislevsmart.utils import log_envio
-        log_envio('email', conjunto=usuario.conjunto, detalle='Reset contraseña')
-    except Exception:
-        pass
+    send_email_async(msg, detalle=f'Reset contraseña → {usuario.email}')
+    _log_envio_global('email', conjunto=usuario.conjunto, detalle='Reset contraseña')
 
 
 class RecuperarPasswordView(View):
@@ -1132,14 +1122,10 @@ def upload_conjunto(request):
                 to=[email],
             )
             msg.attach_alternative(html, 'text/html')
-            msg.send(fail_silently=False)
-            try:
-                from kislevsmart.utils import log_envio as _log_envio
-                from accounts.models import ConjuntoResidencial as _CR
-                _conj = _CR.objects.filter(nombre=conjunto_nombre).first()
-                _log_envio('email', conjunto=_conj, detalle=f'Bienvenida: {nombre}')
-            except Exception:
-                pass
+            send_email_async(msg, detalle=f'Bienvenida upload → {email}')
+            from accounts.models import ConjuntoResidencial as _CR
+            _conj = _CR.objects.filter(nombre=conjunto_nombre).first()
+            _log_envio_global('email', conjunto=_conj, detalle=f'Bienvenida: {nombre}')
             return True
         except Exception as exc:
             return str(exc)
@@ -1505,8 +1491,8 @@ def crear_usuario(request):
             to=[email],
         )
         msg.attach_alternative(html, 'text/html')
-        msg.send(fail_silently=False)
-        _log_envio('email', conjunto=conjunto, detalle=f'Bienvenida: {nombre}')
+        send_email_async(msg, detalle=f'Bienvenida → {email}')
+        _log_envio_global('email', conjunto=conjunto, detalle=f'Bienvenida: {nombre}')
     except Exception as exc:
         email_error = str(exc)
 

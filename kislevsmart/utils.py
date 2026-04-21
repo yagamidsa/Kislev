@@ -1,11 +1,36 @@
 import logging
 import re
+import threading
 import requests as _requests
 from django.conf import settings as _settings
 
 from accounts.utils import role_required  # noqa: F401
 
 logger = logging.getLogger(__name__)
+
+
+def send_email_async(msg, detalle: str = 'email') -> None:
+    """
+    Envía un EmailMessage / EmailMultiAlternatives en un hilo daemon.
+    El request retorna inmediatamente; el envío ocurre en background.
+    Los errores se registran en el log pero nunca bloquean la respuesta.
+
+    Uso:
+        from kislevsmart.utils import send_email_async
+        send_email_async(email_message)
+
+    No usar para el envío masivo (send_service_notification) que ya
+    gestiona su propio bucle y necesita contabilizar éxitos/fallos.
+    """
+    def _send():
+        try:
+            msg.send(fail_silently=False)
+            logger.info(f"[email_async] Enviado OK — {detalle}")
+        except Exception as exc:
+            logger.error(f"[email_async] Error enviando {detalle}: {exc}")
+
+    t = threading.Thread(target=_send, daemon=True)
+    t.start()
 
 
 def _normalizar_telefono(phone):

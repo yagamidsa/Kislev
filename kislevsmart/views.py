@@ -13,7 +13,7 @@ from django.utils import timezone
 from cryptography.fernet import InvalidToken
 from django.core.mail import EmailMessage
 from .models import Visitante
-from .utils import role_required, log_audit, calcular_cobro_parqueadero, log_envio
+from .utils import role_required, log_audit, calcular_cobro_parqueadero, log_envio, send_email_async
 from django.db.models import Count, F
 from django.db.models.functions import ExtractMonth, ExtractWeekDay, ExtractHour
 import json
@@ -796,11 +796,11 @@ def enviar_notificacion_individual(request):
                         archivo['content_type']
                     )
                 
-                # Enviar correo
-                msg.send(fail_silently=False)
+                # Enviar correo en background — no bloquea el request
+                send_email_async(msg, detalle=f'Notif. individual → {propietario.email}')
                 log_envio('email', conjunto=request.user.conjunto, detalle='Notificación individual')
                 enviados += 1
-                logger.info(f"Notificación individual enviada a {propietario.email}")
+                logger.info(f"Notificación individual encolada a {propietario.email}")
                 
             except Exception as e:
                 logger.error(f"Error procesando notificación para {propietario.email}: {str(e)}")
@@ -1452,9 +1452,9 @@ def validar_qr(request, encrypted_token):
                     headers={'X-Priority': '1'},
                 )
                 email_msg.attach_alternative(html_body, 'text/html')
-                email_msg.send(fail_silently=False)
+                send_email_async(email_msg, detalle=f'Notif. visita → {visitante.email_creador}')
                 log_envio('email', conjunto=request.user.conjunto, detalle='Notif. visita registrada')
-                logger.info(f"Notificación de visita enviada a {visitante.email_creador}")
+                logger.info(f"Notificación de visita encolada a {visitante.email_creador}")
             except Exception as e:
                 logger.error(f"Error enviando notificación por email: {str(e)}")
 
@@ -1907,9 +1907,9 @@ def validar_qr_vehicular(request, encrypted_token):
                     [visitante.email_creador],
                     headers={'X-Priority': '1'}
                 )
-                email.send(fail_silently=False)
+                send_email_async(email, detalle=f'QR visitante → {visitante.email_creador}')
                 log_envio('email', conjunto=request.user.conjunto, detalle='QR visitante')
-                logger.info(f"Notificación enviada a {visitante.email_creador}")
+                logger.info(f"QR de visitante encolado a {visitante.email_creador}")
             except Exception as e:
                 logger.error(f"Error enviando notificación por email: {str(e)}")
 
@@ -2571,7 +2571,7 @@ def _enviar_email_novedad(novedad, request):
         for email in emails:
             msg = EmailMultiAlternatives(subject, plain, settings.DEFAULT_FROM_EMAIL, [email])
             msg.attach_alternative(html, 'text/html')
-            msg.send(fail_silently=True)
+            send_email_async(msg, detalle=f'Novedad "{novedad.titulo[:60]}" → {email}')
             log_envio('email', conjunto=novedad.conjunto, detalle=f'Novedad: {novedad.titulo[:80]}')
     except Exception as e:
         logger.error(f'Error enviando emails novedad: {e}')
@@ -2985,7 +2985,7 @@ def regenerar_qr_visitante(request, visitante_id):
             [nuevo.email],
         )
         email_message.attach(f'qr_{nuevo.id}.png', qr_buffer.getvalue(), 'image/png')
-        email_message.send()
+        send_email_async(email_message, detalle=f'QR regenerado → {nuevo.email}')
         log_envio('email', conjunto=request.user.conjunto, detalle='QR regenerado')
     except Exception as e:
         logger.error(f"Error enviando email QR regenerado: {e}")
