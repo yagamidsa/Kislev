@@ -605,14 +605,23 @@ def saas_dashboard(request):
     from django.db.models import Count
     import datetime
 
+    from kislevsmart.utils import uso_almacenamiento_conjunto
     conjuntos = ConjuntoResidencial.objects.all().order_by('nombre')
     stats = []
+    total_storage_bytes = 0
     for c in conjuntos:
+        uso_bytes = uso_almacenamiento_conjunto(c)
+        total_storage_bytes += uso_bytes
+        cuota_bytes = (c.cuota_almacenamiento_mb or 2048) * 1024 * 1024
+        pct_storage = min(round(uso_bytes * 100 / cuota_bytes), 100) if cuota_bytes else 0
         stats.append({
-            'conjunto': c,
+            'conjunto':     c,
             'propietarios': Usuario.objects.filter(conjunto=c, user_type='propietario', is_active=True).count(),
-            'admins': Usuario.objects.filter(conjunto=c, user_type='administrador', is_active=True).count(),
-            'porteria': Usuario.objects.filter(conjunto=c, user_type='porteria', is_active=True).count(),
+            'admins':       Usuario.objects.filter(conjunto=c, user_type='administrador', is_active=True).count(),
+            'porteria':     Usuario.objects.filter(conjunto=c, user_type='porteria', is_active=True).count(),
+            'uso_mb':       round(uso_bytes / 1024 / 1024, 1),
+            'cuota_mb':     c.cuota_almacenamiento_mb or 2048,
+            'pct_storage':  pct_storage,
         })
 
     hoy = timezone.localdate()
@@ -664,17 +673,21 @@ def saas_dashboard(request):
     pct_wa    = min(round(wa_mes    * 100 / cfg.limite_whatsapp_mes) if cfg.limite_whatsapp_mes else 0, 100)
 
     return render(request, 'accounts/saas_dashboard.html', {
-        'stats':           stats,
-        'emails_mes':      emails_mes,
-        'wa_mes':          wa_mes,
-        'limite_emails':   cfg.limite_emails_mes,
-        'limite_wa':       cfg.limite_whatsapp_mes,
-        'pct_email':       pct_email,
-        'pct_wa':          pct_wa,
-        'top_email':       list(top_email),
-        'top_wa':          list(top_wa),
-        'mes_label':       mes_inicio.strftime('%B %Y'),
-        'meses_opciones':  meses_opciones,
+        'stats':               stats,
+        'emails_mes':          emails_mes,
+        'wa_mes':              wa_mes,
+        'limite_emails':       cfg.limite_emails_mes,
+        'limite_wa':           cfg.limite_whatsapp_mes,
+        'pct_email':           pct_email,
+        'pct_wa':              pct_wa,
+        'top_email':           list(top_email),
+        'top_wa':              list(top_wa),
+        'mes_label':           mes_inicio.strftime('%B %Y'),
+        'meses_opciones':      meses_opciones,
+        'total_storage_mb':    round(total_storage_bytes / 1024 / 1024, 1),
+        'total_storage_gb':    round(total_storage_bytes / 1024 / 1024 / 1024, 2),
+        'r2_free_gb':          10,
+        'pct_r2':              min(round(total_storage_bytes * 100 / (10 * 1024**3)), 100),
     })
 
 
