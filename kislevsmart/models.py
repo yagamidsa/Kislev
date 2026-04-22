@@ -60,7 +60,11 @@ class Visitante(models.Model):
             
         super().save(*args, **kwargs)
 
-
+    class Meta:
+        indexes = [
+            models.Index(fields=['email_creador'], name='vis_email_creador_idx'),
+            models.Index(fields=['fecha_generacion'], name='vis_fecha_gen_idx'),
+        ]
 
 
 
@@ -128,6 +132,13 @@ class VisitanteVehicular(models.Model):
             )
             
         super().save(*args, **kwargs)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['email_creador'], name='visveh_email_creador_idx'),
+            models.Index(fields=['fecha_generacion'], name='visveh_fecha_gen_idx'),
+            models.Index(fields=['conjunto', 'ultima_lectura'], name='visveh_conj_ulect_idx'),
+        ]
 
     def esta_completado(self):
         """Verifica si el visitante ya realizó las dos lecturas"""
@@ -475,6 +486,9 @@ class AuditLog(models.Model):
         ordering = ['-fecha']
         verbose_name = 'Registro de auditoría'
         verbose_name_plural = 'Registros de auditoría'
+        indexes = [
+            models.Index(fields=['fecha'], name='audit_fecha_idx'),
+        ]
 
     def __str__(self):
         return f"{self.fecha:%d/%m/%Y %H:%M} — {self.get_accion_display()}"
@@ -495,6 +509,9 @@ class Novedad(models.Model):
         ordering = ['-created_at']
         verbose_name = 'Novedad'
         verbose_name_plural = 'Novedades'
+        indexes = [
+            models.Index(fields=['conjunto', 'activa', 'created_at'], name='novedad_conj_activa_idx'),
+        ]
 
     def __str__(self):
         return self.titulo
@@ -555,6 +572,9 @@ class NovedadVista(models.Model):
     class Meta:
         db_table = 'novedades_vistas'
         unique_together = [['novedad', 'usuario']]
+        indexes = [
+            models.Index(fields=['usuario'], name='novedadvista_usuario_idx'),
+        ]
 
     def __str__(self):
         return f"{self.usuario.nombre} vio {self.novedad.titulo}"
