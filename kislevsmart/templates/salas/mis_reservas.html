@@ -110,7 +110,7 @@
 </head>
 <body>
 <div class="header">
-    <a href="{% url 'lista_salas' %}" class="back-btn">← Volver</a>
+    <a href="javascript:location.replace('{% url 'lista_salas' %}')" class="back-btn">← Volver</a>
     <div>
         <h1>{% if request.user.user_type == 'administrador' %}Todas las Reservas{% else %}Mis Reservas{% endif %}</h1>
         <div class="subtitle">{{ request.user.conjunto.nombre }}</div>

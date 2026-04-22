@@ -142,7 +142,7 @@
 <body>
 
 <div class="header">
-    <a href="{% url 'parking' %}" class="back-btn">← Volver</a>
+    <a href="javascript:location.replace('{% url 'parking' %}')" class="back-btn">← Volver</a>
     <div>
         <h1>Métricas <span>{{ tipo_label }}</span></h1>
         <div class="subtitle">{{ now|date:"d/m/Y H:i" }} — {{ request.user.conjunto.nombre }}</div>

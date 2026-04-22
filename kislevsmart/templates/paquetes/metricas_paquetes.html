@@ -46,7 +46,7 @@
 <div class="topbar">
   <h1><i class="fa fa-chart-bar" style="color:#db2777"></i> Métricas de Paquetes</h1>
   <div style="display:flex;gap:8px">
-    <a href="{% url 'lista_paquetes' %}" class="btn btn-back"><i class="fa fa-list"></i> Historial</a>
+    <a href="javascript:location.replace('{% url 'lista_paquetes' %}')" class="btn btn-back"><i class="fa fa-list"></i> Historial</a>
     <a href="{% url 'registrar_paquete' %}" class="btn" style="background:linear-gradient(135deg,#7c3aed,#db2777)"><i class="fa fa-plus"></i> Registrar</a>
   </div>
 </div>

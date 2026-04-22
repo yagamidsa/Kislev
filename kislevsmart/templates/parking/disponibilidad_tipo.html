@@ -139,7 +139,7 @@
 </head>
 <body>
     <div class="header">
-        <a href="{% url 'parking' %}" class="back-btn">← Volver</a>
+        <a href="javascript:location.replace('{% url 'parking' %}')" class="back-btn">← Volver</a>
         <h1>Parqueadero {{ conjunto.nombre }}{% if tipo %} — {{ tipo|capfirst }}s{% endif %}</h1>
     </div>
 

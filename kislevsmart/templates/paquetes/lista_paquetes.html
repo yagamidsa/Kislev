@@ -99,7 +99,7 @@
   <div class="topbar-right">
     <a href="{% url 'registrar_paquete' %}" class="btn btn-primary"><i class="fa fa-plus"></i> Registrar</a>
     <a href="{% url 'metricas_paquetes' %}" class="btn btn-back"><i class="fa fa-chart-bar"></i> Métricas</a>
-    <a href="javascript:history.back()" class="btn btn-back"><i class="fa fa-arrow-left"></i> Volver</a>
+    <a href="javascript:volverPanel()" class="btn btn-back"><i class="fa fa-arrow-left"></i> Volver</a>
   </div>
 </div>
 
@@ -375,5 +375,15 @@ document.getElementById('modal-editar').addEventListener('click', function(e){
 });
 </script>
 {% include "partials/paginacion.html" %}
+<script>
+history.replaceState(null, '', location.href);
+function volverPanel() {
+  {% if request.user.user_type == 'administrador' %}
+    location.replace("{% url 'accounts:visor_admin' %}");
+  {% else %}
+    location.replace("{% url 'accounts:control_porteria' %}");
+  {% endif %}
+}
+</script>
 </body>
 </html>

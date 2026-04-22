@@ -78,7 +78,7 @@
 </head>
 <body>
 <div class="topbar">
-  <a href="{% url 'lista_novedades' %}" class="btn btn-back"><i class="fa fa-arrow-left"></i> Novedades</a>
+  <a href="javascript:location.replace('{% url 'lista_novedades' %}')" class="btn btn-back"><i class="fa fa-arrow-left"></i> Novedades</a>
   {% if request.user.user_type == 'administrador' %}
   <form method="POST" action="{% url 'eliminar_novedad' novedad.pk %}" onsubmit="return confirm('Eliminar esta novedad?')">
     {% csrf_token %}

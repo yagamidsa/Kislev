@@ -63,7 +63,7 @@
     <a href="{% url 'bloquear_sala' %}" class="btn btn-danger"><i class="fa fa-lock"></i> Bloquear sala</a>
     {% endif %}
     <a href="{% url 'mis_reservas' %}" class="btn btn-back"><i class="fa fa-calendar-check"></i> Mis reservas</a>
-    <a href="javascript:history.back()" class="btn btn-back"><i class="fa fa-arrow-left"></i> Volver</a>
+    <a href="javascript:volverPanel()" class="btn btn-back"><i class="fa fa-arrow-left"></i> Volver</a>
   </div>
 </div>
 
@@ -114,5 +114,17 @@
   </div>
   {% endif %}
 </div>
+<script>
+history.replaceState(null, '', location.href);
+function volverPanel() {
+  {% if request.user.user_type == 'administrador' %}
+    location.replace("{% url 'accounts:visor_admin' %}");
+  {% elif request.user.user_type == 'propietario' %}
+    location.replace("{% url 'accounts:visor_propietario' %}");
+  {% else %}
+    location.replace("{% url 'accounts:control_porteria' %}");
+  {% endif %}
+}
+</script>
 </body>
 </html>

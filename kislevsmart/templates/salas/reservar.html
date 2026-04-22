@@ -90,7 +90,7 @@
 <body>
 <div class="topbar">
   <h1><i class="fa fa-calendar-plus" style="color:#db2777"></i> Reservar {{ sala.nombre }}</h1>
-  <a href="{% url 'lista_salas' %}" class="btn btn-back"><i class="fa fa-arrow-left"></i> Zonas</a>
+  <a href="javascript:location.replace('{% url 'lista_salas' %}')" class="btn btn-back"><i class="fa fa-arrow-left"></i> Zonas</a>
 </div>
 
 <div class="container">
