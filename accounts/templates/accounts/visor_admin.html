@@ -651,6 +651,11 @@ async function guardarMiConjunto(e) {
     btn.disabled = false;
 }
 
+// Bfcache bust: si el browser restaura esta página desde caché al volver,
+// forzar recarga para que el badge de novedades refleje el estado real.
+window.addEventListener('pageshow', function(e) {
+  if (e.persisted) location.reload();
+});
 
 </script>
 

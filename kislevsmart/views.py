@@ -2463,6 +2463,13 @@ def lista_novedades(request):
     qs = Novedad.objects.filter(
         conjunto=request.user.conjunto, activa=True
     ).prefetch_related('archivos', 'comentarios')
+    # Marcar todas las novedades del conjunto como vistas de una vez
+    all_ids = list(qs.values_list('id', flat=True))
+    if all_ids:
+        NovedadVista.objects.bulk_create(
+            [NovedadVista(novedad_id=nid, usuario=request.user) for nid in all_ids],
+            ignore_conflicts=True
+        )
     paginator = Paginator(qs, 10)
     page = paginator.get_page(request.GET.get('page'))
     return render(request, 'novedades/lista.html', {'novedades': page, 'page_obj': page})

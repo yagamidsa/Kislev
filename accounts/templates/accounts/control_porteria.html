@@ -248,6 +248,12 @@ document.addEventListener('click', function(e){
     if(dd && !dd.closest('.bell-wrap').contains(e.target)) dd.classList.remove('open');
 });
 document.addEventListener('keydown', e => { if(e.key==='Escape') document.getElementById('notifDropdown')?.classList.remove('open'); });
+
+// Bfcache bust: si el browser restaura esta página desde caché al volver,
+// forzar recarga para que el badge de novedades refleje el estado real.
+window.addEventListener('pageshow', function(e) {
+  if (e.persisted) location.reload();
+});
 </script>
 
 </body>
