@@ -2564,40 +2564,55 @@ def eliminar_novedad(request, pk):
 
 
 def _enviar_email_novedad(novedad, request):
-    """Envía email a todos los usuarios activos del conjunto al publicar una novedad."""
-    try:
-        usuarios = Usuario.objects.filter(
-            conjunto=novedad.conjunto, is_active=True
-        ).exclude(pk=novedad.autor_id).values_list('email', flat=True)
-        emails = [e for e in usuarios if e]
-        if not emails:
-            return
+    """
+    Envía email a todos los usuarios activos del conjunto al publicar una novedad.
+    Usa un único hilo que envía de forma secuencial con pausa de 250 ms entre
+    cada envío para respetar el rate limit de Resend (5 req/seg).
+    """
+    import threading, time as _time
 
-        url = request.build_absolute_uri(f'/novedades/{novedad.pk}/')
-        subject = f'[{novedad.conjunto.nombre}] Nueva novedad: {novedad.titulo}'
-        plain = f'{novedad.titulo}\n\n{novedad.contenido}\n\nVer novedad: {url}'
-        html = f"""
-        <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;">
-          <div style="background:linear-gradient(135deg,#7f00ff,#e100ff);padding:30px;border-radius:12px 12px 0 0;text-align:center;">
-            <h1 style="color:#fff;margin:0;font-size:22px;">📢 {novedad.titulo}</h1>
-            <p style="color:rgba(255,255,255,0.85);margin:8px 0 0;">{novedad.conjunto.nombre}</p>
-          </div>
-          <div style="background:#fff;padding:30px;border-radius:0 0 12px 12px;border:1px solid #eee;">
-            <p style="color:#333;font-size:15px;line-height:1.6;">{novedad.contenido[:400]}{'...' if len(novedad.contenido)>400 else ''}</p>
-            <div style="text-align:center;margin:24px 0;">
-              <a href="{url}" style="background:linear-gradient(135deg,#7f00ff,#e100ff);color:#fff;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:15px;">Ver novedad completa</a>
-            </div>
-            <p style="color:#999;font-size:12px;text-align:center;">Kislev — Sistema de gestión residencial</p>
-          </div>
-        </div>"""
+    usuarios = Usuario.objects.filter(
+        conjunto=novedad.conjunto, is_active=True
+    ).exclude(pk=novedad.autor_id).values_list('email', flat=True)
+    emails = [e for e in usuarios if e]
+    if not emails:
+        return
 
-        for email in emails:
-            msg = EmailMultiAlternatives(subject, plain, settings.DEFAULT_FROM_EMAIL, [email])
-            msg.attach_alternative(html, 'text/html')
-            send_email_async(msg, detalle=f'Novedad "{novedad.titulo[:60]}" → {email}')
-            log_envio('email', conjunto=novedad.conjunto, detalle=f'Novedad: {novedad.titulo[:80]}')
-    except Exception as e:
-        logger.error(f'Error enviando emails novedad: {e}')
+    url     = request.build_absolute_uri(f'/novedades/{novedad.pk}/')
+    subject = f'[{novedad.conjunto.nombre}] Nueva novedad: {novedad.titulo}'
+    plain   = f'{novedad.titulo}\n\n{novedad.contenido}\n\nVer novedad: {url}'
+    html    = f"""
+    <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;">
+      <div style="background:linear-gradient(135deg,#7f00ff,#e100ff);padding:30px;border-radius:12px 12px 0 0;text-align:center;">
+        <h1 style="color:#fff;margin:0;font-size:22px;">📢 {novedad.titulo}</h1>
+        <p style="color:rgba(255,255,255,0.85);margin:8px 0 0;">{novedad.conjunto.nombre}</p>
+      </div>
+      <div style="background:#fff;padding:30px;border-radius:0 0 12px 12px;border:1px solid #eee;">
+        <p style="color:#333;font-size:15px;line-height:1.6;">{novedad.contenido[:400]}{'...' if len(novedad.contenido)>400 else ''}</p>
+        <div style="text-align:center;margin:24px 0;">
+          <a href="{url}" style="background:linear-gradient(135deg,#7f00ff,#e100ff);color:#fff;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:15px;">Ver novedad completa</a>
+        </div>
+        <p style="color:#999;font-size:12px;text-align:center;">Kislev — Sistema de gestión residencial</p>
+      </div>
+    </div>"""
+
+    conjunto = novedad.conjunto
+    titulo   = novedad.titulo
+
+    def _enviar_batch():
+        for i, email in enumerate(emails):
+            if i > 0:
+                _time.sleep(0.25)   # máx 4 req/seg — Resend permite 5
+            try:
+                msg = EmailMultiAlternatives(subject, plain, settings.DEFAULT_FROM_EMAIL, [email])
+                msg.attach_alternative(html, 'text/html')
+                msg.send(fail_silently=False)
+                log_envio('email', conjunto=conjunto, detalle=f'Novedad: {titulo[:80]}')
+                logger.info('[novedad_email] Enviado → %s', email)
+            except Exception as exc:
+                logger.error('[novedad_email] Error → %s: %s', email, exc)
+
+    threading.Thread(target=_enviar_batch, daemon=True).start()
 
 
 @login_required
