@@ -12,8 +12,8 @@ class Migration(migrations.Migration):
             model_name='conjuntoresidencial',
             name='cuota_almacenamiento_mb',
             field=models.PositiveIntegerField(
-                default=500,
-                help_text='Espacio máximo en MB que puede usar este conjunto para archivos e imágenes.',
+                default=2048,
+                help_text='Espacio máximo en MB que puede usar este conjunto para archivos e imágenes (default 2 GB).',
             ),
         ),
     ]

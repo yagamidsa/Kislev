@@ -150,7 +150,7 @@ def verificar_cuota(conjunto, bytes_nuevos: int) -> tuple[bool, str]:
     Comprueba si el conjunto tiene espacio para subir `bytes_nuevos` más.
     Retorna (ok: bool, mensaje: str).
     """
-    cuota_bytes = (conjunto.cuota_almacenamiento_mb or 500) * 1024 * 1024
+    cuota_bytes = (conjunto.cuota_almacenamiento_mb or 2048) * 1024 * 1024
     uso_actual  = uso_almacenamiento_conjunto(conjunto)
     disponible  = cuota_bytes - uso_actual
     if bytes_nuevos > disponible:
