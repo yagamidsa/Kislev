@@ -11,14 +11,15 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.stdout.write('\n=== CONFIG R2 ===')
-        self.stdout.write(f'DEFAULT_FILE_STORAGE : {settings.DEFAULT_FILE_STORAGE}')
+        backend = settings.STORAGES.get('default', {}).get('BACKEND', 'filesystem (local)')
+        self.stdout.write(f'DEFAULT_FILE_STORAGE : {backend}')
         self.stdout.write(f'MEDIA_URL            : {settings.MEDIA_URL}')
         self.stdout.write(f'AWS_S3_ENDPOINT_URL  : {getattr(settings, "AWS_S3_ENDPOINT_URL", "NO SET")}')
         self.stdout.write(f'AWS_STORAGE_BUCKET   : {getattr(settings, "AWS_STORAGE_BUCKET_NAME", "NO SET")}')
         self.stdout.write(f'AWS_S3_CUSTOM_DOMAIN : {getattr(settings, "AWS_S3_CUSTOM_DOMAIN", "NO SET")}')
         self.stdout.write(f'AWS_QUERYSTRING_AUTH : {getattr(settings, "AWS_QUERYSTRING_AUTH", "NO SET")}')
 
-        if 'S3Boto3' not in settings.DEFAULT_FILE_STORAGE:
+        if 'S3Boto3' not in backend:
             self.stdout.write(self.style.ERROR('\n⚠️  R2 NO activo — usando almacenamiento local'))
             self.stdout.write('Variables requeridas: R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET_NAME, R2_ACCOUNT_ID')
             return
@@ -39,7 +40,7 @@ class Command(BaseCommand):
             # Subir archivo de prueba
             key = '_test_kislev_r2_check.txt'
             s3.put_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=key, Body=b'ok')
-            self.stdout.write(self.style.SUCCESS('✓ Upload OK'))
+            self.stdout.write(self.style.SUCCESS('OK Upload exitoso'))
 
             # URL pública esperada
             domain = getattr(settings, 'AWS_S3_CUSTOM_DOMAIN', None)
@@ -47,19 +48,19 @@ class Command(BaseCommand):
                 url = f'https://{domain}/{key}'
             else:
                 url = f'{settings.AWS_S3_ENDPOINT_URL}/{settings.AWS_STORAGE_BUCKET_NAME}/{key}'
-            self.stdout.write(f'URL pública: {url}')
+            self.stdout.write(f'URL publica: {url}')
 
             # Verificar acceso HTTP
             import urllib.request
             try:
                 req = urllib.request.urlopen(url, timeout=5)
-                self.stdout.write(self.style.SUCCESS(f'✓ Acceso público OK (HTTP {req.status})'))
+                self.stdout.write(self.style.SUCCESS(f'OK Acceso publico HTTP {req.status}'))
             except Exception as e:
-                self.stdout.write(self.style.ERROR(f'✗ Acceso público FALLA: {e}'))
-                self.stdout.write('→ El bucket necesita "Public Development URL" habilitado en Cloudflare R2')
+                self.stdout.write(self.style.ERROR(f'FALLA acceso publico: {e}'))
+                self.stdout.write('-> Habilitar Public Development URL en Cloudflare R2 bucket Settings')
 
             # Limpiar
             s3.delete_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=key)
 
         except Exception as e:
-            self.stdout.write(self.style.ERROR(f'✗ ERROR: {e}'))
+            self.stdout.write(self.style.ERROR(f'ERROR: {e}'))

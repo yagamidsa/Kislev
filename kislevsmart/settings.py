@@ -226,8 +226,7 @@ _R2_BUCKET         = os.getenv('R2_BUCKET_NAME', '')
 _R2_CUSTOM_DOMAIN  = os.getenv('R2_CUSTOM_DOMAIN', '')
 
 if _R2_ACCESS_KEY and _R2_SECRET_KEY and _R2_BUCKET:
-    # ── Cloudflare R2 ──
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    # ── Cloudflare R2 (Django 5.x usa STORAGES, no DEFAULT_FILE_STORAGE) ──
     AWS_ACCESS_KEY_ID       = _R2_ACCESS_KEY
     AWS_SECRET_ACCESS_KEY   = _R2_SECRET_KEY
     AWS_STORAGE_BUCKET_NAME = _R2_BUCKET
@@ -240,6 +239,14 @@ if _R2_ACCESS_KEY and _R2_SECRET_KEY and _R2_BUCKET:
     MEDIA_URL = f'https://{_R2_CUSTOM_DOMAIN}/' if _R2_CUSTOM_DOMAIN \
                 else f'{AWS_S3_ENDPOINT_URL}/{_R2_BUCKET}/'
     MEDIA_ROOT = ''   # no se usa con almacenamiento externo
+    STORAGES = {
+        'default': {
+            'BACKEND': 'storages.backends.s3boto3.S3Boto3Storage',
+        },
+        'staticfiles': {
+            'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage',
+        },
+    }
 else:
     # ── Desarrollo local — filesystem ──
     MEDIA_URL  = '/media/'
