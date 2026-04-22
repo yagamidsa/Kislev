@@ -2,7 +2,7 @@ import base64
 from django.urls import reverse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.conf import settings
-from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
 import qrcode
 import uuid, os
 from io import BytesIO
