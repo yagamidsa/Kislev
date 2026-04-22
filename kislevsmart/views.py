@@ -1097,9 +1097,6 @@ def parking(request):
     return render(request, 'parking/inicio_parqueo.html')
 
 
-@login_required
-def zonas_comunes(request):
-    return render(request, 'zonas_comunes.html')
 
 
 _fernet_key = os.environ.get('FERNET_KEY') or getattr(settings, 'FERNET_KEY', None)

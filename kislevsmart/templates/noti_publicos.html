@@ -29,10 +29,22 @@
 
         /* ── iOS fix ── */
         html, body { height: 100%; overflow: hidden; }
-        .scroll-root { height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: none; }
+        .scroll-root {
+            height: 100%;
+            height: 100dvh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: none;
+        }
 
         /* ── PAGE WRAP ── */
-        .page-wrap { position: relative; z-index: 2; min-height: 100vh; padding: 32px 16px 40px; display: flex; align-items: center; justify-content: center; }
+        .page-wrap {
+            position: relative; z-index: 2;
+            min-height: 100vh;
+            min-height: 100dvh;
+            padding: 32px 16px calc(40px + env(safe-area-inset-bottom, 0px));
+            display: flex; align-items: center; justify-content: center;
+        }
 
         /* ── MAIN CARD ── */
         .main-card {
@@ -80,7 +92,10 @@
         .btn-modal-yes:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(124,58,237,.55); }
 
         @media(max-width:480px) {
-            .page-wrap { padding: 16px 12px 32px; align-items: flex-start; }
+            .page-wrap {
+                padding: 16px 12px calc(32px + env(safe-area-inset-bottom, 0px));
+                align-items: flex-start;
+            }
             .card-header { padding: 22px 18px 20px; }
             .card-body { padding: 20px 16px 24px; }
         }

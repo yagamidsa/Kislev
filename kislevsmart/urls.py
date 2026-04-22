@@ -38,7 +38,6 @@ urlpatterns = [
     path('leerscaner/', views.leerscaner, name='leerscaner'),
     path('notificaciones/', views.notificaciones, name='notificaciones'),
     path('parking/', views.parking, name='parking'),
-    path('zonas_comunes/', views.zonas_comunes, name='zonas_comunes'),
     path('carros/', views.disponibilidad_carros, name='disponibilidad_carros'),
     path('motos/', views.disponibilidad_motos, name='disponibilidad_motos'),
     path('parqueadero/metricas/<str:tipo>/', views.metricas_parqueadero, name='metricas_parqueadero'),
