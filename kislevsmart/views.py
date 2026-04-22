@@ -13,7 +13,7 @@ from django.utils import timezone
 from cryptography.fernet import InvalidToken
 from django.core.mail import EmailMessage
 from .models import Visitante
-from .utils import role_required, log_audit, calcular_cobro_parqueadero, log_envio, send_email_async
+from .utils import role_required, log_audit, calcular_cobro_parqueadero, log_envio, send_email_async, verificar_cuota
 from django.db.models import Count, F
 from django.db.models.functions import ExtractMonth, ExtractWeekDay, ExtractHour
 import json
@@ -2494,15 +2494,42 @@ def crear_novedad(request):
         return redirect('lista_novedades')
 
     if request.method == 'POST':
-        titulo   = sanitize_text(request.POST.get('titulo', '').strip())
+        titulo    = sanitize_text(request.POST.get('titulo', '').strip())
         contenido = request.POST.get('contenido', '').strip()
-        imagen   = request.FILES.get('imagen')
-        archivos = request.FILES.getlist('archivos')
+        imagen    = request.FILES.get('imagen')
+        archivos  = request.FILES.getlist('archivos')
 
         if not titulo or not contenido:
             messages.error(request, 'El título y el contenido son obligatorios.')
             return render(request, 'novedades/crear.html')
 
+        from django.conf import settings as _s
+        max_img_bytes  = _s.KISLEV_MAX_IMAGE_MB  * 1024 * 1024
+        max_file_bytes = _s.KISLEV_MAX_FILE_MB   * 1024 * 1024
+        max_files      = _s.KISLEV_MAX_FILES
+
+        # ── Validar tamaño de imagen ──────────────────────────────────────
+        if imagen and imagen.size > max_img_bytes:
+            messages.error(request, f'La imagen supera el límite de {_s.KISLEV_MAX_IMAGE_MB} MB.')
+            return render(request, 'novedades/crear.html')
+
+        # ── Validar adjuntos ──────────────────────────────────────────────
+        if len(archivos) > max_files:
+            messages.error(request, f'Máximo {max_files} archivos adjuntos por novedad.')
+            return render(request, 'novedades/crear.html')
+        for f in archivos:
+            if f.size > max_file_bytes:
+                messages.error(request, f'El archivo "{f.name}" supera el límite de {_s.KISLEV_MAX_FILE_MB} MB.')
+                return render(request, 'novedades/crear.html')
+
+        # ── Verificar cuota del conjunto ──────────────────────────────────
+        bytes_nuevos = (imagen.size if imagen else 0) + sum(f.size for f in archivos)
+        ok, msg_cuota = verificar_cuota(request.user.conjunto, bytes_nuevos)
+        if not ok:
+            messages.error(request, msg_cuota)
+            return render(request, 'novedades/crear.html')
+
+        # ── Guardar ───────────────────────────────────────────────────────
         novedad = Novedad.objects.create(
             conjunto=request.user.conjunto,
             autor=request.user,
@@ -2510,7 +2537,6 @@ def crear_novedad(request):
             contenido=contenido,
             imagen=imagen,
         )
-
         for f in archivos:
             ArchivoNovedad.objects.create(
                 novedad=novedad,

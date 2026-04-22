@@ -213,9 +213,42 @@ STATICFILES_DIRS = [
 ]
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Configuración de archivos media
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+# ── Almacenamiento de archivos ─────────────────────────────────────────────
+# En producción usa Cloudflare R2 (S3-compatible, sin costo de egress).
+# Variables requeridas en Railway: R2_ACCOUNT_ID, R2_ACCESS_KEY_ID,
+# R2_SECRET_ACCESS_KEY, R2_BUCKET_NAME.
+# Opcional: R2_CUSTOM_DOMAIN (p.ej. files.kislev.net.co via Workers/CDN).
+
+_R2_ACCOUNT_ID     = os.getenv('R2_ACCOUNT_ID', '')
+_R2_ACCESS_KEY     = os.getenv('R2_ACCESS_KEY_ID', '')
+_R2_SECRET_KEY     = os.getenv('R2_SECRET_ACCESS_KEY', '')
+_R2_BUCKET         = os.getenv('R2_BUCKET_NAME', '')
+_R2_CUSTOM_DOMAIN  = os.getenv('R2_CUSTOM_DOMAIN', '')
+
+if _R2_ACCESS_KEY and _R2_SECRET_KEY and _R2_BUCKET:
+    # ── Cloudflare R2 ──
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    AWS_ACCESS_KEY_ID       = _R2_ACCESS_KEY
+    AWS_SECRET_ACCESS_KEY   = _R2_SECRET_KEY
+    AWS_STORAGE_BUCKET_NAME = _R2_BUCKET
+    AWS_S3_ENDPOINT_URL     = f'https://{_R2_ACCOUNT_ID}.r2.cloudflarestorage.com'
+    AWS_S3_REGION_NAME      = 'auto'
+    AWS_DEFAULT_ACL         = None          # R2 no usa ACLs
+    AWS_S3_FILE_OVERWRITE   = False         # nunca sobreescribir
+    AWS_QUERYSTRING_AUTH    = False         # URLs públicas (sin firma)
+    AWS_S3_CUSTOM_DOMAIN    = _R2_CUSTOM_DOMAIN or None
+    MEDIA_URL = f'https://{_R2_CUSTOM_DOMAIN}/' if _R2_CUSTOM_DOMAIN \
+                else f'{AWS_S3_ENDPOINT_URL}/{_R2_BUCKET}/'
+    MEDIA_ROOT = ''   # no se usa con almacenamiento externo
+else:
+    # ── Desarrollo local — filesystem ──
+    MEDIA_URL  = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+# Límites de subida (aplicados en las views)
+KISLEV_MAX_IMAGE_MB   = int(os.getenv('MAX_IMAGE_MB', '5'))    # imagen novedad
+KISLEV_MAX_FILE_MB    = int(os.getenv('MAX_FILE_MB', '10'))    # adjunto individual
+KISLEV_MAX_FILES      = int(os.getenv('MAX_FILES_NOVEDAD', '5'))  # adjuntos por novedad
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

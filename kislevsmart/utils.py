@@ -122,6 +122,47 @@ def log_audit(request, accion, detalle=''):
         pass
 
 
+def uso_almacenamiento_conjunto(conjunto) -> int:
+    """
+    Retorna el uso actual en bytes de todos los archivos e imágenes
+    subidos por este conjunto (novedades: imagen + archivos adjuntos).
+    Suma los tamaños reales almacenados en el storage configurado.
+    """
+    from kislevsmart.models import Novedad, ArchivoNovedad
+    total = 0
+    # Imágenes de novedades
+    for nov in Novedad.objects.filter(conjunto=conjunto, imagen__isnull=False).exclude(imagen=''):
+        try:
+            total += nov.imagen.size
+        except Exception:
+            pass
+    # Archivos adjuntos
+    for arch in ArchivoNovedad.objects.filter(novedad__conjunto=conjunto):
+        try:
+            total += arch.archivo.size
+        except Exception:
+            pass
+    return total
+
+
+def verificar_cuota(conjunto, bytes_nuevos: int) -> tuple[bool, str]:
+    """
+    Comprueba si el conjunto tiene espacio para subir `bytes_nuevos` más.
+    Retorna (ok: bool, mensaje: str).
+    """
+    cuota_bytes = (conjunto.cuota_almacenamiento_mb or 500) * 1024 * 1024
+    uso_actual  = uso_almacenamiento_conjunto(conjunto)
+    disponible  = cuota_bytes - uso_actual
+    if bytes_nuevos > disponible:
+        usado_mb = uso_actual / 1024 / 1024
+        cuota_mb = cuota_bytes / 1024 / 1024
+        return False, (
+            f'Sin espacio disponible. Uso actual: {usado_mb:.1f} MB / {cuota_mb:.0f} MB. '
+            f'Elimina novedades antiguas o contacta al soporte para ampliar la cuota.'
+        )
+    return True, ''
+
+
 def calcular_cobro_parqueadero(entrada_dt, config):
     """
     Calcula el tiempo y valor a cobrar por permanencia en parqueadero.
