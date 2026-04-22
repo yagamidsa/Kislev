@@ -1,0 +1,21 @@
+{% if page_obj.has_other_pages %}
+<nav style="display:flex;justify-content:center;align-items:center;gap:8px;margin:24px 0;flex-wrap:wrap;">
+  {% if page_obj.has_previous %}
+    <a href="?{% for k,v in request.GET.items %}{% if k != 'page' %}{{ k }}={{ v }}&{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}"
+       style="padding:8px 16px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#fff;text-decoration:none;font-size:14px;">
+      &#8592; Anterior
+    </a>
+  {% endif %}
+
+  <span style="padding:8px 16px;background:rgba(99,102,241,0.25);border:1px solid rgba(99,102,241,0.5);border-radius:8px;color:#fff;font-size:14px;">
+    Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+  </span>
+
+  {% if page_obj.has_next %}
+    <a href="?{% for k,v in request.GET.items %}{% if k != 'page' %}{{ k }}={{ v }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}"
+       style="padding:8px 16px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#fff;text-decoration:none;font-size:14px;">
+      Siguiente &#8594;
+    </a>
+  {% endif %}
+</nav>
+{% endif %}

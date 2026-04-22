@@ -12,6 +12,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from cryptography.fernet import InvalidToken
 from django.core.mail import EmailMessage
+from django.core.paginator import Paginator
 from .models import Visitante
 from .utils import role_required, log_audit, calcular_cobro_parqueadero, log_envio, send_email_async, verificar_cuota
 from django.db.models import Count, F
@@ -1083,8 +1084,11 @@ def historial_visitantes(request):
         except ValueError:
             pass
 
+    paginator = Paginator(visitantes, 25)
+    page = paginator.get_page(request.GET.get('page'))
     return render(request, 'historial_visitantes.html', {
-        'visitantes': visitantes,
+        'visitantes': page,
+        'page_obj': page,
         'apartamento': apartamento,
         'fecha_desde': fecha_desde or '',
         'fecha_hasta': fecha_hasta or '',
@@ -2193,21 +2197,21 @@ def config_parqueadero(request):
 def historial_vehiculos(request, tipo_vehiculo):
     """Vista para mostrar el historial de movimientos de vehículos"""
     conjunto_id = request.user.conjunto_id
-    
-    # Obtener todos los movimientos del tipo de vehículo especificado
+
     movimientos = VisitanteVehicular.objects.filter(
         conjunto_id=conjunto_id,
         tipo_vehiculo=tipo_vehiculo,
         ultima_lectura__isnull=False
     ).select_related('conjunto').order_by('-ultima_lectura')
-    
-    context = {
-        'movimientos': movimientos,
+
+    paginator = Paginator(movimientos, 25)
+    page = paginator.get_page(request.GET.get('page'))
+    return render(request, 'parking/historial_vehiculos.html', {
+        'movimientos': page,
+        'page_obj': page,
         'tipo_vehiculo': 'Carros' if tipo_vehiculo == 'carro' else 'Motos',
-        'conjunto': request.user.conjunto
-    }
-    
-    return render(request, 'parking/historial_vehiculos.html', context)
+        'conjunto': request.user.conjunto,
+    })
 
 
 
@@ -2456,10 +2460,12 @@ def estado_cuenta(request):
 
 @login_required
 def lista_novedades(request):
-    novedades = Novedad.objects.filter(
+    qs = Novedad.objects.filter(
         conjunto=request.user.conjunto, activa=True
     ).prefetch_related('archivos', 'comentarios')
-    return render(request, 'novedades/lista.html', {'novedades': novedades})
+    paginator = Paginator(qs, 10)
+    page = paginator.get_page(request.GET.get('page'))
+    return render(request, 'novedades/lista.html', {'novedades': page, 'page_obj': page})
 
 
 @login_required
@@ -2521,6 +2527,24 @@ def crear_novedad(request):
             if f.size > max_file_bytes:
                 messages.error(request, f'El archivo "{f.name}" supera el límite de {_s.KISLEV_MAX_FILE_MB} MB.')
                 return render(request, 'novedades/crear.html')
+
+        # ── Comprimir imagen antes de subir (reduce tamaño hasta 80%) ────────
+        if imagen:
+            try:
+                from PIL import Image as _PIL
+                import io as _io
+                from django.core.files.uploadedfile import InMemoryUploadedFile as _IMU
+                img_pil = _PIL.open(imagen)
+                img_pil = img_pil.convert('RGB')
+                # Máximo 1920px en el lado más largo
+                img_pil.thumbnail((1920, 1920), _PIL.LANCZOS)
+                buf = _io.BytesIO()
+                img_pil.save(buf, format='JPEG', quality=82, optimize=True)
+                buf.seek(0)
+                imagen = _IMU(buf, 'imagen', imagen.name.rsplit('.', 1)[0] + '.jpg',
+                              'image/jpeg', buf.getbuffer().nbytes, None)
+            except Exception:
+                pass  # si falla la compresión, usa la imagen original
 
         # ── Verificar cuota del conjunto ──────────────────────────────────
         bytes_nuevos = (imagen.size if imagen else 0) + sum(f.size for f in archivos)
@@ -2916,10 +2940,13 @@ def lista_paquetes(request):
     if fecha_hasta:
         qs = qs.filter(fecha_registro__date__lte=fecha_hasta)
 
-    qs = qs.order_by('-fecha_registro')[:200]
+    qs = qs.order_by('-fecha_registro')
+    paginator = Paginator(qs, 25)
+    page = paginator.get_page(request.GET.get('page'))
 
     return render(request, 'paquetes/lista_paquetes.html', {
-        'paquetes': qs,
+        'paquetes': page,
+        'page_obj': page,
         'torres': torres,
         'filtros': {
             'torre_id': torre_id,

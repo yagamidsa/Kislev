@@ -205,12 +205,10 @@ DATETIME_INPUT_FORMATS = [
 ]
 
 # Configuración para archivos estáticos
+# STATICFILES_DIRS no va aquí — AppDirectoriesFinder ya recoge kislevsmart/static
+# y accounts/static automáticamente. Listarlo aquí causaba duplicados en collectstatic.
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'kislevsmart', 'static'),
-    os.path.join(BASE_DIR, 'accounts', 'static'),
-]
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # ── Almacenamiento de archivos ─────────────────────────────────────────────
@@ -256,6 +254,12 @@ else:
 KISLEV_MAX_IMAGE_MB   = int(os.getenv('MAX_IMAGE_MB', '5'))    # imagen novedad
 KISLEV_MAX_FILE_MB    = int(os.getenv('MAX_FILE_MB', '10'))    # adjunto individual
 KISLEV_MAX_FILES      = int(os.getenv('MAX_FILES_NOVEDAD', '5'))  # adjuntos por novedad
+
+# Límites de upload a nivel de servidor (bloquea antes de llegar a la view)
+# 5 archivos × 10 MB + imagen 5 MB = 55 MB máximo por request
+DATA_UPLOAD_MAX_MEMORY_SIZE = 60 * 1024 * 1024   # 60 MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024   # 10 MB por archivo en memoria
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 200               # evita ataques de hash flooding
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
