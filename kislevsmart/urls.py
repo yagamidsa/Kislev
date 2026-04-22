@@ -95,6 +95,9 @@ urlpatterns = [
     path('finanzas/cuota/crear/', views.crear_cuota, name='crear_cuota'),
     path('finanzas/cuota/<int:cuota_id>/pago/', views.registrar_pago, name='registrar_pago'),
     path('mi-estado-cuenta/', views.estado_cuenta, name='estado_cuenta'),
+
+    # Mantenimiento interno — llamado por cron externo con token secreto
+    path('_maint/', views.mantenimiento_cron, name='mantenimiento_cron'),
 ]
 
 # Configuración de archivos estáticos y media para desarrollo

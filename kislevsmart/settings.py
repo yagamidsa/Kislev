@@ -255,6 +255,11 @@ KISLEV_MAX_IMAGE_MB   = int(os.getenv('MAX_IMAGE_MB', '5'))    # imagen novedad
 KISLEV_MAX_FILE_MB    = int(os.getenv('MAX_FILE_MB', '10'))    # adjunto individual
 KISLEV_MAX_FILES      = int(os.getenv('MAX_FILES_NOVEDAD', '5'))  # adjuntos por novedad
 
+# Token secreto para el endpoint de mantenimiento cron (_maint/)
+# Generar con: python -c "import secrets; print(secrets.token_hex(32))"
+# Agregar como variable CRON_SECRET_TOKEN en Railway
+CRON_SECRET_TOKEN = os.getenv('CRON_SECRET_TOKEN', '')
+
 # Límites de upload a nivel de servidor (bloquea antes de llegar a la view)
 # 5 archivos × 10 MB + imagen 5 MB = 55 MB máximo por request
 DATA_UPLOAD_MAX_MEMORY_SIZE = 60 * 1024 * 1024   # 60 MB

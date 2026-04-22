@@ -19,7 +19,7 @@ from django.db.models import Count, F
 from django.db.models.functions import ExtractMonth, ExtractWeekDay, ExtractHour
 import json
 from accounts.models import Usuario, ConjuntoResidencial, Torre
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseForbidden
 from django.views.decorators.http import require_POST
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_http_methods
@@ -3058,3 +3058,33 @@ def regenerar_qr_visitante(request, visitante_id):
     log_audit(request, 'qr_regenerado', f"Visitante original: {visitante_original.id} → nuevo: {nuevo.id}")
     email_b64 = base64.urlsafe_b64encode(nuevo.email.encode()).decode()
     return redirect('valqr', email_b64=email_b64)
+
+
+@csrf_exempt
+def mantenimiento_cron(request):
+    """
+    Endpoint llamado por cron externo (cron-job.org) a las 3 AM diario.
+    Protegido con token secreto en header X-Cron-Token o param ?token=.
+    Ejecuta: clearsessions + prunar_auditlog + prunar_novedades.
+    """
+    import hmac, hashlib
+    from django.core.management import call_command
+    from io import StringIO
+
+    token_esperado = settings.CRON_SECRET_TOKEN
+    token_recibido = (
+        request.headers.get('X-Cron-Token', '')
+        or request.GET.get('token', '')
+    )
+    if not token_esperado or not hmac.compare_digest(token_recibido, token_esperado):
+        return HttpResponseForbidden('Forbidden')
+
+    out = StringIO()
+    try:
+        call_command('mantenimiento_diario', stdout=out, stderr=out)
+        logger.info('[cron] mantenimiento_diario OK')
+    except Exception as e:
+        logger.error('[cron] mantenimiento_diario ERROR: %s', e)
+        return JsonResponse({'ok': False, 'error': str(e)}, status=500)
+
+    return JsonResponse({'ok': True, 'output': out.getvalue()})
