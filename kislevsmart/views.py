@@ -1701,11 +1701,16 @@ def dashboard(request):
                 nivel = 'media'
             else:
                 nivel = 'normal'
+            if u:
+                ubicacion = u.get_ubicacion_completa()
+                if ubicacion == 'Sin ubicación asignada':
+                    ubicacion = r['numper'] or '—'
+            else:
+                ubicacion = r['numper'] or '—'
             top_apts.append({
                 'pos': i + 1,
                 'nombre': (u.nombre if u else None) or r['nombre_log'] or r['email_creador'],
-                'torre': u.torre.nombre if u and u.torre else '',
-                'apartamento': (u.apartamento if u else None) or r['numper'] or '—',
+                'ubicacion': ubicacion,
                 'total': total,
                 'pct': pct,
                 'nivel': nivel,

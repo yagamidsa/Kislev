@@ -648,7 +648,7 @@
                                 <tr style="border-bottom:1px solid rgba(255,255,255,.08)">
                                     <th style="color:rgba(255,255,255,.4);font-weight:600;padding:8px 10px;text-align:left;white-space:nowrap">#</th>
                                     <th style="color:rgba(255,255,255,.4);font-weight:600;padding:8px 10px;text-align:left">Propietario</th>
-                                    <th style="color:rgba(255,255,255,.4);font-weight:600;padding:8px 10px;text-align:left;white-space:nowrap">Torre / Apto</th>
+                                    <th style="color:rgba(255,255,255,.4);font-weight:600;padding:8px 10px;text-align:left;white-space:nowrap">Ubicación</th>
                                     <th style="color:rgba(255,255,255,.4);font-weight:600;padding:8px 10px;text-align:center;white-space:nowrap">Visitas</th>
                                     <th style="color:rgba(255,255,255,.4);font-weight:600;padding:8px 10px;text-align:left">Tráfico</th>
                                     <th style="color:rgba(255,255,255,.4);font-weight:600;padding:8px 10px;text-align:center">Alerta</th>
@@ -665,8 +665,7 @@
                                 </td>
                                 <td style="padding:11px 10px;color:#fff;font-weight:600;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ apt.nombre }}</td>
                                 <td style="padding:11px 10px;white-space:nowrap">
-                                    {% if apt.torre %}<span style="color:rgba(167,139,250,.9);font-size:11px;font-weight:600;background:rgba(124,58,237,.15);padding:2px 7px;border-radius:6px;margin-right:5px">{{ apt.torre }}</span>{% endif %}
-                                    <span style="color:#fff;font-weight:700">Apto {{ apt.apartamento }}</span>
+                                    <span style="color:#fff;font-weight:700">{{ apt.ubicacion }}</span>
                                 </td>
                                 <td style="padding:11px 10px;text-align:center">
                                     <span style="color:#fff;font-size:16px;font-weight:800">{{ apt.total }}</span>
