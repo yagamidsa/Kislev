@@ -625,86 +625,51 @@
                 </div>
 
                 <!-- Top 10 apartamentos con más visitantes -->
-                {% if top_apts %}
                 <div class="relative overflow-hidden rounded-xl mt-2">
                     <div class="absolute inset-0 bg-gray-900/40"></div>
                     <div class="absolute inset-0 backdrop-blur-sm"></div>
                     <div class="relative p-6">
-                        <div class="flex items-center justify-between mb-5">
+
+                        <!-- Header + filtros -->
+                        <div class="flex items-start justify-between gap-4 mb-5 flex-wrap">
                             <div class="flex items-center gap-3">
                                 <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#dc2626,#7c3aed);display:flex;align-items:center;justify-content:center;flex-shrink:0">
                                     <i class="fas fa-shield-halved" style="color:#fff;font-size:14px"></i>
                                 </div>
                                 <div>
-                                    <h3 class="text-white font-bold text-base leading-tight">Top 10 — Apartamentos con más visitantes</h3>
-                                    <p style="color:rgba(255,255,255,.45);font-size:11px;margin-top:1px">Histórico total · Tráfico inusual puede indicar actividad sospechosa</p>
+                                    <h3 class="text-white font-bold text-base leading-tight">Top 10 — Apartamentos con más visitas</h3>
+                                    <p style="color:rgba(255,255,255,.45);font-size:11px;margin-top:1px">Tráfico inusual puede indicar actividad sospechosa</p>
                                 </div>
+                            </div>
+                            <!-- Tabs filtro -->
+                            <div style="display:flex;gap:6px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:4px">
+                                <button onclick="top10Filtro('dia')"   id="top10-tab-dia"    style="padding:6px 14px;border-radius:7px;border:none;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;background:transparent;color:rgba(255,255,255,.45)">Hoy</button>
+                                <button onclick="top10Filtro('semana')" id="top10-tab-semana" style="padding:6px 14px;border-radius:7px;border:none;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;box-shadow:0 2px 8px rgba(124,58,237,.4)">Semana</button>
+                                <button onclick="top10Filtro('mes')"   id="top10-tab-mes"    style="padding:6px 14px;border-radius:7px;border:none;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;background:transparent;color:rgba(255,255,255,.45)">Mes</button>
                             </div>
                         </div>
 
-                        <div style="overflow-x:auto">
-                        <table style="width:100%;border-collapse:collapse;font-size:13px">
-                            <thead>
-                                <tr style="border-bottom:1px solid rgba(255,255,255,.08)">
-                                    <th style="color:rgba(255,255,255,.4);font-weight:600;padding:8px 10px;text-align:left;white-space:nowrap">#</th>
-                                    <th style="color:rgba(255,255,255,.4);font-weight:600;padding:8px 10px;text-align:left">Propietario</th>
-                                    <th style="color:rgba(255,255,255,.4);font-weight:600;padding:8px 10px;text-align:left;white-space:nowrap">Ubicación</th>
-                                    <th style="color:rgba(255,255,255,.4);font-weight:600;padding:8px 10px;text-align:center;white-space:nowrap">Visitas</th>
-                                    <th style="color:rgba(255,255,255,.4);font-weight:600;padding:8px 10px;text-align:left">Tráfico</th>
-                                    <th style="color:rgba(255,255,255,.4);font-weight:600;padding:8px 10px;text-align:center">Alerta</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            {% for apt in top_apts %}
-                            <tr style="border-bottom:1px solid rgba(255,255,255,.04);transition:background .15s" onmouseover="this.style.background='rgba(255,255,255,.04)'" onmouseout="this.style.background=''"  >
-                                <td style="padding:11px 10px;color:rgba(255,255,255,.5);font-weight:700">
-                                    {% if apt.pos == 1 %}<span style="color:#fbbf24">🥇</span>
-                                    {% elif apt.pos == 2 %}<span style="color:#94a3b8">🥈</span>
-                                    {% elif apt.pos == 3 %}<span style="color:#cd7c2f">🥉</span>
-                                    {% else %}{{ apt.pos }}{% endif %}
-                                </td>
-                                <td style="padding:11px 10px;max-width:160px">
-                                    <div style="color:#fff;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ apt.nombre }}</div>
-                                    <div style="color:rgba(255,255,255,.35);font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ apt.email }}</div>
-                                </td>
-                                <td style="padding:11px 10px;white-space:nowrap">
-                                    {% if apt.ubicacion != '—' %}
-                                    <span style="color:#fff;font-weight:700">{{ apt.ubicacion }}</span>
-                                    {% else %}
-                                    <span style="color:rgba(255,255,255,.3);font-size:11px">Sin ubicación</span>
-                                    {% endif %}
-                                </td>
-                                <td style="padding:11px 10px;text-align:center">
-                                    <span style="color:#fff;font-size:16px;font-weight:800">{{ apt.total }}</span>
-                                </td>
-                                <td style="padding:11px 10px;min-width:100px">
-                                    <div style="background:rgba(255,255,255,.06);border-radius:999px;height:6px;overflow:hidden">
-                                        <div style="height:100%;border-radius:999px;width:{{ apt.pct }}%;background:{% if apt.nivel == 'alta' %}linear-gradient(90deg,#dc2626,#ef4444){% elif apt.nivel == 'media' %}linear-gradient(90deg,#d97706,#fbbf24){% else %}linear-gradient(90deg,#059669,#34d399){% endif %};transition:width .4s"></div>
-                                    </div>
-                                </td>
-                                <td style="padding:11px 10px;text-align:center">
-                                    {% if apt.nivel == 'alta' %}
-                                    <span style="background:rgba(220,38,38,.18);border:1px solid rgba(220,38,38,.35);color:#f87171;font-size:10px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap">🔴 Alto</span>
-                                    {% elif apt.nivel == 'media' %}
-                                    <span style="background:rgba(217,119,6,.18);border:1px solid rgba(217,119,6,.35);color:#fbbf24;font-size:10px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap">🟡 Medio</span>
-                                    {% else %}
-                                    <span style="background:rgba(5,150,105,.15);border:1px solid rgba(5,150,105,.3);color:#34d399;font-size:10px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap">🟢 Normal</span>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
+                        <!-- Tabla Día -->
+                        <div id="top10-dia" style="display:none;overflow-x:auto">
+                        {% include "partials/top10_tabla.html" with filas=top_dia periodo="hoy" %}
+                        </div>
+
+                        <!-- Tabla Semana (default) -->
+                        <div id="top10-semana" style="display:block;overflow-x:auto">
+                        {% include "partials/top10_tabla.html" with filas=top_semana periodo="últimos 7 días" %}
+                        </div>
+
+                        <!-- Tabla Mes -->
+                        <div id="top10-mes" style="display:none;overflow-x:auto">
+                        {% include "partials/top10_tabla.html" with filas=top_mes periodo="este mes" %}
                         </div>
 
                         <p style="color:rgba(255,255,255,.3);font-size:11px;margin-top:14px;line-height:1.5">
                             <i class="fas fa-circle-info" style="margin-right:5px;color:rgba(255,255,255,.35)"></i>
-                            Nivel <b style="color:#f87171">Alto</b> = tráfico relativo al mayor del conjunto.
-                            Un volumen muy elevado puede justificar una revisión discreta del caso.
+                            Nivel <b style="color:#f87171">Alto</b> = tráfico relativo al apartamento con más visitas del período.
                         </p>
                     </div>
                 </div>
-                {% endif %}
 
             </div>
         </div>
@@ -1074,6 +1039,26 @@ function dashEntregar() {
         result.classList.remove('hidden');
     }).catch(() => { result.textContent = '❌ Error de conexión'; result.classList.remove('hidden'); });
 }
+/* ── Top 10 filtro ── */
+function top10Filtro(periodo) {
+    ['dia','semana','mes'].forEach(function(p) {
+        var table = document.getElementById('top10-' + p);
+        var tab   = document.getElementById('top10-tab-' + p);
+        if (!table || !tab) return;
+        if (p === periodo) {
+            table.style.display = 'block';
+            tab.style.background = 'linear-gradient(135deg,#7c3aed,#db2777)';
+            tab.style.color = '#fff';
+            tab.style.boxShadow = '0 2px 8px rgba(124,58,237,.4)';
+        } else {
+            table.style.display = 'none';
+            tab.style.background = 'transparent';
+            tab.style.color = 'rgba(255,255,255,.45)';
+            tab.style.boxShadow = 'none';
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     var inp = document.getElementById('dash-codigo');
     if (inp) inp.addEventListener('keydown', e => { if (e.key === 'Enter') dashEntregar(); });

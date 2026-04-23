@@ -1,0 +1,58 @@
+{% if filas %}
+<table style="width:100%;border-collapse:collapse;font-size:13px">
+    <thead>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.08)">
+            <th style="color:rgba(255,255,255,.4);font-weight:600;padding:8px 10px;text-align:left;white-space:nowrap">#</th>
+            <th style="color:rgba(255,255,255,.4);font-weight:600;padding:8px 10px;text-align:left">Propietario</th>
+            <th style="color:rgba(255,255,255,.4);font-weight:600;padding:8px 10px;text-align:left;white-space:nowrap">Ubicación</th>
+            <th style="color:rgba(255,255,255,.4);font-weight:600;padding:8px 10px;text-align:center;white-space:nowrap">Visitas</th>
+            <th style="color:rgba(255,255,255,.4);font-weight:600;padding:8px 10px;text-align:left;min-width:90px">Tráfico</th>
+            <th style="color:rgba(255,255,255,.4);font-weight:600;padding:8px 10px;text-align:center">Alerta</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for apt in filas %}
+    <tr style="border-bottom:1px solid rgba(255,255,255,.04);transition:background .15s"
+        onmouseover="this.style.background='rgba(255,255,255,.04)'"
+        onmouseout="this.style.background=''">
+        <td style="padding:11px 10px;color:rgba(255,255,255,.5);font-weight:700;white-space:nowrap">
+            {% if apt.pos == 1 %}🥇{% elif apt.pos == 2 %}🥈{% elif apt.pos == 3 %}🥉{% else %}{{ apt.pos }}{% endif %}
+        </td>
+        <td style="padding:11px 10px;max-width:170px">
+            <div style="color:#fff;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ apt.nombre }}</div>
+            <div style="color:rgba(255,255,255,.3);font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ apt.email }}</div>
+        </td>
+        <td style="padding:11px 10px;white-space:nowrap">
+            {% if apt.ubicacion != '—' %}
+            <span style="color:#c4b5fd;font-weight:700;font-size:13px">{{ apt.ubicacion }}</span>
+            {% else %}
+            <span style="color:rgba(255,255,255,.25);font-size:11px;font-style:italic">Sin ubicación</span>
+            {% endif %}
+        </td>
+        <td style="padding:11px 10px;text-align:center">
+            <span style="color:#fff;font-size:17px;font-weight:800">{{ apt.total }}</span>
+        </td>
+        <td style="padding:11px 10px">
+            <div style="background:rgba(255,255,255,.06);border-radius:999px;height:6px;overflow:hidden">
+                <div style="height:100%;border-radius:999px;width:{{ apt.pct }}%;background:{% if apt.nivel == 'alta' %}linear-gradient(90deg,#dc2626,#ef4444){% elif apt.nivel == 'media' %}linear-gradient(90deg,#d97706,#fbbf24){% else %}linear-gradient(90deg,#059669,#34d399){% endif %}"></div>
+            </div>
+        </td>
+        <td style="padding:11px 10px;text-align:center">
+            {% if apt.nivel == 'alta' %}
+            <span style="background:rgba(220,38,38,.18);border:1px solid rgba(220,38,38,.35);color:#f87171;font-size:10px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap">🔴 Alto</span>
+            {% elif apt.nivel == 'media' %}
+            <span style="background:rgba(217,119,6,.18);border:1px solid rgba(217,119,6,.35);color:#fbbf24;font-size:10px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap">🟡 Medio</span>
+            {% else %}
+            <span style="background:rgba(5,150,105,.15);border:1px solid rgba(5,150,105,.3);color:#34d399;font-size:10px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap">🟢 Normal</span>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div style="text-align:center;padding:40px 20px;color:rgba(255,255,255,.3)">
+    <i class="fas fa-users-slash" style="font-size:2rem;display:block;margin-bottom:10px;opacity:.3"></i>
+    <p style="font-size:13px">Sin visitas registradas para {{ periodo }}</p>
+</div>
+{% endif %}

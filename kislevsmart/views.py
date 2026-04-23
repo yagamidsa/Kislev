@@ -1673,46 +1673,62 @@ def dashboard(request):
             conjunto_id=conjunto_id, activa=True
         ).order_by('-created_at')[:3]
 
-        # ── Top 10 apartamentos con más visitantes (histórico) ────────────
-        raw_top = list(
-            Visitante.objects.filter(conjunto_id=conjunto_id)
-            .values('email_creador')
-            .annotate(
-                total=Count('id'),
-                nombre_log=models.Max('nombre_log'),
+        # ── Top 10 apartamentos — día / semana / mes ──────────────────────
+        def _top10_periodo(qs_periodo, umap):
+            raw = list(
+                qs_periodo
+                .values('email_creador')
+                .annotate(total=Count('id'), nombre_log=models.Max('nombre_log'))
+                .order_by('-total')[:10]
             )
-            .order_by('-total')[:10]
+            if not raw:
+                return []
+            max_v = raw[0]['total']
+            result = []
+            for i, r in enumerate(raw):
+                u = umap.get(r['email_creador'].lower())
+                total = r['total']
+                pct = round(total / max_v * 100)
+                nivel = 'alta' if pct >= 80 else ('media' if pct >= 40 else 'normal')
+                if u:
+                    ub = u.get_ubicacion_completa()
+                    ubicacion = ub if ub != 'Sin ubicación asignada' else '—'
+                else:
+                    ubicacion = '—'
+                result.append({
+                    'pos': i + 1,
+                    'nombre': (u.nombre if u else None) or r['nombre_log'] or r['email_creador'],
+                    'email': r['email_creador'],
+                    'ubicacion': ubicacion,
+                    'total': total,
+                    'pct': pct,
+                    'nivel': nivel,
+                })
+            return result
+
+        base_vis = Visitante.objects.filter(conjunto_id=conjunto_id)
+        hoy_dt   = timezone.make_aware(datetime.combine(fecha_actual, time.min))
+        sem_dt   = hoy_dt - timedelta(days=6)
+        mes_dt   = timezone.make_aware(datetime.combine(fecha_actual.replace(day=1), time.min))
+
+        # Un solo batch de emails para las tres ventanas
+        emails_union = set(
+            base_vis.filter(fecha_generacion__gte=sem_dt)
+            .values_list('email_creador', flat=True)
+        ) | set(
+            base_vis.filter(fecha_generacion__gte=mes_dt)
+            .values_list('email_creador', flat=True)
         )
-        emails_top = [r['email_creador'] for r in raw_top]
-        # Lookup case-insensitive; email_creador y usuario.email deben coincidir
-        usuarios_map = {
+        umap = {
             u.email.lower(): u
             for u in Usuario.objects.filter(
-                email__in=emails_top, conjunto_id=conjunto_id
+                email__in=emails_union, conjunto_id=conjunto_id
             ).select_related('torre', 'conjunto')
         }
-        top_apts = []
-        max_visitas = raw_top[0]['total'] if raw_top else 1
-        for i, r in enumerate(raw_top):
-            u = usuarios_map.get(r['email_creador'].lower())
-            total = r['total']
-            pct = round(total / max_visitas * 100)
-            nivel = 'alta' if pct >= 80 else ('media' if pct >= 40 else 'normal')
-            if u:
-                ubicacion = u.get_ubicacion_completa()
-                if ubicacion == 'Sin ubicación asignada':
-                    ubicacion = '—'
-            else:
-                ubicacion = '—'
-            top_apts.append({
-                'pos': i + 1,
-                'nombre': (u.nombre if u else None) or r['nombre_log'] or r['email_creador'],
-                'email': r['email_creador'],
-                'ubicacion': ubicacion,
-                'total': total,
-                'pct': pct,
-                'nivel': nivel,
-            })
+
+        top_dia    = _top10_periodo(base_vis.filter(fecha_generacion__gte=hoy_dt), umap)
+        top_semana = _top10_periodo(base_vis.filter(fecha_generacion__gte=sem_dt), umap)
+        top_mes    = _top10_periodo(base_vis.filter(fecha_generacion__gte=mes_dt), umap)
 
         # Contexto para el template
         context = {
@@ -1746,8 +1762,10 @@ def dashboard(request):
             'nov_likes': nov_likes,
             'nov_comentarios': nov_comentarios,
             'ultimas_novedades': ultimas_novedades,
-            # Top apartamentos
-            'top_apts': top_apts,
+            # Top apartamentos por período
+            'top_dia': top_dia,
+            'top_semana': top_semana,
+            'top_mes': top_mes,
             # Paquetes
             'paq_pendientes': Paquete.objects.filter(conjunto_id=conjunto_id, estado='pendiente').count(),
             'paq_hoy_registrados': Paquete.objects.filter(conjunto_id=conjunto_id, fecha_registro__date=fecha_actual).count(),
