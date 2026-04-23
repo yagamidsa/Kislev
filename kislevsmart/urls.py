@@ -33,6 +33,8 @@ urlpatterns = [
     # Rutas existentes de la aplicación
     path('bienvenida/', views.bienvenida, name='bienvenida'),
     path('visitantes-guardados/', views.visitantes_guardados_api, name='visitantes_guardados_api'),
+    path('mis-frecuentes/', views.mis_frecuentes, name='mis_frecuentes'),
+    path('admin/frecuentes/', views.admin_frecuentes, name='admin_frecuentes'),
     path('validar_qr/<str:encrypted_token>/', views.validar_qr, name='validar_qr'),
     path('valqr/<str:email_b64>/', views.success_page, name='valqr'),
     path('leerscaner/', views.leerscaner, name='leerscaner'),

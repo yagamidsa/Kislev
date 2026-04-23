@@ -439,25 +439,25 @@
     .frec-del:hover { background: rgba(248,113,113,.35); color: #fca5a5; }
     .frec-del svg { width: 10px; height: 10px; stroke: currentColor; fill: none; stroke-width: 3; }
 
-    /* card "nuevo" */
-    .frec-new {
+    /* card "ver todos" */
+    .frec-all {
       flex-shrink: 0; width: 88px;
-      background: rgba(255,255,255,.03);
-      border: 1.5px dashed rgba(255,255,255,.18);
+      background: rgba(190,24,93,.07);
+      border: 1.5px solid rgba(190,24,93,.25);
       border-radius: 18px; padding: 14px 10px 12px;
       display: flex; flex-direction: column; align-items: center; gap: 7px;
-      cursor: pointer;
-      transition: background .22s, border-color .22s;
+      cursor: pointer; text-decoration: none;
+      transition: background .22s, border-color .22s, transform .22s;
     }
-    .frec-new:hover { background: rgba(190,24,93,.1); border-color: rgba(190,24,93,.4); }
-    .frec-new-icon {
+    .frec-all:hover { background: rgba(190,24,93,.18); border-color: rgba(190,24,93,.5); transform: translateY(-3px); }
+    .frec-all-icon {
       width: 44px; height: 44px; border-radius: 50%;
-      background: rgba(255,255,255,.06); border: 1.5px dashed rgba(255,255,255,.2);
+      background: rgba(190,24,93,.15); border: 1.5px solid rgba(190,24,93,.3);
       display: flex; align-items: center; justify-content: center;
-      color: rgba(255,255,255,.4);
+      color: #f9a8d4;
     }
-    .frec-new-icon svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2.5; }
-    .frec-new-lbl { font-size: 10.5px; font-weight: 700; color: rgba(255,255,255,.4); text-align: center; }
+    .frec-all-icon svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2.5; }
+    .frec-all-lbl { font-size: 10.5px; font-weight: 700; color: #f9a8d4; text-align: center; }
 
     /* empty state */
     .frec-empty {
@@ -826,21 +826,21 @@ function renderFrecuentes() {
   if (!track) return;
   count.textContent = frecuentes.length ? frecuentes.length + (frecuentes.length===1?' guardado':' guardados') : '';
 
-  const newCard = `
-    <div class="frec-new" onclick="openModal()">
-      <div class="frec-new-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
-      <div class="frec-new-lbl">Nuevo</div>
-    </div>`;
+  const verTodosCard = `
+    <a href="{% url 'mis_frecuentes' %}" class="frec-all">
+      <div class="frec-all-icon"><svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></div>
+      <div class="frec-all-lbl">Ver todos</div>
+    </a>`;
 
   if (frecuentes.length === 0) {
-    track.innerHTML = newCard + '<div class="frec-empty" style="align-self:center;padding-left:12px">Sin frecuentes aún</div>';
+    track.innerHTML = '<div class="frec-empty" style="align-self:center">Sin frecuentes aún</div>' + verTodosCard;
     return;
   }
 
-  track.innerHTML = newCard + frecuentes.map(v => {
-    const ini   = initials(v.nombre);
+  track.innerHTML = frecuentes.map(v => {
+    const ini    = initials(v.nombre);
     const isPeat = v.tipo === 'peatonal';
-    const cls   = isPeat ? 'peat' : 'veh';
+    const cls    = isPeat ? 'peat' : 'veh';
     const tipLbl = isPeat ? 'Peatonal' : 'Vehicular';
     const dataAttr = encodeURIComponent(JSON.stringify(v));
     return `
@@ -852,7 +852,7 @@ function renderFrecuentes() {
         <div class="frec-name">${v.nombre.split(' ')[0]}</div>
         <div class="frec-tipo ${cls}">${tipLbl}</div>
       </div>`;
-  }).join('');
+  }).join('') + verTodosCard;
 }
 
 async function loadFrecuentes() {
@@ -915,7 +915,29 @@ async function deleteFrecuente(event, id) {
   }
 }
 
-document.addEventListener('DOMContentLoaded', loadFrecuentes);
+document.addEventListener('DOMContentLoaded', async function() {
+  await loadFrecuentes();
+
+  // Pre-fill desde mis_frecuentes: ?v=id&nombre=...&tipo=...
+  const params = new URLSearchParams(location.search);
+  if (params.has('v')) {
+    const v = {
+      id:           params.get('v'),
+      nombre:       params.get('nombre') || '',
+      email:        params.get('email') || '',
+      celular:      params.get('celular') || '',
+      cedula:       params.get('cedula') || '',
+      motivo:       params.get('motivo') || '',
+      numper:       params.get('numper') || '',
+      tipo:         params.get('tipo') || 'peatonal',
+      tipo_vehiculo:params.get('tipo_vehiculo') || '',
+      placa:        params.get('placa') || '',
+    };
+    // Limpiar URL sin recargar
+    history.replaceState(null, '', location.pathname);
+    selectFrecuente(encodeURIComponent(JSON.stringify(v)));
+  }
+});
 {% endif %}
 
 // ── QR partículas ──

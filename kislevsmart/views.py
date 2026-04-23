@@ -1288,6 +1288,24 @@ def visitantes_guardados_api(request):
     return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=405)
 
 
+@login_required
+@role_required(['propietario'])
+def mis_frecuentes(request):
+    """Página completa: todos los visitantes guardados del propietario."""
+    visitantes = VisitanteGuardado.objects.filter(
+        email_propietario=request.user.email
+    ).order_by('-creado')
+    return render(request, 'visitantes/mis_frecuentes.html', {'visitantes': visitantes})
+
+
+@login_required
+@role_required(['administrador'])
+def admin_frecuentes(request):
+    """Admin: ve todos los VisitanteGuardado del conjunto agrupados por propietario."""
+    visitantes = VisitanteGuardado.objects.filter(
+        conjunto=request.user.conjunto
+    ).order_by('email_propietario', '-creado')
+    return render(request, 'visitantes/admin_frecuentes.html', {'visitantes': visitantes})
 
 
 @login_required
