@@ -1298,15 +1298,6 @@ def mis_frecuentes(request):
     return render(request, 'visitantes/mis_frecuentes.html', {'visitantes': visitantes})
 
 
-@login_required
-@role_required(['administrador'])
-def admin_frecuentes(request):
-    """Admin: ve todos los VisitanteGuardado del conjunto agrupados por propietario."""
-    visitantes = VisitanteGuardado.objects.filter(
-        conjunto=request.user.conjunto
-    ).order_by('email_propietario', '-creado')
-    return render(request, 'visitantes/admin_frecuentes.html', {'visitantes': visitantes})
-
 
 @login_required
 @role_required(['porteria', 'administrador'])
@@ -1682,6 +1673,44 @@ def dashboard(request):
             conjunto_id=conjunto_id, activa=True
         ).order_by('-created_at')[:3]
 
+        # ── Top 10 apartamentos con más visitantes (histórico) ────────────
+        raw_top = list(
+            Visitante.objects.filter(conjunto_id=conjunto_id)
+            .values('email_creador')
+            .annotate(
+                total=Count('id'),
+                nombre_log=models.Max('nombre_log'),
+                numper=models.Max('numper'),
+            )
+            .order_by('-total')[:10]
+        )
+        emails_top = [r['email_creador'] for r in raw_top]
+        usuarios_map = {
+            u.email: u
+            for u in Usuario.objects.filter(email__in=emails_top).select_related('torre')
+        }
+        top_apts = []
+        max_visitas = raw_top[0]['total'] if raw_top else 1
+        for i, r in enumerate(raw_top):
+            u = usuarios_map.get(r['email_creador'])
+            total = r['total']
+            pct = round(total / max_visitas * 100)
+            if pct >= 80:
+                nivel = 'alta'
+            elif pct >= 40:
+                nivel = 'media'
+            else:
+                nivel = 'normal'
+            top_apts.append({
+                'pos': i + 1,
+                'nombre': (u.nombre if u else None) or r['nombre_log'] or r['email_creador'],
+                'torre': u.torre.nombre if u and u.torre else '',
+                'apartamento': (u.apartamento if u else None) or r['numper'] or '—',
+                'total': total,
+                'pct': pct,
+                'nivel': nivel,
+            })
+
         # Contexto para el template
         context = {
             'fecha_seleccionada': fecha_inicio.date(),
@@ -1714,6 +1743,8 @@ def dashboard(request):
             'nov_likes': nov_likes,
             'nov_comentarios': nov_comentarios,
             'ultimas_novedades': ultimas_novedades,
+            # Top apartamentos
+            'top_apts': top_apts,
             # Paquetes
             'paq_pendientes': Paquete.objects.filter(conjunto_id=conjunto_id, estado='pendiente').count(),
             'paq_hoy_registrados': Paquete.objects.filter(conjunto_id=conjunto_id, fecha_registro__date=fecha_actual).count(),

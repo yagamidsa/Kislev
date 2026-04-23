@@ -623,6 +623,83 @@
                         <canvas id="visitorsAnalyticsChart"></canvas>
                     </div>
                 </div>
+
+                <!-- Top 10 apartamentos con más visitantes -->
+                {% if top_apts %}
+                <div class="relative overflow-hidden rounded-xl mt-2">
+                    <div class="absolute inset-0 bg-gray-900/40"></div>
+                    <div class="absolute inset-0 backdrop-blur-sm"></div>
+                    <div class="relative p-6">
+                        <div class="flex items-center justify-between mb-5">
+                            <div class="flex items-center gap-3">
+                                <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#dc2626,#7c3aed);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                                    <i class="fas fa-shield-halved" style="color:#fff;font-size:14px"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-white font-bold text-base leading-tight">Top 10 — Apartamentos con más visitantes</h3>
+                                    <p style="color:rgba(255,255,255,.45);font-size:11px;margin-top:1px">Histórico total · Tráfico inusual puede indicar actividad sospechosa</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="overflow-x:auto">
+                        <table style="width:100%;border-collapse:collapse;font-size:13px">
+                            <thead>
+                                <tr style="border-bottom:1px solid rgba(255,255,255,.08)">
+                                    <th style="color:rgba(255,255,255,.4);font-weight:600;padding:8px 10px;text-align:left;white-space:nowrap">#</th>
+                                    <th style="color:rgba(255,255,255,.4);font-weight:600;padding:8px 10px;text-align:left">Propietario</th>
+                                    <th style="color:rgba(255,255,255,.4);font-weight:600;padding:8px 10px;text-align:left;white-space:nowrap">Torre / Apto</th>
+                                    <th style="color:rgba(255,255,255,.4);font-weight:600;padding:8px 10px;text-align:center;white-space:nowrap">Visitas</th>
+                                    <th style="color:rgba(255,255,255,.4);font-weight:600;padding:8px 10px;text-align:left">Tráfico</th>
+                                    <th style="color:rgba(255,255,255,.4);font-weight:600;padding:8px 10px;text-align:center">Alerta</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for apt in top_apts %}
+                            <tr style="border-bottom:1px solid rgba(255,255,255,.04);transition:background .15s" onmouseover="this.style.background='rgba(255,255,255,.04)'" onmouseout="this.style.background=''"  >
+                                <td style="padding:11px 10px;color:rgba(255,255,255,.5);font-weight:700">
+                                    {% if apt.pos == 1 %}<span style="color:#fbbf24">🥇</span>
+                                    {% elif apt.pos == 2 %}<span style="color:#94a3b8">🥈</span>
+                                    {% elif apt.pos == 3 %}<span style="color:#cd7c2f">🥉</span>
+                                    {% else %}{{ apt.pos }}{% endif %}
+                                </td>
+                                <td style="padding:11px 10px;color:#fff;font-weight:600;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ apt.nombre }}</td>
+                                <td style="padding:11px 10px;white-space:nowrap">
+                                    {% if apt.torre %}<span style="color:rgba(167,139,250,.9);font-size:11px;font-weight:600;background:rgba(124,58,237,.15);padding:2px 7px;border-radius:6px;margin-right:5px">{{ apt.torre }}</span>{% endif %}
+                                    <span style="color:#fff;font-weight:700">Apto {{ apt.apartamento }}</span>
+                                </td>
+                                <td style="padding:11px 10px;text-align:center">
+                                    <span style="color:#fff;font-size:16px;font-weight:800">{{ apt.total }}</span>
+                                </td>
+                                <td style="padding:11px 10px;min-width:100px">
+                                    <div style="background:rgba(255,255,255,.06);border-radius:999px;height:6px;overflow:hidden">
+                                        <div style="height:100%;border-radius:999px;width:{{ apt.pct }}%;background:{% if apt.nivel == 'alta' %}linear-gradient(90deg,#dc2626,#ef4444){% elif apt.nivel == 'media' %}linear-gradient(90deg,#d97706,#fbbf24){% else %}linear-gradient(90deg,#059669,#34d399){% endif %};transition:width .4s"></div>
+                                    </div>
+                                </td>
+                                <td style="padding:11px 10px;text-align:center">
+                                    {% if apt.nivel == 'alta' %}
+                                    <span style="background:rgba(220,38,38,.18);border:1px solid rgba(220,38,38,.35);color:#f87171;font-size:10px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap">🔴 Alto</span>
+                                    {% elif apt.nivel == 'media' %}
+                                    <span style="background:rgba(217,119,6,.18);border:1px solid rgba(217,119,6,.35);color:#fbbf24;font-size:10px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap">🟡 Medio</span>
+                                    {% else %}
+                                    <span style="background:rgba(5,150,105,.15);border:1px solid rgba(5,150,105,.3);color:#34d399;font-size:10px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap">🟢 Normal</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        </div>
+
+                        <p style="color:rgba(255,255,255,.3);font-size:11px;margin-top:14px;line-height:1.5">
+                            <i class="fas fa-circle-info" style="margin-right:5px;color:rgba(255,255,255,.35)"></i>
+                            Nivel <b style="color:#f87171">Alto</b> = tráfico relativo al mayor del conjunto.
+                            Un volumen muy elevado puede justificar una revisión discreta del caso.
+                        </p>
+                    </div>
+                </div>
+                {% endif %}
+
             </div>
         </div>
     </div>
