@@ -663,9 +663,16 @@
                                     {% elif apt.pos == 3 %}<span style="color:#cd7c2f">🥉</span>
                                     {% else %}{{ apt.pos }}{% endif %}
                                 </td>
-                                <td style="padding:11px 10px;color:#fff;font-weight:600;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ apt.nombre }}</td>
+                                <td style="padding:11px 10px;max-width:160px">
+                                    <div style="color:#fff;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ apt.nombre }}</div>
+                                    <div style="color:rgba(255,255,255,.35);font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ apt.email }}</div>
+                                </td>
                                 <td style="padding:11px 10px;white-space:nowrap">
+                                    {% if apt.ubicacion != '—' %}
                                     <span style="color:#fff;font-weight:700">{{ apt.ubicacion }}</span>
+                                    {% else %}
+                                    <span style="color:rgba(255,255,255,.3);font-size:11px">Sin ubicación</span>
+                                    {% endif %}
                                 </td>
                                 <td style="padding:11px 10px;text-align:center">
                                     <span style="color:#fff;font-size:16px;font-weight:800">{{ apt.total }}</span>

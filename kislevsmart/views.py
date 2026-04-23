@@ -1680,36 +1680,34 @@ def dashboard(request):
             .annotate(
                 total=Count('id'),
                 nombre_log=models.Max('nombre_log'),
-                numper=models.Max('numper'),
             )
             .order_by('-total')[:10]
         )
         emails_top = [r['email_creador'] for r in raw_top]
+        # Lookup case-insensitive; email_creador y usuario.email deben coincidir
         usuarios_map = {
-            u.email: u
-            for u in Usuario.objects.filter(email__in=emails_top).select_related('torre')
+            u.email.lower(): u
+            for u in Usuario.objects.filter(
+                email__in=emails_top, conjunto_id=conjunto_id
+            ).select_related('torre', 'conjunto')
         }
         top_apts = []
         max_visitas = raw_top[0]['total'] if raw_top else 1
         for i, r in enumerate(raw_top):
-            u = usuarios_map.get(r['email_creador'])
+            u = usuarios_map.get(r['email_creador'].lower())
             total = r['total']
             pct = round(total / max_visitas * 100)
-            if pct >= 80:
-                nivel = 'alta'
-            elif pct >= 40:
-                nivel = 'media'
-            else:
-                nivel = 'normal'
+            nivel = 'alta' if pct >= 80 else ('media' if pct >= 40 else 'normal')
             if u:
                 ubicacion = u.get_ubicacion_completa()
                 if ubicacion == 'Sin ubicación asignada':
-                    ubicacion = r['numper'] or '—'
+                    ubicacion = '—'
             else:
-                ubicacion = r['numper'] or '—'
+                ubicacion = '—'
             top_apts.append({
                 'pos': i + 1,
                 'nombre': (u.nombre if u else None) or r['nombre_log'] or r['email_creador'],
+                'email': r['email_creador'],
                 'ubicacion': ubicacion,
                 'total': total,
                 'pct': pct,
