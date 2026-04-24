@@ -1,4 +1,4 @@
-{% load static %}
+{% load static humanize %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -144,7 +144,7 @@
             </div>
             <div class="status-amount">
                 <div class="amount-label">Total pendiente</div>
-                <div class="amount-val">${{ total_deuda|floatformat:"0" }}</div>
+                <div class="amount-val">${{ total_deuda|floatformat:"0"|intcomma }}<span style="font-size:.65em;color:rgba(255,255,255,.35);font-weight:400;margin-left:1px">COP</span></div>
             </div>
         </div>
         {% endif %}
@@ -178,10 +178,10 @@
                 <div class="cuota-right">
                     {% if item.pago and item.pendiente == 0 %}
                         <span class="estado-badge badge-pagado"><i class="fas fa-check-circle"></i> Pagado</span>
-                        <span class="cuota-monto monto-pagado">${{ item.pago.monto_pagado|floatformat:"0" }}</span>
+                        <span class="cuota-monto monto-pagado">${{ item.pago.monto_pagado|floatformat:"0"|intcomma }}<span style="font-size:.65em;color:rgba(255,255,255,.35);font-weight:400;margin-left:1px">COP</span></span>
                     {% elif item.cuota.vencida %}
                         <span class="estado-badge badge-vencida"><i class="fas fa-exclamation-triangle"></i> Vencida</span>
-                        <span class="cuota-monto monto-vencida">${{ item.pendiente|floatformat:"0" }}</span>
+                        <span class="cuota-monto monto-vencida">${{ item.pendiente|floatformat:"0"|intcomma }}<span style="font-size:.65em;color:rgba(255,255,255,.35);font-weight:400;margin-left:1px">COP</span></span>
                         {% if user.conjunto.link_pago %}
                         <a href="{{ user.conjunto.link_pago }}" target="_blank" class="btn-pagar">
                             <i class="fas fa-credit-card"></i> Pagar ahora
@@ -189,7 +189,7 @@
                         {% endif %}
                     {% else %}
                         <span class="estado-badge badge-pendiente"><i class="fas fa-clock"></i> Pendiente</span>
-                        <span class="cuota-monto monto-pendiente">${{ item.pendiente|floatformat:"0" }}</span>
+                        <span class="cuota-monto monto-pendiente">${{ item.pendiente|floatformat:"0"|intcomma }}<span style="font-size:.65em;color:rgba(255,255,255,.35);font-weight:400;margin-left:1px">COP</span></span>
                         {% if user.conjunto.link_pago %}
                         <a href="{{ user.conjunto.link_pago }}" target="_blank" class="btn-pagar">
                             <i class="fas fa-credit-card"></i> Pagar ahora

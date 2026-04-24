@@ -1,4 +1,4 @@
-{% load static %}
+{% load static humanize %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -35,11 +35,9 @@
         .logo-mark { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
         .logo-icon { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg,#0ea5e9,#06b6d4); display: flex; align-items: center; justify-content: center; font-size: 1rem; color: #fff; flex-shrink: 0; }
         .logo-text { font-size: 1rem; font-weight: 700; background: linear-gradient(135deg,#7dd3fc,#67e8f9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; white-space: nowrap; }
-        .status-pill { display: flex; align-items: center; gap: 6px; background: rgba(6,182,212,.12); border: 1px solid rgba(6,182,212,.3); border-radius: 20px; padding: 5px 14px; font-size: .75rem; font-weight: 600; color: #67e8f9; flex-shrink: 0; }
-        .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #06b6d4; animation: pulse-cyan 2s infinite; }
         @keyframes pulse-cyan { 0%,100%{opacity:1} 50%{opacity:.3} }
-        .logout-btn { display: flex; align-items: center; gap: 7px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); border-radius: 10px; color: #e2e8f0; font-size: .82rem; font-family: 'Poppins', sans-serif; padding: 8px 16px; cursor: pointer; transition: all .2s; flex-shrink: 0; white-space: nowrap; }
-        .logout-btn:hover { background: rgba(255,255,255,.12); }
+        .logout-btn { display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08); border-radius: 8px; color: rgba(255,255,255,.55); font-size: .72rem; font-family: 'Poppins', sans-serif; padding: 5px 10px; cursor: pointer; transition: all .2s; flex-shrink: 0; white-space: nowrap; }
+        .logout-btn:hover { background: rgba(255,255,255,.1); color: #e2e8f0; }
 
         /* ── HERO ── */
         .hero { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 48px 24px 56px; text-align: center; }
@@ -359,7 +357,6 @@
             <div class="logo-icon"><i class="fas fa-chart-line"></i></div>
             <span class="logo-text">Kislev</span>
         </div>
-        <div class="status-pill"><div class="status-dot"></div> Sistema activo</div>
         <form method="post" action="{% url 'accounts:logout' %}">
             {% csrf_token %}
             <button type="submit" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button>
@@ -794,7 +791,7 @@
         <div class="p-6">
             <div class="text-center mb-8"><h1 class="text-4xl font-bold text-white mb-2">Finanzas</h1><p class="subtle-text text-lg">Resumen financiero — {{ conjunto.nombre }}</p></div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <div class="glass-effect rounded-xl p-4 text-center"><p class="text-white/60 text-xs mb-1">Recaudo este mes</p><p class="text-2xl font-bold text-white">${{ recaudo_mes|floatformat:"0" }}</p></div>
+                <div class="glass-effect rounded-xl p-4 text-center"><p class="text-white/60 text-xs mb-1">Recaudo este mes</p><p class="text-2xl font-bold text-white">${{ recaudo_mes|floatformat:"0"|intcomma }}<span style="font-size:.6em;color:rgba(255,255,255,.35);font-weight:400;margin-left:1px">COP</span></p></div>
                 <div class="glass-effect rounded-xl p-4 text-center"><p class="text-white/60 text-xs mb-1">Propietarios al día</p><p class="text-2xl font-bold text-white">{{ pct_al_dia }}%</p><p class="text-white/50 text-xs">{{ propietarios_al_dia }} / {{ total_propietarios_fin }}</p></div>
                 <div class="glass-effect rounded-xl p-4 text-center"><p class="text-white/60 text-xs mb-1">Cuotas vigentes</p><p class="text-2xl font-bold text-green-400">{{ cuotas_vigentes }}</p></div>
                 <div class="glass-effect rounded-xl p-4 text-center"><p class="text-white/60 text-xs mb-1">Cuotas vencidas</p><p class="text-2xl font-bold text-red-400">{{ cuotas_vencidas }}</p></div>

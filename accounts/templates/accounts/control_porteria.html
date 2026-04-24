@@ -21,11 +21,9 @@
         .logo-mark { display: flex; align-items: center; gap: 10px; }
         .logo-icon { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #7c3aed, #db2777); display: flex; align-items: center; justify-content: center; font-size: 1rem; color: #fff; }
         .logo-text { font-size: 1rem; font-weight: 700; background: linear-gradient(135deg, #a78bfa, #f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .status-pill { display: flex; align-items: center; gap: 6px; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25); border-radius: 20px; padding: 5px 14px; font-size: 0.75rem; font-weight: 600; color: #34d399; }
-        .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #34d399; animation: pulse-green 2s infinite; }
         @keyframes pulse-green { 0%,100%{opacity:1} 50%{opacity:0.3} }
-        .logout-btn { display: flex; align-items: center; gap: 7px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #e2e8f0; font-size: 0.82rem; font-family: 'Poppins', sans-serif; padding: 8px 16px; cursor: pointer; transition: all 0.2s; }
-        .logout-btn:hover { background: rgba(255,255,255,0.1); color: #e2e8f0; }
+        .logout-btn { display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; color: rgba(255,255,255,0.55); font-size: 0.72rem; font-family: 'Poppins', sans-serif; padding: 5px 10px; cursor: pointer; transition: all 0.2s; }
+        .logout-btn:hover { background: rgba(255,255,255,0.09); color: #e2e8f0; }
 
         .hero { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 48px 24px 32px; text-align: center; }
         .conjunto-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.3); border-radius: 24px; padding: 6px 18px; font-size: 0.78rem; font-weight: 600; color: #a78bfa; margin-bottom: 20px; animation: fadeInDown 0.6s ease; }
@@ -56,8 +54,8 @@
 
         /* ── Campana ── */
         .bell-wrap { position: relative; }
-        .bell-btn { width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); color: #e2e8f0; font-size: 1.05rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; position: relative; }
-        .bell-btn:hover { background: rgba(255,255,255,0.13); }
+        .bell-btn { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.09); color: rgba(255,255,255,0.6); font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; position: relative; }
+        .bell-btn:hover { background: rgba(255,255,255,0.1); }
         .bell-badge { position: absolute; top: -4px; right: -4px; background: linear-gradient(135deg, #db2777, #7c3aed); color: #fff; font-size: 0.65rem; font-weight: 700; font-family: 'Poppins', sans-serif; min-width: 18px; height: 18px; border-radius: 9px; display: flex; align-items: center; justify-content: center; padding: 0 4px; border: 2px solid #09000f; }
         .notif-dropdown { display: none; position: absolute; top: 50px; right: 0; width: 320px; background: #1a0a28; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); overflow: hidden; z-index: 200; }
         .notif-dropdown.open { display: block; animation: notifSlide .2s ease-out; }
@@ -109,7 +107,6 @@
             <div class="logo-icon"><i class="fas fa-shield-alt"></i></div>
             <span class="logo-text">Kislev</span>
         </div>
-        <div class="status-pill"><div class="status-dot"></div> Sistema activo</div>
         <div style="display:flex;align-items:center;gap:10px;">
             <div class="bell-wrap">
                 <button class="bell-btn" onclick="toggleNotif(event)">

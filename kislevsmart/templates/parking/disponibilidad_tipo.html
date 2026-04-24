@@ -1,5 +1,5 @@
 <!-- templates/parking/disponibilidad_tipo.html -->
-{% load static %}
+{% load static humanize %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -165,7 +165,7 @@
     {% if config and config.valor_hora > 0 %}
     <div class="tariff-info">
         <i class="fa fa-tag" style="color:#a78bfa"></i>
-        <strong>Tarifa:</strong> {{ config.minutos_gracia }} min gratis &middot; luego ${{ config.valor_hora|floatformat:0 }}/hora &middot; cobro por bloques de {{ config.fraccion_minutos }} min
+        <strong>Tarifa:</strong> {{ config.minutos_gracia }} min gratis &middot; luego ${{ config.valor_hora|floatformat:0|intcomma }}<span style="font-size:.65em;color:rgba(255,255,255,.35);font-weight:400;margin-left:1px">COP</span>/hora &middot; cobro por bloques de {{ config.fraccion_minutos }} min
     </div>
     {% endif %}
 
@@ -194,7 +194,7 @@
                         {% if vehiculo.en_gracia %}
                             <span class="status-grace">En gracia</span>
                         {% else %}
-                            <span class="valor-cop">${{ vehiculo.valor|floatformat:0 }}</span>
+                            <span class="valor-cop">${{ vehiculo.valor|floatformat:0|intcomma }}<span style="font-size:.65em;color:rgba(255,255,255,.35);font-weight:400;margin-left:1px">COP</span></span>
                         {% endif %}
                     </td>
                 </tr>

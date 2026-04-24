@@ -1,4 +1,4 @@
-{% load static %}
+{% load static humanize %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -220,7 +220,7 @@
                     </div>
                 </div>
                 <div class="cuota-header-right">
-                    <span class="cuota-monto">${{ cuota.monto|floatformat:"0" }}</span>
+                    <span class="cuota-monto">${{ cuota.monto|floatformat:"0"|intcomma }}<span style="font-size:.65em;color:rgba(255,255,255,.35);font-weight:400;margin-left:1px">COP</span></span>
                     {% if cuota.vencida %}
                     <span class="badge badge-vencida">Vencida</span>
                     {% else %}
@@ -270,7 +270,7 @@
                             </td>
                             <td style="color:rgba(255,255,255,.45);font-size:.76rem;">{{ prop.get_ubicacion_completa }}</td>
                             <td><span class="status-dot dot-paid"></span><span class="text-paid">Pagado</span></td>
-                            <td class="text-paid">${{ p.monto_pagado|floatformat:"0" }}</td>
+                            <td class="text-paid">${{ p.monto_pagado|floatformat:"0"|intcomma }}<span style="font-size:.65em;color:rgba(255,255,255,.35);font-weight:400;margin-left:1px">COP</span></td>
                             <td style="color:rgba(255,255,255,.5);font-size:.76rem;">{{ p.fecha_pago|date:"d/m/Y" }}</td>
                             <td>
                                 <button class="btn-reg btn-reg-editar"

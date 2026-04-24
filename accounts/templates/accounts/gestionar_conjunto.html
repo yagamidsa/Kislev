@@ -1,4 +1,4 @@
-{% load static %}
+{% load static humanize %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -344,7 +344,7 @@
                             <div style="font-size:.72rem;color:#94a3b8;margin-top:2px">transacciones</div>
                         </div>
                         <div style="flex:1;border-left:1px solid rgba(255,255,255,.08);padding-left:20px">
-                            <div style="font-size:1.15rem;font-weight:700;color:#86efac">${{ pagos_mes_total|floatformat:0 }}</div>
+                            <div style="font-size:1.15rem;font-weight:700;color:#86efac">${{ pagos_mes_total|floatformat:0|intcomma }}<span style="font-size:.65em;color:rgba(255,255,255,.35);font-weight:400;margin-left:1px">COP</span></div>
                             <div style="font-size:.72rem;color:#94a3b8;margin-top:2px">recaudado COP</div>
                         </div>
                     </div>
@@ -372,7 +372,7 @@
             <div class="card">
                 <div class="card-title"><i class="fas fa-exclamation-triangle"></i> Deuda estimada</div>
                 <div class="big-number" style="color:{% if deuda_estimada == 0 %}#34d399{% elif deuda_estimada < 500000 %}#fbbf24{% else %}#f87171{% endif %}">
-                    ${{ deuda_estimada|floatformat:0 }}
+                    ${{ deuda_estimada|floatformat:0|intcomma }}<span style="font-size:.65em;color:rgba(255,255,255,.35);font-weight:400;margin-left:1px">COP</span>
                 </div>
                 <div class="sub-label">COP sin pagar (última cuota)</div>
             </div>

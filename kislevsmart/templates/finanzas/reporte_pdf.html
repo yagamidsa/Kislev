@@ -53,7 +53,7 @@
         <div class="etiqueta">Reservas de zonas comunes</div>
     </div>
     <div class="kpi">
-        <div class="valor">${{ recaudo|floatformat:"0" }}</div>
+        <div class="valor">${{ recaudo|floatformat:"0"|intcomma }}</div>
         <div class="etiqueta">Recaudo COP</div>
     </div>
 </div>
@@ -128,7 +128,7 @@
             <tr>
                 <td>{{ p.propietario.nombre }}</td>
                 <td>{{ p.cuota.nombre }}</td>
-                <td>${{ p.monto_pagado|floatformat:"0" }}</td>
+                <td>${{ p.monto_pagado|floatformat:"0"|intcomma }}</td>
                 <td>{{ p.get_metodo_display }}</td>
                 <td>{{ p.fecha_pago|date:"d/m/Y" }}</td>
                 <td>{{ p.comprobante|default:"—" }}</td>
