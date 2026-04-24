@@ -660,13 +660,20 @@
           Motivo de la visita
         </label>
         <select name="motivo" id="motivo" required>
-          <option value="Visita Personal">Visita Personal</option>
-          <option value="Servicios">Servicios</option>
-          <option value="Visita Proveedores">Visita Proveedores</option>
-          <option value="Eventos Especiales">Eventos Especiales</option>
-          <option value="Mantenimiento de Instalaciones">Mantenimiento de Instalaciones</option>
-          <option value="Inspección">Inspección</option>
-          <option value="otro">Otro</option>
+          {% if request.user.user_type == 'propietario' or request.user.user_type == 'arrendatario' %}
+            <option value="Visita Personal">Visita Personal</option>
+            <option value="Eventos Especiales">Eventos Especiales</option>
+            <option value="Proveedor">Proveedor</option>
+            <option value="Otro">Otro</option>
+          {% else %}
+            <option value="Visita Personal">Visita Personal</option>
+            <option value="Servicios">Servicios</option>
+            <option value="Visita Proveedores">Visita Proveedores</option>
+            <option value="Eventos Especiales">Eventos Especiales</option>
+            <option value="Mantenimiento de Instalaciones">Mantenimiento de Instalaciones</option>
+            <option value="Inspección">Inspección</option>
+            <option value="Otro">Otro</option>
+          {% endif %}
         </select>
       </div>
 
