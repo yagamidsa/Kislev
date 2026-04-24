@@ -26,12 +26,6 @@ class LoginForm(forms.Form):
         })
     )
 
-    remember_me = forms.BooleanField(
-        label='Recuérdame',
-        required=False,
-        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
-    )
-
     def clean_cedula(self):
         """Validación específica para el campo cédula"""
         cedula = self.cleaned_data.get('cedula')

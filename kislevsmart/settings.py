@@ -69,9 +69,12 @@ CSRF_COOKIE_SAMESITE = 'Lax'
 
 # Configuración de sesión
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
-SESSION_COOKIE_AGE = 3600  # 1 hora
+SESSION_COOKIE_AGE = 1800  # 30 min de inactividad — el middleware de token persistente reloga automáticamente
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# Vista personalizada para fallo CSRF — muestra pantalla amigable en vez de debug page
+CSRF_FAILURE_VIEW = 'kislevsmart.views.csrf_failure'
 
 # Application definition
 INSTALLED_APPS = [
@@ -99,6 +102,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'accounts.middleware.PersistentLoginMiddleware',
     'accounts.middleware.ForcePasswordChangeMiddleware',
 ]
 

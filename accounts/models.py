@@ -234,3 +234,22 @@ class Usuario(AbstractBaseUser):
                 return apto_str
 
         return "Sin ubicación asignada"
+
+
+class PersistentLoginToken(models.Model):
+    """Token de larga duración para auto-login sin pedir credenciales."""
+    user = models.ForeignKey(
+        Usuario,
+        on_delete=models.CASCADE,
+        related_name='persistent_tokens',
+    )
+    token = models.CharField(max_length=64, unique=True, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+
+    class Meta:
+        db_table = 'persistent_login_tokens'
+        verbose_name = 'Token de login persistente'
+
+    def __str__(self):
+        return f"{self.user.cedula} — {self.expires_at:%Y-%m-%d}"

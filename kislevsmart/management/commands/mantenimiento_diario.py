@@ -3,6 +3,7 @@ Comando único que agrupa todas las tareas de mantenimiento diario:
   1. Limpiar sesiones Django expiradas (clearsessions)
   2. Purgar registros de auditoría con más de N días (prunar_auditlog)
   3. Purgar novedades con más de N días (prunar_novedades)
+  4. Purgar tokens de login persistente expirados
 
 Uso:
     python manage.py mantenimiento_diario
@@ -14,6 +15,7 @@ Cron Railway (diario a las 3:00 AM):
 import logging
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +36,7 @@ class Command(BaseCommand):
         self.stdout.write('=== Mantenimiento diario Kislev ===')
 
         # 1. Sesiones expiradas
-        self.stdout.write('\n[1/3] Limpiando sesiones expiradas...')
+        self.stdout.write('\n[1/4] Limpiando sesiones expiradas...')
         if not dry_run:
             call_command('clearsessions', verbosity=0)
             self.stdout.write(self.style.SUCCESS('OK Sesiones limpiadas'))
@@ -42,18 +44,29 @@ class Command(BaseCommand):
             self.stdout.write('dry-run: se ejecutaria clearsessions')
 
         # 2. Audit log
-        self.stdout.write(f'\n[2/3] Purgando audit log (>{options["dias_audit"]} dias)...')
+        self.stdout.write(f'\n[2/4] Purgando audit log (>{options["dias_audit"]} dias)...')
         if dry_run:
             self.stdout.write(f'dry-run: se ejecutaria prunar_auditlog --dias {options["dias_audit"]}')
         else:
             call_command('prunar_auditlog', dias=options['dias_audit'])
 
         # 3. Novedades antiguas
-        self.stdout.write(f'\n[3/3] Purgando novedades (>{options["dias_novedades"]} dias)...')
+        self.stdout.write(f'\n[3/4] Purgando novedades (>{options["dias_novedades"]} dias)...')
         if dry_run:
             self.stdout.write(f'dry-run: se ejecutaria prunar_novedades --dias {options["dias_novedades"]}')
         else:
             call_command('prunar_novedades', dias=options['dias_novedades'])
+
+        # 4. Tokens de login persistente expirados
+        self.stdout.write('\n[4/4] Purgando tokens de login expirados...')
+        if dry_run:
+            from accounts.models import PersistentLoginToken
+            count = PersistentLoginToken.objects.filter(expires_at__lt=timezone.now()).count()
+            self.stdout.write(f'dry-run: se eliminarian {count} tokens expirados')
+        else:
+            from accounts.models import PersistentLoginToken
+            deleted, _ = PersistentLoginToken.objects.filter(expires_at__lt=timezone.now()).delete()
+            self.stdout.write(self.style.SUCCESS(f'OK {deleted} tokens expirados eliminados'))
 
         self.stdout.write(self.style.SUCCESS('\nMantenimiento completado.'))
         logger.info('[mantenimiento_diario] completado — dry_run=%s', dry_run)

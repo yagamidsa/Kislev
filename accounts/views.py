@@ -1,8 +1,34 @@
 # accounts/views.py
 import os
+import secrets
+from datetime import timedelta
 from django.conf import settings
+from django.utils import timezone
 
 _DEFAULT_PASSWORD = os.getenv('DEFAULT_USER_PASSWORD', 'kislev123')
+_TOKEN_COOKIE = 'kislev_token'
+_TOKEN_DAYS   = 30
+
+
+def _emit_token_cookie(user, response):
+    """Crea un PersistentLoginToken en DB y lo pone como cookie en la respuesta."""
+    from .models import PersistentLoginToken
+    token_value = secrets.token_urlsafe(32)
+    PersistentLoginToken.objects.create(
+        user=user,
+        token=token_value,
+        expires_at=timezone.now() + timedelta(days=_TOKEN_DAYS),
+    )
+    response.set_cookie(
+        _TOKEN_COOKIE,
+        token_value,
+        max_age=_TOKEN_DAYS * 24 * 60 * 60,
+        httponly=True,
+        samesite='Lax',
+        secure=not settings.DEBUG,
+        path='/',
+    )
+    return response
 from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -150,11 +176,8 @@ class LoginView(View):
         if form.is_valid():
             cedula = form.cleaned_data.get('cedula')
             password = form.cleaned_data.get('password')
-            remember_me = form.cleaned_data.get('remember_me')
-            if remember_me:
-                request.session.set_expiry(30 * 24 * 60 * 60)  # 30 días
-            else:
-                request.session.set_expiry(0)  # expira al cerrar el navegador
+            # La sesión siempre expira por inactividad (settings.SESSION_COOKIE_AGE).
+            # El auto-login persistente se maneja vía cookie kislev_token.
 
             # Verificar si la cédula existe en algún conjunto
             conjuntos_usuario = ConjuntoResidencial.objects.filter(
@@ -199,14 +222,12 @@ class LoginView(View):
                     # Especificamos el backend
                     user.backend = 'accounts.backends.CedulaConjuntoBackend'
                     login(request, user)
-                    
+
                     if request.is_secure():
                         request.session.cookie_secure = True
-                    
-                    # Registrar el último acceso
+
                     user.save()
-                    
-                    return self._redirect_by_user_type(user)
+                    return _emit_token_cookie(user, self._redirect_by_user_type(user))
                 else:
                     messages.error(request, 'Error al autenticar. Por favor, verifique sus credenciales.')
                     return render(request, self.template_name, {'form': form})
@@ -275,7 +296,7 @@ class SelectConjuntoView(View):
                 login(request, user)
                 request.session.pop('login_cedula', None)
                 request.session.pop('login_token', None)
-                return self._redirect_by_user_type(user)
+                return _emit_token_cookie(user, self._redirect_by_user_type(user))
             else:
                 messages.error(request, 'Error al autenticar. Credenciales inválidas.')
                 return redirect('accounts:login')
@@ -304,7 +325,7 @@ class SelectConjuntoView(View):
                 login(request, user)
                 request.session.pop('login_cedula', None)
                 request.session.pop('login_token', None)
-                return self._redirect_by_user_type(user)
+                return _emit_token_cookie(user, self._redirect_by_user_type(user))
             else:
                 messages.error(request, 'Error al autenticar. Credenciales inválidas.')
                 return redirect('accounts:login')
@@ -326,15 +347,16 @@ class SelectConjuntoView(View):
 @method_decorator(csrf_protect, name='dispatch')
 class LogoutView(DjangoLogoutView):
     def dispatch(self, request, *args, **kwargs):
-        # Verificar si el usuario está autenticado
         if request.user.is_authenticated:
-            # Realizar el logout
+            # Borrar todos los tokens persistentes del usuario
+            from .models import PersistentLoginToken
+            PersistentLoginToken.objects.filter(user=request.user).delete()
             logout(request)
-            # Agregar mensaje de éxito
             messages.success(request, 'Has cerrado sesión correctamente.')
-        
-        # Redirigir a la página de inicio o login
-        return redirect('accounts:login')
+
+        response = redirect('accounts:login')
+        response.delete_cookie(_TOKEN_COOKIE, path='/', samesite='Lax')
+        return response
 
     def get_next_page(self):
         return 'login'
@@ -1220,7 +1242,7 @@ def upload_conjunto(request):
                     continue
                 rd = dict(zip(headers, row))
                 nombre_torre = str(rd.get('nombre', '')).strip()
-                if not nombre_torre:
+                if not nombre_torre or nombre_torre.startswith('💡'):
                     continue
                 from accounts.models import Torre
                 torre, _ = Torre.objects.get_or_create(

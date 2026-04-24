@@ -106,3 +106,8 @@ if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     import debug_toolbar
     urlpatterns += [path('__debug__/', include(debug_toolbar.urls))]
+
+# ── Custom error handlers ────────────────────────────────────────────────────
+handler404 = 'kislevsmart.views.error_404'
+handler500 = 'kislevsmart.views.error_500'
+handler403 = 'kislevsmart.views.error_403'

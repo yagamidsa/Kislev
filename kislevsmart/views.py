@@ -1369,7 +1369,13 @@ def validar_qr(request, encrypted_token):
                 })
             
             visitante.refresh_from_db()
-            
+
+            # Verificar expiración de 24 horas
+            if timezone.now() - visitante.fecha_generacion > timedelta(hours=24):
+                return render(request, 'qr_expirado.html', {
+                    'mensaje': 'Este QR ha expirado.'
+                })
+
             # Lógica específica para visitantes vehiculares
             if tipo_visitante == 'vehicular':
                 if visitante.segunda_lectura:
@@ -1754,7 +1760,7 @@ def dashboard(request):
             .values_list('email_creador', flat=True)
         )
         umap = {
-            row['email__lower']: row
+            row['email_lower']: row
             for row in Usuario.objects.filter(
                 email__in=emails_union, conjunto_id=conjunto_id
             ).annotate(
@@ -1973,7 +1979,13 @@ def validar_qr_vehicular(request, encrypted_token):
 
             # Verificar estado directamente en la base de datos
             visitante.refresh_from_db()
-            
+
+            # Verificar expiración de 24 horas
+            if timezone.now() - visitante.fecha_generacion > timedelta(hours=24):
+                return render(request, 'qr_expirado.html', {
+                    'mensaje': 'Este QR ha expirado.'
+                })
+
             if not visitante.puede_leer():
                 return render(request, 'qr_desactivado.html', {
                     'mensaje': 'Este código QR ya completó sus dos lecturas.',
@@ -2331,8 +2343,8 @@ def get_torres(request):
         # Obtener todas las torres activas del conjunto
         torres = Torre.objects.filter(
             conjunto=conjunto,
-            activo=True
-        ).values('id', 'nombre')
+            activo=True,
+        ).exclude(nombre__startswith='💡').values('id', 'nombre')
         
         return JsonResponse({
             'status': 'success',
@@ -3205,3 +3217,18 @@ def mantenimiento_cron(request):
         return JsonResponse({'ok': False, 'error': str(e)}, status=500)
 
     return JsonResponse({'ok': True, 'output': out.getvalue()})
+
+
+# ── Error handlers ────────────────────────────────────────────────────────────
+
+def error_404(request, exception=None):
+    return render(request, '404.html', status=404)
+
+def error_500(request):
+    return render(request, '500.html', status=500)
+
+def error_403(request, exception=None):
+    return render(request, '403.html', status=403)
+
+def csrf_failure(request, reason=''):
+    return render(request, 'csrf_failure.html', status=403)

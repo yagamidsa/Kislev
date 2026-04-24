@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Página no encontrada — Kislev</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{height:100%;overscroll-behavior:none}
+    body{font-family:'Poppins',sans-serif;background:#09000f;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;overflow:hidden;position:relative}
+    body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 50% at 30% 30%,rgba(124,58,237,.07) 0%,transparent 70%),radial-gradient(ellipse 50% 60% at 70% 70%,rgba(219,39,119,.05) 0%,transparent 70%);pointer-events:none}
+    .card{position:relative;z-index:1;width:100%;max-width:420px;background:rgba(255,255,255,.04);border:1px solid rgba(124,58,237,.2);border-radius:28px;padding:48px 36px 40px;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.5);animation:slideUp .45s cubic-bezier(.22,1,.36,1) both}
+    .card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#7c3aed,#db2777);border-radius:28px 28px 0 0}
+    @keyframes slideUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+    .code{font-size:5rem;font-weight:800;background:linear-gradient(135deg,#a78bfa,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;margin-bottom:8px}
+    .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.3);border-radius:20px;padding:5px 14px;font-size:.72rem;font-weight:700;color:#a78bfa;letter-spacing:.04em;text-transform:uppercase;margin-bottom:20px}
+    h1{font-size:1.4rem;font-weight:800;color:#f1f5f9;margin-bottom:10px}
+    p{font-size:.85rem;color:rgba(255,255,255,.45);line-height:1.65;margin-bottom:32px}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;font-family:'Poppins',sans-serif;font-size:.9rem;font-weight:700;text-decoration:none;border-radius:14px;border:none;cursor:pointer;transition:opacity .2s,transform .15s;box-shadow:0 6px 20px rgba(124,58,237,.3)}
+    .btn:hover{opacity:.9;transform:translateY(-1px)}
+    .footer{margin-top:16px;font-size:.72rem;color:rgba(255,255,255,.2)}
+    @media(max-width:480px){.card{padding:36px 22px 32px}.code{font-size:4rem}}
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="code">404</div>
+  <div class="badge"><i class="fas fa-map-location-dot"></i> Página no encontrada</div>
+  <h1>Esta página no existe</h1>
+  <p>La URL que buscas no existe o fue movida. Verifica la dirección o regresa al panel principal.</p>
+  <a href="/" class="btn"><i class="fas fa-house"></i> Ir al inicio</a>
+  <p class="footer">Kislev &mdash; Sistema de acceso residencial</p>
+</div>
+</body>
+</html>

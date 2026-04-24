@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acceso denegado — Kislev</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{height:100%;overscroll-behavior:none}
+    body{font-family:'Poppins',sans-serif;background:#09000f;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;overflow:hidden;position:relative}
+    body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 50% at 30% 30%,rgba(245,158,11,.06) 0%,transparent 70%),radial-gradient(ellipse 50% 60% at 70% 70%,rgba(239,68,68,.04) 0%,transparent 70%);pointer-events:none}
+    .card{position:relative;z-index:1;width:100%;max-width:420px;background:rgba(255,255,255,.04);border:1px solid rgba(245,158,11,.2);border-radius:28px;padding:48px 36px 40px;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.5);animation:slideUp .45s cubic-bezier(.22,1,.36,1) both}
+    .card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#f59e0b,#ef4444);border-radius:28px 28px 0 0}
+    @keyframes slideUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+    .icon-wrap{width:80px;height:80px;margin:0 auto 24px;border-radius:50%;background:rgba(245,158,11,.1);border:2px solid rgba(245,158,11,.25);display:flex;align-items:center;justify-content:center;animation:pulse 2.8s ease-in-out infinite}
+    @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,.2)}50%{box-shadow:0 0 0 14px rgba(245,158,11,0)}}
+    .icon-wrap i{font-size:2rem;color:#fbbf24}
+    .code{font-size:4.5rem;font-weight:800;color:rgba(251,191,36,.8);line-height:1;margin-bottom:8px}
+    .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:20px;padding:5px 14px;font-size:.72rem;font-weight:700;color:#fbbf24;letter-spacing:.04em;text-transform:uppercase;margin-bottom:20px}
+    h1{font-size:1.4rem;font-weight:800;color:#f1f5f9;margin-bottom:10px}
+    p{font-size:.85rem;color:rgba(255,255,255,.45);line-height:1.65;margin-bottom:32px}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;background:linear-gradient(135deg,#d97706,#fbbf24);color:#000;font-family:'Poppins',sans-serif;font-size:.9rem;font-weight:700;text-decoration:none;border-radius:14px;border:none;cursor:pointer;transition:opacity .2s,transform .15s;box-shadow:0 6px 20px rgba(245,158,11,.25)}
+    .btn:hover{opacity:.9;transform:translateY(-1px)}
+    .footer{margin-top:16px;font-size:.72rem;color:rgba(255,255,255,.2)}
+    @media(max-width:480px){.card{padding:36px 22px 32px}.code{font-size:3.5rem}}
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="icon-wrap"><i class="fas fa-lock"></i></div>
+  <div class="code">403</div>
+  <div class="badge"><i class="fas fa-shield-halved"></i> Acceso denegado</div>
+  <h1>No tienes permiso</h1>
+  <p>No tienes autorización para acceder a esta sección. Si crees que es un error, contacta al administrador del conjunto.</p>
+  <a href="/" class="btn"><i class="fas fa-house"></i> Volver al inicio</a>
+  <p class="footer">Kislev &mdash; Sistema de acceso residencial</p>
+</div>
+</body>
+</html>
