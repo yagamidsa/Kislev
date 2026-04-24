@@ -209,13 +209,28 @@ class Usuario(AbstractBaseUser):
 
         if tiene_agrupacion:
             if self.torre and self.apartamento:
-                return f"{etiqueta_agrup} {self.torre.nombre} — {etiqueta_unidad} {self.apartamento}"
+                torre_str = self.torre.nombre
+                if not torre_str.lower().startswith(etiqueta_agrup.lower()):
+                    torre_str = f"{etiqueta_agrup} {torre_str}"
+                apto_str = str(self.apartamento)
+                if not apto_str.lower().startswith(etiqueta_unidad.lower()):
+                    apto_str = f"{etiqueta_unidad} {apto_str}"
+                return f"{torre_str} — {apto_str}"
             elif self.torre:
-                return f"{etiqueta_agrup} {self.torre.nombre}"
+                torre_str = self.torre.nombre
+                if not torre_str.lower().startswith(etiqueta_agrup.lower()):
+                    torre_str = f"{etiqueta_agrup} {torre_str}"
+                return torre_str
             elif self.apartamento:
-                return f"{etiqueta_unidad} {self.apartamento}"
+                apto_str = str(self.apartamento)
+                if not apto_str.lower().startswith(etiqueta_unidad.lower()):
+                    apto_str = f"{etiqueta_unidad} {apto_str}"
+                return apto_str
         else:
             if self.apartamento:
-                return f"{etiqueta_unidad} {self.apartamento}"
+                apto_str = str(self.apartamento)
+                if not apto_str.lower().startswith(etiqueta_unidad.lower()):
+                    apto_str = f"{etiqueta_unidad} {apto_str}"
+                return apto_str
 
         return "Sin ubicación asignada"
