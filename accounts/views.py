@@ -28,7 +28,7 @@ from django_ratelimit.decorators import ratelimit
 from .utils import role_required
 from .forms import LoginForm, SelectConjuntoForm
 from .models import Usuario, ConjuntoResidencial
-from kislevsmart.models import Novedad, NovedadVista, Visitante, VisitanteVehicular, ConfigParqueadero
+from kislevsmart.models import Novedad, NovedadVista, Visitante, VisitanteVehicular, ConfigParqueadero, ParqueaderoCarro, ParqueaderoMoto
 from kislevsmart.utils import calcular_cobro_parqueadero, send_email_async, log_envio as _log_envio_global
 from django.utils import timezone as tz
 
@@ -118,11 +118,17 @@ class ControlpropietarioView(TemplateView):
                 'entrada': tz.localtime(v.ultima_lectura).strftime('%H:%M'),
             })
 
+        conjunto_id = user.conjunto_id
+        disp_carros = ParqueaderoCarro.get_disponibilidad(conjunto_id)
+        disp_motos  = ParqueaderoMoto.get_disponibilidad(conjunto_id)
+
         context = {
             'user': user,
             'novedades_no_vistas': novedades_no_vistas,
             'novedades_count': novedades_no_vistas.count(),
             'vehiculos_activos': vehiculos_activos,
+            'disp_carros': disp_carros,
+            'disp_motos': disp_motos,
         }
         return self.render_to_response(context)
 

@@ -87,6 +87,22 @@
         .nav-card.alt .nav-icon { background: linear-gradient(135deg, #db2777, #7c3aed); }
         .nav-badge { background: linear-gradient(135deg, #db2777, #7c3aed); color: #fff; font-size: 0.65rem; padding: 2px 7px; border-radius: 10px; font-weight: 700; }
 
+        /* Disponibilidad parqueadero (arrendatario) */
+        .parking-section { width: 100%; max-width: 700px; margin-top: 28px; animation: fadeInUp 1.2s ease; }
+        .parking-section h3 { font-size: 13px; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; font-weight: 600; }
+        .parking-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .parking-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 18px 16px; display: flex; align-items: center; gap: 14px; }
+        .parking-icon { width: 44px; height: 44px; border-radius: 13px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+        .parking-icon.car { background: linear-gradient(135deg, #7c3aed, #db2777); }
+        .parking-icon.moto { background: linear-gradient(135deg, #0ea5e9, #7c3aed); }
+        .parking-info { flex: 1; min-width: 0; }
+        .parking-tipo { font-size: 0.75rem; color: rgba(255,255,255,0.45); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+        .parking-num { font-size: 1.7rem; font-weight: 800; line-height: 1.1; }
+        .parking-num.ok { color: #34d399; }
+        .parking-num.low { color: #fbbf24; }
+        .parking-num.full { color: #f87171; }
+        .parking-sub { font-size: 0.72rem; color: rgba(255,255,255,0.35); margin-top: 2px; }
+
         /* Vehículos visitantes */
         .vehicles-section { width: 100%; max-width: 700px; margin-top: 28px; animation: fadeInUp 1.3s ease; }
         .vehicles-section h3 { font-size: 13px; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; font-weight: 600; }
@@ -215,6 +231,35 @@
                 Estado de cuenta
             </a>
         </div>
+
+        <!-- Disponibilidad parqueadero — solo arrendatarios -->
+        {% if user.es_arrendatario %}
+        <div class="parking-section">
+          <h3><i class="fas fa-parking" style="margin-right:6px;color:#7c3aed"></i>Disponibilidad de parqueadero</h3>
+          <div class="parking-grid">
+            <div class="parking-card">
+              <div class="parking-icon car">🚗</div>
+              <div class="parking-info">
+                <div class="parking-tipo">Carros</div>
+                <div class="parking-num {% if disp_carros.disponibles == 0 %}full{% elif disp_carros.disponibles <= 2 %}low{% else %}ok{% endif %}">
+                  {{ disp_carros.disponibles }}
+                </div>
+                <div class="parking-sub">disponibles de {{ disp_carros.total }}</div>
+              </div>
+            </div>
+            <div class="parking-card">
+              <div class="parking-icon moto">🏍️</div>
+              <div class="parking-info">
+                <div class="parking-tipo">Motos</div>
+                <div class="parking-num {% if disp_motos.disponibles == 0 %}full{% elif disp_motos.disponibles <= 2 %}low{% else %}ok{% endif %}">
+                  {{ disp_motos.disponibles }}
+                </div>
+                <div class="parking-sub">disponibles de {{ disp_motos.total }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
 
         <!-- Vehículos visitantes activos -->
         <div class="vehicles-section">
