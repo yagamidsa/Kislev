@@ -232,8 +232,8 @@
             </a>
         </div>
 
-        <!-- Disponibilidad parqueadero — solo arrendatarios -->
-        {% if user.es_arrendatario %}
+        <!-- Disponibilidad parqueadero — propietarios y arrendatarios -->
+        {% if user.user_type == 'propietario' %}
         <div class="parking-section">
           <h3><i class="fas fa-parking" style="margin-right:6px;color:#7c3aed"></i>Disponibilidad de parqueadero</h3>
           <div class="parking-grid">
