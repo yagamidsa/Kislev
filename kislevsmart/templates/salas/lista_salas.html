@@ -6,115 +6,179 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Zonas Comunes — {{ request.user.conjunto.nombre }}</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     html{overscroll-behavior:none;background:#09000f}
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Segoe UI',Arial,sans-serif;min-height:100vh;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%)}
-    .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:rgba(255,255,255,0.05);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,0.1)}
-    .topbar-left h1{color:#fff;font-size:1.2rem;font-weight:700}
-    .topbar-left .sub{color:rgba(255,255,255,0.5);font-size:0.8rem;margin-top:2px}
-    .topbar-right{display:flex;gap:10px;align-items:center}
-    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:10px;font-size:0.88rem;font-weight:600;text-decoration:none;border:none;cursor:pointer;transition:all .2s}
-    .btn-back{background:rgba(255,255,255,0.1);color:#fff}
-    .btn-back:hover{background:rgba(255,255,255,0.2)}
-    .btn-danger{background:rgba(255,50,50,0.2);color:#ff6b6b;border:1px solid rgba(255,50,50,0.3)}
-    .btn-danger:hover{background:rgba(255,50,50,0.35)}
-    .container{max-width:960px;margin:0 auto;padding:28px 20px}
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
-    .card{background:rgba(255,255,255,0.07);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.12);border-radius:20px;overflow:hidden;transition:transform .2s,box-shadow .2s;position:relative}
-    .card:not(.bloqueada):hover{transform:translateY(-4px);box-shadow:0 20px 40px rgba(127,0,255,.25)}
-    .card.bloqueada{opacity:.75}
-    .card-img{width:100%;height:170px;object-fit:cover}
-    .card-img-placeholder{width:100%;height:170px;display:flex;align-items:center;justify-content:center;font-size:3rem;background:linear-gradient(135deg,#7c3aed33,#db277733)}
-    .card-body{padding:18px}
-    .card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px}
-    .card-title{color:#fff;font-size:1.05rem;font-weight:700}
-    .badge{padding:4px 10px;border-radius:20px;font-size:0.72rem;font-weight:700;white-space:nowrap;flex-shrink:0}
-    .badge-ok{background:rgba(34,197,94,0.2);color:#4ade80;border:1px solid rgba(34,197,94,0.3)}
-    .badge-bloqueo{background:rgba(255,160,0,0.2);color:#fbbf24;border:1px solid rgba(255,160,0,0.3)}
-    .card-desc{color:rgba(255,255,255,0.6);font-size:0.85rem;line-height:1.5;margin-bottom:12px}
-    .card-meta{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:16px}
-    .meta-item{display:flex;align-items:center;gap:5px;color:rgba(255,255,255,0.5);font-size:0.82rem}
-    .meta-item i{color:#db2777;font-size:0.8rem}
-    .bloqueo-info{background:rgba(255,160,0,0.1);border:1px solid rgba(255,160,0,0.25);border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:0.82rem;color:#fbbf24}
-    .bloqueo-info i{margin-right:6px}
-    .btn-reservar{width:100%;padding:12px;background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;border:none;border-radius:12px;font-size:0.95rem;font-weight:700;cursor:pointer;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity .2s}
-    .btn-reservar:hover{opacity:.9}
-    .btn-bloqueada{width:100%;padding:12px;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.35);border:1px solid rgba(255,255,255,0.1);border-radius:12px;font-size:0.95rem;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;cursor:not-allowed}
-    .empty{text-align:center;padding:80px 20px;color:rgba(255,255,255,0.5)}
-    .empty i{font-size:4rem;display:block;margin-bottom:16px;opacity:.4}
-    @media(max-width:600px){
-      .topbar{flex-wrap:wrap;gap:8px;padding:12px 14px}
-      .topbar-left h1{font-size:1rem}
-      .btn{padding:8px 12px;font-size:0.8rem}
-      .container{padding:14px 10px}
-      .grid{grid-template-columns:1fr}
-      .card-img,.card-img-placeholder{height:140px}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Poppins',sans-serif;background:#09000f;min-height:100vh;color:#e2e8f0}
+
+    /* ── TOPBAR ── */
+    .topbar{background:rgba(255,255,255,.04);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.08);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;z-index:50}
+    .topbar-left{display:flex;align-items:center;gap:12px;min-width:0}
+    .back-btn{display:inline-flex;align-items:center;gap:6px;color:#a78bfa;text-decoration:none;font-weight:600;font-size:.8rem;padding:6px 13px;border-radius:10px;border:1px solid rgba(167,139,250,.3);transition:all .2s;white-space:nowrap;flex-shrink:0}
+    .back-btn:hover{background:rgba(167,139,250,.1)}
+    .topbar-title{font-size:.95rem;font-weight:700;background:linear-gradient(135deg,#a78bfa,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .topbar-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+    .btn-top{display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:10px;font-size:.78rem;font-weight:600;text-decoration:none;border:none;cursor:pointer;transition:all .2s;white-space:nowrap;font-family:'Poppins',sans-serif}
+    .btn-reservas{background:rgba(124,58,237,.15);color:#a78bfa;border:1px solid rgba(124,58,237,.3)}
+    .btn-reservas:hover{background:rgba(124,58,237,.25)}
+    .btn-bloquear{background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.25)}
+    .btn-bloquear:hover{background:rgba(239,68,68,.2)}
+
+    /* ── CONTAINER ── */
+    .container{max-width:960px;margin:0 auto;padding:32px 18px 60px}
+
+    /* ── HERO ── */
+    .hero{text-align:center;margin-bottom:36px}
+    .hero-icon{width:64px;height:64px;border-radius:20px;background:linear-gradient(135deg,#7c3aed,#db2777);display:flex;align-items:center;justify-content:center;font-size:1.7rem;color:#fff;margin:0 auto 14px;box-shadow:0 8px 28px rgba(124,58,237,.4)}
+    .hero h1{font-size:1.5rem;font-weight:800;color:#f1f5f9;margin-bottom:4px}
+    .hero p{font-size:.85rem;color:rgba(255,255,255,.4)}
+
+    /* ── GRID ── */
+    .salas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(290px,100%),1fr));gap:20px}
+
+    /* ── CARD ── */
+    .sala-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:20px;overflow:hidden;transition:transform .25s,box-shadow .25s,border-color .25s;position:relative;display:flex;flex-direction:column}
+    .sala-card:not(.bloqueada):hover{transform:translateY(-5px);box-shadow:0 20px 48px rgba(124,58,237,.22);border-color:rgba(124,58,237,.3)}
+    .sala-card.bloqueada{opacity:.8}
+    .sala-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#7c3aed,#db2777);z-index:1}
+    .sala-card.bloqueada::before{background:linear-gradient(90deg,#f59e0b,#ef4444)}
+
+    /* ── IMAGEN ── */
+    .card-img-wrap{position:relative;overflow:hidden}
+    .card-img{width:100%;height:180px;object-fit:cover;display:block}
+    .card-img-placeholder{width:100%;height:180px;background:linear-gradient(135deg,rgba(124,58,237,.2),rgba(219,39,119,.12));display:flex;align-items:center;justify-content:center;font-size:3.2rem}
+    .card-status-badge{position:absolute;top:12px;right:12px;display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:.7rem;font-weight:700;backdrop-filter:blur(8px)}
+    .badge-ok{background:rgba(16,185,129,.2);color:#34d399;border:1px solid rgba(16,185,129,.3)}
+    .badge-mant{background:rgba(245,158,11,.2);color:#fbbf24;border:1px solid rgba(245,158,11,.3)}
+
+    /* ── BODY ── */
+    .card-body{padding:18px 18px 20px;display:flex;flex-direction:column;flex:1}
+    .card-title{font-size:1rem;font-weight:700;color:#f1f5f9;margin-bottom:6px}
+    .card-desc{font-size:.8rem;color:rgba(255,255,255,.5);line-height:1.55;margin-bottom:14px;flex:1}
+
+    /* ── META ── */
+    .card-meta{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+    .meta-chip{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:4px 10px;font-size:.75rem;color:rgba(255,255,255,.55)}
+    .meta-chip i{color:#a78bfa;font-size:.72rem}
+
+    /* ── BLOQUEO ── */
+    .bloqueo-info{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:.78rem;color:#fbbf24;line-height:1.5}
+    .bloqueo-info i{margin-right:5px}
+
+    /* ── BOTONES ── */
+    .btn-reservar{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;border:none;border-radius:12px;font-size:.9rem;font-weight:700;font-family:'Poppins',sans-serif;cursor:pointer;text-decoration:none;transition:opacity .2s,transform .15s;box-shadow:0 4px 16px rgba(124,58,237,.3)}
+    .btn-reservar:hover{opacity:.92;transform:translateY(-1px)}
+    .btn-bloqueada{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:rgba(255,255,255,.05);color:rgba(255,255,255,.3);border:1px solid rgba(255,255,255,.08);border-radius:12px;font-size:.88rem;font-weight:600;cursor:not-allowed}
+
+    /* ── EMPTY ── */
+    .empty{text-align:center;padding:80px 20px;color:rgba(255,255,255,.3)}
+    .empty i{font-size:3.5rem;display:block;margin-bottom:16px;opacity:.35}
+    .empty p{font-size:.9rem}
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:640px){
+      .topbar{padding:12px 14px}
+      .topbar-title{display:none}
+      .card-img,.card-img-placeholder{height:150px}
+      .hero h1{font-size:1.25rem}
+      .btn-top span{display:none}
+      .btn-top{padding:7px 10px}
     }
   </style>
 </head>
 <body>
+
 <div class="topbar">
   <div class="topbar-left">
-    <h1><i class="fa fa-building" style="color:#db2777"></i> Zonas Comunes</h1>
-    <div class="sub">{{ request.user.conjunto.nombre }}</div>
+    <a href="javascript:volverPanel()" class="back-btn"><i class="fas fa-arrow-left"></i> Volver</a>
+    <span class="topbar-title"><i class="fas fa-building" style="margin-right:6px"></i>Zonas Comunes</span>
   </div>
   <div class="topbar-right">
+    <a href="{% url 'mis_reservas' %}" class="btn-top btn-reservas">
+      <i class="fas fa-calendar-check"></i><span> Mis reservas</span>
+    </a>
     {% if request.user.user_type == 'administrador' %}
-    <a href="{% url 'bloquear_sala' %}" class="btn btn-danger"><i class="fa fa-lock"></i> Bloquear sala</a>
+    <a href="{% url 'bloquear_sala' %}" class="btn-top btn-bloquear">
+      <i class="fas fa-lock"></i><span> Bloquear</span>
+    </a>
     {% endif %}
-    <a href="{% url 'mis_reservas' %}" class="btn btn-back"><i class="fa fa-calendar-check"></i> Mis reservas</a>
-    <a href="javascript:volverPanel()" class="btn btn-back"><i class="fa fa-arrow-left"></i> Volver</a>
   </div>
 </div>
 
 <div class="container">
+
+  <div class="hero">
+    <div class="hero-icon"><i class="fas fa-building"></i></div>
+    <h1>Zonas Comunes</h1>
+    <p>{{ request.user.conjunto.nombre }} &mdash; Selecciona un área para reservar</p>
+  </div>
+
   {% if salas %}
-  <div class="grid">
+  <div class="salas-grid">
     {% for sala in salas %}
-    <div class="card {% if sala.bloqueo_activo %}bloqueada{% endif %}">
-      {% if sala.imagen %}
-        <img src="{{ sala.imagen.url }}" class="card-img" alt="{{ sala.nombre }}">
-      {% else %}
-        <div class="card-img-placeholder">
-          {% if 'gym' in sala.nombre|lower %}🏋️{% elif 'piscina' in sala.nombre|lower %}🏊{% elif 'bbq' in sala.nombre|lower or 'grill' in sala.nombre|lower %}🔥{% elif 'salon' in sala.nombre|lower or 'salón' in sala.nombre|lower %}🎉{% elif 'juego' in sala.nombre|lower %}🎮{% else %}🏢{% endif %}
-        </div>
-      {% endif %}
-      <div class="card-body">
-        <div class="card-header">
-          <div class="card-title">{{ sala.nombre }}</div>
-          {% if sala.bloqueo_activo %}
-            <span class="badge badge-bloqueo"><i class="fa fa-wrench"></i> Mantenimiento</span>
-          {% else %}
-            <span class="badge badge-ok"><i class="fa fa-circle-check"></i> Disponible</span>
-          {% endif %}
-        </div>
-        {% if sala.descripcion %}
-        <div class="card-desc">{{ sala.descripcion }}</div>
-        {% endif %}
-        <div class="card-meta">
-          <span class="meta-item"><i class="fa fa-users"></i> {{ sala.capacidad }} personas</span>
-          {% if sala.bloqueo_activo %}
-            <span class="meta-item"><i class="fa fa-calendar-xmark"></i> Hasta {{ sala.bloqueo_activo.fecha_fin|date:"d/m/Y" }}</span>
-          {% endif %}
-        </div>
-        {% if sala.bloqueo_activo %}
-          <div class="bloqueo-info"><i class="fa fa-triangle-exclamation"></i> {{ sala.bloqueo_activo.motivo }}</div>
-          <div class="btn-bloqueada"><i class="fa fa-lock"></i> No disponible por mantenimiento</div>
+    <div class="sala-card {% if sala.bloqueo_activo %}bloqueada{% endif %}">
+
+      <div class="card-img-wrap">
+        {% if sala.imagen %}
+          <img src="{{ sala.imagen.url }}" class="card-img" alt="{{ sala.nombre }}">
         {% else %}
-          <a href="{% url 'reservar_sala' sala.id %}" class="btn-reservar"><i class="fa fa-calendar-plus"></i> Reservar ahora</a>
+          <div class="card-img-placeholder">
+            {% if 'gym' in sala.nombre|lower or 'gimnasio' in sala.nombre|lower %}🏋️
+            {% elif 'piscina' in sala.nombre|lower %}🏊
+            {% elif 'bbq' in sala.nombre|lower or 'grill' in sala.nombre|lower or 'asado' in sala.nombre|lower %}🔥
+            {% elif 'salon' in sala.nombre|lower or 'salón' in sala.nombre|lower %}🎉
+            {% elif 'juego' in sala.nombre|lower or 'billar' in sala.nombre|lower %}🎮
+            {% elif 'terraza' in sala.nombre|lower %}🌇
+            {% elif 'cancha' in sala.nombre|lower %}⚽
+            {% else %}🏢{% endif %}
+          </div>
+        {% endif %}
+        {% if sala.bloqueo_activo %}
+          <span class="card-status-badge badge-mant"><i class="fas fa-wrench"></i> Mantenimiento</span>
+        {% else %}
+          <span class="card-status-badge badge-ok"><i class="fas fa-circle-check"></i> Disponible</span>
         {% endif %}
       </div>
+
+      <div class="card-body">
+        <div class="card-title">{{ sala.nombre }}</div>
+        {% if sala.descripcion %}
+          <div class="card-desc">{{ sala.descripcion }}</div>
+        {% else %}
+          <div class="card-desc" style="color:rgba(255,255,255,.25);font-style:italic">Sin descripción</div>
+        {% endif %}
+
+        <div class="card-meta">
+          <span class="meta-chip"><i class="fas fa-users"></i> {{ sala.capacidad }} personas</span>
+          {% if sala.bloqueo_activo %}
+            <span class="meta-chip"><i class="fas fa-calendar-xmark"></i> Hasta {{ sala.bloqueo_activo.fecha_fin|date:"d/m/Y" }}</span>
+          {% endif %}
+        </div>
+
+        {% if sala.bloqueo_activo %}
+          <div class="bloqueo-info"><i class="fas fa-triangle-exclamation"></i> {{ sala.bloqueo_activo.motivo }}</div>
+          <div class="btn-bloqueada"><i class="fas fa-lock"></i> No disponible</div>
+        {% else %}
+          <a href="{% url 'reservar_sala' sala.id %}" class="btn-reservar">
+            <i class="fas fa-calendar-plus"></i> Reservar ahora
+          </a>
+        {% endif %}
+      </div>
+
     </div>
     {% endfor %}
   </div>
+
   {% else %}
   <div class="empty">
-    <i class="fa fa-building"></i>
-    <p>No hay zonas comunes configuradas.</p>
+    <i class="fas fa-building"></i>
+    <p>No hay zonas comunes configuradas aún.</p>
   </div>
   {% endif %}
+
 </div>
+
 <script>
 history.replaceState(null, '', location.href);
 function volverPanel() {
