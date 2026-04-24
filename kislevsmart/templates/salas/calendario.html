@@ -250,7 +250,8 @@
 
         // Agregar los estilos al documento
         if (!document.getElementById('touchStyles')) {
-            $('<style>')
+            $('<style>
+    html{overscroll-behavior:none;background:#09000f}')
                 .attr('id', 'touchStyles')
                 .text(styles)
                 .appendTo('head');

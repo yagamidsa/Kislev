@@ -1,3 +1,4 @@
+html{overscroll-behavior:none;background:#09000f}
 :root {
     --primary-color: #be185d;  /* pink-700 */
     --primary-hover: #9d174d;  /* pink-800 */

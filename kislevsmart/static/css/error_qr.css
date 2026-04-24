@@ -1,3 +1,4 @@
+html{overscroll-behavior:none;background:#09000f}
 /* Reset y variables */
 :root {
     --primary-color: #7f00ff;

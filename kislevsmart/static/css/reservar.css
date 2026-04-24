@@ -1,3 +1,4 @@
+html{overscroll-behavior:none;background:#09000f}
 :root {
     --primary-color: #FF1493;
     --neon-color: #FF1493;

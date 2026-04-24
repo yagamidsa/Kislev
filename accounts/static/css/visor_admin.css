@@ -1,3 +1,4 @@
+html{overscroll-behavior:none;background:#09000f}
 body {
   background: linear-gradient(135deg, #09000f 0%, #140020 45%, #07080f 100%); background-attachment: fixed;
   background-size: cover;
