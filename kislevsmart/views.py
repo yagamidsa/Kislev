@@ -1057,7 +1057,7 @@ def notificaciones(request):
 def historial_visitantes(request):
     """Vista para que el propietario vea los visitantes que él generó."""
     hoy = timezone.localtime(timezone.now()).date()
-    periodo = request.GET.get('periodo', 'mes')
+    periodo = request.GET.get('periodo', 'dia')
 
     qs = Visitante.objects.filter(
         conjunto_id=request.user.conjunto_id,
