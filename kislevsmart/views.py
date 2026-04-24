@@ -15,8 +15,8 @@ from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
 from .models import Visitante
 from .utils import role_required, log_audit, calcular_cobro_parqueadero, log_envio, send_email_async, verificar_cuota
-from django.db.models import Count, F
-from django.db.models.functions import ExtractMonth, ExtractWeekDay, ExtractHour
+from django.db.models import Count, F, Q, Sum
+from django.db.models.functions import ExtractMonth, ExtractWeekDay, ExtractHour, Lower
 import json
 from accounts.models import Usuario, ConjuntoResidencial, Torre
 from django.http import JsonResponse, HttpResponseForbidden
@@ -1519,8 +1519,9 @@ def success_page(request, email_b64):
 @role_required(['administrador'])
 def dashboard(request):
     try:
-        # Obtener el conjunto_id del usuario logueado
-        conjunto_id = request.user.conjunto_id
+        # Pre-cargar conjunto una sola vez — queda cacheado en request.user
+        conjunto = request.user.conjunto
+        conjunto_id = conjunto.id
 
         # Configuración inicial de fechas
         fecha_actual = timezone.localtime(timezone.now()).date()
@@ -1578,26 +1579,26 @@ def dashboard(request):
             total=Count('email')
         ).filter(total__gt=1).values_list('email', flat=True)
 
-        # Conteos para el día seleccionado
-        visitantes_recurrentes = visitantes_dia.filter(email__in=correos_recurrentes).count()
-        visitantes_nuevos = visitantes_dia.exclude(email__in=correos_recurrentes).count()
-        ingresos = visitantes_dia.exclude(ultima_lectura=None).count()
-
-        # Calcular pendientes incluyendo las últimas 24 horas
+        # Conteos para el día seleccionado — 1 aggregate + 1 pendientes_anteriores
         tiempo_limite = timezone.now() - timedelta(hours=24)
+        dia_stats = visitantes_dia.aggregate(
+            ingresos=Count('id', filter=~Q(ultima_lectura=None)),
+            pendientes_hoy=Count('id', filter=Q(ultima_lectura=None)),
+            total_dia=Count('id'),
+            recurrentes=Count('id', filter=Q(email__in=correos_recurrentes)),
+        )
+        ingresos = dia_stats['ingresos']
+        pendientes_hoy = dia_stats['pendientes_hoy']
+        total_visitantes_dia = dia_stats['total_dia']
+        visitantes_recurrentes = dia_stats['recurrentes']
+        visitantes_nuevos = total_visitantes_dia - visitantes_recurrentes
 
-        # Pendientes del día actual
-        pendientes_hoy = visitantes_dia.filter(ultima_lectura=None).count()
-
-        # Pendientes anteriores pero aún válidos (dentro de 24 horas)
         pendientes_anteriores = Visitante.objects.filter(
             ultima_lectura=None,
             fecha_generacion__lt=fecha_inicio,
             fecha_generacion__gte=tiempo_limite,
             conjunto_id=conjunto_id
         ).count()
-
-        # Total de pendientes
         total_pendientes = pendientes_hoy + pendientes_anteriores
 
         # Datos para el gráfico por año seleccionado
@@ -1625,9 +1626,6 @@ def dashboard(request):
             total=Count('id')
         ).order_by('-total')
 
-        # Total de visitantes por día
-        total_visitantes_dia = visitantes_dia.count()
-        
         # ── Datos financieros ──────────────────────────────────────────
         mes_actual = fecha_actual.month
         cuotas_qs = Cuota.objects.filter(conjunto_id=conjunto_id)
@@ -1639,11 +1637,12 @@ def dashboard(request):
         total_propietarios_fin = Usuario.objects.filter(
             conjunto_id=conjunto_id, user_type='propietario', is_active=True
         ).count()
-        cuotas_vigentes = cuotas_qs.filter(fecha_vencimiento__gte=fecha_actual)
-        cuotas_vencidas = cuotas_qs.filter(fecha_vencimiento__lt=fecha_actual)
-        recaudo_mes = pagos_mes.aggregate(
-            total=models.Sum('monto_pagado')
-        )['total'] or 0
+        # Cuotas vigentes/vencidas en 1 sola query
+        cuotas_stats = cuotas_qs.aggregate(
+            vigentes=Count('id', filter=Q(fecha_vencimiento__gte=fecha_actual)),
+            vencidas=Count('id', filter=Q(fecha_vencimiento__lt=fecha_actual)),
+        )
+        recaudo_mes = pagos_mes.aggregate(total=Sum('monto_pagado'))['total'] or 0
         propietarios_al_dia = Pago.objects.filter(
             cuota__conjunto_id=conjunto_id,
             cuota__fecha_vencimiento__gte=fecha_actual,
@@ -1660,20 +1659,52 @@ def dashboard(request):
         ).values('fecha_pago__month').annotate(total=models.Sum('monto_pagado')):
             recaudo_por_mes[p['fecha_pago__month'] - 1] = p['total'] or 0
 
-        # ── Datos novedades ────────────────────────────────────────────
-        from django.db.models import Sum as _Sum
-        mes_inicio = fecha_actual.replace(day=1)
-        novedades_mes = Novedad.objects.filter(conjunto_id=conjunto_id, activa=True, created_at__date__gte=mes_inicio)
-        nov_total = Novedad.objects.filter(conjunto_id=conjunto_id, activa=True).count()
-        nov_mes = novedades_mes.count()
+        # ── Datos novedades — 2 queries en lugar de 5 ────────────────────
         from .models import LikeNovedad, ComentarioNovedad
-        nov_likes = LikeNovedad.objects.filter(novedad__conjunto_id=conjunto_id).count()
-        nov_comentarios = ComentarioNovedad.objects.filter(novedad__conjunto_id=conjunto_id).count()
+        mes_inicio = fecha_actual.replace(day=1)
+        nov_stats = Novedad.objects.filter(conjunto_id=conjunto_id, activa=True).aggregate(
+            nov_total=Count('id'),
+            nov_mes=Count('id', filter=Q(created_at__date__gte=mes_inicio)),
+            nov_likes=Count('likes', distinct=True),
+            nov_comentarios=Count('comentarios', distinct=True),
+        )
+        nov_total       = nov_stats['nov_total']
+        nov_mes         = nov_stats['nov_mes']
+        nov_likes       = nov_stats['nov_likes']
+        nov_comentarios = nov_stats['nov_comentarios']
         ultimas_novedades = Novedad.objects.filter(
             conjunto_id=conjunto_id, activa=True
+        ).select_related('autor__conjunto').annotate(
+            likes_count=Count('likes', distinct=True),
+            comentarios_count=Count('comentarios', distinct=True),
         ).order_by('-created_at')[:3]
 
         # ── Top 10 apartamentos — día / semana / mes ──────────────────────
+        # Precalculamos etiquetas del conjunto una sola vez (sin acceder a FK por usuario)
+        _tiene_agrup  = conjunto.tiene_agrupacion
+        _et_agrup     = conjunto.etiqueta_agrupacion
+        _et_unidad    = conjunto.etiqueta_unidad
+
+        def _ubicacion_top10(u_data):
+            """Construye el string de ubicación usando valores planos (sin FK)."""
+            if not u_data or u_data.get('user_type') != 'propietario':
+                return '—'
+            torre_nombre = u_data.get('torre_nombre') or ''
+            apto = u_data.get('apartamento') or ''
+            if _tiene_agrup:
+                if torre_nombre and apto:
+                    t = torre_nombre if torre_nombre.lower().startswith(_et_agrup.lower()) else f"{_et_agrup} {torre_nombre}"
+                    a = apto if apto.lower().startswith(_et_unidad.lower()) else f"{_et_unidad} {apto}"
+                    return f"{t} — {a}"
+                elif torre_nombre:
+                    return torre_nombre if torre_nombre.lower().startswith(_et_agrup.lower()) else f"{_et_agrup} {torre_nombre}"
+                elif apto:
+                    return apto if apto.lower().startswith(_et_unidad.lower()) else f"{_et_unidad} {apto}"
+            else:
+                if apto:
+                    return apto if apto.lower().startswith(_et_unidad.lower()) else f"{_et_unidad} {apto}"
+            return '—'
+
         def _top10_periodo(qs_periodo, umap):
             raw = list(
                 qs_periodo
@@ -1686,23 +1717,18 @@ def dashboard(request):
             max_v = raw[0]['total']
             result = []
             for i, r in enumerate(raw):
-                u = umap.get(r['email_creador'].lower())
-                total = r['total']
-                pct = round(total / max_v * 100)
-                nivel = 'alta' if pct >= 80 else ('media' if pct >= 40 else 'normal')
-                if u:
-                    ub = u.get_ubicacion_completa()
-                    ubicacion = ub if ub != 'Sin ubicación asignada' else '—'
-                else:
-                    ubicacion = '—'
+                u_data = umap.get(r['email_creador'].lower())
+                total  = r['total']
+                pct    = round(total / max_v * 100)
+                nivel  = 'alta' if pct >= 80 else ('media' if pct >= 40 else 'normal')
                 result.append({
-                    'pos': i + 1,
-                    'nombre': (u.nombre if u else None) or r['nombre_log'] or r['email_creador'],
-                    'email': r['email_creador'],
-                    'ubicacion': ubicacion,
-                    'total': total,
-                    'pct': pct,
-                    'nivel': nivel,
+                    'pos':       i + 1,
+                    'nombre':    (u_data['nombre'] if u_data else None) or r['nombre_log'] or r['email_creador'],
+                    'email':     r['email_creador'],
+                    'ubicacion': _ubicacion_top10(u_data),
+                    'total':     total,
+                    'pct':       pct,
+                    'nivel':     nivel,
                 })
             return result
 
@@ -1711,7 +1737,7 @@ def dashboard(request):
         sem_dt   = hoy_dt - timedelta(days=6)
         mes_dt   = timezone.make_aware(datetime.combine(fecha_actual.replace(day=1), time.min))
 
-        # Un solo batch de emails para las tres ventanas
+        # Un solo batch de emails — devuelve dicts planos (sin FK, sin cache miss)
         emails_union = set(
             base_vis.filter(fecha_generacion__gte=sem_dt)
             .values_list('email_creador', flat=True)
@@ -1720,10 +1746,14 @@ def dashboard(request):
             .values_list('email_creador', flat=True)
         )
         umap = {
-            u.email.lower(): u
-            for u in Usuario.objects.filter(
+            row['email__lower']: row
+            for row in Usuario.objects.filter(
                 email__in=emails_union, conjunto_id=conjunto_id
-            ).select_related('torre', 'conjunto')
+            ).annotate(
+                email_lower=Lower('email'),
+                torre_nombre=F('torre__nombre'),
+            ).values('email_lower', 'nombre', 'user_type', 'apartamento', 'torre_nombre')
+            if row['email_lower']
         }
 
         top_dia    = _top10_periodo(base_vis.filter(fecha_generacion__gte=hoy_dt), umap)
@@ -1746,12 +1776,12 @@ def dashboard(request):
             'año_seleccionado': año_seleccionado,
             'visitantes_por_motivo': visitantes_por_motivo,
             'total_visitantes_dia': total_visitantes_dia,
-            'conjunto': request.user.conjunto,
+            'conjunto': conjunto,
             'conjunto_id': conjunto_id,
             # Financiero
             'recaudo_mes': recaudo_mes,
-            'cuotas_vigentes': cuotas_vigentes.count(),
-            'cuotas_vencidas': cuotas_vencidas.count(),
+            'cuotas_vigentes': cuotas_stats['vigentes'],
+            'cuotas_vencidas': cuotas_stats['vencidas'],
             'propietarios_al_dia': propietarios_al_dia,
             'total_propietarios_fin': total_propietarios_fin,
             'pct_al_dia': pct_al_dia,
@@ -1766,18 +1796,17 @@ def dashboard(request):
             'top_dia': top_dia,
             'top_semana': top_semana,
             'top_mes': top_mes,
-            # Paquetes
-            'paq_pendientes': Paquete.objects.filter(conjunto_id=conjunto_id, estado='pendiente').count(),
-            'paq_hoy_registrados': Paquete.objects.filter(conjunto_id=conjunto_id, fecha_registro__date=fecha_actual).count(),
-            'paq_hoy_entregados': Paquete.objects.filter(conjunto_id=conjunto_id, fecha_entrega__date=fecha_actual).count(),
-            'torres_dashboard': Torre.objects.filter(conjunto_id=conjunto_id, activo=True),
-            # Reservas pendientes de aprobación (solo de propietarios)
-            'reservas_pendientes': Reserva.objects.filter(
+            # Paquetes — 3 counts en 1 sola query
+            **{k: v for k, v in Paquete.objects.filter(conjunto_id=conjunto_id).aggregate(
+                paq_pendientes=Count('id', filter=Q(estado='pendiente')),
+                paq_hoy_registrados=Count('id', filter=Q(fecha_registro__date=fecha_actual)),
+                paq_hoy_entregados=Count('id', filter=Q(fecha_entrega__date=fecha_actual)),
+            ).items()},
+            # Reservas — lista + len evita la segunda query de count
+            **({'reservas_pendientes': (_rp := list(Reserva.objects.filter(
                 sala__conjunto_id=conjunto_id, estado='pendiente'
-            ).exclude(usuario__user_type='administrador').select_related('sala', 'usuario').order_by('fecha', 'hora_inicio'),
-            'reservas_pendientes_count': Reserva.objects.filter(
-                sala__conjunto_id=conjunto_id, estado='pendiente'
-            ).exclude(usuario__user_type='administrador').count(),
+            ).exclude(usuario__user_type='administrador').select_related('sala', 'usuario').order_by('fecha', 'hora_inicio'))),
+                'reservas_pendientes_count': len(_rp)}),
         }
         
         return render(request, 'dashboard.html', context)
@@ -2532,7 +2561,10 @@ def estado_cuenta(request):
 def lista_novedades(request):
     qs = Novedad.objects.filter(
         conjunto=request.user.conjunto, activa=True
-    ).prefetch_related('archivos', 'comentarios')
+    ).select_related('autor').prefetch_related('archivos').annotate(
+        likes_count=Count('likes', distinct=True),
+        comentarios_count=Count('comentarios', distinct=True),
+    )
     # Marcar todas las novedades del conjunto como vistas de una vez
     all_ids = list(qs.values_list('id', flat=True))
     if all_ids:
