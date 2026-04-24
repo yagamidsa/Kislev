@@ -1129,9 +1129,19 @@ def bienvenida(request):
                 
                 # Crear el visitante según el tipo
                 if tipo_visitante == 'vehicular':
+                    tipo_vehiculo = sanitize_text(request.POST.get('tipo_vehiculo', ''))
+                    # Validar disponibilidad de parqueadero antes de crear el QR
+                    if tipo_vehiculo == 'carro':
+                        disp = ParqueaderoCarro.get_disponibilidad(request.user.conjunto_id)
+                        if disp['disponibles'] <= 0:
+                            raise ValueError('No hay espacios de parqueadero disponibles para carros en este momento.')
+                    elif tipo_vehiculo == 'moto':
+                        disp = ParqueaderoMoto.get_disponibilidad(request.user.conjunto_id)
+                        if disp['disponibles'] <= 0:
+                            raise ValueError('No hay espacios de parqueadero disponibles para motos en este momento.')
                     visitante = VisitanteVehicular.objects.create(
                         **datos_visitante,
-                        tipo_vehiculo=sanitize_text(request.POST.get('tipo_vehiculo', '')),
+                        tipo_vehiculo=tipo_vehiculo,
                         placa=sanitize_text(request.POST.get('placa', '')).upper(),
                         segunda_lectura=None
                     )
@@ -1251,7 +1261,14 @@ def bienvenida(request):
             return render(request, 'bienvenida.html', {'error': str(e)})
 
     conjunto = request.user.conjunto if request.user.is_authenticated else None
-    return render(request, 'bienvenida.html', {'conjunto': conjunto})
+    cid = request.user.conjunto_id if request.user.is_authenticated else None
+    disp_carros = ParqueaderoCarro.get_disponibilidad(cid)['disponibles'] if cid else 0
+    disp_motos  = ParqueaderoMoto.get_disponibilidad(cid)['disponibles'] if cid else 0
+    return render(request, 'bienvenida.html', {
+        'conjunto': conjunto,
+        'disp_carros': disp_carros,
+        'disp_motos': disp_motos,
+    })
 
 
 @login_required

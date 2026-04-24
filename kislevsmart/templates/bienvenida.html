@@ -644,12 +644,16 @@
             <svg viewBox="0 0 24 24"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99z"/></svg>
             Tipo de vehículo
           </label>
-          <select name="tipo_vehiculo" id="tipo_vehiculo" disabled>
+          <select name="tipo_vehiculo" id="tipo_vehiculo" disabled onchange="checkDisponibilidad()">
             <option value="carro">Carro</option>
             <option value="moto">Moto</option>
             <option value="camion">Camión</option>
             <option value="otro">Otro</option>
           </select>
+          <!-- Banner sin espacio — se muestra/oculta por JS -->
+          <div id="parkingAlert" style="display:none;margin-top:8px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);border-radius:10px;padding:9px 12px;font-size:.78rem;color:#f87171;display:none;align-items:center;gap:7px">
+            <i class="fas fa-ban"></i><span id="parkingAlertTxt"></span>
+          </div>
         </div>
       </div>
 
@@ -692,6 +696,31 @@
 <div class="toast" id="toast"></div>
 
 <script>
+// ── Disponibilidad parqueadero (datos desde Django, 0 queries extra en JS) ──
+const DISP_CARROS = {{ disp_carros|default:0 }};
+const DISP_MOTOS  = {{ disp_motos|default:0 }};
+
+function checkDisponibilidad() {
+  const tv    = document.getElementById('tipo_vehiculo');
+  const alert = document.getElementById('parkingAlert');
+  const txt   = document.getElementById('parkingAlertTxt');
+  const btn   = document.getElementById('submitBtn');
+  if (!tv || tv.disabled) { alert.style.display = 'none'; btn.disabled = false; return; }
+  const tipo = tv.value;
+  let bloqueado = false;
+  if (tipo === 'carro' && DISP_CARROS <= 0) {
+    txt.textContent = 'No hay espacios disponibles para carros. El QR no puede generarse.';
+    bloqueado = true;
+  } else if (tipo === 'moto' && DISP_MOTOS <= 0) {
+    txt.textContent = 'No hay espacios disponibles para motos. El QR no puede generarse.';
+    bloqueado = true;
+  }
+  alert.style.display = bloqueado ? 'flex' : 'none';
+  btn.disabled = bloqueado;
+  if (bloqueado) btn.style.opacity = '.45';
+  else btn.style.opacity = '';
+}
+
 // ── Tipo ──
 let tipoActual = 'peatonal';
 function setTipo(tipo, btn) {
@@ -709,10 +738,14 @@ function setTipo(tipo, btn) {
     sec.classList.add('open');
     placa.required = true; placa.disabled = false;
     tv.required    = true; tv.disabled    = false;
+    checkDisponibilidad(); // validar al activar vehicular
   } else {
     sec.classList.remove('open');
     placa.required = false; placa.disabled = true; placa.value = '';
     tv.required    = false; tv.disabled    = true;
+    document.getElementById('parkingAlert').style.display = 'none';
+    document.getElementById('submitBtn').disabled = false;
+    document.getElementById('submitBtn').style.opacity = '';
   }
 }
 
