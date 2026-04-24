@@ -86,14 +86,12 @@ INSTALLED_APPS = [
     'django_ratelimit',
     'whitenoise.runserver_nostatic',
     'anymail',
-    'debug_toolbar',
 ]
 
 # Configuración de middleware
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -373,8 +371,10 @@ if not DEBUG:
 
 # ── Django Debug Toolbar (solo desarrollo) ────────────────────────────────
 if DEBUG:
+    INSTALLED_APPS += ['debug_toolbar']
+    MIDDLEWARE.insert(2, 'debug_toolbar.middleware.DebugToolbarMiddleware')
     INTERNAL_IPS = ['127.0.0.1', 'localhost']
     DEBUG_TOOLBAR_CONFIG = {
-        'SHOW_TOOLBAR_CALLBACK': lambda request: DEBUG,
-        'SHOW_COLLAPSED': True,   # empieza colapsada para no estorbar
+        'SHOW_TOOLBAR_CALLBACK': lambda request: True,
+        'SHOW_COLLAPSED': True,
     }
