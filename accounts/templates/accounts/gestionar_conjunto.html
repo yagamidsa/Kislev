@@ -223,7 +223,7 @@
                 </div>
                 <div class="card stat-mini" style="padding:12px 8px">
                     <div class="val" style="color:#34d399;font-size:1.6rem">{{ reservas_mes }}</div>
-                    <div class="lbl">Reservas salas</div>
+                    <div class="lbl">Reservas zonas comunes</div>
                 </div>
                 <div class="card stat-mini" style="padding:12px 8px">
                     <div class="val" style="color:#f472b6;font-size:1.6rem">{{ novedades_mes_count }}</div>
@@ -320,10 +320,10 @@
                 {% endif %}
             </div>
 
-            <!-- Salas más reservadas + pagos -->
+            <!-- Zonas Comunes más reservadas + pagos -->
             <div style="display:flex;flex-direction:column;gap:14px">
                 <div class="card" style="flex:1">
-                    <div class="card-title"><i class="fas fa-door-open"></i> Salas más reservadas — {{ mes_label }}</div>
+                    <div class="card-title"><i class="fas fa-door-open"></i> Zonas Comunes más reservadas — {{ mes_label }}</div>
                     {% if salas_top %}
                     {% for s in salas_top %}
                     <div class="sala-row">
