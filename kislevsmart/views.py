@@ -2564,7 +2564,7 @@ def lista_novedades(request):
     ).select_related('autor').prefetch_related('archivos').annotate(
         likes_count=Count('likes', distinct=True),
         comentarios_count=Count('comentarios', distinct=True),
-    )
+    ).order_by('-created_at')
     # Marcar todas las novedades del conjunto como vistas de una vez
     all_ids = list(qs.values_list('id', flat=True))
     if all_ids:
