@@ -62,30 +62,15 @@
     .vrow i{color:#7c3aed;width:13px;flex-shrink:0;font-size:.78rem}
     .vrow span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-    .vcard-footer{display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid rgba(255,255,255,.06)}
+    .vcard-footer{padding-top:12px;border-top:1px solid rgba(255,255,255,.06)}
     .badge{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;font-size:.72rem;font-weight:700}
     .badge-ok{background:rgba(16,185,129,.15);color:#34d399;border:1px solid rgba(16,185,129,.25)}
     .badge-pend{background:rgba(245,158,11,.15);color:#fbbf24;border:1px solid rgba(245,158,11,.25)}
-    .btn-qr{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;border:none;border-radius:9px;font-size:.76rem;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;transition:opacity .2s,transform .15s}
-    .btn-qr:hover{opacity:.85;transform:scale(1.04)}
 
     /* ── EMPTY ── */
     .empty{text-align:center;padding:60px 20px;color:rgba(255,255,255,.3)}
     .empty i{font-size:3rem;display:block;margin-bottom:14px;opacity:.4}
     .empty p{font-size:.9rem}
-
-    /* ── MODAL QR ── */
-    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);z-index:200;align-items:center;justify-content:center;padding:20px}
-    .modal-overlay.active{display:flex}
-    .modal-box{background:#130020;border:1px solid rgba(255,255,255,.1);border-radius:22px;padding:32px 28px;max-width:400px;width:100%;text-align:center}
-    .modal-icon{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#db2777);display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:#fff;margin:0 auto 18px;box-shadow:0 6px 20px rgba(124,58,237,.4)}
-    .modal-box h3{font-size:1.05rem;font-weight:700;color:#f1f5f9;margin-bottom:6px}
-    .modal-box p{font-size:.82rem;color:rgba(255,255,255,.45);margin-bottom:18px}
-    .modal-preview{background:rgba(255,255,255,.05);border-radius:12px;padding:14px;margin-bottom:22px;text-align:left;font-size:.82rem;color:rgba(255,255,255,.6);line-height:1.8}
-    .modal-preview strong{color:#e2e8f0}
-    .modal-actions{display:flex;gap:10px;justify-content:center}
-    .btn-cancel{padding:10px 22px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:rgba(255,255,255,.6);font-size:.85rem;font-family:'Poppins',sans-serif;cursor:pointer}
-    .btn-confirm{padding:10px 22px;background:linear-gradient(135deg,#7c3aed,#db2777);border:none;border-radius:10px;color:#fff;font-size:.85rem;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer}
 
     /* ── RESPONSIVE ── */
     @media(max-width:600px){
@@ -95,7 +80,6 @@
       .stat-lbl{font-size:.65rem}
       .tab{padding:8px 18px;font-size:.8rem}
       .visitantes-grid{grid-template-columns:1fr}
-      .modal-box{padding:24px 18px}
     }
   </style>
 </head>
@@ -172,9 +156,6 @@
         {% else %}
           <span class="badge badge-pend"><i class="fas fa-clock"></i> Pendiente</span>
         {% endif %}
-        <button class="btn-qr" onclick="abrirModal({{ v.id }},'{{ v.nombre|escapejs }}','{{ v.email|escapejs }}','{{ v.motivo|escapejs }}')">
-          <i class="fas fa-qrcode"></i> Reenviar QR
-        </button>
       </div>
     </div>
     {% endfor %}
@@ -190,38 +171,7 @@
 
 </div>
 
-<!-- Modal reenviar QR -->
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal-box">
-    <div class="modal-icon"><i class="fas fa-qrcode"></i></div>
-    <h3>Reenviar QR</h3>
-    <p>Se generará un nuevo QR y se enviará al correo del visitante.</p>
-    <div class="modal-preview" id="modalPreview"></div>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="cerrarModal()">Cancelar</button>
-      <form id="qrForm" method="POST" action="">
-        {% csrf_token %}
-        <button type="submit" class="btn-confirm"><i class="fas fa-paper-plane"></i> Enviar</button>
-      </form>
-    </div>
-  </div>
-</div>
-
 <script>
-function abrirModal(id, nombre, email, motivo) {
-  document.getElementById('qrForm').action = '/mis-visitantes/' + id + '/regenerar-qr/';
-  document.getElementById('modalPreview').innerHTML =
-    '<strong>Visitante:</strong> ' + nombre + '<br>' +
-    '<strong>Correo:</strong> ' + email + '<br>' +
-    '<strong>Motivo:</strong> ' + motivo;
-  document.getElementById('modalOverlay').classList.add('active');
-}
-function cerrarModal() {
-  document.getElementById('modalOverlay').classList.remove('active');
-}
-document.getElementById('modalOverlay').addEventListener('click', function(e) {
-  if (e.target === this) cerrarModal();
-});
 window.addEventListener('pageshow', function(e) { if (e.persisted) location.reload(); });
 </script>
 </body>
