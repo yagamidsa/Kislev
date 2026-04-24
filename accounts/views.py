@@ -1071,6 +1071,26 @@ def download_template(request):
                ['cedula', 'nombre', 'email', 'telefono'],
                example_row=['80654321', 'Pedro Ramos', 'pedro@elprado.com', '3204567890'])
 
+    # Sheet 6: Parqueadero Carros
+    make_sheet(wb, 'Parqueadero Carros',
+               ['campo', 'valor', 'descripcion'],
+               first=True)
+    ws_pc = wb['Parqueadero Carros']
+    ws_pc.cell(row=2, column=1, value='total_espacios')
+    ws_pc.cell(row=2, column=2, value=20)
+    ws_pc.cell(row=2, column=3, value='Número total de espacios para carros en el parqueadero').font = note_font
+    ws_pc.column_dimensions['C'].width = 55
+
+    # Sheet 7: Parqueadero Motos
+    make_sheet(wb, 'Parqueadero Motos',
+               ['campo', 'valor', 'descripcion'],
+               first=True)
+    ws_pm = wb['Parqueadero Motos']
+    ws_pm.cell(row=2, column=1, value='total_espacios')
+    ws_pm.cell(row=2, column=2, value=10)
+    ws_pm.cell(row=2, column=3, value='Número total de espacios para motos en el parqueadero').font = note_font
+    ws_pm.column_dimensions['C'].width = 55
+
     buffer = io.BytesIO()
     wb.save(buffer)
     buffer.seek(0)
@@ -1253,6 +1273,16 @@ def upload_conjunto(request):
                     if not row[0]:
                         continue
                     create_user(dict(zip(hdrs, row)), utype)
+
+            # Parqueaderos — hojas opcionales
+            from kislevsmart.models import ParqueaderoCarro, ParqueaderoMoto
+            for sheet_name, model in [('Parqueadero Carros', ParqueaderoCarro), ('Parqueadero Motos', ParqueaderoMoto)]:
+                if sheet_name in wb.sheetnames:
+                    ws_pk = wb[sheet_name]
+                    pk_data = {row[0].value: row[1].value for row in ws_pk.iter_rows(min_row=2) if row[0].value}
+                    espacios = int(pk_data.get('total_espacios', 0) or 0)
+                    if espacios > 0:
+                        model.objects.get_or_create(conjunto=conjunto, defaults={'total_espacios': espacios})
 
     except ValueError as exc:
         messages.error(request, str(exc))
