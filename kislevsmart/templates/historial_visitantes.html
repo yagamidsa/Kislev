@@ -2,459 +2,226 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Visitantes — Kislev</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mis Visitantes — Kislev</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Poppins',sans-serif;background:#09000f;min-height:100vh;color:#e2e8f0}
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #09000f 0%, #140020 50%, #07080f 100%);
-            min-height: 100vh;
-            color: #e2e8f0;
-        }
+    /* ── TOPBAR ── */
+    .topbar{background:rgba(255,255,255,.04);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.08);padding:14px 20px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:50}
+    .back-btn{display:inline-flex;align-items:center;gap:7px;color:#a78bfa;text-decoration:none;font-weight:600;font-size:.82rem;padding:7px 14px;border-radius:10px;border:1px solid rgba(167,139,250,.3);transition:all .2s;white-space:nowrap}
+    .back-btn:hover{background:rgba(167,139,250,.1)}
+    .topbar-title{font-size:1rem;font-weight:700;background:linear-gradient(135deg,#a78bfa,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 
-        /* ── TOP BAR ── */
-        .topbar {
-            background: rgba(255,255,255,0.04);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-            padding: 16px 24px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            color: #a78bfa;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.85rem;
-            padding: 8px 16px;
-            border-radius: 10px;
-            border: 1px solid rgba(167,139,250,0.3);
-            transition: all 0.2s;
-        }
-        .back-btn:hover { background: rgba(167,139,250,0.1); color: #c4b5fd; }
-        .topbar-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #db2777, #7c3aed);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+    /* ── CONTAINER ── */
+    .container{max-width:900px;margin:0 auto;padding:28px 18px 60px}
 
-        /* ── CONTAINER ── */
-        .container {
-            max-width: 960px;
-            margin: 0 auto;
-            padding: 32px 20px;
-        }
+    /* ── HERO ── */
+    .hero{text-align:center;margin-bottom:28px}
+    .hero-icon{width:64px;height:64px;border-radius:20px;background:linear-gradient(135deg,#7c3aed,#db2777);display:flex;align-items:center;justify-content:center;font-size:1.7rem;color:#fff;margin:0 auto 14px;box-shadow:0 8px 28px rgba(124,58,237,.4)}
+    .hero h1{font-size:1.5rem;font-weight:800;color:#f1f5f9;margin-bottom:4px}
+    .hero p{font-size:.85rem;color:rgba(255,255,255,.45)}
 
-        /* ── HEADER ── */
-        .page-header {
-            margin-bottom: 28px;
-        }
-        .page-header h1 {
-            font-size: 1.7rem;
-            font-weight: 700;
-            color: #f1f5f9;
-            margin-bottom: 4px;
-        }
-        .page-header h1 i { color: #a78bfa; margin-right: 10px; }
-        .page-header p { color: #cbd5e1; font-size: 0.9rem; }
+    /* ── TABS FILTRO ── */
+    .tabs-wrap{display:flex;justify-content:center;margin-bottom:24px}
+    .tabs{display:inline-flex;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:4px;gap:4px}
+    .tab{padding:9px 28px;border-radius:10px;font-size:.85rem;font-weight:600;color:rgba(255,255,255,.5);text-decoration:none;transition:all .2s;white-space:nowrap}
+    .tab.active{background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;box-shadow:0 4px 14px rgba(124,58,237,.4)}
+    .tab:not(.active):hover{color:#fff;background:rgba(255,255,255,.07)}
 
-        /* ── FILTROS ── */
-        .filtros-card {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 24px;
-        }
-        .filtros-row {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            align-items: flex-end;
-        }
-        .filtros-row label { font-size: 0.78rem; color: #cbd5e1; font-weight: 500; margin-bottom: 4px; display: block; }
-        .filtros-row input[type="date"] {
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 10px;
-            padding: 10px 14px;
-            color: #e2e8f0;
-            font-size: 0.88rem;
-            font-family: 'Poppins', sans-serif;
-            outline: none;
-            transition: border-color 0.2s;
-            color-scheme: dark;
-        }
-        .filtros-row input[type="date"]:focus { border-color: #7c3aed; }
-        .btn-filtrar {
-            padding: 10px 22px;
-            background: linear-gradient(135deg, #db2777, #7c3aed);
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 0.88rem;
-            font-weight: 600;
-            font-family: 'Poppins', sans-serif;
-            transition: opacity 0.2s;
-        }
-        .btn-filtrar:hover { opacity: 0.85; }
-        .btn-limpiar {
-            padding: 10px 20px;
-            background: rgba(255,255,255,0.06);
-            color: #cbd5e1;
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 0.88rem;
-            font-family: 'Poppins', sans-serif;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            transition: background 0.2s;
-        }
-        .btn-limpiar:hover { background: rgba(255,255,255,0.1); color: #e2e8f0; }
+    /* ── STATS BAR ── */
+    .stats-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+    .stat-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:16px;text-align:center}
+    .stat-num{font-size:1.8rem;font-weight:800;line-height:1}
+    .stat-lbl{font-size:.72rem;color:rgba(255,255,255,.4);margin-top:4px;font-weight:500;text-transform:uppercase;letter-spacing:.04em}
+    .stat-total .stat-num{background:linear-gradient(135deg,#a78bfa,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .stat-ingreso .stat-num{color:#34d399}
+    .stat-pendiente .stat-num{color:#fbbf24}
 
-        /* ── GRID CARDS ── */
-        .visitantes-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(min(280px, 90vw), 1fr));
-            gap: 18px;
-        }
+    /* ── GRID CARDS ── */
+    .visitantes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));gap:16px}
 
-        .visitor-card {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 18px;
-            padding: 22px;
-            transition: transform 0.2s, box-shadow 0.2s;
-            position: relative;
-            overflow: hidden;
-        }
-        .visitor-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #db2777, #7c3aed);
-        }
-        .visitor-card.ingreso::before { background: linear-gradient(90deg, #10b981, #059669); }
-        .visitor-card:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(127,0,255,0.2); }
+    .vcard{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:20px;transition:transform .2s,box-shadow .2s;position:relative;overflow:hidden}
+    .vcard::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#7c3aed,#db2777)}
+    .vcard.ingresó::after{background:linear-gradient(90deg,#059669,#10b981)}
+    .vcard:hover{transform:translateY(-3px);box-shadow:0 14px 40px rgba(124,58,237,.2)}
 
-        .card-avatar {
-            width: 48px; height: 48px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #db2777, #7c3aed);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 14px;
-            flex-shrink: 0;
-        }
-        .card-avatar.ingreso { background: linear-gradient(135deg, #10b981, #059669); }
+    .vcard-top{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+    .avatar{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#db2777);display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:800;color:#fff;flex-shrink:0}
+    .avatar.ingresó{background:linear-gradient(135deg,#059669,#10b981)}
+    .vcard-name{font-size:.97rem;font-weight:700;color:#f1f5f9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .vcard-cc{font-size:.75rem;color:rgba(255,255,255,.35);margin-top:1px}
 
-        .card-header-row {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            margin-bottom: 14px;
-        }
-        .card-info { flex: 1; min-width: 0; }
-        .card-nombre {
-            font-size: 1rem;
-            font-weight: 700;
-            color: #f1f5f9;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .card-cedula { font-size: 0.78rem; color: #cbd5e1; margin-top: 2px; }
+    .vcard-rows{display:flex;flex-direction:column;gap:7px;margin-bottom:14px}
+    .vrow{display:flex;align-items:center;gap:9px;font-size:.8rem;color:rgba(255,255,255,.6)}
+    .vrow i{color:#7c3aed;width:13px;flex-shrink:0;font-size:.78rem}
+    .vrow span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-        .card-details {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            margin-bottom: 14px;
-        }
-        .detail-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.82rem;
-            color: #cbd5e1;
-        }
-        .detail-row i { color: #7c3aed; width: 14px; flex-shrink: 0; }
-        .detail-value { color: #cbd5e1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .vcard-footer{display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid rgba(255,255,255,.06)}
+    .badge{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;font-size:.72rem;font-weight:700}
+    .badge-ok{background:rgba(16,185,129,.15);color:#34d399;border:1px solid rgba(16,185,129,.25)}
+    .badge-pend{background:rgba(245,158,11,.15);color:#fbbf24;border:1px solid rgba(245,158,11,.25)}
+    .btn-qr{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;border:none;border-radius:9px;font-size:.76rem;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;transition:opacity .2s,transform .15s}
+    .btn-qr:hover{opacity:.85;transform:scale(1.04)}
 
-        /* ── BADGES ── */
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-        .badge-ingreso { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
-        .badge-pendiente { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+    /* ── EMPTY ── */
+    .empty{text-align:center;padding:60px 20px;color:rgba(255,255,255,.3)}
+    .empty i{font-size:3rem;display:block;margin-bottom:14px;opacity:.4}
+    .empty p{font-size:.9rem}
 
-        .card-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 14px;
-            padding-top: 14px;
-            border-top: 1px solid rgba(255,255,255,0.07);
-        }
+    /* ── MODAL QR ── */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);z-index:200;align-items:center;justify-content:center;padding:20px}
+    .modal-overlay.active{display:flex}
+    .modal-box{background:#130020;border:1px solid rgba(255,255,255,.1);border-radius:22px;padding:32px 28px;max-width:400px;width:100%;text-align:center}
+    .modal-icon{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#db2777);display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:#fff;margin:0 auto 18px;box-shadow:0 6px 20px rgba(124,58,237,.4)}
+    .modal-box h3{font-size:1.05rem;font-weight:700;color:#f1f5f9;margin-bottom:6px}
+    .modal-box p{font-size:.82rem;color:rgba(255,255,255,.45);margin-bottom:18px}
+    .modal-preview{background:rgba(255,255,255,.05);border-radius:12px;padding:14px;margin-bottom:22px;text-align:left;font-size:.82rem;color:rgba(255,255,255,.6);line-height:1.8}
+    .modal-preview strong{color:#e2e8f0}
+    .modal-actions{display:flex;gap:10px;justify-content:center}
+    .btn-cancel{padding:10px 22px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:rgba(255,255,255,.6);font-size:.85rem;font-family:'Poppins',sans-serif;cursor:pointer}
+    .btn-confirm{padding:10px 22px;background:linear-gradient(135deg,#7c3aed,#db2777);border:none;border-radius:10px;color:#fff;font-size:.85rem;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer}
 
-        /* ── BOTÓN REGENERAR QR ── */
-        .btn-qr {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 16px;
-            background: linear-gradient(135deg, #7c3aed, #db2777);
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            font-family: 'Poppins', sans-serif;
-            cursor: pointer;
-            text-decoration: none;
-            transition: opacity 0.2s, transform 0.15s;
-        }
-        .btn-qr:hover { opacity: 0.85; transform: scale(1.03); }
-        .btn-qr i { font-size: 0.8rem; }
-
-        /* ── EMPTY STATE ── */
-        .empty-state {
-            text-align: center;
-            padding: 5rem 2rem;
-            color: #94a3b8;
-        }
-        .empty-state i { font-size: 3.5rem; margin-bottom: 1.2rem; display: block; }
-        .empty-state p { font-size: 1rem; }
-
-        /* ── CONFIRM MODAL ── */
-        .modal-overlay {
-            display: none;
-            position: fixed; inset: 0;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(4px);
-            z-index: 100;
-            align-items: center;
-            justify-content: center;
-        }
-        .modal-overlay.active { display: flex; }
-        .modal-box {
-            background: #1a0a28;
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 20px;
-            padding: 32px;
-            max-width: 420px;
-            width: 90%;
-            text-align: center;
-        }
-        .modal-box .modal-icon {
-            width: 64px; height: 64px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #7c3aed, #db2777);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.6rem; color: #fff;
-            margin: 0 auto 20px;
-        }
-        .modal-box h3 { font-size: 1.1rem; font-weight: 700; color: #f1f5f9; margin-bottom: 8px; }
-        .modal-box p { font-size: 0.88rem; color: #cbd5e1; margin-bottom: 24px; }
-        .modal-box .visitor-preview {
-            background: rgba(255,255,255,0.05);
-            border-radius: 12px;
-            padding: 14px;
-            margin-bottom: 24px;
-            text-align: left;
-            font-size: 0.85rem;
-            color: #cbd5e1;
-            line-height: 1.7;
-        }
-        .modal-box .visitor-preview strong { color: #e2e8f0; }
-        .modal-actions { display: flex; gap: 12px; justify-content: center; }
-        .btn-cancel-modal {
-            padding: 10px 22px;
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 10px;
-            color: #cbd5e1;
-            font-size: 0.88rem;
-            font-family: 'Poppins', sans-serif;
-            cursor: pointer;
-        }
-        .btn-confirm-modal {
-            padding: 10px 22px;
-            background: linear-gradient(135deg, #7c3aed, #db2777);
-            border: none;
-            border-radius: 10px;
-            color: #fff;
-            font-size: 0.88rem;
-            font-weight: 600;
-            font-family: 'Poppins', sans-serif;
-            cursor: pointer;
-        }
-
-        @media(max-width:768px){
-          input, select, textarea { font-size: 16px !important; }
-        }
-        @media(max-width:480px){
-          .visitantes-grid, .cards-grid { grid-template-columns: 1fr !important; }
-          .btn-filtrar, .btn-limpiar { min-height: 44px; }
-          .filtros-row { flex-direction: column; }
-          .modal-box { padding: 20px 16px; }
-          .btn-cancel-modal, .btn-confirm-modal { min-height: 44px; }
-          .container { padding: 16px 12px; }
-        }
-    </style>
+    /* ── RESPONSIVE ── */
+    @media(max-width:600px){
+      .stats-bar{grid-template-columns:repeat(3,1fr);gap:8px}
+      .stat-card{padding:12px 8px}
+      .stat-num{font-size:1.4rem}
+      .stat-lbl{font-size:.65rem}
+      .tab{padding:8px 18px;font-size:.8rem}
+      .visitantes-grid{grid-template-columns:1fr}
+      .modal-box{padding:24px 18px}
+    }
+  </style>
 </head>
 <body>
 
 <div class="topbar">
-    <a href="{% url 'accounts:visor_propietario' %}" class="back-btn">
-        <i class="fas fa-arrow-left"></i> Volver
-    </a>
-    <span class="topbar-title">Mis Visitantes</span>
+  <a href="javascript:location.replace('{% url 'accounts:visor_propietario' %}')" class="back-btn">
+    <i class="fas fa-arrow-left"></i> Volver
+  </a>
+  <span class="topbar-title"><i class="fas fa-users" style="margin-right:6px"></i>Mis Visitantes</span>
 </div>
 
 <div class="container">
 
-    <div class="page-header">
-        <h1><i class="fas fa-users"></i> Mis Visitantes</h1>
-        <p>Apartamento {{ apartamento }} &mdash; {{ visitantes.count }} registro{% if visitantes.count != 1 %}s{% endif %}</p>
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-icon"><i class="fas fa-users"></i></div>
+    <h1>Mis Visitantes</h1>
+    <p>Registro de personas que has autorizado a ingresar</p>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs-wrap">
+    <div class="tabs">
+      <a href="?periodo=dia" class="tab {% if periodo == 'dia' %}active{% endif %}">
+        <i class="fas fa-sun" style="margin-right:6px"></i>Hoy
+      </a>
+      <a href="?periodo=mes" class="tab {% if periodo == 'mes' %}active{% endif %}">
+        <i class="fas fa-calendar-alt" style="margin-right:6px"></i>Este mes
+      </a>
     </div>
+  </div>
 
-    <div class="filtros-card">
-        <form method="GET" class="filtros-row">
-            <div>
-                <label>Desde</label>
-                <input type="date" name="desde" value="{{ fecha_desde }}">
-            </div>
-            <div>
-                <label>Hasta</label>
-                <input type="date" name="hasta" value="{{ fecha_hasta }}">
-            </div>
-            <button type="submit" class="btn-filtrar"><i class="fas fa-filter"></i> Filtrar</button>
-            {% if fecha_desde or fecha_hasta %}
-            <a href="{% url 'historial_visitantes' %}" class="btn-limpiar"><i class="fas fa-times"></i> Limpiar</a>
-            {% endif %}
-        </form>
+  <!-- Stats -->
+  <div class="stats-bar">
+    <div class="stat-card stat-total">
+      <div class="stat-num">{{ stats.total }}</div>
+      <div class="stat-lbl">Total</div>
     </div>
+    <div class="stat-card stat-ingreso">
+      <div class="stat-num">{{ stats.ingresaron }}</div>
+      <div class="stat-lbl">Ingresaron</div>
+    </div>
+    <div class="stat-card stat-pendiente">
+      <div class="stat-num">{{ stats.pendientes }}</div>
+      <div class="stat-lbl">Pendientes</div>
+    </div>
+  </div>
 
-    {% if visitantes %}
-    <div class="visitantes-grid">
-        {% for v in visitantes %}
-        <div class="visitor-card {% if v.ultima_lectura %}ingreso{% endif %}">
-            <div class="card-header-row">
-                <div class="card-avatar {% if v.ultima_lectura %}ingreso{% endif %}">
-                    {{ v.nombre|first|upper }}
-                </div>
-                <div class="card-info">
-                    <div class="card-nombre">{{ v.nombre }}</div>
-                    <div class="card-cedula">CC {{ v.cedula }}</div>
-                </div>
-            </div>
-
-            <div class="card-details">
-                <div class="detail-row">
-                    <i class="fas fa-tag"></i>
-                    <span class="detail-value">{{ v.motivo }}</span>
-                </div>
-                <div class="detail-row">
-                    <i class="fas fa-envelope"></i>
-                    <span class="detail-value">{{ v.email }}</span>
-                </div>
-                <div class="detail-row">
-                    <i class="fas fa-phone"></i>
-                    <span class="detail-value">{{ v.celular }}</span>
-                </div>
-                <div class="detail-row">
-                    <i class="fas fa-calendar"></i>
-                    <span class="detail-value">{{ v.fecha_generacion|date:"d/m/Y H:i" }}</span>
-                </div>
-            </div>
-
-            <div class="card-footer">
-                {% if v.ultima_lectura %}
-                    <span class="badge badge-ingreso"><i class="fas fa-check-circle"></i> Ingresó</span>
-                {% else %}
-                    <span class="badge badge-pendiente"><i class="fas fa-clock"></i> Pendiente</span>
-                {% endif %}
-
-                <button class="btn-qr"
-                    onclick="abrirModal({{ v.id }}, '{{ v.nombre|escapejs }}', '{{ v.email|escapejs }}', '{{ v.motivo|escapejs }}')">
-                    <i class="fas fa-qrcode"></i> Generar QR
-                </button>
-            </div>
+  <!-- Visitantes -->
+  {% if visitantes %}
+  <div class="visitantes-grid">
+    {% for v in visitantes %}
+    <div class="vcard {% if v.ultima_lectura %}ingresó{% endif %}">
+      <div class="vcard-top">
+        <div class="avatar {% if v.ultima_lectura %}ingresó{% endif %}">{{ v.nombre|first|upper }}</div>
+        <div style="min-width:0;flex:1">
+          <div class="vcard-name">{{ v.nombre }}</div>
+          <div class="vcard-cc">CC {{ v.cedula }}</div>
         </div>
-        {% endfor %}
+      </div>
+      <div class="vcard-rows">
+        <div class="vrow"><i class="fas fa-tag"></i><span>{{ v.motivo }}</span></div>
+        <div class="vrow"><i class="fas fa-envelope"></i><span>{{ v.email }}</span></div>
+        <div class="vrow"><i class="fas fa-phone"></i><span>{{ v.celular }}</span></div>
+        <div class="vrow"><i class="fas fa-calendar"></i><span>{{ v.fecha_generacion|date:"d/m/Y H:i" }}</span></div>
+        {% if v.ultima_lectura %}
+        <div class="vrow"><i class="fas fa-door-open" style="color:#34d399"></i><span style="color:#34d399">Ingresó {{ v.ultima_lectura|date:"d/m H:i" }}</span></div>
+        {% endif %}
+      </div>
+      <div class="vcard-footer">
+        {% if v.ultima_lectura %}
+          <span class="badge badge-ok"><i class="fas fa-check-circle"></i> Ingresó</span>
+        {% else %}
+          <span class="badge badge-pend"><i class="fas fa-clock"></i> Pendiente</span>
+        {% endif %}
+        <button class="btn-qr" onclick="abrirModal({{ v.id }},'{{ v.nombre|escapejs }}','{{ v.email|escapejs }}','{{ v.motivo|escapejs }}')">
+          <i class="fas fa-qrcode"></i> Reenviar QR
+        </button>
+      </div>
     </div>
+    {% endfor %}
+  </div>
+  {% include "partials/paginacion.html" %}
 
-    {% else %}
-    <div class="empty-state">
-        <i class="fas fa-user-slash"></i>
-        <p>No hay visitantes registrados{% if fecha_desde or fecha_hasta %} en el rango seleccionado{% endif %}.</p>
-    </div>
-    {% endif %}
+  {% else %}
+  <div class="empty">
+    <i class="fas fa-user-slash"></i>
+    <p>No hay visitantes registrados{% if periodo == 'dia' %} hoy{% else %} este mes{% endif %}.</p>
+  </div>
+  {% endif %}
 
 </div>
 
-<!-- Modal confirmación -->
+<!-- Modal reenviar QR -->
 <div class="modal-overlay" id="modalOverlay">
-    <div class="modal-box">
-        <div class="modal-icon"><i class="fas fa-qrcode"></i></div>
-        <h3>Generar nuevo QR</h3>
-        <p>Se creará un QR nuevo y se enviará al correo del visitante.</p>
-        <div class="visitor-preview" id="modalPreview"></div>
-        <div class="modal-actions">
-            <button class="btn-cancel-modal" onclick="cerrarModal()">Cancelar</button>
-            <form id="qrForm" method="POST" action="">
-                {% csrf_token %}
-                <button type="submit" class="btn-confirm-modal">
-                    <i class="fas fa-paper-plane"></i> Enviar QR
-                </button>
-            </form>
-        </div>
+  <div class="modal-box">
+    <div class="modal-icon"><i class="fas fa-qrcode"></i></div>
+    <h3>Reenviar QR</h3>
+    <p>Se generará un nuevo QR y se enviará al correo del visitante.</p>
+    <div class="modal-preview" id="modalPreview"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="cerrarModal()">Cancelar</button>
+      <form id="qrForm" method="POST" action="">
+        {% csrf_token %}
+        <button type="submit" class="btn-confirm"><i class="fas fa-paper-plane"></i> Enviar</button>
+      </form>
     </div>
+  </div>
 </div>
 
 <script>
 function abrirModal(id, nombre, email, motivo) {
-    document.getElementById('qrForm').action = '/mis-visitantes/' + id + '/regenerar-qr/';
-    document.getElementById('modalPreview').innerHTML =
-        '<strong>Visitante:</strong> ' + nombre + '<br>' +
-        '<strong>Correo:</strong> ' + email + '<br>' +
-        '<strong>Motivo:</strong> ' + motivo;
-    document.getElementById('modalOverlay').classList.add('active');
+  document.getElementById('qrForm').action = '/mis-visitantes/' + id + '/regenerar-qr/';
+  document.getElementById('modalPreview').innerHTML =
+    '<strong>Visitante:</strong> ' + nombre + '<br>' +
+    '<strong>Correo:</strong> ' + email + '<br>' +
+    '<strong>Motivo:</strong> ' + motivo;
+  document.getElementById('modalOverlay').classList.add('active');
 }
 function cerrarModal() {
-    document.getElementById('modalOverlay').classList.remove('active');
+  document.getElementById('modalOverlay').classList.remove('active');
 }
 document.getElementById('modalOverlay').addEventListener('click', function(e) {
-    if (e.target === this) cerrarModal();
+  if (e.target === this) cerrarModal();
 });
+window.addEventListener('pageshow', function(e) { if (e.persisted) location.reload(); });
 </script>
-{% include "partials/paginacion.html" %}
 </body>
 </html>

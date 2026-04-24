@@ -1055,43 +1055,34 @@ def notificaciones(request):
 @login_required
 @role_required(['propietario'])
 def historial_visitantes(request):
-    """Vista para que el propietario vea los visitantes de su apartamento."""
-    apartamento = request.user.apartamento
-    conjunto_id = request.user.conjunto_id
+    """Vista para que el propietario vea los visitantes que él generó."""
+    hoy = timezone.localtime(timezone.now()).date()
+    periodo = request.GET.get('periodo', 'mes')
 
-    # Filtros opcionales
-    fecha_desde = request.GET.get('desde')
-    fecha_hasta = request.GET.get('hasta')
-
-    visitantes = Visitante.objects.filter(
-        conjunto_id=conjunto_id,
-        numper=apartamento,
+    qs = Visitante.objects.filter(
+        conjunto_id=request.user.conjunto_id,
+        email_creador=request.user.email,
     ).order_by('-fecha_generacion')
 
-    if fecha_desde:
-        try:
-            visitantes = visitantes.filter(
-                fecha_generacion__date__gte=datetime.strptime(fecha_desde, '%Y-%m-%d').date()
-            )
-        except ValueError:
-            pass
+    if periodo == 'dia':
+        qs = qs.filter(fecha_generacion__date=hoy)
+    else:
+        qs = qs.filter(fecha_generacion__year=hoy.year, fecha_generacion__month=hoy.month)
 
-    if fecha_hasta:
-        try:
-            visitantes = visitantes.filter(
-                fecha_generacion__date__lte=datetime.strptime(fecha_hasta, '%Y-%m-%d').date()
-            )
-        except ValueError:
-            pass
+    stats = qs.aggregate(
+        total=Count('id'),
+        ingresaron=Count('id', filter=Q(ultima_lectura__isnull=False)),
+        pendientes=Count('id', filter=Q(ultima_lectura__isnull=True)),
+    )
 
-    paginator = Paginator(visitantes, 25)
+    paginator = Paginator(qs, 20)
     page = paginator.get_page(request.GET.get('page'))
     return render(request, 'historial_visitantes.html', {
         'visitantes': page,
         'page_obj': page,
-        'apartamento': apartamento,
-        'fecha_desde': fecha_desde or '',
-        'fecha_hasta': fecha_hasta or '',
+        'periodo': periodo,
+        'stats': stats,
+        'hoy': hoy,
     })
 
 
