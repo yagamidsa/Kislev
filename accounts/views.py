@@ -1,5 +1,8 @@
 # accounts/views.py
+import os
 from django.conf import settings
+
+_DEFAULT_PASSWORD = os.getenv('DEFAULT_USER_PASSWORD', 'kislev123')
 from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -1215,7 +1218,7 @@ def upload_conjunto(request):
                 if Usuario.objects.filter(cedula=cedula, conjunto=conjunto).exists():
                     skipped_count += 1
                     return
-                password = 'kislev123'
+                password = _DEFAULT_PASSWORD
                 torre_nombre = str(row_data.get('agrupacion', '') or row_data.get('torre', '') or '').strip()
                 torre_obj = torres_map.get(torre_nombre)
                 apartamento = str(row_data.get('unidad', '') or row_data.get('apartamento', '') or '').strip()
@@ -1467,7 +1470,7 @@ def crear_usuario(request):
         cedula=cedula,
         nombre=nombre,
         email=email,
-        password='kislev123',
+        password=_DEFAULT_PASSWORD,
         conjunto=conjunto,
         user_type=user_type,
         es_arrendatario=es_arrendatario,
@@ -1488,7 +1491,7 @@ def crear_usuario(request):
             'nombre': nombre,
             'conjunto_nombre': conjunto.nombre,
             'cedula': cedula,
-            'password': 'kislev123',
+            'password': _DEFAULT_PASSWORD,
             'login_url': login_url,
         }
         html = render_to_string('emails/bienvenida_credenciales.html', context)

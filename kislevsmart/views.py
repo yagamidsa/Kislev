@@ -2791,17 +2791,17 @@ def metricas_novedades(request):
 # ─────────────────────────────────────────────────────────────────────────────
 # MÓDULO DE PAQUETES / MENSAJERÍA
 # ─────────────────────────────────────────────────────────────────────────────
-import random as _random
+import secrets as _secrets
 from .utils import send_whatsapp, mensaje_paquete
 
 
 def _generar_codigo_paquete():
     """Genera un código numérico de 6 dígitos único entre paquetes pendientes."""
     for _ in range(20):
-        codigo = str(_random.randint(100000, 999999))
+        codigo = str(_secrets.randbelow(900000) + 100000)
         if not Paquete.objects.filter(codigo=codigo, estado='pendiente').exists():
             return codigo
-    return str(_random.randint(100000, 999999))
+    return str(_secrets.randbelow(900000) + 100000)
 
 
 @login_required
