@@ -97,7 +97,7 @@ def mensaje_paquete(nombre, conjunto, torre, apartamento, empresa, fecha, hora, 
         f"```{codigo}```\n\n"
         f"Muéstralo en portería para recibir tu pedido.\n\n"
         f"✅ _¡Ya puedes venir a buscarlo!_\n\n"
-        f"_Kislev Smart  ·  {conjunto}_"
+        f"_Kislev  ·  {conjunto}_"
     )
 
 

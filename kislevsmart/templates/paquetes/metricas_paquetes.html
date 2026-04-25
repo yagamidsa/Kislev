@@ -4,135 +4,264 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Métricas — Paquetes</title>
+  <title>Métricas Paquetes — Kislev</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     html{overscroll-behavior:none;background:#09000f}
     *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Segoe UI',Arial,sans-serif;min-height:100vh;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);color:#fff}
-    .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:rgba(255,255,255,0.05);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,0.1)}
-    .topbar h1{font-size:1.1rem;font-weight:700}
-    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:10px;font-size:0.88rem;font-weight:600;text-decoration:none;border:none;cursor:pointer;transition:all .2s}
-    .btn-back{background:rgba(255,255,255,0.1);color:#fff}
-    .container{max-width:1000px;margin:0 auto;padding:28px 20px}
-    .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:24px}
-    .kpi{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:18px;padding:20px 16px;text-align:center}
-    .kpi-val{font-size:2.2rem;font-weight:800;line-height:1;margin-bottom:6px}
-    .kpi-label{font-size:0.75rem;color:rgba(255,255,255,0.55)}
-    .charts{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:24px}
-    @media(max-width:640px){.charts{grid-template-columns:1fr}}
-    .chart-card{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:18px;padding:20px}
-    .chart-card h3{font-size:0.9rem;color:rgba(255,255,255,0.75);margin-bottom:14px;font-weight:600}
-    .table-card{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:18px;overflow:hidden}
-    .table-head{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:center}
-    .table-head h3{font-size:0.95rem;font-weight:700}
-    .table-scroll{overflow-x:auto}
+    body{font-family:'Segoe UI',system-ui,Arial,sans-serif;min-height:100vh;background:linear-gradient(160deg,#0d0d1a 0%,#0f1228 60%,#0a0f2e 100%);color:#fff}
+
+    /* ── Topbar ── */
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:rgba(255,255,255,0.04);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,0.07);position:sticky;top:0;z-index:100;gap:10px}
+    .topbar-left{display:flex;align-items:center;gap:10px;min-width:0}
+    .topbar-icon{width:34px;height:34px;background:linear-gradient(135deg,#7c3aed,#db2777);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:0.9rem;color:#fff;flex-shrink:0}
+    .topbar-title{color:#fff;font-size:0.95rem;font-weight:700}
+    .topbar-sub{color:rgba(255,255,255,0.38);font-size:0.7rem;display:block}
+    .topbar-actions{display:flex;gap:6px;flex-shrink:0}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 14px;border-radius:10px;font-size:0.8rem;font-weight:700;text-decoration:none;border:none;cursor:pointer;transition:all .2s;white-space:nowrap;font-family:inherit;color:#fff}
+    .btn-primary{background:linear-gradient(135deg,#7c3aed,#db2777)}
+    .btn-ghost{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.8)}
+    .btn-ghost:hover{background:rgba(255,255,255,0.14)}
+
+    /* ── Wrap ── */
+    .wrap{max-width:1020px;margin:0 auto;padding:20px 14px 64px}
+
+    /* ── Section heading ── */
+    .sec-title{font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:rgba(255,255,255,0.38);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+    .sec-title i{color:#db2777}
+
+    /* ── KPI grid ── */
+    .kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:24px}
+    @media(min-width:480px){.kpi-grid{grid-template-columns:repeat(3,1fr)}}
+    @media(min-width:760px){.kpi-grid{grid-template-columns:repeat(6,1fr)}}
+    .kpi{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:16px;padding:18px 14px;text-align:center;position:relative;overflow:hidden}
+    .kpi::before{content:'';position:absolute;inset:-1px;border-radius:16px;padding:1px;background:linear-gradient(135deg,rgba(124,58,237,0.3),transparent 60%);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+    .kpi-val{font-size:2rem;font-weight:900;line-height:1;margin-bottom:5px}
+    .kpi-label{font-size:0.68rem;color:rgba(255,255,255,0.42);font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+    @media(max-width:360px){.kpi-val{font-size:1.65rem}}
+
+    /* ── Charts ── */
+    .charts-grid{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:24px}
+    @media(min-width:700px){.charts-grid{grid-template-columns:1fr 1fr}}
+    .chart-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:18px;padding:18px}
+    .chart-title{font-size:0.82rem;font-weight:700;color:rgba(255,255,255,0.75);margin-bottom:14px;display:flex;align-items:center;gap:7px}
+    .chart-title i{color:#db2777}
+    .chart-empty{text-align:center;padding:32px 20px;color:rgba(255,255,255,0.3);font-size:0.85rem}
+
+    /* ── Carrier bar chart (custom, no Chart.js) ── */
+    .carrier-bars{display:flex;flex-direction:column;gap:9px}
+    .bar-row{display:flex;align-items:center;gap:10px}
+    .bar-label{font-size:0.72rem;color:rgba(255,255,255,0.6);min-width:82px;text-align:right;flex-shrink:0}
+    .bar-track{flex:1;background:rgba(255,255,255,0.07);border-radius:6px;height:20px;overflow:hidden;position:relative}
+    .bar-fill{height:100%;border-radius:6px;transition:width .6s ease;position:relative}
+    .bar-count{position:absolute;right:7px;top:50%;transform:translateY(-50%);font-size:0.68rem;font-weight:800;color:#fff}
+
+    /* ── Recent table/cards ── */
+    .recent-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:18px;overflow:hidden}
+    .recent-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.07)}
+    .recent-header-title{font-size:0.88rem;font-weight:700;display:flex;align-items:center;gap:7px}
+    .recent-header-title i{color:#db2777}
+    .see-all{color:#db2777;font-size:0.76rem;text-decoration:none;font-weight:600}
+    /* Mobile: card list */
+    .recent-cards{display:flex;flex-direction:column}
+    .recent-item{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;border-bottom:1px solid rgba(255,255,255,0.05);gap:10px}
+    .recent-item:last-child{border-bottom:none}
+    .ri-left{min-width:0}
+    .ri-code{font-size:0.82rem;font-weight:900;color:#db2777;letter-spacing:2px}
+    .ri-loc{font-size:0.74rem;color:rgba(255,255,255,0.55);margin-top:2px}
+    .ri-right{text-align:right;flex-shrink:0}
+    .ri-date{font-size:0.68rem;color:rgba(255,255,255,0.35);margin-top:2px}
+    /* Desktop table */
+    .recent-tbl{display:none}
+    @media(min-width:700px){.recent-cards{display:none}.recent-tbl{display:block}}
+    .tbl-scroll{overflow-x:auto}
     table{width:100%;border-collapse:collapse;min-width:480px}
-    th{padding:10px 16px;text-align:left;font-size:0.75rem;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid rgba(255,255,255,0.07)}
-    td{padding:12px 16px;font-size:0.88rem;border-bottom:1px solid rgba(255,255,255,0.04)}
+    th{padding:9px 14px;text-align:left;font-size:0.68rem;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid rgba(255,255,255,0.07);font-weight:700}
+    td{padding:11px 14px;font-size:0.82rem;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:middle}
     tr:last-child td{border-bottom:none}
-    .badge-pendiente{background:rgba(251,191,36,0.2);color:#fbbf24;padding:2px 8px;border-radius:20px;font-size:0.74rem;font-weight:700}
-    .badge-entregado{background:rgba(34,197,94,0.15);color:#4ade80;padding:2px 8px;border-radius:20px;font-size:0.74rem;font-weight:700}
-    @media(max-width:600px){
-      .topbar{padding:12px 14px}.topbar h1{font-size:1rem}
-      .btn{padding:8px 12px;font-size:0.8rem}
-      .container{padding:14px 10px}
-      .kpi-val{font-size:1.7rem}
-      .table-card{overflow-x:auto}
-    }
+    tr:hover td{background:rgba(255,255,255,0.025)}
+
+    /* ── Carrier badges ── */
+    .cb{display:inline-block;padding:2px 7px;border-radius:5px;font-size:0.67rem;font-weight:800}
+    .cb-servientrega{background:#003F8A;color:#fff}
+    .cb-coordinadora{background:#C0392B;color:#fff}
+    .cb-envia{background:#E05400;color:#fff}
+    .cb-interrapidisimo{background:#D4520A;color:#fff}
+    .cb-deprisa{background:#003087;color:#fff}
+    .cb-tcc{background:#0056A0;color:#fff}
+    .cb-fedex{background:#4D148C;color:#fff}
+    .cb-dhl{background:#FFCC00;color:#D40511}
+    .cb-amazon{background:#FF9900;color:#1a1a1a}
+    .cb-mercadolibre{background:#FFE600;color:#333}
+    .cb-rappi{background:#FF441F;color:#fff}
+    .cb-otro{background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.75)}
+
+    .badge-p{background:rgba(251,191,36,0.18);color:#fbbf24;border:1px solid rgba(251,191,36,0.28);padding:2px 8px;border-radius:20px;font-size:0.68rem;font-weight:800}
+    .badge-e{background:rgba(34,197,94,0.13);color:#4ade80;border:1px solid rgba(34,197,94,0.22);padding:2px 8px;border-radius:20px;font-size:0.68rem;font-weight:800}
   </style>
 </head>
 <body>
+
+<!-- Topbar -->
 <div class="topbar">
-  <h1><i class="fa fa-chart-bar" style="color:#db2777"></i> Métricas de Paquetes</h1>
-  <div style="display:flex;gap:8px">
-    <a href="javascript:location.replace('{% url 'lista_paquetes' %}')" class="btn btn-back"><i class="fa fa-list"></i> Historial</a>
-    <a href="{% url 'registrar_paquete' %}" class="btn" style="background:linear-gradient(135deg,#7c3aed,#db2777)"><i class="fa fa-plus"></i> Registrar</a>
+  <div class="topbar-left">
+    <div class="topbar-icon"><i class="fa fa-chart-bar"></i></div>
+    <div>
+      <div class="topbar-title">Métricas · Paquetes</div>
+      <span class="topbar-sub">Análisis de correspondencia</span>
+    </div>
+  </div>
+  <div class="topbar-actions">
+    <a href="{% url 'registrar_paquete' %}" class="btn btn-primary"><i class="fa fa-plus"></i><span class="btn-label"> Registrar</span></a>
+    <a href="javascript:location.replace('{% url 'lista_paquetes' %}')" class="btn btn-ghost"><i class="fa fa-list"></i></a>
   </div>
 </div>
 
-<div class="container">
+<div class="wrap">
+
   <!-- KPIs -->
-  <div class="kpis">
-    <div class="kpi"><div class="kpi-val">{{ total }}</div><div class="kpi-label">Total histórico</div></div>
-    <div class="kpi"><div class="kpi-val" style="color:#fbbf24">{{ pendientes }}</div><div class="kpi-label">⏳ Pendientes</div></div>
-    <div class="kpi"><div class="kpi-val" style="color:#4ade80">{{ entregados }}</div><div class="kpi-label">✅ Entregados</div></div>
-    <div class="kpi"><div class="kpi-val" style="color:#db2777">{{ mes_registrados }}</div><div class="kpi-label">📦 Este mes</div></div>
-    <div class="kpi"><div class="kpi-val">{{ hoy_registrados }}</div><div class="kpi-label">Hoy recibidos</div></div>
-    <div class="kpi"><div class="kpi-val" style="color:#4ade80">{{ hoy_entregados }}</div><div class="kpi-label">Hoy entregados</div></div>
+  <div class="sec-title"><i class="fa fa-bolt"></i> Resumen</div>
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-val">{{ total }}</div>
+      <div class="kpi-label">Histórico</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-val" style="color:#fbbf24">{{ pendientes }}</div>
+      <div class="kpi-label">Pendientes</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-val" style="color:#4ade80">{{ entregados }}</div>
+      <div class="kpi-label">Entregados</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-val" style="color:#db2777">{{ mes_registrados }}</div>
+      <div class="kpi-label">Este mes</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-val">{{ hoy_registrados }}</div>
+      <div class="kpi-label">Hoy · Recibidos</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-val" style="color:#4ade80">{{ hoy_entregados }}</div>
+      <div class="kpi-label">Hoy · Entregados</div>
+    </div>
   </div>
 
   <!-- Charts -->
-  <div class="charts">
+  <div class="sec-title"><i class="fa fa-chart-pie"></i> Distribución</div>
+  <div class="charts-grid">
+
+    <!-- Empresa: horizontal bar chart (custom) -->
     <div class="chart-card">
-      <h3><i class="fa fa-truck" style="color:#db2777"></i> Paquetes por empresa</h3>
-      <canvas id="chartEmpresa" height="220"></canvas>
-    </div>
-    <div class="chart-card">
-      <h3><i class="fa fa-building" style="color:#fbbf24"></i> Pendientes por torre</h3>
-      {% if por_torre %}
-      <canvas id="chartTorre" height="220"></canvas>
+      <div class="chart-title"><i class="fa fa-truck"></i> Paquetes por empresa</div>
+      {% if por_empresa %}
+      <div class="carrier-bars" id="carrier-bars">
+        {% for e in por_empresa %}
+        <div class="bar-row" data-count="{{ e.total }}" data-max="{{ por_empresa.0.total }}">
+          <div class="bar-label">{{ e.empresa_display }}</div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:0%;background:linear-gradient(90deg,#7c3aed,#db2777)">
+              <span class="bar-count">{{ e.total }}</span>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
       {% else %}
-      <p style="color:rgba(255,255,255,0.4);font-size:0.88rem;padding:20px 0;text-align:center">Sin paquetes pendientes 🎉</p>
+      <div class="chart-empty"><i class="fa fa-box-open" style="font-size:2rem;display:block;margin-bottom:10px;opacity:.3"></i>Sin datos disponibles</div>
       {% endif %}
     </div>
+
+    <!-- Torres: Chart.js bar -->
+    <div class="chart-card">
+      <div class="chart-title"><i class="fa fa-building"></i> Pendientes por torre</div>
+      {% if por_torre %}
+      <canvas id="chartTorre" style="max-height:200px"></canvas>
+      {% else %}
+      <div class="chart-empty">
+        <i class="fa fa-check-circle" style="font-size:2rem;display:block;margin-bottom:10px;color:#4ade80;opacity:.7"></i>
+        ¡Sin paquetes pendientes! 🎉
+      </div>
+      {% endif %}
+    </div>
+
   </div>
 
-  <!-- Últimos paquetes -->
-  <div class="table-card">
-    <div class="table-head">
-      <h3><i class="fa fa-clock-rotate-left" style="color:#db2777"></i> Últimos 20 paquetes</h3>
-      <a href="{% url 'lista_paquetes' %}" style="color:#db2777;font-size:0.82rem;text-decoration:none">Ver todos →</a>
+  <!-- Recent packages -->
+  <div class="sec-title"><i class="fa fa-clock-rotate-left"></i> Últimos 20 registros</div>
+  <div class="recent-card">
+    <div class="recent-header">
+      <div class="recent-header-title"><i class="fa fa-boxes-stacked"></i> Historial reciente</div>
+      <a href="{% url 'lista_paquetes' %}" class="see-all">Ver todos →</a>
     </div>
-    <div class="table-scroll">
-      <table>
-        <thead>
-          <tr><th>Código</th><th>Torre / Apto</th><th>Empresa</th><th>Fecha</th><th>Estado</th></tr>
-        </thead>
-        <tbody>
-          {% for p in ultimos %}
-          <tr>
-            <td><strong style="color:#db2777;letter-spacing:2px">{{ p.codigo }}</strong></td>
-            <td>{{ p.torre.nombre }} · <strong>{{ p.apartamento }}</strong></td>
-            <td style="color:rgba(255,255,255,0.7)">{{ p.empresa_display }}</td>
-            <td style="color:rgba(255,255,255,0.5);font-size:0.8rem">{{ p.fecha_registro|date:"d/m/Y H:i" }}</td>
-            <td>
-              {% if p.estado == 'pendiente' %}<span class="badge-pendiente">Pendiente</span>
-              {% else %}<span class="badge-entregado">Entregado</span>{% endif %}
-            </td>
-          </tr>
-          {% empty %}
-          <tr><td colspan="5" style="text-align:center;color:rgba(255,255,255,0.4);padding:30px">Sin registros</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
+
+    <!-- Mobile cards -->
+    <div class="recent-cards">
+      {% for p in ultimos %}
+      <div class="recent-item">
+        <div class="ri-left">
+          <div class="ri-code">{{ p.codigo }}</div>
+          <div class="ri-loc">{{ p.torre.nombre }} · {{ p.apartamento }}</div>
+        </div>
+        <div class="ri-right">
+          <div>
+            {% if p.estado == 'pendiente' %}<span class="badge-p">Pendiente</span>
+            {% else %}<span class="badge-e">Entregado</span>{% endif %}
+          </div>
+          <div class="ri-date">{{ p.fecha_registro|date:"d/m H:i" }}</div>
+        </div>
+      </div>
+      {% empty %}
+      <div style="text-align:center;padding:32px 20px;color:rgba(255,255,255,0.3);font-size:0.85rem">Sin registros</div>
+      {% endfor %}
+    </div>
+
+    <!-- Desktop table -->
+    <div class="recent-tbl">
+      <div class="tbl-scroll">
+        <table>
+          <thead>
+            <tr><th>Código</th><th>Torre / Apto</th><th>Empresa</th><th>Registrado</th><th>Estado</th></tr>
+          </thead>
+          <tbody>
+            {% for p in ultimos %}
+            <tr>
+              <td><strong style="color:#db2777;letter-spacing:2.5px">{{ p.codigo }}</strong></td>
+              <td>{{ p.torre.nombre }} · <strong>{{ p.apartamento }}</strong></td>
+              <td><span class="cb cb-{{ p.empresa }}">{{ p.empresa_display }}</span></td>
+              <td style="color:rgba(255,255,255,0.45);font-size:0.78rem">{{ p.fecha_registro|date:"d/m/Y H:i" }}</td>
+              <td>
+                {% if p.estado == 'pendiente' %}<span class="badge-p">Pendiente</span>
+                {% else %}<span class="badge-e">Entregado</span>{% endif %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" style="text-align:center;color:rgba(255,255,255,0.3);padding:28px">Sin registros</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
-</div>
+
+</div><!-- /wrap -->
 
 <script>
-var empresaData = {{ por_empresa|safe }};
-var torreData = {{ por_torre|safe }};
-
-if (empresaData.length) {
-  new Chart(document.getElementById('chartEmpresa'), {
-    type: 'doughnut',
-    data: {
-      labels: empresaData.map(function(e){ return e.empresa_display; }),
-      datasets: [{
-        data: empresaData.map(function(e){ return e.total; }),
-        backgroundColor: ['#7c3aed','#db2777','#ff3264','#fbbf24','#4ade80','#60a5fa','#f472b6','#a78bfa'],
-        borderWidth: 2,
-        borderColor: 'rgba(255,255,255,0.05)',
-      }]
-    },
-    options: {
-      plugins: {legend: {labels: {color:'rgba(255,255,255,0.7)',font:{size:11}}}},
-    }
+/* ── Animate carrier bars ── */
+var bars = document.querySelectorAll('#carrier-bars .bar-row');
+var maxVal = bars.length ? parseInt(bars[0].dataset.max) || 1 : 1;
+setTimeout(function(){
+  bars.forEach(function(row){
+    var count = parseInt(row.dataset.count) || 0;
+    var pct = maxVal > 0 ? (count / maxVal * 100) : 0;
+    row.querySelector('.bar-fill').style.width = pct + '%';
   });
-}
+}, 120);
 
+/* ── Torre bar chart ── */
+var torreData = {{ por_torre|safe }};
 if (torreData.length) {
   new Chart(document.getElementById('chartTorre'), {
     type: 'bar',
@@ -141,17 +270,19 @@ if (torreData.length) {
       datasets: [{
         label: 'Pendientes',
         data: torreData.map(function(t){ return t.total; }),
-        backgroundColor: 'rgba(251,191,36,0.6)',
+        backgroundColor: 'rgba(251,191,36,0.55)',
         borderColor: '#fbbf24',
         borderWidth: 2,
-        borderRadius: 6,
+        borderRadius: 7,
       }]
     },
     options: {
-      plugins: {legend: {display: false}},
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {legend:{display:false}},
       scales: {
-        x: {ticks:{color:'rgba(255,255,255,0.6)'},grid:{color:'rgba(255,255,255,0.05)'}},
-        y: {ticks:{color:'rgba(255,255,255,0.6)',stepSize:1},grid:{color:'rgba(255,255,255,0.05)'}},
+        x:{ticks:{color:'rgba(255,255,255,0.55)',font:{size:11}},grid:{color:'rgba(255,255,255,0.05)'}},
+        y:{ticks:{color:'rgba(255,255,255,0.55)',stepSize:1,font:{size:11}},grid:{color:'rgba(255,255,255,0.05)'},beginAtZero:true},
       }
     }
   });

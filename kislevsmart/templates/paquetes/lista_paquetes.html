@@ -4,172 +4,302 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Paquetes</title>
+  <title>Control de Paquetes — Kislev</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     html{overscroll-behavior:none;background:#09000f}
     *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Segoe UI',Arial,sans-serif;min-height:100vh;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%)}
-    .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:rgba(255,255,255,0.05);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,0.1);flex-wrap:wrap;gap:8px}
-    .topbar h1{color:#fff;font-size:1.1rem;font-weight:700}
-    .topbar-right{display:flex;gap:8px;flex-wrap:wrap}
-    .btn{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:10px;font-size:0.85rem;font-weight:600;text-decoration:none;border:none;cursor:pointer;transition:all .2s}
-    .btn-back{background:rgba(255,255,255,0.1);color:#fff}
+    body{font-family:'Segoe UI',system-ui,Arial,sans-serif;min-height:100vh;background:linear-gradient(160deg,#0d0d1a 0%,#0f1228 60%,#0a0f2e 100%);color:#fff}
+
+    /* ── Topbar ── */
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:rgba(255,255,255,0.04);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,0.07);position:sticky;top:0;z-index:200;gap:10px}
+    .topbar-left{display:flex;align-items:center;gap:10px;min-width:0}
+    .topbar-icon{width:34px;height:34px;background:linear-gradient(135deg,#7c3aed,#db2777);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:0.9rem;color:#fff;flex-shrink:0}
+    .topbar-texts{min-width:0}
+    .topbar-title{color:#fff;font-size:0.95rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .topbar-sub{color:rgba(255,255,255,0.38);font-size:0.7rem;display:block}
+    .topbar-actions{display:flex;gap:6px;flex-shrink:0}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 14px;border-radius:10px;font-size:0.8rem;font-weight:700;text-decoration:none;border:none;cursor:pointer;transition:all .2s;white-space:nowrap;font-family:inherit}
     .btn-primary{background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff}
-    .container{max-width:1000px;margin:0 auto;padding:24px 20px}
-    /* Filters */
-    .filters{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:16px 20px;margin-bottom:20px;display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
-    .filter-group{display:flex;flex-direction:column;gap:5px;min-width:120px;flex:1}
-    .filter-group label{font-size:0.75rem;color:rgba(255,255,255,0.55);font-weight:600}
-    select,input[type=text],input[type=date]{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:8px 12px;color:#fff;font-size:0.85rem;width:100%}
-    select option{background:#1a1a2e}
-    select:focus,input:focus{outline:none;border-color:#db2777}
-    .filter-btn{padding:9px 18px;background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:0.85rem;white-space:nowrap}
-    .clear-link{color:rgba(255,255,255,0.5);font-size:0.8rem;text-decoration:none;white-space:nowrap;align-self:center}
-    /* Entregar widget */
-    .entregar-widget{background:rgba(127,0,255,0.1);border:1px solid rgba(127,0,255,0.25);border-radius:16px;padding:18px 20px;margin-bottom:20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-    .entregar-widget h3{color:#fff;font-size:0.95rem;font-weight:700;flex-shrink:0}
-    .entregar-widget h3 i{color:#db2777;margin-right:6px}
-    .code-input{flex:1;min-width:160px;background:rgba(255,255,255,0.1);border:2px solid rgba(127,0,255,0.4);border-radius:10px;padding:11px 16px;color:#fff;font-size:1.1rem;font-weight:700;letter-spacing:6px;text-align:center}
-    .code-input::placeholder{letter-spacing:2px;font-size:0.9rem;font-weight:400}
-    .code-input:focus{outline:none;border-color:#db2777}
-    .btn-entregar{padding:11px 22px;background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:0.9rem;cursor:pointer}
-    .result-box{width:100%;font-size:0.9rem;padding:10px 14px;border-radius:8px;display:none}
-    .result-ok{background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);color:#4ade80}
-    .result-err{background:rgba(255,68,68,0.15);border:1px solid rgba(255,68,68,0.3);color:#ff6b6b}
-    /* Table */
-    .table-wrap{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:18px;overflow:hidden}
-    .table-head{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:center}
-    .table-head h3{color:#fff;font-size:0.95rem;font-weight:700}
-    .count-badge{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);padding:3px 10px;border-radius:20px;font-size:0.78rem}
-    .table-scroll{overflow-x:auto}
-    table{width:100%;border-collapse:collapse;min-width:600px}
-    th{padding:11px 16px;text-align:left;font-size:0.75rem;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid rgba(255,255,255,0.07)}
-    td{padding:13px 16px;font-size:0.88rem;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:middle}
+    .btn-ghost{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.8)}
+    .btn-ghost:hover{background:rgba(255,255,255,0.14)}
+    .btn i{font-size:0.78rem}
+
+    /* ── Container ── */
+    .wrap{max-width:1020px;margin:0 auto;padding:18px 14px 64px}
+
+    /* ── Deliver hero ── */
+    .deliver-hero{background:linear-gradient(135deg,rgba(124,58,237,0.15),rgba(219,39,119,0.1));border:1px solid rgba(124,58,237,0.25);border-radius:18px;padding:18px 18px;margin-bottom:18px}
+    .deliver-header{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+    .deliver-header h2{font-size:0.92rem;font-weight:700;color:#fff}
+    .deliver-header i{color:#db2777;font-size:0.95rem}
+    .deliver-row{display:flex;gap:10px;align-items:stretch}
+    .code-input{flex:1;background:rgba(255,255,255,0.09);border:2px solid rgba(124,58,237,0.4);border-radius:12px;padding:13px 16px;color:#fff;font-size:1.25rem;font-weight:800;letter-spacing:8px;text-align:center;min-width:0;font-family:inherit;transition:border-color .2s}
+    .code-input:focus{outline:none;border-color:#db2777;background:rgba(219,39,119,0.07)}
+    .code-input::placeholder{letter-spacing:2px;font-size:0.88rem;font-weight:400;color:rgba(255,255,255,0.28)}
+    .btn-entregar{padding:13px 20px;background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;border:none;border-radius:12px;font-weight:800;font-size:0.88rem;cursor:pointer;flex-shrink:0;font-family:inherit;min-height:52px}
+    .result-box{margin-top:12px;padding:11px 14px;border-radius:10px;font-size:0.86rem;display:none;align-items:center;gap:8px}
+    .result-ok{background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.28);color:#4ade80}
+    .result-err{background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.25);color:#f87171}
+
+    /* ── Filter panel ── */
+    .filter-toggle{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:14px;padding:12px 16px;margin-bottom:10px;cursor:pointer;user-select:none}
+    .filter-toggle-label{display:flex;align-items:center;gap:8px;font-size:0.85rem;font-weight:700;color:rgba(255,255,255,0.75)}
+    .filter-toggle-label i{color:#7c3aed;font-size:0.82rem}
+    .filter-toggle-arrow{color:rgba(255,255,255,0.4);font-size:0.78rem;transition:transform .25s}
+    .filter-toggle.open .filter-toggle-arrow{transform:rotate(180deg)}
+    .filter-panel{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:14px;padding:16px;margin-bottom:16px;display:none}
+    .filter-panel.open{display:block}
+    .filter-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    @media(min-width:600px){.filter-grid{grid-template-columns:repeat(3,1fr)}}
+    @media(min-width:900px){.filter-grid{grid-template-columns:repeat(5,1fr)}}
+    .fg{display:flex;flex-direction:column;gap:5px}
+    .fg label{font-size:0.7rem;color:rgba(255,255,255,0.45);font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+    .fg select,.fg input{background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.12);border-radius:9px;padding:9px 11px;color:#fff;font-size:0.85rem;width:100%;font-family:inherit}
+    .fg select:focus,.fg input:focus{outline:none;border-color:#db2777}
+    .fg select option{background:#1a1a2e}
+    .filter-actions{display:flex;gap:8px;margin-top:12px;align-items:center}
+    .btn-filter{padding:10px 20px;background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;border:none;border-radius:9px;font-weight:700;font-size:0.82rem;cursor:pointer;font-family:inherit}
+    .btn-clear{color:rgba(255,255,255,0.4);font-size:0.78rem;text-decoration:none;padding:8px 12px;border-radius:8px;background:rgba(255,255,255,0.05);transition:background .2s}
+    .btn-clear:hover{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7)}
+
+    /* ── Table header row ── */
+    .list-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .list-title{font-size:0.88rem;font-weight:700;color:#fff;display:flex;align-items:center;gap:7px}
+    .list-title i{color:#db2777}
+    .count-pill{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.65);padding:3px 11px;border-radius:20px;font-size:0.74rem;font-weight:700}
+
+    /* ── Mobile card list ── */
+    .pkg-cards{display:flex;flex-direction:column;gap:10px}
+    .pkg-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:16px;padding:14px 15px;transition:border-color .2s}
+    .pkg-card.pendiente{border-left:3px solid #fbbf24}
+    .pkg-card.entregado{border-left:3px solid #4ade80}
+    .pkg-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+    .pkg-code{font-size:1.05rem;font-weight:900;color:#db2777;letter-spacing:3px}
+    .pkg-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:800}
+    .badge-pendiente{background:rgba(251,191,36,0.18);color:#fbbf24;border:1px solid rgba(251,191,36,0.3)}
+    .badge-entregado{background:rgba(34,197,94,0.13);color:#4ade80;border:1px solid rgba(34,197,94,0.22)}
+    .pkg-info{display:grid;grid-template-columns:1fr 1fr;gap:5px 12px;margin-bottom:10px}
+    .pkg-info-item{font-size:0.78rem}
+    .pkg-info-label{color:rgba(255,255,255,0.38);font-size:0.68rem;text-transform:uppercase;letter-spacing:.3px;display:block;margin-bottom:1px}
+    .pkg-info-val{color:rgba(255,255,255,0.88);font-weight:600}
+    .pkg-footer{display:flex;align-items:center;justify-content:space-between;padding-top:9px;border-top:1px solid rgba(255,255,255,0.06);gap:8px;flex-wrap:wrap}
+    .pkg-meta{display:flex;align-items:center;gap:8px;font-size:0.74rem;color:rgba(255,255,255,0.4)}
+    .wa-ok{color:#25d366}
+    .wa-no{color:rgba(255,255,255,0.22)}
+    .btn-edit-sm{background:rgba(124,58,237,0.18);border:1px solid rgba(124,58,237,0.35);color:#a78bfa;padding:6px 13px;border-radius:8px;font-size:0.74rem;font-weight:700;cursor:pointer;font-family:inherit;transition:background .2s}
+    .btn-edit-sm:hover{background:rgba(124,58,237,0.35)}
+
+    /* ── Desktop table ── */
+    .table-wrap{display:none;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:18px;overflow:hidden}
+    @media(min-width:900px){.pkg-cards{display:none}.table-wrap{display:block}}
+    .tbl-scroll{overflow-x:auto}
+    table{width:100%;border-collapse:collapse;min-width:820px}
+    th{padding:10px 14px;text-align:left;font-size:0.7rem;color:rgba(255,255,255,0.38);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid rgba(255,255,255,0.07);font-weight:700}
+    td{padding:12px 14px;font-size:0.84rem;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:middle}
     tr:last-child td{border-bottom:none}
-    tr:hover td{background:rgba(255,255,255,0.03)}
-    .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:700}
-    .badge-pendiente{background:rgba(251,191,36,0.2);color:#fbbf24;border:1px solid rgba(251,191,36,0.3)}
-    .badge-entregado{background:rgba(34,197,94,0.15);color:#4ade80;border:1px solid rgba(34,197,94,0.25)}
-    .wa-ok{color:#25d366;font-size:0.8rem}
-    .wa-no{color:rgba(255,255,255,0.3);font-size:0.8rem}
-    .empty{text-align:center;padding:60px 20px;color:rgba(255,255,255,0.4)}
-    .empty i{font-size:3rem;display:block;margin-bottom:12px;opacity:.4}
-    .btn-edit{background:rgba(124,58,237,0.2);border:1px solid rgba(124,58,237,0.4);color:#a78bfa;padding:8px 12px;min-height:36px;border-radius:7px;font-size:0.78rem;cursor:pointer;transition:.2s}
-    .btn-edit:hover{background:rgba(124,58,237,0.4)}
-    /* Modal */
-    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000;display:none;align-items:center;justify-content:center}
+    tr:hover td{background:rgba(255,255,255,0.025)}
+
+    /* ── Carrier badges ── */
+    .cb{display:inline-block;padding:3px 8px;border-radius:6px;font-size:0.7rem;font-weight:800;letter-spacing:.2px}
+    .cb-servientrega{background:#003F8A;color:#fff}
+    .cb-coordinadora{background:#C0392B;color:#fff}
+    .cb-envia{background:#E05400;color:#fff}
+    .cb-interrapidisimo{background:#D4520A;color:#fff}
+    .cb-deprisa{background:#003087;color:#fff}
+    .cb-tcc{background:#0056A0;color:#fff}
+    .cb-fedex{background:#4D148C;color:#fff}
+    .cb-dhl{background:#FFCC00;color:#D40511}
+    .cb-amazon{background:#FF9900;color:#1a1a1a}
+    .cb-mercadolibre{background:#FFE600;color:#333}
+    .cb-rappi{background:#FF441F;color:#fff}
+    .cb-otro{background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.75)}
+
+    /* ── Empty state ── */
+    .empty{text-align:center;padding:56px 24px;color:rgba(255,255,255,0.3)}
+    .empty-icon{font-size:2.8rem;display:block;margin-bottom:14px;opacity:.35}
+    .empty p{font-size:0.88rem}
+
+    /* ── Modal ── */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:500;display:none;align-items:flex-end;justify-content:center;padding-bottom:0}
+    @media(min-width:600px){.modal-overlay{align-items:center;padding:20px}}
     .modal-overlay.open{display:flex}
-    .modal{background:#1a1a2e;border:1px solid rgba(124,58,237,0.4);border-radius:18px;padding:28px;width:100%;max-width:420px;position:relative}
-    .modal h2{color:#fff;font-size:1rem;font-weight:700;margin-bottom:18px}
-    .modal label{display:block;color:rgba(255,255,255,0.55);font-size:0.78rem;font-weight:600;margin-bottom:5px}
-    .modal select,.modal input{width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:10px 12px;color:#fff;font-size:0.9rem;margin-bottom:14px}
-    .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:4px}
-    .btn-cancel-modal{background:rgba(255,255,255,0.08);color:#fff;border:none;padding:9px 18px;border-radius:8px;cursor:pointer;font-size:0.85rem}
-    .btn-save-modal{background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;border:none;padding:9px 18px;border-radius:8px;cursor:pointer;font-weight:700;font-size:0.85rem}
-    .modal-msg{font-size:0.85rem;padding:8px 12px;border-radius:7px;margin-bottom:10px;display:none}
-    /* Carrier badges */
-    .carrier-badge{display:inline-block;padding:3px 8px;border-radius:6px;font-size:0.72rem;font-weight:700;letter-spacing:.2px}
-    .carrier-servientrega{background:#003F8A;color:#fff}
-    .carrier-coordinadora{background:#C0392B;color:#fff}
-    .carrier-envia{background:#E05400;color:#fff}
-    .carrier-interrapidisimo{background:#D4520A;color:#fff}
-    .carrier-deprisa{background:#003087;color:#fff}
-    .carrier-tcc{background:#0056A0;color:#fff}
-    .carrier-fedex{background:#4D148C;color:#fff}
-    .carrier-dhl{background:#FFCC00;color:#D40511}
-    .carrier-amazon{background:#FF9900;color:#232F3E}
-    .carrier-mercadolibre{background:#FFE600;color:#333}
-    .carrier-rappi{background:#FF441F;color:#fff}
-    .carrier-otro{background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.75)}
-    @media(max-width:600px){
-      .topbar{padding:12px 14px}.topbar h1{font-size:0.95rem}
-      .btn{padding:7px 12px;font-size:0.8rem}
-      .container{padding:12px 10px}
-      .filters{flex-direction:column;gap:10px}
-      .entregar-widget{flex-direction:column;align-items:stretch}
-      .code-input{text-align:center;width:100%}
-      .btn-entregar{width:100%;text-align:center}
-    }
-    @media(max-width:768px){
-      input, select, textarea { font-size: 16px !important; }
-    }
-    @media(max-width:480px){
-      .topbar{padding:10px 12px;gap:6px}
-      .topbar h1{font-size:0.85rem}
-      .btn{padding:8px 10px;font-size:0.78rem}
-      .container{padding:10px 8px}
-      .filters{flex-direction:column}
-      .entregar-widget{flex-direction:column;align-items:stretch;gap:8px}
-      .code-input{width:100%;text-align:center}
-      .btn-entregar{width:100%;padding:12px;min-height:44px}
-      .btn-edit{padding:8px 12px;min-height:36px;font-size:0.8rem}
-      .modal{margin:8px;padding:20px}
-    }
+    .modal{background:#141428;border:1px solid rgba(124,58,237,0.35);border-radius:20px 20px 0 0;padding:24px 20px 32px;width:100%;max-width:440px;animation:slideUp .22s ease}
+    @media(min-width:600px){.modal{border-radius:20px}}
+    @keyframes slideUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+    .modal-drag{width:40px;height:4px;background:rgba(255,255,255,0.15);border-radius:2px;margin:0 auto 18px}
+    .modal-title{color:#fff;font-size:0.95rem;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+    .modal-title i{color:#db2777}
+    .modal-msg{font-size:0.82rem;padding:9px 12px;border-radius:8px;margin-bottom:12px;display:none}
+    .ml{display:block;color:rgba(255,255,255,0.45);font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
+    .modal select,.modal input{width:100%;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.13);border-radius:10px;padding:10px 13px;color:#fff;font-size:0.9rem;margin-bottom:14px;font-family:inherit}
+    .modal select:focus,.modal input:focus{outline:none;border-color:#db2777}
+    .modal select option{background:#1a1a2e}
+    .modal-actions{display:flex;gap:10px;margin-top:4px}
+    .btn-modal-cancel{flex:1;padding:11px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);border-radius:11px;cursor:pointer;font-size:0.85rem;font-family:inherit;font-weight:600}
+    .btn-modal-save{flex:2;padding:11px;background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;border:none;border-radius:11px;cursor:pointer;font-weight:700;font-size:0.85rem;font-family:inherit}
+
+    @media(max-width:768px){input,select,textarea{font-size:16px!important}}
   </style>
 </head>
 <body>
+
+<!-- Topbar -->
 <div class="topbar">
-  <h1><i class="fa fa-boxes-stacked" style="color:#db2777"></i> Control de Paquetes</h1>
-  <div class="topbar-right">
-    <a href="{% url 'registrar_paquete' %}" class="btn btn-primary"><i class="fa fa-plus"></i> Registrar</a>
-    <a href="{% url 'metricas_paquetes' %}" class="btn btn-back"><i class="fa fa-chart-bar"></i> Métricas</a>
-    <a href="javascript:volverPanel()" class="btn btn-back"><i class="fa fa-arrow-left"></i> Volver</a>
+  <div class="topbar-left">
+    <div class="topbar-icon"><i class="fa fa-boxes-stacked"></i></div>
+    <div class="topbar-texts">
+      <div class="topbar-title">Control de Paquetes</div>
+      <span class="topbar-sub">Recepción y entrega</span>
+    </div>
+  </div>
+  <div class="topbar-actions">
+    <a href="{% url 'registrar_paquete' %}" class="btn btn-primary"><i class="fa fa-plus"></i><span class="btn-label"> Registrar</span></a>
+    <a href="{% url 'metricas_paquetes' %}" class="btn btn-ghost"><i class="fa fa-chart-bar"></i></a>
+    <a href="javascript:volverPanel()" class="btn btn-ghost"><i class="fa fa-arrow-left"></i></a>
   </div>
 </div>
 
-<div class="container">
-  <!-- ENTREGAR WIDGET -->
-  <div class="entregar-widget">
-    <h3><i class="fa fa-key"></i> Entregar paquete</h3>
-    <input type="text" class="code-input" id="codigo-input" maxlength="6" placeholder="Código 6 dígitos" inputmode="numeric">
-    <button class="btn-entregar" onclick="entregar()"><i class="fa fa-check"></i> Entregar</button>
+<div class="wrap">
+
+  <!-- Deliver hero -->
+  <div class="deliver-hero">
+    <div class="deliver-header">
+      <i class="fa fa-hand-holding-box"></i>
+      <h2>Entregar paquete</h2>
+    </div>
+    <div class="deliver-row">
+      <input type="text" class="code-input" id="codigo-input" maxlength="6"
+             placeholder="CÓDIGO" inputmode="numeric" autocomplete="off">
+      <button class="btn-entregar" onclick="entregar()">
+        <i class="fa fa-circle-check"></i><br>Entregar
+      </button>
+    </div>
     <div class="result-box" id="result-box"></div>
   </div>
 
-  <!-- FILTROS -->
-  <form method="GET">
-    <div class="filters">
-      <div class="filter-group">
-        <label>Torre</label>
-        <select name="torre">
-          <option value="">Todas</option>
-          {% for t in torres %}<option value="{{ t.id }}" {% if filtros.torre_id == t.id|stringformat:'s' %}selected{% endif %}>{{ t.nombre }}</option>{% endfor %}
-        </select>
+  <!-- Filter toggle -->
+  <div class="filter-toggle" id="filter-toggle" onclick="toggleFiltros()">
+    <div class="filter-toggle-label">
+      <i class="fa fa-sliders"></i> Filtros
+      {% if filtros.torre_id or filtros.apto or filtros.estado or filtros.desde or filtros.hasta %}
+        <span style="background:#db2777;color:#fff;padding:1px 8px;border-radius:20px;font-size:0.65rem">Activos</span>
+      {% endif %}
+    </div>
+    <i class="fa fa-chevron-down filter-toggle-arrow" id="filter-arrow"></i>
+  </div>
+
+  <form method="GET" id="filter-form">
+    <div class="filter-panel {% if filtros.torre_id or filtros.apto or filtros.estado or filtros.desde or filtros.hasta %}open{% endif %}" id="filter-panel">
+      <div class="filter-grid">
+        <div class="fg">
+          <label>Torre</label>
+          <select name="torre">
+            <option value="">Todas</option>
+            {% for t in torres %}<option value="{{ t.id }}" {% if filtros.torre_id == t.id|stringformat:'s' %}selected{% endif %}>{{ t.nombre }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="fg">
+          <label>Apartamento</label>
+          <input type="text" name="apto" value="{{ filtros.apto }}" placeholder="Ej: 0302">
+        </div>
+        <div class="fg">
+          <label>Estado</label>
+          <select name="estado">
+            <option value="">Todos</option>
+            <option value="pendiente" {% if filtros.estado == 'pendiente' %}selected{% endif %}>⏳ Pendiente</option>
+            <option value="entregado" {% if filtros.estado == 'entregado' %}selected{% endif %}>✅ Entregado</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Desde</label>
+          <input type="date" name="desde" value="{{ filtros.desde }}">
+        </div>
+        <div class="fg">
+          <label>Hasta</label>
+          <input type="date" name="hasta" value="{{ filtros.hasta }}">
+        </div>
       </div>
-      <div class="filter-group">
-        <label>Apto</label>
-        <input type="text" name="apto" value="{{ filtros.apto }}" placeholder="Ej: 101">
+      <div class="filter-actions">
+        <button type="submit" class="btn-filter"><i class="fa fa-filter"></i> Aplicar</button>
+        <a href="{% url 'lista_paquetes' %}" class="btn-clear"><i class="fa fa-xmark"></i> Limpiar</a>
       </div>
-      <div class="filter-group">
-        <label>Estado</label>
-        <select name="estado">
-          <option value="">Todos</option>
-          <option value="pendiente" {% if filtros.estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
-          <option value="entregado" {% if filtros.estado == 'entregado' %}selected{% endif %}>Entregado</option>
-        </select>
-      </div>
-      <div class="filter-group">
-        <label>Desde</label>
-        <input type="date" name="desde" value="{{ filtros.desde }}">
-      </div>
-      <div class="filter-group">
-        <label>Hasta</label>
-        <input type="date" name="hasta" value="{{ filtros.hasta }}">
-      </div>
-      <button type="submit" class="filter-btn"><i class="fa fa-filter"></i> Filtrar</button>
-      <a href="{% url 'lista_paquetes' %}" class="clear-link">Limpiar</a>
     </div>
   </form>
 
-  <!-- TABLA -->
-  <div class="table-wrap">
-    <div class="table-head">
-      <h3><i class="fa fa-list" style="color:#db2777"></i> Historial</h3>
-      <span class="count-badge">{{ paquetes|length }} resultado(s)</span>
+  <!-- List header -->
+  <div class="list-header">
+    <div class="list-title"><i class="fa fa-list-ul"></i> Historial</div>
+    <span class="count-pill">{{ paquetes|length }} resultado(s)</span>
+  </div>
+
+  {% if paquetes %}
+
+  <!-- ── Mobile cards ── -->
+  <div class="pkg-cards">
+    {% for p in paquetes %}
+    <div class="pkg-card {{ p.estado }}">
+      <div class="pkg-top">
+        <div class="pkg-code">{{ p.codigo }}</div>
+        <div>
+          {% if p.estado == 'pendiente' %}
+            <span class="pkg-badge badge-pendiente"><i class="fa fa-clock"></i> Pendiente</span>
+          {% else %}
+            <span class="pkg-badge badge-entregado"><i class="fa fa-circle-check"></i> Entregado</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="pkg-info">
+        <div class="pkg-info-item">
+          <span class="pkg-info-label">Ubicación</span>
+          <span class="pkg-info-val">{{ p.torre.nombre }} · {{ p.apartamento }}</span>
+        </div>
+        <div class="pkg-info-item">
+          <span class="pkg-info-label">Empresa</span>
+          <span class="pkg-info-val"><span class="cb cb-{{ p.empresa }}">{{ p.empresa_display }}</span></span>
+        </div>
+        {% if p.numero_guia %}
+        <div class="pkg-info-item">
+          <span class="pkg-info-label">N° Guía</span>
+          <span class="pkg-info-val" style="font-family:monospace;font-size:0.76rem">{{ p.numero_guia|truncatechars:16 }}</span>
+        </div>
+        {% endif %}
+        <div class="pkg-info-item">
+          <span class="pkg-info-label">Destinatario</span>
+          <span class="pkg-info-val">{{ p.destinatario_nombre|default:"—"|truncatechars:18 }}</span>
+        </div>
+        <div class="pkg-info-item">
+          <span class="pkg-info-label">Registrado</span>
+          <span class="pkg-info-val">{{ p.fecha_registro|date:"d/m H:i" }}</span>
+        </div>
+        {% if p.fecha_entrega %}
+        <div class="pkg-info-item">
+          <span class="pkg-info-label">Entregado</span>
+          <span class="pkg-info-val">{{ p.fecha_entrega|date:"d/m H:i" }}</span>
+        </div>
+        {% endif %}
+      </div>
+      <div class="pkg-footer">
+        <div class="pkg-meta">
+          {% if p.whatsapp_enviado %}
+            <i class="fa-brands fa-whatsapp wa-ok" title="WA enviado"></i> WA
+          {% else %}
+            <i class="fa fa-minus wa-no"></i> Sin WA
+          {% endif %}
+        </div>
+        {% if p.estado == 'pendiente' %}
+        <button class="btn-edit-sm" onclick="abrirEditar({{ p.id }}, '{{ p.torre.id }}', '{{ p.apartamento }}', '{{ p.destinatario_nombre|escapejs }}')">
+          <i class="fa fa-pen"></i> Editar
+        </button>
+        {% endif %}
+      </div>
     </div>
-    {% if paquetes %}
-    <div class="table-scroll">
+    {% endfor %}
+  </div>
+
+  <!-- ── Desktop table ── -->
+  <div class="table-wrap">
+    <div class="tbl-scroll">
       <table>
         <thead>
           <tr>
@@ -188,36 +318,31 @@
         <tbody>
           {% for p in paquetes %}
           <tr>
-            <td><strong style="color:#db2777;letter-spacing:2px">{{ p.codigo }}</strong></td>
+            <td><strong style="color:#db2777;letter-spacing:2.5px;font-size:0.88rem">{{ p.codigo }}</strong></td>
             <td style="color:#fff">{{ p.torre.nombre }} · <strong>{{ p.apartamento }}</strong></td>
-            <td style="color:rgba(255,255,255,0.8)">{{ p.destinatario_nombre|default:"—" }}</td>
-            <td>
-              <span class="carrier-badge carrier-{{ p.empresa }}">{{ p.empresa_display }}</span>
+            <td style="color:rgba(255,255,255,0.75)">{{ p.destinatario_nombre|default:"—" }}</td>
+            <td><span class="cb cb-{{ p.empresa }}">{{ p.empresa_display }}</span></td>
+            <td style="font-family:monospace;font-size:0.78rem;color:rgba(255,255,255,0.58)">
+              {% if p.numero_guia %}<span title="{{ p.numero_guia }}">{{ p.numero_guia|truncatechars:15 }}</span>{% else %}—{% endif %}
             </td>
-            <td style="color:rgba(255,255,255,0.6);font-size:0.8rem;font-family:monospace">
-              {% if p.numero_guia %}<span title="{{ p.numero_guia }}">{{ p.numero_guia|truncatechars:14 }}</span>{% else %}—{% endif %}
-            </td>
-            <td style="color:rgba(255,255,255,0.5);font-size:0.8rem">{{ p.fecha_registro|date:"d/m/Y H:i" }}</td>
+            <td style="color:rgba(255,255,255,0.45);font-size:0.78rem">{{ p.fecha_registro|date:"d/m/Y H:i" }}</td>
             <td>
               {% if p.estado == 'pendiente' %}
-                <span class="badge badge-pendiente"><i class="fa fa-clock"></i> Pendiente</span>
+                <span class="pkg-badge badge-pendiente"><i class="fa fa-clock"></i> Pendiente</span>
               {% else %}
-                <span class="badge badge-entregado"><i class="fa fa-circle-check"></i> Entregado</span>
+                <span class="pkg-badge badge-entregado"><i class="fa fa-circle-check"></i> Entregado</span>
               {% endif %}
             </td>
             <td>
-              {% if p.whatsapp_enviado %}
-                <i class="fa fa-brands fa-whatsapp wa-ok" title="WhatsApp enviado"></i>
-              {% else %}
-                <i class="fa fa-minus wa-no" title="Sin WhatsApp"></i>
-              {% endif %}
+              {% if p.whatsapp_enviado %}<i class="fa-brands fa-whatsapp wa-ok" style="font-size:1rem" title="WA enviado"></i>
+              {% else %}<i class="fa fa-minus" style="color:rgba(255,255,255,0.2)"></i>{% endif %}
             </td>
-            <td style="color:rgba(255,255,255,0.45);font-size:0.8rem">
+            <td style="color:rgba(255,255,255,0.4);font-size:0.78rem">
               {% if p.fecha_entrega %}{{ p.fecha_entrega|date:"d/m/Y H:i" }}{% else %}—{% endif %}
             </td>
             <td>
               {% if p.estado == 'pendiente' %}
-              <button class="btn-edit" onclick="abrirEditar({{ p.id }}, '{{ p.torre.id }}', '{{ p.apartamento }}', '{{ p.destinatario_nombre|escapejs }}')">
+              <button class="btn-edit-sm" onclick="abrirEditar({{ p.id }}, '{{ p.torre.id }}', '{{ p.apartamento }}', '{{ p.destinatario_nombre|escapejs }}')">
                 <i class="fa fa-pen"></i> Editar
               </button>
               {% endif %}
@@ -227,38 +352,39 @@
         </tbody>
       </table>
     </div>
-    {% else %}
-    <div class="empty">
-      <i class="fa fa-box-open"></i>
-      <p>No se encontraron paquetes con esos filtros.</p>
-    </div>
-    {% endif %}
   </div>
-</div>
 
-<!-- Modal editar paquete -->
+  {% else %}
+  <div class="empty">
+    <i class="fa fa-box-open empty-icon"></i>
+    <p>No se encontraron paquetes con los filtros aplicados.</p>
+  </div>
+  {% endif %}
+
+</div><!-- /wrap -->
+
+<!-- Modal editar -->
 <div class="modal-overlay" id="modal-editar">
   <div class="modal">
-    <h2><i class="fa fa-pen" style="color:#db2777"></i> Corregir paquete</h2>
+    <div class="modal-drag"></div>
+    <div class="modal-title"><i class="fa fa-pen"></i> Corregir paquete</div>
     <div class="modal-msg" id="modal-msg"></div>
     <input type="hidden" id="edit-paquete-id">
-    <label>Torre</label>
+    <label class="ml">Torre</label>
     <select id="edit-torre" onchange="cargarApartamentos()">
-      {% for t in torres %}
-      <option value="{{ t.id }}">{{ t.nombre }}</option>
-      {% endfor %}
+      {% for t in torres %}<option value="{{ t.id }}">{{ t.nombre }}</option>{% endfor %}
     </select>
-    <label>Apartamento</label>
+    <label class="ml">Apartamento</label>
     <select id="edit-apto" onchange="cargarResidente()">
       <option value="">— Selecciona torre primero —</option>
     </select>
-    <label>Destinatario</label>
-    <div id="edit-nombre-wrap" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:10px 12px;color:rgba(255,255,255,0.5);font-size:0.9rem;margin-bottom:14px">
+    <label class="ml">Destinatario</label>
+    <div id="edit-nombre-wrap" style="background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px 13px;color:rgba(255,255,255,0.4);font-size:0.88rem;margin-bottom:18px">
       — selecciona apartamento —
     </div>
     <div class="modal-actions">
-      <button class="btn-cancel-modal" onclick="cerrarEditar()">Cancelar</button>
-      <button class="btn-save-modal" onclick="guardarEditar()"><i class="fa fa-save"></i> Guardar</button>
+      <button class="btn-modal-cancel" onclick="cerrarEditar()">Cancelar</button>
+      <button class="btn-modal-save" onclick="guardarEditar()"><i class="fa fa-save"></i> Guardar</button>
     </div>
   </div>
 </div>
@@ -266,145 +392,116 @@
 <script>
 var CSRF = '{{ csrf_token }}';
 
+/* ── Entregar ── */
 function entregar() {
-  var codigo = document.getElementById('codigo-input').value.trim();
-  var box = document.getElementById('result-box');
-  if (!codigo || codigo.length !== 6) {
-    showResult(false, 'El código debe tener 6 dígitos');
-    return;
-  }
+  var codigo = document.getElementById('codigo-input').value.trim().toUpperCase();
+  if (!codigo || codigo.length !== 6) { showResult(false, 'El código debe tener 6 caracteres'); return; }
   fetch('{% url "entregar_paquete" %}', {
     method: 'POST',
     headers: {'Content-Type': 'application/json', 'X-CSRFToken': CSRF},
     body: JSON.stringify({codigo: codigo})
   })
   .then(function(r){ return r.json(); })
-  .then(function(data){
-    showResult(data.ok, data.mensaje);
-    if (data.ok) {
-      document.getElementById('codigo-input').value = '';
-      setTimeout(function(){ location.reload(); }, 2000);
-    }
+  .then(function(d){
+    showResult(d.ok, d.mensaje);
+    if (d.ok) { document.getElementById('codigo-input').value = ''; setTimeout(function(){ location.reload(); }, 1800); }
   })
   .catch(function(){ showResult(false, 'Error de conexión'); });
 }
-
 function showResult(ok, msg) {
-  var box = document.getElementById('result-box');
-  box.className = 'result-box ' + (ok ? 'result-ok' : 'result-err');
-  box.innerHTML = '<i class="fa ' + (ok ? 'fa-circle-check' : 'fa-circle-xmark') + '"></i> ' + msg;
-  box.style.display = 'block';
+  var b = document.getElementById('result-box');
+  b.className = 'result-box ' + (ok ? 'result-ok' : 'result-err');
+  b.innerHTML = '<i class="fa '+(ok?'fa-circle-check':'fa-circle-xmark')+'"></i> '+msg;
+  b.style.display = 'flex';
 }
+document.getElementById('codigo-input').addEventListener('keydown', function(e){ if(e.key==='Enter') entregar(); });
 
-document.getElementById('codigo-input').addEventListener('keydown', function(e){
-  if (e.key === 'Enter') entregar();
-});
+/* ── Filtros toggle ── */
+function toggleFiltros() {
+  var t = document.getElementById('filter-toggle');
+  var p = document.getElementById('filter-panel');
+  t.classList.toggle('open');
+  p.classList.toggle('open');
+}
+{% if filtros.torre_id or filtros.apto or filtros.estado or filtros.desde or filtros.hasta %}
+document.getElementById('filter-toggle').classList.add('open');
+{% endif %}
 
+/* ── Modal editar ── */
 var _editResidente = '';
-
 function abrirEditar(id, torreId, apto, nombre) {
   document.getElementById('edit-paquete-id').value = id;
   document.getElementById('modal-msg').style.display = 'none';
   _editResidente = nombre;
   document.getElementById('modal-editar').classList.add('open');
-  // Cargar apartamentos de la torre actual y preseleccionar apto
   document.getElementById('edit-torre').value = torreId;
   cargarApartamentos(apto);
 }
-
 function cargarApartamentos(preselect) {
-  var torreId = document.getElementById('edit-torre').value;
-  var select = document.getElementById('edit-apto');
-  select.innerHTML = '<option value="">Cargando...</option>';
+  var sel = document.getElementById('edit-apto');
+  sel.innerHTML = '<option value="">Cargando…</option>';
   document.getElementById('edit-nombre-wrap').textContent = '— selecciona apartamento —';
-  _editResidente = '';
-  fetch('/api/torres/' + torreId + '/apartamentos/')
-    .then(r => r.json())
-    .then(data => {
-      select.innerHTML = '<option value="">— Selecciona —</option>';
-      (data.apartamentos || []).forEach(function(ap) {
-        var opt = document.createElement('option');
-        opt.value = ap;
-        opt.textContent = ap + (data.ocupados && data.ocupados.includes(ap) ? ' ✓' : '');
-        select.appendChild(opt);
+  fetch('/api/torres/'+document.getElementById('edit-torre').value+'/apartamentos/')
+    .then(function(r){return r.json();})
+    .then(function(d){
+      sel.innerHTML = '<option value="">— Selecciona —</option>';
+      (d.apartamentos||[]).forEach(function(ap){
+        var o=document.createElement('option');o.value=ap;
+        o.textContent=ap+(d.ocupados&&d.ocupados.includes(ap)?' ✓':'');
+        sel.appendChild(o);
       });
-      if (preselect) {
-        select.value = preselect;
-        cargarResidente();
-      }
+      if(preselect){sel.value=preselect;cargarResidente();}
     })
-    .catch(() => { select.innerHTML = '<option value="">Error cargando</option>'; });
+    .catch(function(){sel.innerHTML='<option value="">Error</option>';});
 }
-
 function cargarResidente() {
-  var torreId = document.getElementById('edit-torre').value;
-  var apto = document.getElementById('edit-apto').value;
-  var wrap = document.getElementById('edit-nombre-wrap');
-  if (!apto) { wrap.textContent = '— selecciona apartamento —'; _editResidente = ''; return; }
-  wrap.textContent = 'Buscando...';
-  fetch('/api/torres/' + torreId + '/apartamentos/?apto=' + encodeURIComponent(apto))
-    .then(r => r.json())
-    .then(data => {
-      if (data.residente) {
-        wrap.textContent = data.residente;
-        wrap.style.color = '#fff';
-        _editResidente = data.residente;
-      } else {
-        wrap.textContent = '— Sin residente registrado —';
-        wrap.style.color = 'rgba(255,255,255,0.4)';
-        _editResidente = '';
-      }
+  var apto=document.getElementById('edit-apto').value;
+  var wrap=document.getElementById('edit-nombre-wrap');
+  if(!apto){wrap.textContent='— selecciona apartamento —';_editResidente='';return;}
+  wrap.textContent='Buscando…';
+  fetch('/api/torres/'+document.getElementById('edit-torre').value+'/apartamentos/?apto='+encodeURIComponent(apto))
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(d.residente){wrap.textContent=d.residente;wrap.style.color='#fff';_editResidente=d.residente;}
+      else{wrap.textContent='— Sin residente registrado —';wrap.style.color='rgba(255,255,255,0.35)';_editResidente='';}
     })
-    .catch(() => { wrap.textContent = 'Error'; _editResidente = ''; });
+    .catch(function(){wrap.textContent='Error';});
 }
-
-function cerrarEditar() {
-  document.getElementById('modal-editar').classList.remove('open');
-}
-
-function guardarEditar() {
-  var id = document.getElementById('edit-paquete-id').value;
-  var torre = document.getElementById('edit-torre').value;
-  var apto = document.getElementById('edit-apto').value;
-  if (!apto) { mostrarMsgModal('error', 'Selecciona un apartamento'); return; }
-  fetch('{% url "editar_paquete" %}', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json', 'X-CSRFToken': CSRF},
-    body: JSON.stringify({id: id, torre_id: torre, apartamento: apto, destinatario_nombre: _editResidente})
+function cerrarEditar(){document.getElementById('modal-editar').classList.remove('open');}
+function guardarEditar(){
+  var id=document.getElementById('edit-paquete-id').value;
+  var torre=document.getElementById('edit-torre').value;
+  var apto=document.getElementById('edit-apto').value;
+  if(!apto){mostrarMsg('error','Selecciona un apartamento');return;}
+  fetch('{% url "editar_paquete" %}',{
+    method:'POST',headers:{'Content-Type':'application/json','X-CSRFToken':CSRF},
+    body:JSON.stringify({id:id,torre_id:torre,apartamento:apto,destinatario_nombre:_editResidente})
   })
-  .then(r => r.json())
-  .then(data => {
-    if (data.ok) {
-      mostrarMsgModal('ok', data.mensaje);
-      setTimeout(function(){ cerrarEditar(); location.reload(); }, 1200);
-    } else {
-      mostrarMsgModal('error', data.mensaje);
-    }
+  .then(function(r){return r.json();})
+  .then(function(d){
+    if(d.ok){mostrarMsg('ok',d.mensaje);setTimeout(function(){cerrarEditar();location.reload();},1100);}
+    else mostrarMsg('error',d.mensaje);
   })
-  .catch(() => mostrarMsgModal('error', 'Error de conexión'));
+  .catch(function(){mostrarMsg('error','Error de conexión');});
 }
+function mostrarMsg(tipo,msg){
+  var el=document.getElementById('modal-msg');el.style.display='block';
+  if(tipo==='ok'){el.style.background='rgba(34,197,94,0.13)';el.style.color='#4ade80';el.style.border='1px solid rgba(34,197,94,0.25)';}
+  else{el.style.background='rgba(239,68,68,0.13)';el.style.color='#f87171';el.style.border='1px solid rgba(239,68,68,0.25)';}
+  el.textContent=msg;
+}
+document.getElementById('modal-editar').addEventListener('click',function(e){if(e.target===this)cerrarEditar();});
 
-function mostrarMsgModal(tipo, msg) {
-  var el = document.getElementById('modal-msg');
-  el.style.display = 'block';
-  if (tipo === 'ok') { el.style.background='rgba(34,197,94,0.15)'; el.style.color='#4ade80'; el.style.border='1px solid rgba(34,197,94,0.3)'; }
-  else { el.style.background='rgba(255,68,68,0.15)'; el.style.color='#ff6b6b'; el.style.border='1px solid rgba(255,68,68,0.3)'; }
-  el.textContent = msg;
-}
-document.getElementById('modal-editar').addEventListener('click', function(e){
-  if (e.target === this) cerrarEditar();
-});
-</script>
-{% include "partials/paginacion.html" %}
-<script>
-history.replaceState(null, '', location.href);
-function volverPanel() {
+/* ── Back nav ── */
+history.replaceState(null,'',location.href);
+function volverPanel(){
   {% if request.user.user_type == 'administrador' %}
-    location.replace("{% url 'accounts:visor_admin' %}");
+    location.replace("{% url 'dashboard' %}");
   {% else %}
     location.replace("{% url 'accounts:control_porteria' %}");
   {% endif %}
 }
 </script>
+{% include "partials/paginacion.html" %}
 </body>
 </html>
