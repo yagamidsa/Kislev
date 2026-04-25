@@ -1270,6 +1270,9 @@ def upload_conjunto(request):
                 torre_nombre = str(row_data.get('agrupacion', '') or row_data.get('torre', '') or '').strip()
                 torre_obj = torres_map.get(torre_nombre)
                 apartamento = str(row_data.get('unidad', '') or row_data.get('apartamento', '') or '').strip()
+                # Normalizar a 4 dígitos si es numérico (ej: "101" → "0101")
+                if apartamento.isdigit() and len(apartamento) < 4:
+                    apartamento = apartamento.zfill(4)
                 Usuario.objects.create_user(
                     cedula=cedula,
                     nombre=nombre,
