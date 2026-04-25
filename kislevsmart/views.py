@@ -686,14 +686,23 @@ def enviar_notificacion_individual(request):
                 'message': 'La torre seleccionada no existe o no pertenece a su conjunto'
             }, status=404)
         
-        # Buscar propietarios que coincidan con la ubicación
+        # Buscar propietarios que coincidan con la ubicación.
+        # Primero por FK de torre; si no hay resultados, fallback por conjunto+apartamento
+        # (cubre casos donde el FK de torre no fue asignado correctamente en el import).
         propietarios = Usuario.objects.filter(
             user_type='propietario',
             is_active=True,
             conjunto=request.user.conjunto,
             torre=torre,
-            apartamento=apartamento
+            apartamento=apartamento,
         )
+        if not propietarios.exists():
+            propietarios = Usuario.objects.filter(
+                user_type='propietario',
+                is_active=True,
+                conjunto=request.user.conjunto,
+                apartamento=apartamento,
+            )
         
         if not propietarios.exists():
             logger.warning(f"No se encontraron propietarios en {torre.nombre} - Apto {apartamento}")
@@ -2370,18 +2379,40 @@ def get_apartamentos(request, torre_id):
         )
         
         # Generar lista de apartamentos según la configuración de la torre
-        apartamentos = torre.get_apartamentos()
-        
-        # También obtener los apartamentos que ya están ocupados
-        ocupados = Usuario.objects.filter(
-            torre=torre,
-            is_active=True
-        ).values_list('apartamento', flat=True)
-        
+        gen_aptos = torre.get_apartamentos()
+        gen_set   = set(gen_aptos)
+
+        # Usuarios vinculados por FK de torre (caso ideal)
+        por_fk = set(
+            Usuario.objects.filter(
+                torre=torre,
+                conjunto=request.user.conjunto,
+                is_active=True,
+            ).values_list('apartamento', flat=True)
+        )
+
+        # Fallback: usuarios del mismo conjunto sin torre asignada cuyo
+        # apartamento coincide con los generados (datos importados sin FK de torre)
+        por_apto = set(
+            Usuario.objects.filter(
+                torre__isnull=True,
+                conjunto=request.user.conjunto,
+                is_active=True,
+                apartamento__in=gen_aptos,
+            ).values_list('apartamento', flat=True)
+        )
+
+        ocupados_set = (por_fk | por_apto) - {''}
+
+        # Si hay valores de DB que no coinciden con el formato generado
+        # (ej: "101" vs "0101"), añadirlos al listado para que sean seleccionables
+        extras = [a for a in ocupados_set if a not in gen_set]
+        apartamentos = gen_aptos + extras
+
         response = {
             'status': 'success',
             'apartamentos': apartamentos,
-            'ocupados': list(ocupados),
+            'ocupados': list(ocupados_set),
         }
         # Si viene ?apto=XXX, devolver info del residente para el formulario de paquetes
         apto = request.GET.get('apto', '').strip()
