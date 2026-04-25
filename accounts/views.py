@@ -29,6 +29,15 @@ def _emit_token_cookie(user, response):
         path='/',
     )
     return response
+
+
+def _sync_password_hash(cedula: str, hashed: str) -> int:
+    """Propaga el mismo hash de contraseña a todos los registros con la misma cédula.
+    Devuelve la cantidad de filas actualizadas."""
+    from .models import Usuario as _Usuario
+    return _Usuario.objects.filter(cedula=cedula).update(password=hashed)
+
+
 from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -193,15 +202,15 @@ class LoginView(View):
                 )
                 return render(request, self.template_name, {'form': form})
 
-            # Verificamos la contraseña con cualquiera de los usuarios
-            # (la contraseña debería ser la misma para todos los conjuntos)
-            conjunto_example = conjuntos_usuario.first()
-            user_example = Usuario.objects.filter(
-                cedula=cedula,
-                conjunto=conjunto_example
-            ).first()
+            # Verificamos la contraseña contra todos los registros de la cédula —
+            # por si los hashes difieren (edge case antes de la primera sincronización).
+            user_example = None
+            for _u in Usuario.objects.filter(cedula=cedula, is_active=True).order_by('pk'):
+                if _u.check_password(password):
+                    user_example = _u
+                    break
 
-            if not user_example or not user_example.check_password(password):
+            if not user_example:
                 messages.error(
                     request, 
                     'Contraseña incorrecta. Por favor, verifíquela.'
@@ -431,6 +440,8 @@ class CustomPasswordChangeView(LoginRequiredMixin, View):
         if form.is_valid():
             form.save()
             update_session_auth_hash(request, request.user)
+            # Propagar hash a todos los conjuntos de esta cédula
+            _sync_password_hash(request.user.cedula, request.user.password)
             messages.success(request, 'Tu contraseña ha sido cambiada con éxito.')
             return redirect('dashboard')
         messages.error(request, 'Por favor, corrige los errores.')
@@ -577,6 +588,8 @@ class RecuperarPasswordConfirmView(View):
 
         usuario.set_password(p1)
         usuario.save()
+        # Propagar hash a todos los conjuntos de esta cédula
+        _sync_password_hash(usuario.cedula, usuario.password)
         messages.success(request, '¡Contraseña actualizada! Ya puedes iniciar sesión.')
         return redirect('accounts:login')
 
@@ -600,8 +613,9 @@ class ForcePasswordChangeView(LoginRequiredMixin, View):
         if form.is_valid():
             form.save()
             update_session_auth_hash(request, request.user)
-            request.user.must_change_password = False
-            request.user.save(update_fields=['must_change_password'])
+            # Propagar hash y limpiar must_change_password en todos los conjuntos
+            _sync_password_hash(request.user.cedula, request.user.password)
+            Usuario.objects.filter(cedula=request.user.cedula).update(must_change_password=False)
             messages.success(request, 'Contraseña actualizada. Bienvenido.')
             redirects = {
                 'propietario': 'accounts:visor_propietario',
@@ -1513,6 +1527,10 @@ def crear_usuario(request):
     if Usuario.objects.filter(cedula=cedula, conjunto=conjunto).exists():
         return JsonResponse({'error': f'Ya existe un usuario con cédula {cedula} en este conjunto'}, status=400)
 
+    # Normalizar apartamento a 4 dígitos si es numérico
+    if apartamento and apartamento.isdigit() and len(apartamento) < 4:
+        apartamento = apartamento.zfill(4)
+
     from accounts.models import Torre
     torre_obj = None
     if torre_id:
@@ -1527,6 +1545,12 @@ def crear_usuario(request):
     if user_type not in ('propietario', 'administrador', 'porteria'):
         return JsonResponse({'error': 'Tipo de usuario no válido'}, status=400)
 
+    # ── Cédula en otro conjunto: sincronizar credenciales ────────────────────
+    # Si la persona ya existe en otro conjunto usamos su hash actual para que
+    # pueda iniciar sesión sin cambiar contraseña de nuevo.
+    existing_other = Usuario.objects.filter(cedula=cedula).exclude(conjunto=conjunto).first()
+    credenciales_sincronizadas = existing_other is not None
+
     nuevo = Usuario.objects.create_user(
         cedula=cedula,
         nombre=nombre,
@@ -1538,43 +1562,61 @@ def crear_usuario(request):
         phone_number=telefono or None,
         torre=torre_obj,
         apartamento=apartamento,
-        must_change_password=True,
+        must_change_password=not credenciales_sincronizadas,
     )
+
+    if credenciales_sincronizadas:
+        # Copiar hash — mismo hash, sin revelar la contraseña
+        nuevo.password = existing_other.password
+        nuevo.save(update_fields=['password'])
 
     # ── Enviar email de bienvenida con credenciales ───────────────────────────
     email_error = None
     try:
         from django.core.mail import EmailMultiAlternatives
         from django.template.loader import render_to_string
-        from kislevsmart.utils import log_envio as _log_envio
         login_url = getattr(settings, 'SITE_URL', 'https://kislev.net.co') + '/accounts/login/'
-        context = {
-            'nombre': nombre,
-            'conjunto_nombre': conjunto.nombre,
-            'cedula': cedula,
-            'password': _DEFAULT_PASSWORD,
-            'login_url': login_url,
-        }
-        html = render_to_string('emails/bienvenida_credenciales.html', context)
-        text = (
-            f"Hola {nombre},\n\nHas sido registrado en {conjunto.nombre} en Kislev.\n\n"
-            f"Usuario: {cedula}\nContraseña temporal: kislev123\n\n"
-            f"Cámbiala en tu primer inicio de sesión.\n{login_url}"
-        )
-        msg = EmailMultiAlternatives(
-            subject=f'Bienvenido a Kislev — {conjunto.nombre}',
-            body=text,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            to=[email],
-        )
-        msg.attach_alternative(html, 'text/html')
+        if credenciales_sincronizadas:
+            # Usuario ya tenía cuenta en otro conjunto — usar sus credenciales existentes
+            text = (
+                f"Hola {nombre},\n\nHas sido registrado en {conjunto.nombre} en Kislev.\n\n"
+                f"Usuario: {cedula}\nContraseña: la misma que usas en tus otros conjuntos.\n\n"
+                f"{login_url}"
+            )
+            msg = EmailMultiAlternatives(
+                subject=f'Acceso a {conjunto.nombre} — Kislev',
+                body=text,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                to=[email],
+            )
+        else:
+            context = {
+                'nombre': nombre,
+                'conjunto_nombre': conjunto.nombre,
+                'cedula': cedula,
+                'password': _DEFAULT_PASSWORD,
+                'login_url': login_url,
+            }
+            html = render_to_string('emails/bienvenida_credenciales.html', context)
+            text = (
+                f"Hola {nombre},\n\nHas sido registrado en {conjunto.nombre} en Kislev.\n\n"
+                f"Usuario: {cedula}\nContraseña temporal: {_DEFAULT_PASSWORD}\n\n"
+                f"Cámbiala en tu primer inicio de sesión.\n{login_url}"
+            )
+            msg = EmailMultiAlternatives(
+                subject=f'Bienvenido a Kislev — {conjunto.nombre}',
+                body=text,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                to=[email],
+            )
+            msg.attach_alternative(html, 'text/html')
         send_email_async(msg, detalle=f'Bienvenida → {email}')
         _log_envio_global('email', conjunto=conjunto, detalle=f'Bienvenida: {nombre}')
     except Exception as exc:
         email_error = str(exc)
 
     tipo_display = 'arrendatario' if es_arrendatario else user_type
-    return JsonResponse({
+    resp = {
         'ok': True,
         'id': nuevo.pk,
         'nombre': nuevo.nombre,
@@ -1586,7 +1628,14 @@ def crear_usuario(request):
         'torre': torre_obj.nombre if torre_obj else '',
         'apartamento': apartamento,
         'is_active': True,
-    })
+        'credenciales_sincronizadas': credenciales_sincronizadas,
+    }
+    if credenciales_sincronizadas:
+        resp['aviso'] = (
+            f'Esta cédula ya existe en otro conjunto — las credenciales han sido sincronizadas. '
+            f'El usuario puede iniciar sesión con su contraseña actual.'
+        )
+    return JsonResponse(resp)
 
 
 @require_POST

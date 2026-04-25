@@ -594,10 +594,15 @@ function crearUsuario(){
     .then(d => {
         if(d.ok){
             closeCreateModal();
-            const msg = d.email_enviado
-                ? '✅ ' + d.nombre + ' creado — credenciales enviadas por email'
-                : '✅ ' + d.nombre + ' creado — email no enviado: ' + (d.email_error || 'error');
-            showToast(msg, d.email_enviado ? 'success' : 'error');
+            let msg;
+            if(d.credenciales_sincronizadas){
+                msg = '✅ ' + d.nombre + ' creado — cédula ya existe en otro conjunto, credenciales sincronizadas';
+            } else if(d.email_enviado){
+                msg = '✅ ' + d.nombre + ' creado — credenciales enviadas por email';
+            } else {
+                msg = '✅ ' + d.nombre + ' creado — email no enviado: ' + (d.email_error || 'error');
+            }
+            showToast(msg, 'success');
             setTimeout(() => location.reload(), 1800);
         } else {
             showToast(d.error || 'Error al crear usuario', 'error');
