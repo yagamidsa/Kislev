@@ -67,7 +67,7 @@
 <body>
 
 <div class="topbar">
-  <a href="javascript:history.back()" class="back-btn">
+  <a href="javascript:volverPanel()" class="back-btn">
     <i class="fas fa-arrow-left"></i> Volver
   </a>
   <span class="topbar-title"><i class="fas fa-building" style="margin-right:6px"></i>Zonas Comunes</span>
@@ -108,5 +108,17 @@
   </div>
 </div>
 
+<script>
+history.replaceState(null, '', location.href);
+function volverPanel() {
+  {% if request.user.user_type == 'administrador' %}
+    location.replace("{% url 'accounts:visor_admin' %}");
+  {% elif request.user.user_type == 'porteria' %}
+    location.replace("{% url 'accounts:control_porteria' %}");
+  {% else %}
+    location.replace("{% url 'accounts:visor_propietario' %}");
+  {% endif %}
+}
+</script>
 </body>
 </html>

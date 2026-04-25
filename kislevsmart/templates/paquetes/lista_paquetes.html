@@ -68,6 +68,20 @@
     .btn-cancel-modal{background:rgba(255,255,255,0.08);color:#fff;border:none;padding:9px 18px;border-radius:8px;cursor:pointer;font-size:0.85rem}
     .btn-save-modal{background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;border:none;padding:9px 18px;border-radius:8px;cursor:pointer;font-weight:700;font-size:0.85rem}
     .modal-msg{font-size:0.85rem;padding:8px 12px;border-radius:7px;margin-bottom:10px;display:none}
+    /* Carrier badges */
+    .carrier-badge{display:inline-block;padding:3px 8px;border-radius:6px;font-size:0.72rem;font-weight:700;letter-spacing:.2px}
+    .carrier-servientrega{background:#003F8A;color:#fff}
+    .carrier-coordinadora{background:#C0392B;color:#fff}
+    .carrier-envia{background:#E05400;color:#fff}
+    .carrier-interrapidisimo{background:#D4520A;color:#fff}
+    .carrier-deprisa{background:#003087;color:#fff}
+    .carrier-tcc{background:#0056A0;color:#fff}
+    .carrier-fedex{background:#4D148C;color:#fff}
+    .carrier-dhl{background:#FFCC00;color:#D40511}
+    .carrier-amazon{background:#FF9900;color:#232F3E}
+    .carrier-mercadolibre{background:#FFE600;color:#333}
+    .carrier-rappi{background:#FF441F;color:#fff}
+    .carrier-otro{background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.75)}
     @media(max-width:600px){
       .topbar{padding:12px 14px}.topbar h1{font-size:0.95rem}
       .btn{padding:7px 12px;font-size:0.8rem}
@@ -163,6 +177,7 @@
             <th>Torre / Apto</th>
             <th>Destinatario</th>
             <th>Empresa</th>
+            <th>N° Guía</th>
             <th>Registrado</th>
             <th>Estado</th>
             <th>WA</th>
@@ -176,7 +191,12 @@
             <td><strong style="color:#db2777;letter-spacing:2px">{{ p.codigo }}</strong></td>
             <td style="color:#fff">{{ p.torre.nombre }} · <strong>{{ p.apartamento }}</strong></td>
             <td style="color:rgba(255,255,255,0.8)">{{ p.destinatario_nombre|default:"—" }}</td>
-            <td style="color:rgba(255,255,255,0.7)">{{ p.empresa_display }}</td>
+            <td>
+              <span class="carrier-badge carrier-{{ p.empresa }}">{{ p.empresa_display }}</span>
+            </td>
+            <td style="color:rgba(255,255,255,0.6);font-size:0.8rem;font-family:monospace">
+              {% if p.numero_guia %}<span title="{{ p.numero_guia }}">{{ p.numero_guia|truncatechars:14 }}</span>{% else %}—{% endif %}
+            </td>
             <td style="color:rgba(255,255,255,0.5);font-size:0.8rem">{{ p.fecha_registro|date:"d/m/Y H:i" }}</td>
             <td>
               {% if p.estado == 'pendiente' %}

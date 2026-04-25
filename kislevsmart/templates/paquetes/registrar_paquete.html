@@ -4,103 +4,168 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registrar Paquete</title>
+  <title>Registrar Paquete — Kislev</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     html{overscroll-behavior:none;background:#09000f}
     *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Segoe UI',Arial,sans-serif;min-height:100vh;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%)}
-    .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:rgba(255,255,255,0.05);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,0.1)}
-    .topbar h1{color:#fff;font-size:1.1rem;font-weight:700}
-    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:10px;font-size:0.88rem;font-weight:600;text-decoration:none;border:none;cursor:pointer;transition:all .2s}
-    .btn-back{background:rgba(255,255,255,0.1);color:#fff}
-    .container{max-width:640px;margin:0 auto;padding:24px 20px}
-    /* Steps */
-    .steps{display:flex;gap:0;margin-bottom:24px}
-    .step{flex:1;text-align:center;padding:10px 4px;font-size:0.72rem;font-weight:700;color:rgba(255,255,255,0.3);border-bottom:3px solid rgba(255,255,255,0.08);text-transform:uppercase;letter-spacing:.5px;transition:all .2s}
-    .step.active{color:#db2777;border-bottom-color:#db2777}
-    .step.done{color:#4ade80;border-bottom-color:#4ade80}
-    .step .num{display:inline-block;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.08);line-height:20px;margin-right:5px;font-size:0.7rem}
-    .step.active .num{background:#db2777}
-    .step.done .num{background:#4ade80;color:#1a1a2e}
-    /* Section */
+    body{font-family:'Segoe UI',system-ui,Arial,sans-serif;min-height:100vh;background:linear-gradient(135deg,#0d0d1a 0%,#111128 50%,#0a0f2e 100%)}
+
+    /* ── Topbar ── */
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:rgba(255,255,255,0.04);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,0.07);position:sticky;top:0;z-index:100}
+    .topbar-left{display:flex;align-items:center;gap:10px}
+    .topbar-icon{width:34px;height:34px;background:linear-gradient(135deg,#7c3aed,#db2777);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:0.9rem;color:#fff;flex-shrink:0}
+    .topbar-title{color:#fff;font-size:1rem;font-weight:700}
+    .topbar-sub{color:rgba(255,255,255,0.4);font-size:0.75rem;display:block}
+    .btn-back{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;font-size:0.82rem;font-weight:600;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.8);cursor:pointer;text-decoration:none;transition:all .2s}
+    .btn-back:hover{background:rgba(255,255,255,0.13)}
+
+    /* ── Progress ── */
+    .progress-bar{display:flex;padding:0 20px;gap:0;background:rgba(255,255,255,0.02);border-bottom:1px solid rgba(255,255,255,0.05)}
+    .prog-step{flex:1;padding:12px 6px 10px;text-align:center;font-size:0.68rem;font-weight:700;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:.4px;border-bottom:2px solid transparent;transition:all .25s;cursor:default}
+    .prog-step.active{color:#db2777;border-bottom-color:#db2777}
+    .prog-step.done{color:#4ade80;border-bottom-color:#4ade80}
+    .prog-num{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.08);font-size:0.65rem;margin-right:4px;transition:all .25s}
+    .prog-step.active .prog-num{background:#db2777;color:#fff}
+    .prog-step.done .prog-num{background:#4ade80;color:#0d0d1a}
+
+    /* ── Container ── */
+    .container{max-width:620px;margin:0 auto;padding:24px 16px 48px}
+
+    /* ── Messages ── */
+    .msg{border-radius:12px;padding:13px 16px;margin-bottom:18px;display:flex;align-items:flex-start;gap:10px;font-size:0.88rem}
+    .msg-success{background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.25);color:#4ade80}
+    .msg-error{background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.25);color:#f87171}
+
+    /* ── Card ── */
+    .card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:20px;padding:22px;margin-bottom:14px}
+    .card-title{color:#fff;font-size:0.92rem;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+    .card-title i{color:#db2777;font-size:0.95rem}
+    .card-hint{color:rgba(255,255,255,0.35);font-size:0.75rem;margin-left:auto;font-weight:400}
+
+    /* ── Section visibility ── */
     .section{display:none}
-    .section.visible{display:block}
-    .section-card{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:22px;margin-bottom:16px}
-    .section-title{color:#fff;font-size:0.95rem;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
-    .section-title i{color:#db2777}
-    /* Selection grids */
-    .torre-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px}
-    .apto-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px}
-    .empresa-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
-    /* Generic selectable item */
-    .sel-item{border-radius:12px;border:2px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.75);font-weight:600;text-align:center;cursor:pointer;transition:all .18s;user-select:none;-webkit-tap-highlight-color:transparent}
-    .sel-item:active{transform:scale(.95)}
-    .sel-item.selected{border-color:#db2777;background:rgba(225,0,255,0.2);color:#fff}
-    /* Torre items */
-    .torre-item{padding:16px 10px;font-size:0.9rem}
-    .torre-item .t-icon{font-size:1.5rem;display:block;margin-bottom:6px}
-    /* Apto items */
-    .apto-item{padding:12px 4px;font-size:0.88rem}
-    /* Empresa items - brand colors */
-    .empresa-item{padding:14px 8px;font-size:0.78rem;display:flex;flex-direction:column;align-items:center;gap:6px}
-    .empresa-logo{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.75rem;flex-shrink:0;letter-spacing:-.3px}
-    /* Brand colors */
-    .brand-envia{background:#ff6b00;color:#fff}
-    .brand-coordinadora{background:#c0392b;color:#fff}
-    .brand-servientrega{background:#003f8a;color:#fff;font-size:0.6rem}
-    .brand-interrapidisimo{background:#ff8c00;color:#fff;font-size:0.65rem}
-    .brand-deprisa{background:#e31837;color:#fff}
-    .brand-fedex{background:linear-gradient(135deg,#4d148c,#ff6600);color:#fff}
-    .brand-dhl{background:#ffcc00;color:#d40511;font-size:0.8rem}
-    .brand-amazon{background:#ff9900;color:#232f3e}
-    .brand-mercadolibre{background:#ffe600;color:#333;font-size:0.65rem}
-    .brand-tcc{background:#0056a0;color:#fff}
-    .brand-rappi{background:#ff441f;color:#fff}
-    .brand-otro{background:rgba(255,255,255,0.15);color:#fff}
-    /* Residente info */
-    .residente-info{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);border-radius:10px;padding:12px 14px;margin-top:10px;font-size:0.85rem;color:#4ade80;display:none}
-    /* Summary */
-    .summary{background:rgba(127,0,255,0.12);border:1px solid rgba(127,0,255,0.3);border-radius:14px;padding:16px;margin-bottom:16px}
-    .summary-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:0.88rem}
-    .summary-row:last-child{border-bottom:none}
-    .summary-row .key{color:rgba(255,255,255,0.55)}
-    .summary-row .val{color:#fff;font-weight:700}
-    /* Buttons */
-    .btn-next{width:100%;padding:14px;background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;transition:opacity .2s;margin-top:8px}
-    .btn-next:disabled{opacity:.35;cursor:not-allowed}
-    .btn-next:not(:disabled):hover{opacity:.9}
-    .btn-ghost{width:100%;padding:11px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.12);border-radius:12px;font-size:0.9rem;font-weight:600;cursor:pointer;margin-bottom:10px;transition:background .2s}
-    .btn-ghost:hover{background:rgba(255,255,255,0.12)}
-    /* Messages */
-    .msg{border-radius:10px;padding:13px 16px;margin-bottom:16px;font-size:0.9rem;display:flex;align-items:flex-start;gap:10px}
-    .msg-success{background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);color:#4ade80}
-    .msg-error{background:rgba(255,68,68,0.15);border:1px solid rgba(255,68,68,0.3);color:#ff6b6b}
-    .loading{text-align:center;padding:20px;color:rgba(255,255,255,0.4)}
-    .no-aptos{color:rgba(255,255,255,0.4);font-size:0.85rem;padding:12px 0}
-    /* Actions shortcuts */
-    .shortcuts{display:flex;gap:10px;margin-bottom:20px}
-    .shortcut{flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:12px;text-align:center;text-decoration:none;color:#fff;font-size:0.8rem;font-weight:600;transition:background .2s}
-    .shortcut:hover{background:rgba(255,255,255,0.1)}
-    .shortcut i{font-size:1.2rem;display:block;margin-bottom:4px}
-    @media(max-width:600px){
-      .topbar{padding:12px 14px}.topbar h1{font-size:1rem}
-      .btn{padding:8px 12px;font-size:0.8rem}
-      .container{padding:12px 10px}
-      .section-card{padding:16px}
-      .torre-grid{grid-template-columns:repeat(auto-fill,minmax(90px,1fr))}
-      .empresa-grid{grid-template-columns:repeat(3,1fr)}
-      .step span{display:none}
+    .section.visible{display:block;animation:fadeSlide .22s ease}
+    @keyframes fadeSlide{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+    /* ── Torre grid ── */
+    .torre-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:10px}
+    .torre-card{border:2px solid rgba(255,255,255,0.09);border-radius:14px;background:rgba(255,255,255,0.04);padding:18px 10px 14px;text-align:center;cursor:pointer;transition:all .18s;user-select:none;-webkit-tap-highlight-color:transparent}
+    .torre-card:active{transform:scale(.95)}
+    .torre-card.selected{border-color:#db2777;background:rgba(219,39,119,0.12)}
+    .torre-card .t-icon{font-size:1.8rem;margin-bottom:8px;display:block}
+    .torre-card .t-name{color:rgba(255,255,255,0.85);font-size:0.85rem;font-weight:700}
+    .torre-card.selected .t-name{color:#fff}
+
+    /* ── Apto grid ── */
+    .apto-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(66px,1fr));gap:8px;max-height:280px;overflow-y:auto;padding-right:2px}
+    .apto-grid::-webkit-scrollbar{width:4px}
+    .apto-grid::-webkit-scrollbar-thumb{background:rgba(219,39,119,0.4);border-radius:4px}
+    .apto-card{border:2px solid rgba(255,255,255,0.09);border-radius:11px;background:rgba(255,255,255,0.04);padding:11px 4px;text-align:center;cursor:pointer;transition:all .15s;font-size:0.83rem;font-weight:700;color:rgba(255,255,255,0.7);user-select:none;-webkit-tap-highlight-color:transparent}
+    .apto-card.ocupado{border-color:rgba(34,197,94,0.3);color:rgba(34,197,94,0.85)}
+    .apto-card.selected{border-color:#db2777;background:rgba(219,39,119,0.12);color:#fff}
+    .residente-box{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.22);border-radius:12px;padding:12px 14px;margin-top:14px;display:none;font-size:0.85rem;color:#4ade80;gap:8px;align-items:flex-start}
+    .residente-box.show{display:flex}
+    .residente-box i{flex-shrink:0;margin-top:1px}
+    .loading-aptos{text-align:center;padding:24px;color:rgba(255,255,255,0.35);font-size:0.85rem}
+
+    /* ── Carrier grid ── */
+    .carrier-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    @media(min-width:480px){.carrier-grid{grid-template-columns:repeat(4,1fr)}}
+    @media(min-width:600px){.carrier-grid{grid-template-columns:repeat(4,1fr)}}
+    .carrier-card{border:2px solid rgba(255,255,255,0.08);border-radius:14px;overflow:hidden;cursor:pointer;transition:all .18s;user-select:none;-webkit-tap-highlight-color:transparent;background:rgba(255,255,255,0.03)}
+    .carrier-card:active{transform:scale(.94)}
+    .carrier-card.selected{border-color:#db2777;box-shadow:0 0 0 3px rgba(219,39,119,0.18)}
+    .carrier-logo{height:58px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:0.72rem;letter-spacing:-0.2px;flex-direction:column;gap:2px}
+    .carrier-name{background:rgba(0,0,0,0.45);padding:7px 4px;text-align:center;font-size:0.68rem;font-weight:700;color:rgba(255,255,255,0.75);letter-spacing:.2px}
+    .carrier-card.selected .carrier-name{color:#fff}
+    /* Brand backgrounds */
+    .logo-servientrega{background:#003F8A}
+    .logo-coordinadora{background:#C0392B}
+    .logo-envia{background:#E05400}
+    .logo-interrapidisimo{background:#D4520A}
+    .logo-deprisa{background:#003087}
+    .logo-tcc{background:#0056A0}
+    .logo-fedex{background:linear-gradient(135deg,#4D148C 50%,#FF6600 50%)}
+    .logo-dhl{background:#FFCC00}
+    .logo-amazon{background:#FF9900}
+    .logo-mercadolibre{background:#FFE600}
+    .logo-rappi{background:#FF441F}
+    .logo-otro{background:rgba(255,255,255,0.1)}
+    /* Brand logo text */
+    .logo-servientrega span,.logo-coordinadora span,.logo-envia span,.logo-interrapidisimo span,.logo-deprisa span,.logo-tcc span,.logo-fedex span,.logo-rappi span{color:#fff}
+    .logo-dhl span,.logo-amazon span,.logo-mercadolibre span{color:#1a1a1a}
+    .logo-otro span{color:rgba(255,255,255,0.6)}
+    /* FedEx special */
+    .logo-fedex .fed{font-size:1.1rem;font-style:italic;font-weight:900;color:#4D148C;text-shadow:none;background:linear-gradient(90deg,#fff 45%,#FF6600 45%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .carrier-logo .logo-big{font-size:1.05rem;line-height:1.1}
+    .carrier-logo .logo-sub{font-size:0.58rem;opacity:0.75;letter-spacing:.5px}
+
+    /* ── Guia + confirm ── */
+    .field-group{margin-bottom:18px}
+    .field-label{display:block;color:rgba(255,255,255,0.5);font-size:0.73rem;font-weight:700;margin-bottom:7px;text-transform:uppercase;letter-spacing:.5px}
+    .field-input{width:100%;background:rgba(255,255,255,0.07);border:1.5px solid rgba(255,255,255,0.13);border-radius:11px;padding:12px 14px;color:#fff;font-size:0.95rem;font-family:inherit;transition:border-color .2s}
+    .field-input:focus{outline:none;border-color:#db2777;background:rgba(219,39,119,0.06)}
+    .field-input::placeholder{color:rgba(255,255,255,0.28);font-size:0.88rem}
+    .field-optional{color:rgba(255,255,255,0.25);font-size:0.68rem;font-weight:400;margin-left:6px}
+
+    /* ── Summary ── */
+    .summary{background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.22);border-radius:14px;padding:16px 18px;margin-bottom:20px}
+    .sum-row{display:flex;justify-content:space-between;align-items:flex-start;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:0.86rem;gap:10px}
+    .sum-row:last-child{border-bottom:none}
+    .sum-key{color:rgba(255,255,255,0.45);flex-shrink:0}
+    .sum-val{color:#fff;font-weight:700;text-align:right}
+    .sum-val.accent{color:#db2777}
+
+    /* ── Buttons ── */
+    .btn-primary{width:100%;padding:15px;background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;border:none;border-radius:14px;font-size:1rem;font-weight:700;cursor:pointer;transition:opacity .2s;margin-top:6px;font-family:inherit}
+    .btn-primary:disabled{opacity:.35;cursor:not-allowed}
+    .btn-primary:not(:disabled):hover{opacity:.9}
+    .btn-ghost{width:100%;padding:12px;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.65);border:1px solid rgba(255,255,255,0.1);border-radius:14px;font-size:0.88rem;font-weight:600;cursor:pointer;margin-bottom:10px;font-family:inherit;transition:background .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+    .btn-ghost:hover{background:rgba(255,255,255,0.1)}
+
+    /* ── Selected recap bar ── */
+    .recap-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+    .recap-chip{background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.3);border-radius:20px;padding:4px 12px;font-size:0.75rem;color:#c4b5fd;font-weight:600;display:flex;align-items:center;gap:5px}
+    .recap-chip i{font-size:0.7rem;color:#db2777}
+
+    @media(max-width:480px){
+      .topbar-title{font-size:0.9rem}
+      .container{padding:16px 12px 48px}
+      .carrier-grid{grid-template-columns:repeat(3,1fr);gap:8px}
+      .carrier-logo{height:50px}
+    }
+    @media(max-width:768px){
+      input,select,textarea{font-size:16px!important}
     }
   </style>
 </head>
 <body>
+
+<!-- Topbar -->
 <div class="topbar">
-  <h1><i class="fa fa-box" style="color:#db2777"></i> Registrar Paquete</h1>
-  <a href="javascript:location.replace('{% url 'lista_paquetes' %}')" class="btn btn-back"><i class="fa fa-arrow-left"></i> Volver</a>
+  <div class="topbar-left">
+    <div class="topbar-icon"><i class="fa fa-box"></i></div>
+    <div>
+      <div class="topbar-title">Registrar paquete</div>
+      <span class="topbar-sub">Control de correspondencia</span>
+    </div>
+  </div>
+  <a href="javascript:location.replace('{% url 'lista_paquetes' %}')" class="btn-back">
+    <i class="fa fa-arrow-left"></i> Volver
+  </a>
+</div>
+
+<!-- Progress -->
+<div class="progress-bar">
+  <div class="prog-step active" id="ps1"><span class="prog-num">1</span>Torre</div>
+  <div class="prog-step" id="ps2"><span class="prog-num">2</span>Apto</div>
+  <div class="prog-step" id="ps3"><span class="prog-num">3</span>Empresa</div>
+  <div class="prog-step" id="ps4"><span class="prog-num">4</span>Confirmar</div>
 </div>
 
 <div class="container">
+
   {% if messages %}
     {% for m in messages %}
     <div class="msg {% if m.tags == 'success' %}msg-success{% else %}msg-error{% endif %}">
@@ -110,30 +175,21 @@
     {% endfor %}
   {% endif %}
 
-  <div class="shortcuts">
-    <a href="{% url 'lista_paquetes' %}" class="shortcut"><i class="fa fa-list" style="color:#a5b4fc"></i>Ver todos</a>
-    <a href="{% url 'metricas_paquetes' %}" class="shortcut"><i class="fa fa-chart-bar" style="color:#db2777"></i>Métricas</a>
-  </div>
-
-  <!-- STEPS -->
-  <div class="steps">
-    <div class="step active" id="s1"><span class="num">1</span><span>Torre</span></div>
-    <div class="step" id="s2"><span class="num">2</span><span>Apto</span></div>
-    <div class="step" id="s3"><span class="num">3</span><span>Empresa</span></div>
-    <div class="step" id="s4"><span class="num">4</span><span>Confirmar</span></div>
-  </div>
-
   <!-- PASO 1: TORRE -->
   <div class="section visible" id="sec-1">
-    <div class="section-card">
-      <div class="section-title"><i class="fa fa-building"></i> ¿A qué torre llegó el paquete?</div>
+    <div class="card">
+      <div class="card-title">
+        <i class="fa fa-building"></i> ¿A qué torre llegó?
+        <span class="card-hint">{{ torres|length }} torre(s)</span>
+      </div>
       <div class="torre-grid">
         {% for t in torres %}
-        <div class="sel-item torre-item" data-id="{{ t.id }}" data-nombre="{{ t.nombre }}" onclick="selectTorre(this)">
-          <span class="t-icon">🏢</span>{{ t.nombre }}
+        <div class="torre-card" data-id="{{ t.id }}" data-nombre="{{ t.nombre }}" onclick="selectTorre(this)">
+          <span class="t-icon">🏢</span>
+          <div class="t-name">{{ t.nombre }}</div>
         </div>
         {% empty %}
-        <p style="color:rgba(255,255,255,0.4);font-size:0.88rem">No hay torres configuradas.</p>
+        <p style="color:rgba(255,255,255,0.35);font-size:0.88rem;padding:8px 0">No hay torres configuradas.</p>
         {% endfor %}
       </div>
     </div>
@@ -141,17 +197,20 @@
 
   <!-- PASO 2: APARTAMENTO -->
   <div class="section" id="sec-2">
-    <div class="section-card">
-      <div class="section-title"><i class="fa fa-door-open"></i> ¿Cuál apartamento?</div>
-      <div style="margin-bottom:10px">
-        <span id="torre-selected-label" style="color:rgba(255,255,255,0.5);font-size:0.82rem"></span>
+    <div class="recap-bar" id="recap-torre"></div>
+    <div class="card">
+      <div class="card-title">
+        <i class="fa fa-door-open"></i> ¿Cuál apartamento?
       </div>
       <div class="apto-grid" id="apto-grid">
-        <div class="loading"><i class="fa fa-spinner fa-spin"></i></div>
+        <div class="loading-aptos"><i class="fa fa-spinner fa-spin"></i> Cargando…</div>
       </div>
-      <div class="residente-info" id="residente-info">
-        <i class="fa fa-user-check"></i> <span id="residente-nombre"></span><br>
-        <span id="residente-tel" style="font-size:0.78rem;color:rgba(255,255,255,0.5)"></span>
+      <div class="residente-box" id="residente-box">
+        <i class="fa fa-user-check"></i>
+        <div>
+          <div id="res-nombre" style="font-weight:700"></div>
+          <div id="res-tel" style="font-size:0.78rem;color:rgba(255,255,255,0.45);margin-top:2px"></div>
+        </div>
       </div>
     </div>
     <button class="btn-ghost" onclick="goStep(1)"><i class="fa fa-arrow-left"></i> Cambiar torre</button>
@@ -159,160 +218,278 @@
 
   <!-- PASO 3: EMPRESA -->
   <div class="section" id="sec-3">
-    <div class="section-card">
-      <div class="section-title"><i class="fa fa-truck"></i> ¿Quién lo trajo?</div>
-      <div class="empresa-grid">
-        {% for value, label in empresas %}
-        <div class="sel-item empresa-item" data-val="{{ value }}" data-label="{{ label }}" onclick="selectEmpresa(this)">
-          <div class="empresa-logo brand-{{ value }}">
-            {% if value == 'envia' %}ENVIA
-            {% elif value == 'coordinadora' %}COOR
-            {% elif value == 'servientrega' %}SERV
-            {% elif value == 'interrapidisimo' %}INTER
-            {% elif value == 'deprisa' %}DEP
-            {% elif value == 'fedex' %}FedEx
-            {% elif value == 'dhl' %}DHL
-            {% elif value == 'amazon' %}amzn
-            {% elif value == 'mercadolibre' %}MeLi
-            {% elif value == 'tcc' %}TCC
-            {% elif value == 'rappi' %}rappi
-            {% else %}?{% endif %}
+    <div class="recap-bar" id="recap-apto"></div>
+    <div class="card">
+      <div class="card-title">
+        <i class="fa fa-truck"></i> ¿Qué operador lo trajo?
+      </div>
+      <div class="carrier-grid">
+
+        <!-- Servientrega -->
+        <div class="carrier-card" data-val="servientrega" data-label="Servientrega" onclick="selectEmpresa(this)">
+          <div class="carrier-logo logo-servientrega">
+            <span class="logo-big">SERVI</span>
+            <span class="logo-sub">ENTREGA</span>
           </div>
-          <span>{{ label }}</span>
+          <div class="carrier-name">Servientrega</div>
         </div>
-        {% endfor %}
+
+        <!-- Coordinadora -->
+        <div class="carrier-card" data-val="coordinadora" data-label="Coordinadora" onclick="selectEmpresa(this)">
+          <div class="carrier-logo logo-coordinadora">
+            <span class="logo-big" style="font-size:1.3rem">C</span>
+            <span class="logo-sub">COORDINADORA</span>
+          </div>
+          <div class="carrier-name">Coordinadora</div>
+        </div>
+
+        <!-- Envia -->
+        <div class="carrier-card" data-val="envia" data-label="Envia" onclick="selectEmpresa(this)">
+          <div class="carrier-logo logo-envia">
+            <span class="logo-big">ENVIA</span>
+          </div>
+          <div class="carrier-name">Envia</div>
+        </div>
+
+        <!-- Interrapidísimo -->
+        <div class="carrier-card" data-val="interrapidisimo" data-label="Interrapidísimo" onclick="selectEmpresa(this)">
+          <div class="carrier-logo logo-interrapidisimo">
+            <span class="logo-big">INTER</span>
+            <span class="logo-sub">RAPIDÍSIMO</span>
+          </div>
+          <div class="carrier-name">Interrapidísimo</div>
+        </div>
+
+        <!-- Deprisa -->
+        <div class="carrier-card" data-val="deprisa" data-label="Deprisa" onclick="selectEmpresa(this)">
+          <div class="carrier-logo logo-deprisa">
+            <span class="logo-big">DEPRISA</span>
+          </div>
+          <div class="carrier-name">Deprisa</div>
+        </div>
+
+        <!-- TCC -->
+        <div class="carrier-card" data-val="tcc" data-label="TCC" onclick="selectEmpresa(this)">
+          <div class="carrier-logo logo-tcc">
+            <span class="logo-big">TCC</span>
+          </div>
+          <div class="carrier-name">TCC</div>
+        </div>
+
+        <!-- FedEx -->
+        <div class="carrier-card" data-val="fedex" data-label="FedEx" onclick="selectEmpresa(this)">
+          <div class="carrier-logo logo-fedex">
+            <span style="font-size:1.15rem;font-weight:900;font-style:italic;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.4)">FedEx</span>
+          </div>
+          <div class="carrier-name">FedEx</div>
+        </div>
+
+        <!-- DHL -->
+        <div class="carrier-card" data-val="dhl" data-label="DHL" onclick="selectEmpresa(this)">
+          <div class="carrier-logo logo-dhl">
+            <span class="logo-big" style="color:#D40511;font-size:1.35rem">DHL</span>
+          </div>
+          <div class="carrier-name">DHL</div>
+        </div>
+
+        <!-- Amazon -->
+        <div class="carrier-card" data-val="amazon" data-label="Amazon" onclick="selectEmpresa(this)">
+          <div class="carrier-logo logo-amazon">
+            <span class="logo-big" style="color:#232F3E;font-size:0.85rem">amazon</span>
+            <span style="font-size:1rem">🙂</span>
+          </div>
+          <div class="carrier-name">Amazon</div>
+        </div>
+
+        <!-- Mercado Libre -->
+        <div class="carrier-card" data-val="mercadolibre" data-label="Mercado Libre" onclick="selectEmpresa(this)">
+          <div class="carrier-logo logo-mercadolibre">
+            <span class="logo-big" style="color:#333;font-size:0.82rem;font-style:italic">MercadoLibre</span>
+          </div>
+          <div class="carrier-name">Mercado Libre</div>
+        </div>
+
+        <!-- Rappi -->
+        <div class="carrier-card" data-val="rappi" data-label="Rappi" onclick="selectEmpresa(this)">
+          <div class="carrier-logo logo-rappi">
+            <span class="logo-big" style="font-size:1.2rem">rappi</span>
+          </div>
+          <div class="carrier-name">Rappi</div>
+        </div>
+
+        <!-- Otro -->
+        <div class="carrier-card" data-val="otro" data-label="Otro" onclick="selectEmpresa(this)">
+          <div class="carrier-logo logo-otro">
+            <span style="font-size:1.6rem">📦</span>
+          </div>
+          <div class="carrier-name">Otro</div>
+        </div>
+
       </div>
     </div>
     <button class="btn-ghost" onclick="goStep(2)"><i class="fa fa-arrow-left"></i> Cambiar apartamento</button>
   </div>
 
-  <!-- PASO 4: CONFIRMAR -->
+  <!-- PASO 4: GUÍA + CONFIRMAR -->
   <div class="section" id="sec-4">
-    <div class="section-card">
-      <div class="section-title"><i class="fa fa-circle-check" style="color:#4ade80"></i> Confirmar registro</div>
+    <div class="recap-bar" id="recap-empresa"></div>
+    <div class="card">
+      <div class="card-title">
+        <i class="fa fa-barcode"></i> Número de guía
+        <span class="card-hint">Recomendado</span>
+      </div>
+      <div class="field-group">
+        <label class="field-label">N° de guía / tracking <span class="field-optional">(opcional)</span></label>
+        <input type="text" class="field-input" id="guia-input" maxlength="60"
+               placeholder="Ej: 9874563210, 1Z999AA10123456784…"
+               inputmode="text" autocomplete="off">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i class="fa fa-circle-check" style="color:#4ade80"></i> Resumen del registro</div>
       <div class="summary" id="summary-box"></div>
+
       <form method="POST" action="{% url 'registrar_paquete' %}" id="form-final">
         {% csrf_token %}
         <input type="hidden" name="torre" id="f-torre">
         <input type="hidden" name="apartamento" id="f-apto">
         <input type="hidden" name="empresa" id="f-empresa">
+        <input type="hidden" name="numero_guia" id="f-guia">
         <input type="hidden" name="descripcion" value="">
-        <button type="submit" class="btn-next" id="btn-registrar">
-          <i class="fa fa-paper-plane"></i> Registrar y notificar por WhatsApp
+        <button type="submit" class="btn-primary" id="btn-registrar">
+          <i class="fa fa-paper-plane"></i> &nbsp;Registrar y notificar por WhatsApp
         </button>
       </form>
     </div>
     <button class="btn-ghost" onclick="goStep(3)"><i class="fa fa-arrow-left"></i> Cambiar empresa</button>
   </div>
-</div>
+
+</div><!-- /container -->
 
 <script>
-var state = {torre: null, torreNombre: '', apto: null, empresa: null, empresaLabel: '',
-             resNombre: '', resTel: ''};
+var S = {torre:null, torreNombre:'', apto:null, empresa:null, empresaLabel:'',
+         resNombre:'', resTel:''};
 
 function goStep(n) {
-  [1,2,3,4].forEach(function(i){
+  for (var i=1;i<=4;i++) {
     document.getElementById('sec-'+i).classList.toggle('visible', i===n);
-    var s = document.getElementById('s'+i);
-    s.classList.remove('active','done');
-    if (i < n) s.classList.add('done');
-    else if (i === n) s.classList.add('active');
-  });
+    var ps = document.getElementById('ps'+i);
+    ps.classList.remove('active','done');
+    if (i < n) ps.classList.add('done');
+    else if (i === n) ps.classList.add('active');
+  }
   window.scrollTo({top:0, behavior:'smooth'});
 }
 
-function selectTorre(el) {
-  document.querySelectorAll('.torre-item').forEach(function(x){x.classList.remove('selected');});
-  el.classList.add('selected');
-  state.torre = el.dataset.id;
-  state.torreNombre = el.dataset.nombre;
-  setTimeout(function(){ goStep(2); loadAptos(state.torre); }, 200);
+function chip(icon, text) {
+  return '<div class="recap-chip"><i class="fa '+icon+'"></i> '+text+'</div>';
 }
 
-function loadAptos(torreId) {
-  document.getElementById('torre-selected-label').textContent = 'Torre: ' + state.torreNombre;
-  document.getElementById('apto-grid').innerHTML = '<div class="loading"><i class="fa fa-spinner fa-spin"></i> Cargando apartamentos...</div>';
-  document.getElementById('residente-info').style.display = 'none';
+// ── Step 1: Torre ──
+function selectTorre(el) {
+  document.querySelectorAll('.torre-card').forEach(function(x){x.classList.remove('selected')});
+  el.classList.add('selected');
+  S.torre = el.dataset.id;
+  S.torreNombre = el.dataset.nombre;
+  document.getElementById('recap-torre').innerHTML = chip('fa-building', S.torreNombre);
+  document.getElementById('recap-apto').innerHTML  = chip('fa-building', S.torreNombre);
+  setTimeout(function(){ goStep(2); loadAptos(); }, 180);
+}
 
-  fetch('/api/torres/' + torreId + '/apartamentos/')
-    .then(function(r){ return r.json(); })
+// ── Step 2: Apartamento ──
+function loadAptos() {
+  var grid = document.getElementById('apto-grid');
+  grid.innerHTML = '<div class="loading-aptos"><i class="fa fa-spinner fa-spin"></i> Cargando…</div>';
+  document.getElementById('residente-box').classList.remove('show');
+
+  fetch('/api/torres/'+S.torre+'/apartamentos/')
+    .then(function(r){return r.json();})
     .then(function(data){
-      var grid = document.getElementById('apto-grid');
+      grid.innerHTML = '';
       if (!data.apartamentos || !data.apartamentos.length) {
-        grid.innerHTML = '<p class="no-aptos">Sin apartamentos configurados para esta torre.</p>';
+        grid.innerHTML = '<p style="color:rgba(255,255,255,.35);font-size:.85rem;padding:12px 0">Sin apartamentos configurados.</p>';
         return;
       }
-      grid.innerHTML = '';
-      data.apartamentos.forEach(function(apto){
-        var div = document.createElement('div');
-        div.className = 'sel-item apto-item';
-        div.textContent = apto;
-        div.dataset.apto = apto;
-        var isOcupado = data.ocupados && data.ocupados.includes(apto);
-        if (isOcupado) div.style.borderColor = 'rgba(34,197,94,0.3)';
-        div.addEventListener('click', function(){ selectApto(div); });
-        grid.appendChild(div);
+      data.apartamentos.forEach(function(ap){
+        var d = document.createElement('div');
+        d.className = 'apto-card' + (data.ocupados && data.ocupados.includes(ap) ? ' ocupado' : '');
+        d.textContent = ap;
+        d.dataset.apto = ap;
+        d.addEventListener('click', function(){ selectApto(d); });
+        grid.appendChild(d);
       });
     })
     .catch(function(){
-      document.getElementById('apto-grid').innerHTML = '<p class="no-aptos">Error al cargar apartamentos.</p>';
+      grid.innerHTML = '<p style="color:rgba(255,255,255,.35);font-size:.85rem;padding:12px 0">Error al cargar apartamentos.</p>';
     });
 }
 
 function selectApto(el) {
-  document.querySelectorAll('.apto-item').forEach(function(x){x.classList.remove('selected');});
+  document.querySelectorAll('.apto-card').forEach(function(x){x.classList.remove('selected')});
   el.classList.add('selected');
-  state.apto = el.dataset.apto;
-  // Buscar residente
-  fetch('/api/torres/' + state.torre + '/apartamentos/?apto=' + encodeURIComponent(state.apto))
-    .then(function(r){ return r.json(); })
+  S.apto = el.dataset.apto;
+  var box = document.getElementById('residente-box');
+  box.classList.remove('show');
+
+  fetch('/api/torres/'+S.torre+'/apartamentos/?apto='+encodeURIComponent(S.apto))
+    .then(function(r){return r.json();})
     .then(function(data){
-      var info = document.getElementById('residente-info');
-      if (data.residente) {
-        state.resNombre = data.residente;
-        state.resTel = data.telefono || '';
-        document.getElementById('residente-nombre').textContent = data.residente;
-        document.getElementById('residente-tel').textContent = data.telefono ? '📱 ' + data.telefono : 'Sin teléfono registrado';
-        info.style.display = 'block';
-      } else {
-        state.resNombre = '';
-        state.resTel = '';
-        info.style.display = 'none';
+      S.resNombre = data.residente || '';
+      S.resTel    = data.telefono  || '';
+      if (S.resNombre) {
+        document.getElementById('res-nombre').textContent = S.resNombre;
+        document.getElementById('res-tel').textContent    = S.resTel ? '📱 '+S.resTel : 'Sin teléfono registrado';
+        box.classList.add('show');
       }
-      setTimeout(function(){ goStep(3); }, 350);
+      var chips = chip('fa-building', S.torreNombre) + chip('fa-door-open', 'Apto '+S.apto);
+      document.getElementById('recap-apto').innerHTML    = chips;
+      document.getElementById('recap-empresa').innerHTML = chips;
+      setTimeout(function(){ goStep(3); }, 280);
     })
     .catch(function(){ setTimeout(function(){ goStep(3); }, 200); });
 }
 
+// ── Step 3: Empresa ──
 function selectEmpresa(el) {
-  document.querySelectorAll('.empresa-item').forEach(function(x){x.classList.remove('selected');});
+  document.querySelectorAll('.carrier-card').forEach(function(x){x.classList.remove('selected')});
   el.classList.add('selected');
-  state.empresa = el.dataset.val;
-  state.empresaLabel = el.dataset.label;
-  setTimeout(function(){ buildSummary(); goStep(4); }, 200);
+  S.empresa      = el.dataset.val;
+  S.empresaLabel = el.dataset.label;
+  setTimeout(function(){ goStep(4); buildSummary(); }, 200);
 }
 
+// ── Step 4: Guía + Summary ──
 function buildSummary() {
-  document.getElementById('f-torre').value = state.torre;
-  document.getElementById('f-apto').value = state.apto;
-  document.getElementById('f-empresa').value = state.empresa;
+  document.getElementById('f-torre').value   = S.torre;
+  document.getElementById('f-apto').value    = S.apto;
+  document.getElementById('f-empresa').value = S.empresa;
+
   var rows = [
-    ['🏢 Torre', state.torreNombre],
-    ['🚪 Apartamento', state.apto],
-    ['🚚 Empresa', state.empresaLabel],
+    ['🏢 Torre',      S.torreNombre],
+    ['🚪 Apartamento',S.apto],
+    ['🚚 Empresa',    S.empresaLabel],
   ];
-  if (state.resNombre) rows.push(['👤 Destinatario', state.resNombre]);
-  if (state.resTel) rows.push(['📱 WhatsApp', state.resTel]);
-  else rows.push(['📱 WhatsApp', 'No disponible — sin teléfono']);
-  var html = rows.map(function(r){
-    return '<div class="summary-row"><span class="key">'+r[0]+'</span><span class="val">'+r[1]+'</span></div>';
+  if (S.resNombre) rows.push(['👤 Destinatario', S.resNombre]);
+  if (S.resTel)    rows.push(['📱 WhatsApp',     S.resTel]);
+  else             rows.push(['📱 WhatsApp',     'Sin teléfono — sin notificación']);
+
+  document.getElementById('summary-box').innerHTML = rows.map(function(r){
+    return '<div class="sum-row"><span class="sum-key">'+r[0]+'</span><span class="sum-val">'+r[1]+'</span></div>';
   }).join('');
-  document.getElementById('summary-box').innerHTML = html;
 }
 
 document.getElementById('form-final').addEventListener('submit', function(){
+  var guia = document.getElementById('guia-input').value.trim();
+  document.getElementById('f-guia').value = guia;
+  // Update summary with guia before submit
+  if (guia) {
+    var box = document.getElementById('summary-box');
+    var row = '<div class="sum-row"><span class="sum-key">📋 N° Guía</span><span class="sum-val accent">'+guia+'</span></div>';
+    box.insertAdjacentHTML('afterbegin', row);
+  }
   document.getElementById('btn-registrar').disabled = true;
-  document.getElementById('btn-registrar').innerHTML = '<i class="fa fa-spinner fa-spin"></i> Registrando...';
+  document.getElementById('btn-registrar').innerHTML = '<i class="fa fa-spinner fa-spin"></i>  Registrando…';
 });
 </script>
 </body>

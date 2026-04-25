@@ -2901,6 +2901,7 @@ def registrar_paquete(request):
         apartamento = request.POST.get('apartamento', '').strip()
         empresa = request.POST.get('empresa', '')
         descripcion = request.POST.get('descripcion', '').strip()
+        numero_guia = request.POST.get('numero_guia', '').strip()[:60]
 
         try:
             torre = get_object_or_404(Torre, id=torre_id, conjunto=conjunto)
@@ -2909,6 +2910,10 @@ def registrar_paquete(request):
             residente = Usuario.objects.filter(
                 conjunto=conjunto, torre=torre, apartamento=apartamento, user_type='propietario'
             ).first()
+            if not residente:
+                residente = Usuario.objects.filter(
+                    conjunto=conjunto, apartamento=apartamento, user_type='propietario', is_active=True
+                ).first()
             destinatario_nombre = residente.nombre if residente else f'Residente Apto {apartamento}'
             destinatario_telefono = (residente.phone_number or '') if residente else ''
 
@@ -2918,6 +2923,7 @@ def registrar_paquete(request):
                 torre=torre,
                 apartamento=apartamento,
                 empresa=empresa,
+                numero_guia=numero_guia,
                 descripcion=descripcion,
                 codigo=codigo,
                 registrado_por=request.user,
@@ -2939,6 +2945,7 @@ def registrar_paquete(request):
                     fecha=now.strftime('%d/%m/%Y'),
                     hora=now.strftime('%H:%M'),
                     codigo=codigo,
+                    numero_guia=numero_guia,
                 )
                 wa_enviado = send_whatsapp(destinatario_telefono, msg, conjunto=conjunto, detalle='Paquete registrado')
                 paquete.whatsapp_enviado = wa_enviado
@@ -2954,7 +2961,7 @@ def registrar_paquete(request):
             else:
                 messages.success(request, f'Paquete registrado ✓ · Código: {codigo} · El residente no tiene teléfono registrado')
 
-            return redirect('dashboard')
+            return redirect('lista_paquetes')
 
         except Exception as e:
             messages.error(request, f'Error al registrar: {e}')

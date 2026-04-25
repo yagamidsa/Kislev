@@ -608,6 +608,7 @@ class Paquete(models.Model):
     )
     apartamento = models.CharField(max_length=10)
     empresa = models.CharField(max_length=30, choices=EMPRESAS)
+    numero_guia = models.CharField(max_length=60, blank=True, help_text='Número de guía o tracking del operador')
     descripcion = models.CharField(max_length=200, blank=True, help_text='Ej: caja grande, sobre, etc.')
     codigo = models.CharField(max_length=6)
     estado = models.CharField(max_length=15, choices=ESTADOS, default='pendiente')

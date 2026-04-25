@@ -76,21 +76,28 @@ def send_whatsapp(phone: str, message: str, conjunto=None, detalle: str = 'Whats
         return False
 
 
-def mensaje_paquete(nombre, conjunto, torre, apartamento, empresa, fecha, hora, codigo):
+def mensaje_paquete(nombre, conjunto, torre, apartamento, empresa, fecha, hora, codigo,
+                    numero_guia: str = ''):
     """Construye el mensaje de WhatsApp para notificación de paquete."""
+    guia_line = f"📋 *Guía:*  `{numero_guia}`\n" if numero_guia else ''
     return (
-        f"📦 *¡Llegó un paquete para ti!*\n\n"
-        f"Hola, {nombre}! 👋\n\n"
-        f"Tienes un paquete esperándote en la portería de *{conjunto}*.\n\n"
-        f"📍 *Torre:* {torre}\n"
-        f"🏠 *Apto:* {apartamento}\n"
-        f"🚚 *Empresa:* {empresa}\n"
-        f"📅 *Fecha:* {fecha}\n"
-        f"⏰ *Hora:* {hora}\n\n"
-        f"Tu código de retiro es:\n\n"
-        f"🔐  *{codigo}*  🔐\n\n"
-        f"Preséntalo en portería al momento de recoger tu pedido.\n\n"
-        f"_Este mensaje es automático · {conjunto}_"
+        f"🎁 *¡Tu pedido ha llegado!*\n\n"
+        f"Hola, *{nombre}* 👋\n\n"
+        f"Tenemos una buena noticia: tu paquete de *{empresa}* "
+        f"ya está en la portería de *{conjunto}* esperándote.\n\n"
+        f"━━━━━━━━━━━━━━━━━━\n"
+        f"📦  *Detalles del envío*\n"
+        f"━━━━━━━━━━━━━━━━━━\n"
+        f"🏢  Torre *{torre}*  ·  Apto *{apartamento}*\n"
+        f"🚚  Operador: *{empresa}*\n"
+        f"{guia_line}"
+        f"🗓️  Recibido: *{fecha}*  ⏰  *{hora}*\n"
+        f"━━━━━━━━━━━━━━━━━━\n\n"
+        f"🔐  *Tu código de retiro*\n\n"
+        f"```{codigo}```\n\n"
+        f"Muéstralo en portería para recibir tu pedido.\n\n"
+        f"✅ _¡Ya puedes venir a buscarlo!_\n\n"
+        f"_Kislev Smart  ·  {conjunto}_"
     )
 
 
