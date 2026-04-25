@@ -50,18 +50,18 @@
     .filter-toggle.open .filter-toggle-arrow{transform:rotate(180deg)}
     .filter-panel{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:14px;padding:16px;margin-bottom:16px;display:none}
     .filter-panel.open{display:block}
-    .filter-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .filter-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;overflow:hidden}
     @media(min-width:600px){.filter-grid{grid-template-columns:repeat(3,1fr)}}
     @media(min-width:900px){.filter-grid{grid-template-columns:repeat(5,1fr)}}
-    .fg{display:flex;flex-direction:column;gap:5px}
-    .fg label{font-size:0.7rem;color:rgba(255,255,255,0.45);font-weight:700;text-transform:uppercase;letter-spacing:.4px}
-    .fg select,.fg input{background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.12);border-radius:9px;padding:9px 11px;color:#fff;font-size:0.85rem;width:100%;font-family:inherit}
+    .fg{display:flex;flex-direction:column;gap:5px;min-width:0;overflow:hidden}
+    .fg label{font-size:0.7rem;color:rgba(255,255,255,0.45);font-weight:700;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+    .fg select,.fg input[type="date"],.fg input[type="text"]{background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.12);border-radius:9px;padding:9px 11px;color:#fff;font-size:0.85rem;width:100%;min-width:0;max-width:100%;font-family:inherit;box-sizing:border-box}
     .fg select:focus,.fg input:focus{outline:none;border-color:#db2777}
     .fg select option{background:#1a1a2e}
     .filter-actions{display:flex;gap:8px;margin-top:12px;align-items:center}
     .btn-filter{padding:10px 20px;background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;border:none;border-radius:9px;font-weight:700;font-size:0.82rem;cursor:pointer;font-family:inherit}
-    .btn-clear{color:rgba(255,255,255,0.4);font-size:0.78rem;text-decoration:none;padding:8px 12px;border-radius:8px;background:rgba(255,255,255,0.05);transition:background .2s}
-    .btn-clear:hover{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7)}
+    .btn-clear{color:#f87171;font-size:0.82rem;font-weight:700;text-decoration:none;padding:9px 16px;border-radius:9px;background:rgba(239,68,68,0.14);border:1.5px solid rgba(239,68,68,0.32);transition:background .2s;display:inline-flex;align-items:center;gap:6px}
+    .btn-clear:hover{background:rgba(239,68,68,0.24);color:#fca5a5}
 
     /* ── Table header row ── */
     .list-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
@@ -201,7 +201,10 @@
         </div>
         <div class="fg">
           <label>Apartamento</label>
-          <input type="text" name="apto" value="{{ filtros.apto }}" placeholder="Ej: 0302">
+          <select name="apto" id="filter-apto">
+            <option value="">Todos</option>
+            {% if filtros.apto %}<option value="{{ filtros.apto }}" selected>{{ filtros.apto }}</option>{% endif %}
+          </select>
         </div>
         <div class="fg">
           <label>Estado</label>
@@ -426,6 +429,35 @@ function toggleFiltros() {
 {% if filtros.torre_id or filtros.apto or filtros.estado or filtros.desde or filtros.hasta %}
 document.getElementById('filter-toggle').classList.add('open');
 {% endif %}
+
+/* ── Apartamentos dinámicos según torre ── */
+function cargarAptosFilter(preselect) {
+  var torreId = document.querySelector('select[name="torre"]').value;
+  var sel = document.getElementById('filter-apto');
+  sel.innerHTML = '<option value="">Todos</option>';
+  if (!torreId) return;
+  sel.innerHTML = '<option value="">Cargando…</option>';
+  fetch('/api/torres/'+torreId+'/apartamentos/')
+    .then(function(r){return r.json();})
+    .then(function(d){
+      sel.innerHTML = '<option value="">Todos</option>';
+      (d.apartamentos||[]).forEach(function(ap){
+        var o = document.createElement('option');
+        o.value = ap; o.textContent = ap;
+        if (preselect && ap === preselect) o.selected = true;
+        sel.appendChild(o);
+      });
+    })
+    .catch(function(){sel.innerHTML='<option value="">Todos</option>';});
+}
+document.querySelector('select[name="torre"]').addEventListener('change', function(){ cargarAptosFilter(''); });
+// Al cargar la página, si hay torre seleccionada, cargar sus aptos y preseleccionar el filtro activo
+(function(){
+  var torreSelect = document.querySelector('select[name="torre"]');
+  if(torreSelect && torreSelect.value){
+    cargarAptosFilter('{{ filtros.apto|escapejs }}');
+  }
+})();
 
 /* ── Modal editar ── */
 var _editResidente = '';

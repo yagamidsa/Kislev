@@ -174,6 +174,26 @@
         .panel-btn:hover { transform: translateY(-2px); filter: brightness(1.12); }
         .panel-btn i { font-size: 1rem; }
 
+        /* ── Panel Recepción — estilos extra ── */
+        .panel-actions-grid{display:grid;grid-template-columns:1fr;gap:12px;width:100%;margin-top:8px}
+        .panel-action-btn{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:16px 20px;color:#e2e8f0;text-decoration:none;font-family:'Poppins',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;transition:all .2s;text-align:left}
+        .panel-action-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(124,58,237,.25);border-color:rgba(124,58,237,.45)}
+        .panel-action-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:#fff;flex-shrink:0}
+        .panel-action-text{display:flex;flex-direction:column;gap:2px;min-width:0}
+        .panel-action-title{font-size:.9rem;font-weight:700;color:#fff}
+        .panel-action-sub{font-size:.73rem;color:rgba(255,255,255,.4);font-weight:400}
+        /* Entregar widget dentro del panel */
+        .panel-deliver{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:16px;margin-bottom:20px;width:100%}
+        .panel-deliver-label{font-size:.7rem;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+        .panel-deliver-row{display:flex;gap:8px}
+        .panel-code-in{flex:1;background:rgba(255,255,255,.08);border:2px solid rgba(124,58,237,.4);border-radius:12px;padding:12px 14px;color:#fff;font-size:1.15rem;font-weight:800;letter-spacing:7px;text-align:center;font-family:inherit;min-width:0;transition:border-color .2s}
+        .panel-code-in:focus{outline:none;border-color:#db2777;background:rgba(219,39,119,.07)}
+        .panel-code-in::placeholder{letter-spacing:2px;font-size:.82rem;font-weight:400;color:rgba(255,255,255,.25)}
+        .panel-deliver-btn{padding:12px 16px;background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;border:none;border-radius:12px;font-weight:800;font-size:.82rem;cursor:pointer;font-family:inherit;flex-shrink:0}
+        .panel-result{margin-top:10px;padding:9px 12px;border-radius:9px;font-size:.82rem;display:none;align-items:center;gap:8px}
+        .panel-result-ok{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.28);color:#4ade80}
+        .panel-result-err{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);color:#f87171}
+
         /* ── ANIMATIONS ── */
         @keyframes fadeInUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
         @keyframes fadeInDown { from{opacity:0;transform:translateY(-12px)} to{opacity:1;transform:translateY(0)} }
@@ -323,6 +343,10 @@
             <div class="sel-card" onclick="openPanel('conjunto')">
                 <div class="sel-icon"><i class="fas fa-building"></i></div>
                 <span class="sel-label">Info Conjunto</span>
+            </div>
+            <div class="sel-card alt" onclick="openPanel('recepcion')">
+                <div class="sel-icon"><i class="fas fa-boxes-stacked"></i></div>
+                <span class="sel-label">Recepción</span>
             </div>
         </div>
 
@@ -515,6 +539,68 @@
 </div>
 
 
+<!-- Recepción de Paquetes -->
+<div id="panel-recepcion" class="panel">
+    <div class="panel-glow" style="background:radial-gradient(ellipse at 50% 25%, rgba(124,58,237,.18) 0%, transparent 60%), radial-gradient(ellipse at 75% 65%, rgba(219,39,119,.12) 0%, transparent 50%);"></div>
+    <button class="panel-close" onclick="closePanel('recepcion')"><i class="fas fa-times"></i></button>
+    <div class="panel-body" style="max-width:460px">
+        <div class="panel-icon-wrap" style="background:linear-gradient(135deg,#7c3aed,#db2777);">
+            <i class="fas fa-boxes-stacked"></i>
+        </div>
+        <h2 class="panel-title" style="background:linear-gradient(135deg,#c4b5fd,#f9a8d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:22px;">
+            Recepción
+        </h2>
+
+        <!-- Entregar paquete rápido -->
+        <div class="panel-deliver">
+            <div class="panel-deliver-label"><i class="fas fa-hand-holding-box" style="color:#db2777;margin-right:5px"></i>Entregar paquete</div>
+            <div class="panel-deliver-row">
+                <input type="text" class="panel-code-in" id="adm-codigo" maxlength="6"
+                       placeholder="CÓDIGO" inputmode="numeric" autocomplete="off">
+                <button class="panel-deliver-btn" onclick="admEntregar()">
+                    <i class="fas fa-circle-check"></i><br>OK
+                </button>
+            </div>
+            <div class="panel-result" id="adm-result"></div>
+        </div>
+
+        <!-- Acciones rápidas -->
+        <div class="panel-actions-grid">
+            <a href="{% url 'registrar_paquete' %}" class="panel-action-btn">
+                <div class="panel-action-icon" style="background:linear-gradient(135deg,#db2777,#9d174d);">
+                    <i class="fas fa-plus"></i>
+                </div>
+                <div class="panel-action-text">
+                    <span class="panel-action-title">Registrar paquete</span>
+                    <span class="panel-action-sub">Nuevo ingreso en portería</span>
+                </div>
+                <i class="fas fa-chevron-right" style="color:rgba(255,255,255,.2);margin-left:auto;flex-shrink:0;font-size:.8rem"></i>
+            </a>
+            <a href="{% url 'lista_paquetes' %}" class="panel-action-btn">
+                <div class="panel-action-icon" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);">
+                    <i class="fas fa-list-ul"></i>
+                </div>
+                <div class="panel-action-text">
+                    <span class="panel-action-title">Ver todos los paquetes</span>
+                    <span class="panel-action-sub">Historial y entrega por código</span>
+                </div>
+                <i class="fas fa-chevron-right" style="color:rgba(255,255,255,.2);margin-left:auto;flex-shrink:0;font-size:.8rem"></i>
+            </a>
+            <a href="{% url 'metricas_paquetes' %}" class="panel-action-btn">
+                <div class="panel-action-icon" style="background:linear-gradient(135deg,#059669,#10b981);">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <div class="panel-action-text">
+                    <span class="panel-action-title">Métricas</span>
+                    <span class="panel-action-sub">Estadísticas y tendencias</span>
+                </div>
+                <i class="fas fa-chevron-right" style="color:rgba(255,255,255,.2);margin-left:auto;flex-shrink:0;font-size:.8rem"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+
 <script>
 /* ── Reloj ── */
 function pad(n){ return String(n).padStart(2,'0'); }
@@ -652,6 +738,34 @@ async function guardarMiConjunto(e) {
 // forzar recarga para que el badge de novedades refleje el estado real.
 window.addEventListener('pageshow', function(e) {
   if (e.persisted) location.reload();
+});
+
+/* ── Panel Recepción — entregar rápido ── */
+var _CSRF_VA = '{{ csrf_token }}';
+function admEntregar() {
+    var codigo = document.getElementById('adm-codigo').value.trim().toUpperCase();
+    if (!codigo || codigo.length !== 6) { admShowResult(false, 'El código debe tener 6 caracteres'); return; }
+    fetch('{% url "entregar_paquete" %}', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'X-CSRFToken': _CSRF_VA},
+        body: JSON.stringify({codigo: codigo})
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+        admShowResult(d.ok, d.mensaje);
+        if (d.ok) { document.getElementById('adm-codigo').value = ''; }
+    })
+    .catch(function(){ admShowResult(false, 'Error de conexión'); });
+}
+function admShowResult(ok, msg) {
+    var b = document.getElementById('adm-result');
+    b.className = 'panel-result ' + (ok ? 'panel-result-ok' : 'panel-result-err');
+    b.innerHTML = '<i class="fas '+(ok?'fa-circle-check':'fa-circle-xmark')+'"></i> '+msg;
+    b.style.display = 'flex';
+    if (ok) setTimeout(function(){ b.style.display='none'; }, 3000);
+}
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && document.activeElement && document.activeElement.id === 'adm-codigo') admEntregar();
 });
 
 </script>

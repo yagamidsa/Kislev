@@ -85,6 +85,62 @@
           .notif-list { max-height: none; }
         }
 
+        /* ── PANELS (igual que visor_admin) ── */
+        .panel {
+            position: fixed; inset: 0; z-index: 400;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 24px; overflow-y: auto;
+            background: rgba(6,3,18,.97);
+            backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
+            transform: translateY(-100%);
+            transition: transform .48s cubic-bezier(.4,0,.2,1);
+        }
+        .panel.open { transform: translateY(0); }
+        .panel::after { display: none; }
+        .panel-glow { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+        .panel-close {
+            position: absolute; top: 20px; right: 20px;
+            width: 44px; height: 44px; border-radius: 12px;
+            background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12);
+            color: #e2e8f0; font-size: 1rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all .25s; font-family: 'Poppins', sans-serif; z-index: 10;
+        }
+        .panel-close:hover { background: rgba(255,255,255,.15); color: #fff; transform: rotate(90deg); }
+        .panel-body { text-align: center; max-width: 460px; width: 100%; position: relative; z-index: 1; }
+        .panel-icon-wrap {
+            width: 90px; height: 90px; border-radius: 24px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem; color: #fff; margin: 0 auto 26px;
+            animation: iconPulse 2.6s ease infinite;
+        }
+        @keyframes iconPulse {
+            0%,100% { box-shadow: 0 0 0 0 rgba(255,255,255,.25), 0 8px 28px rgba(0,0,0,.4); }
+            50%      { box-shadow: 0 0 0 18px rgba(255,255,255,0), 0 8px 28px rgba(0,0,0,.4); }
+        }
+        .panel-title { font-size: clamp(1.8rem,6vw,2.6rem); font-weight: 800; margin-bottom: 14px; word-break: break-word; }
+
+        /* Entregar widget dentro del panel */
+        .panel-deliver{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:16px;margin-bottom:20px;width:100%}
+        .panel-deliver-label{font-size:.7rem;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+        .panel-deliver-row{display:flex;gap:8px}
+        .panel-code-in{flex:1;background:rgba(255,255,255,.08);border:2px solid rgba(124,58,237,.4);border-radius:12px;padding:12px 14px;color:#fff;font-size:1.15rem;font-weight:800;letter-spacing:7px;text-align:center;font-family:inherit;min-width:0;transition:border-color .2s}
+        .panel-code-in:focus{outline:none;border-color:#db2777;background:rgba(219,39,119,.07)}
+        .panel-code-in::placeholder{letter-spacing:2px;font-size:.82rem;font-weight:400;color:rgba(255,255,255,.25)}
+        .panel-deliver-btn{padding:12px 16px;background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;border:none;border-radius:12px;font-weight:800;font-size:.82rem;cursor:pointer;font-family:inherit;flex-shrink:0}
+        .panel-result{margin-top:10px;padding:9px 12px;border-radius:9px;font-size:.82rem;display:none;align-items:center;gap:8px}
+        .panel-result-ok{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.28);color:#4ade80}
+        .panel-result-err{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);color:#f87171}
+
+        /* Acciones grid dentro del panel */
+        .panel-actions-grid{display:grid;grid-template-columns:1fr;gap:12px;width:100%;margin-top:8px}
+        .panel-action-btn{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:16px 20px;color:#e2e8f0;text-decoration:none;font-family:'Poppins',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;transition:all .2s;text-align:left}
+        .panel-action-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(124,58,237,.25);border-color:rgba(124,58,237,.45)}
+        .panel-action-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:#fff;flex-shrink:0}
+        .panel-action-text{display:flex;flex-direction:column;gap:2px;min-width:0}
+        .panel-action-title{font-size:.9rem;font-weight:700;color:#fff}
+        .panel-action-sub{font-size:.73rem;color:rgba(255,255,255,.4);font-weight:400}
+
         @media(max-width:768px){
           input, select, textarea { font-size: 16px !important; }
           .topbar { padding: 12px 16px; }
@@ -189,10 +245,65 @@
                 <div class="nav-icon"><i class="fas fa-building"></i></div>
                 Zonas Comunes
             </a>
+            <div class="nav-card alt" onclick="openPanel('recepcion')" style="cursor:pointer">
+                <div class="nav-icon"><i class="fas fa-boxes-stacked"></i></div>
+                Recepción
+            </div>
         </div>
     </div>
 </div><!-- /page -->
 </div><!-- /scroll-root -->
+
+<!-- ═══ Panel Recepción de Paquetes ═══ -->
+<div id="panel-recepcion" class="panel">
+    <div class="panel-glow" style="background:radial-gradient(ellipse at 50% 25%, rgba(124,58,237,.18) 0%, transparent 60%), radial-gradient(ellipse at 75% 65%, rgba(219,39,119,.12) 0%, transparent 50%);"></div>
+    <button class="panel-close" onclick="closePanel('recepcion')"><i class="fas fa-times"></i></button>
+    <div class="panel-body">
+        <div class="panel-icon-wrap" style="background:linear-gradient(135deg,#7c3aed,#db2777);">
+            <i class="fas fa-boxes-stacked"></i>
+        </div>
+        <h2 class="panel-title" style="background:linear-gradient(135deg,#c4b5fd,#f9a8d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:22px;">
+            Recepción
+        </h2>
+
+        <!-- Entregar paquete rápido -->
+        <div class="panel-deliver">
+            <div class="panel-deliver-label"><i class="fas fa-hand-holding-box" style="color:#db2777;margin-right:5px"></i>Entregar paquete</div>
+            <div class="panel-deliver-row">
+                <input type="text" class="panel-code-in" id="port-codigo" maxlength="6"
+                       placeholder="CÓDIGO" inputmode="numeric" autocomplete="off">
+                <button class="panel-deliver-btn" onclick="portEntregar()">
+                    <i class="fas fa-circle-check"></i><br>OK
+                </button>
+            </div>
+            <div class="panel-result" id="port-result"></div>
+        </div>
+
+        <!-- Acciones rápidas -->
+        <div class="panel-actions-grid">
+            <a href="{% url 'registrar_paquete' %}" class="panel-action-btn">
+                <div class="panel-action-icon" style="background:linear-gradient(135deg,#db2777,#9d174d);">
+                    <i class="fas fa-plus"></i>
+                </div>
+                <div class="panel-action-text">
+                    <span class="panel-action-title">Registrar paquete</span>
+                    <span class="panel-action-sub">Nuevo ingreso en portería</span>
+                </div>
+                <i class="fas fa-chevron-right" style="color:rgba(255,255,255,.2);margin-left:auto;flex-shrink:0;font-size:.8rem"></i>
+            </a>
+            <a href="{% url 'lista_paquetes' %}" class="panel-action-btn">
+                <div class="panel-action-icon" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);">
+                    <i class="fas fa-list-ul"></i>
+                </div>
+                <div class="panel-action-text">
+                    <span class="panel-action-title">Ver todos los paquetes</span>
+                    <span class="panel-action-sub">Historial y entrega por código</span>
+                </div>
+                <i class="fas fa-chevron-right" style="color:rgba(255,255,255,.2);margin-left:auto;flex-shrink:0;font-size:.8rem"></i>
+            </a>
+        </div>
+    </div>
+</div>
 
 <script>
 function pad(n){ return String(n).padStart(2,'0'); }
@@ -234,6 +345,50 @@ tick(); setInterval(tick,1000);
     draw();
 })();
 
+
+/* ── Panels ── */
+var _lockScrollY = 0;
+function lockBody() {
+    _lockScrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = '-' + _lockScrollY + 'px';
+    document.body.style.left = '0'; document.body.style.right = '0'; document.body.style.overflow = 'hidden';
+}
+function unlockBody() {
+    document.body.style.position = '';
+    document.body.style.top = ''; document.body.style.left = ''; document.body.style.right = ''; document.body.style.overflow = '';
+    window.scrollTo(0, _lockScrollY);
+}
+function openPanel(id){ document.getElementById('panel-'+id).classList.add('open'); lockBody(); }
+function closePanel(id){ document.getElementById('panel-'+id).classList.remove('open'); unlockBody(); }
+document.addEventListener('keydown', function(e){
+    if(e.key==='Escape'){ document.querySelectorAll('.panel.open').forEach(p=>p.classList.remove('open')); unlockBody(); }
+});
+
+/* ── Panel recepción — entregar paquete ── */
+var _PORT_CSRF = '{{ csrf_token }}';
+function portEntregar() {
+    var codigo = document.getElementById('port-codigo').value.trim().toUpperCase();
+    if (!codigo || codigo.length !== 6) { portShowResult(false, 'El código debe tener 6 caracteres'); return; }
+    fetch('{% url "entregar_paquete" %}', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'X-CSRFToken': _PORT_CSRF},
+        body: JSON.stringify({codigo: codigo})
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(d){ portShowResult(d.ok, d.mensaje); if(d.ok) document.getElementById('port-codigo').value=''; })
+    .catch(function(){ portShowResult(false, 'Error de conexión'); });
+}
+function portShowResult(ok, msg) {
+    var b = document.getElementById('port-result');
+    b.className = 'panel-result '+(ok?'panel-result-ok':'panel-result-err');
+    b.innerHTML = '<i class="fas '+(ok?'fa-circle-check':'fa-circle-xmark')+'"></i> '+msg;
+    b.style.display = 'flex';
+    if(ok) setTimeout(function(){ b.style.display='none'; }, 3000);
+}
+document.addEventListener('keydown', function(e){
+    if(e.key==='Enter' && document.activeElement && document.activeElement.id==='port-codigo') portEntregar();
+});
 
 /* ── Campana toggleNotif ── */
 function toggleNotif(e){
